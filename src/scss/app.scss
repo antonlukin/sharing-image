@@ -1,0 +1,21 @@
+.meta-image-generate {
+  text-align: right;
+  margin-top: 1em;
+
+  .meta-image-preview {
+    display: block;
+
+    max-width: 100%;
+  }
+
+  .meta-image-text {
+    display: block;
+
+    width: 100%;
+    min-height: 6rem;
+  }
+
+  .meta-image-run {
+    float: right;
+  }
+}
