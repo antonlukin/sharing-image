@@ -3,55 +3,59 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-31 18:29+0000\n"
+"POT-Creation-Date: 2017-07-31 19:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
 "Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Loco https://localise.biz/"
+"X-Generator: Loco - https://localise.biz/"
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:15
+#: src/views/metabox.php:15
 msgid "Choose from library"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:29
+#: src/views/metabox.php:29
 msgid "Brightness"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:34
+#: src/views/metabox.php:34
 msgid "Contrast"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:41
+#: src/views/metabox.php:41
 msgid "Generate"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:43
+#: src/views/metabox.php:43
 msgid "Delete"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:41
+#: src/classes/Generator.php:41
 msgid "Image save error"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:96
+#: src/classes/Generator.php:96
 msgid "Image process error"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:121
+#: src/classes/Generator.php:121
 msgid "Cannot delete meta"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:133
+#: src/classes/Generator.php:133
 msgid "Cannot update meta"
 msgstr ""
 
-#: ../../../../plugins/meta-image/src/classes/MetaBox.php:12
+#: src/classes/MetaBox.php:12
 msgid "Social sharing image"
+msgstr ""
+
+#: src/classes/MetaBox.php:24
+msgid "Choose image for social sharing"
 msgstr ""
 
 #. Name of the plugin

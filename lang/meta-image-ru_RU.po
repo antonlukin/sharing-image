@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meta Image\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-31 18:29+0000\n"
-"PO-Revision-Date: 2017-07-31 19:00+0000\n"
+"POT-Creation-Date: 2017-07-31 19:07+0000\n"
+"PO-Revision-Date: 2017-07-31 19:08+0000\n"
 "Last-Translator: Anton Lukin <anton@lukin.me>\n"
 "Language-Team: Russian\n"
 "Language: ru-RU\n"
@@ -14,43 +14,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco - https://localise.biz/"
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:15
+#: src/classes/MetaBox.php:24
+msgid "Choose image for social sharing"
+msgstr "Выберите изображение для шаринга в соцсети"
+
+#: src/views/metabox.php:15
 msgid "Choose from library"
 msgstr "Загрузить из библиотеки"
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:29
+#: src/views/metabox.php:29
 msgid "Brightness"
 msgstr "Яркость"
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:34
+#: src/views/metabox.php:34
 msgid "Contrast"
 msgstr "Контрастность"
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:41
+#: src/views/metabox.php:41
 msgid "Generate"
 msgstr "Сгенерировать"
 
-#: ../../../../plugins/meta-image/src/views/metabox.php:43
+#: src/views/metabox.php:43
 msgid "Delete"
 msgstr "Удалить"
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:41
+#: src/classes/Generator.php:41
 msgid "Image save error"
 msgstr "Не удалось сохранить изображение"
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:96
+#: src/classes/Generator.php:96
 msgid "Image process error"
 msgstr "Не удалось сгенерировать изображение"
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:121
+#: src/classes/Generator.php:121
 msgid "Cannot delete meta"
 msgstr "Не удалось удалить данные поста"
 
-#: ../../../../plugins/meta-image/src/classes/Generator.php:133
+#: src/classes/Generator.php:133
 msgid "Cannot update meta"
 msgstr "Не удалось обновить данные поста"
 
-#: ../../../../plugins/meta-image/src/classes/MetaBox.php:12
+#: src/classes/MetaBox.php:12
 msgid "Social sharing image"
 msgstr "Изображение соцсети"
 

@@ -7,7 +7,7 @@ use Intervention\Image\ImageManager;
 class Generator {
 	function __construct() {
 		add_action('wp_ajax_meta_image_generate', [$this, 'generate']);
-  		add_action('wp_ajax_meta_image_library', [$this, 'library']);  
+		add_action('wp_ajax_meta_image_library', [$this, 'library']);  
  		add_action('wp_ajax_meta_image_delete', [$this, 'delete']); 
 	}
 
@@ -58,6 +58,9 @@ class Generator {
 		$im = new ImageManager(array('driver' => 'gd'));  
 
 		$thumb = get_attached_file(get_post_thumbnail_id($p['post']));
+
+		if(empty($thumb))
+ 			wp_send_json_error(__('Post thumbnail not found', 'meta-image')); 
 		
  		try {
 			$image = $im->make($thumb);
@@ -106,6 +109,7 @@ class Generator {
 			'contrast' => intval($_POST['contrast']),
 			'brightness' => intval($_POST['brightness'])
 		];
+
 
 		$image = $this->_image($p);
 

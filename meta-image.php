@@ -18,11 +18,11 @@ if (!defined('WPINC')) {
 	die;
 }      
 
-
 require_once(__DIR__ . '/vendor/autoload.php');
-
 
 add_action('init', function() {
 	$generator = new MetaImage\Generator;
  	$metabox = new MetaImage\MetaBox; 
+
+	load_plugin_textdomain('meta-image', false, basename(__DIR__) . '/lang');
 });

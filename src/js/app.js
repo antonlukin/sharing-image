@@ -51,9 +51,9 @@ jQuery(document).ready(function($) {
 			return frame.open();
 
 		frame = wp.media({
-      title: 'Выберите изображение для шаринга в соцсети',
-      multiple: false
-    });
+			title: meta_image_options.choose,
+			multiple: false
+		});
 
 		frame.on('select', function() {
 			var attachment = frame.state().get('selection').first().toJSON();

@@ -20,8 +20,14 @@ class MetaBox {
 		if('post.php' !== $hook )
 			return;
 
-		wp_enqueue_script('meta-image', plugins_url("assets/meta-image.js", dirname(__DIR__)), ['jquery'], '1.1');
- 		wp_enqueue_style('meta-image', plugins_url("assets/meta-image.css", dirname(__DIR__)), [], '1.1'); 
+		$options = [
+			'choose' => __('Choose image for social sharing', 'meta-image')
+		];
+
+		wp_enqueue_script('meta-image', plugins_url("assets/meta-image.js", dirname(__DIR__)), ['jquery'], '0.2');
+ 		wp_enqueue_style('meta-image', plugins_url("assets/meta-image.css", dirname(__DIR__)), [], '0.2'); 
+
+		wp_localize_script('meta-image', 'meta_image_options', $options); 
 	}
 }
 
