@@ -53,7 +53,12 @@ class Generator {
 		
  		try {
 			$image = $im->make($thumb);
-			$image->resize(1024, 512);   
+
+			$image->resize(1024, null, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+			$image->crop(1024, 512);   
 			$image->contrast(-30);
 			$image->brightness(-30);  
 

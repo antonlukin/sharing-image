@@ -7,7 +7,7 @@
 			$text = get_the_title();
 	?> 
 
-	<img class="meta-image-preview" src="<?php echo $preview; ?>" />
+	<img class="meta-image-preview" src="<?php echo $preview; ?>" onclick="window.open(this.src, '_blank');" />
 
 	<p>
 		<textarea class="meta-image-text"><?php echo $text; ?></textarea>
