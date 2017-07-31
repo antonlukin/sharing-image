@@ -20,8 +20,8 @@ class MetaBox {
 		if('post.php' !== $hook )
 			return;
 
-		wp_enqueue_script('meta-image', plugins_url("assets/meta-image.js", dirname(__DIR__)), ['jquery']);
- 		wp_enqueue_style('meta-image', plugins_url("assets/meta-image.css", dirname(__DIR__))); 
+		wp_enqueue_script('meta-image', plugins_url("assets/meta-image.js", dirname(__DIR__)), ['jquery'], '1.1');
+ 		wp_enqueue_style('meta-image', plugins_url("assets/meta-image.css", dirname(__DIR__)), [], '1.1'); 
 	}
 }
 

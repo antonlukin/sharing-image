@@ -2,7 +2,7 @@
 /**
  *
  * @link              https://lukin.me
- * @since             1.0
+ * @since             1.1
  *
  * @wordpress-plugin
  * Plugin Name:       [НОЖ] Генератор картинок для соцсетей
