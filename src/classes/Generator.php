@@ -72,10 +72,10 @@ class Generator {
 
 			$logo = [
 				"text" => "knife.media",
-				"posx" => 75,
-				"posy" => 65,
+				"posx" => 45,
+				"posy" => 70,
 				"file" => plugin_dir_path(__DIR__) . "fonts/gerbera.ttf",
-				"size" => 22,
+				"size" => 29,
 				"color" => "#ffffff"
 			];
 
@@ -83,8 +83,8 @@ class Generator {
 
 			$text = [
 				"text" => wordwrap($p['text'], 1024 / 20),
-				"posx" => 75,
-				"posy" => 142,
+				"posx" => 45,
+				"posy" => 165,
 				"file" => plugin_dir_path(__DIR__) . "fonts/garamond-medium.ttf",
 				"size" => 67,
 				"color" => "#ffffff"
