@@ -7,6 +7,8 @@ use Intervention\Image\ImageManager;
 class Generator {
 	function __construct() {
 		add_action('wp_ajax_meta_image_generate', [$this, 'generate']);
+  		add_action('wp_ajax_meta_image_library', [$this, 'library']);  
+ 		add_action('wp_ajax_meta_image_delete', [$this, 'delete']); 
 	}
 
 	private function _save($image, $p) {
@@ -23,8 +25,14 @@ class Generator {
 
 			$image->save($dir);                     
 
+			$options = [
+				'text' => $p['text'],
+				'contrast' => $p['contrast'],
+				'brightness' => $p['brightness']
+			];
+
 			update_post_meta($p['post'], 'meta-image', $url);
-			update_post_meta($p['post'], 'meta-image-text', $p['text']);
+ 			update_post_meta($p['post'], 'meta-image-options', serialize($options));
 
 			wp_send_json_success($url);
 		}
@@ -59,15 +67,15 @@ class Generator {
             });
 
 			$image->crop(1024, 512);   
-			$image->contrast(-30);
-			$image->brightness(-30);  
+			$image->contrast($p['contrast']);
+			$image->brightness($p['brightness']);  
 
 			$logo = [
 				"text" => "knife.media",
-				"posx" => 40,
-				"posy" => 75,
+				"posx" => 75,
+				"posy" => 65,
 				"file" => plugin_dir_path(__DIR__) . "fonts/gerbera.ttf",
-				"size" => 30,
+				"size" => 22,
 				"color" => "#ffffff"
 			];
 
@@ -75,10 +83,10 @@ class Generator {
 
 			$text = [
 				"text" => wordwrap($p['text'], 1024 / 20),
-				"posx" => 40,
-				"posy" => 200,
+				"posx" => 75,
+				"posy" => 142,
 				"file" => plugin_dir_path(__DIR__) . "fonts/garamond-medium.ttf",
-				"size" => 60,
+				"size" => 67,
 				"color" => "#ffffff"
 			];
 
@@ -94,11 +102,34 @@ class Generator {
 	public function generate() {
 		$p = [
 			'post' => intval($_POST['post']),
-			'text' => html_entity_decode($_POST['text'])
+			'text' => html_entity_decode($_POST['text']),
+			'contrast' => intval($_POST['contrast']),
+			'brightness' => intval($_POST['brightness'])
 		];
 
 		$image = $this->_image($p);
 
         return $this->_save($image, $p);
+	}
+
+	public function delete() {
+		$post = intval($_POST['post']);
+
+		if(delete_post_meta($post, 'meta-image'))
+			wp_send_json_success('');
+
+		wp_send_json_error('Cannot delete meta');
+	}
+
+	public function library() {
+		$p = [
+			'post' => intval($_POST['post']),
+			'url' => $_POST['url']
+		];
+
+		if(update_post_meta($p['post'], 'meta-image', $p['url']))
+			wp_send_json_success($p['url']);
+
+		wp_send_json_error('Cannot update meta');
 	}
 }
