@@ -38,7 +38,7 @@ class Generator {
 		}
 
 		catch(Exception $e) {
-			wp_send_json_error('Image save error'); 
+			wp_send_json_error(__('Image save error', 'meta-image')); 
 		}
 	}
 
@@ -93,7 +93,7 @@ class Generator {
 			$image = $this->_text($image, $text);
 		}
 		catch(Exception $e) {
-			wp_send_json_error('Image process error');
+			wp_send_json_error(__('Image process error', 'meta-image'));
 		}
 
 		return $image;
@@ -118,7 +118,7 @@ class Generator {
 		if(delete_post_meta($post, 'meta-image'))
 			wp_send_json_success('');
 
-		wp_send_json_error('Cannot delete meta');
+		wp_send_json_error(__('Cannot delete meta', 'meta-image'));
 	}
 
 	public function library() {
@@ -130,6 +130,6 @@ class Generator {
 		if(update_post_meta($p['post'], 'meta-image', $p['url']))
 			wp_send_json_success($p['url']);
 
-		wp_send_json_error('Cannot update meta');
+		wp_send_json_error(__('Cannot update meta', 'meta-image'));
 	}
 }

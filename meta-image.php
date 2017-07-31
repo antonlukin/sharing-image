@@ -1,15 +1,17 @@
 <?php
 /**
  *
- * @link              https://lukin.me
- * @since             1.1
+ * @link              https://lukin.me/meta-image
+ * @since             0.2
  *
  * @wordpress-plugin
- * Plugin Name:       [НОЖ] Генератор картинок для соцсетей
- * Description:       Позволяет генерировать к постам картинки которые будут расшарены в соцсетях
- * Version:           1.0
+ * Plugin Name:       Meta Image
+ * Description:       Create social sharing image for Facebook, VK.com, Telegram and other social networks
+ * Version:           0.2
+ * Plugin URI:        https://lukin.me/meta-image	
  * Author:            Anton Lukin
  * Author URI:        https://lukin.me
+ * Text Domain:       meta-image
  */
 
 if (!defined('WPINC')) {

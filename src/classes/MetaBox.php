@@ -9,7 +9,7 @@ class MetaBox {
 	}
 
 	public function add_box() {
-		add_meta_box('meta-image-box', 'Изображение соцсети', [$this, 'display_box'], 'post', 'side', 'low');
+		add_meta_box('meta-image-box', __('Social sharing image', 'meta-image'), [$this, 'display_box'], 'post', 'side', 'low');
 	}
 
 	public function display_box() {

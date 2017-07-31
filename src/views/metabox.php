@@ -12,7 +12,7 @@
 			$options['text'] = get_the_title();
 	?> 
 
-	<button class="meta-image-library button">Выбрать из библиотеки</button>
+		<button class="meta-image-library button"><?php _e('Choose from library', 'meta-image') ?></button>
 
 	<p class="meta-image-fullsize">
 		<img class="meta-image-preview" src="<?php echo $preview; ?>" />
@@ -26,21 +26,21 @@
 
 	<div class="meta-image-options">
 		<div class="meta-image-option">
-			<label class="meta-image-label" for="meta-image-brightness">Яркость</label>
+			<label class="meta-image-label" for="meta-image-brightness"><?php _e('Brightness', 'meta-image') ?></label>
 			<input class="meta-image-brightness meta-image-input" id="meta-image-brightness" value="<?php echo $options['brightness'] ?>" />
 		</div>
 
 		<div class="meta-image-option">
-			<label class="meta-image-label" for="meta-image-contrast">Контрастность</label> 
+			<label class="meta-image-label" for="meta-image-contrast"><?php _e('Contrast', 'meta-image') ?></label> 
 			<input class="meta-image-contrast meta-image-input" id="meta-image-contrast" value="<?php echo $options['contrast'] ?>" />
 		</div> 
 	</div>
 	
 	
 	<div class="meta-image-manage">
-		<button class="meta-image-run button">Сгенерировать</button>
+		<button class="meta-image-run button"><?php _e('Generate', 'meta-image') ?></button>
 
-		<a class="meta-image-delete" href="#delete">Удалить</a>
+		<a class="meta-image-delete" href="#delete"><?php _e('Delete', 'meta-image') ?></a>
 		<span class="spinner"></span>
 
 		<div class="clear"></div>
