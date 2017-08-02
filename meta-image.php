@@ -2,13 +2,13 @@
 /**
  *
  * @link              https://lukin.me/meta-image
- * @since             0.2
+ * @since             1.0
  *
  * @wordpress-plugin
  * Plugin Name:       Meta Image
  * Description:       Create social sharing image for Facebook, VK.com, Telegram and other social networks
- * Version:           0.2
- * Plugin URI:        https://lukin.me/meta-image	
+ * Version:           1.0
+ * Plugin URI:        https://bitbucket.org/antonlukin/meta-image
  * Author:            Anton Lukin
  * Author URI:        https://lukin.me
  * Text Domain:       meta-image
