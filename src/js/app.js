@@ -37,7 +37,9 @@ jQuery(document).ready(function($) {
 			if(answer.success === false)
 				return console.log(answer.data);
 
-			return box.find(".meta-image-preview").attr('src', answer.data);
+ 			box.find('.meta-image-delete').addClass('is-active'); 
+
+			return box.find('.meta-image-preview').attr('src', answer.data);
 		});    
 
 		return wait();
@@ -72,7 +74,9 @@ jQuery(document).ready(function($) {
 				if(answer.success === false)
 					return console.log(answer.data);
 
-				return box.find(".meta-image-preview").attr('src', answer.data);             
+				box.find('.meta-image-delete').addClass('is-active');
+
+				return box.find('.meta-image-preview').attr('src', answer.data);             
 			});
 
 			return wait();
@@ -98,7 +102,9 @@ jQuery(document).ready(function($) {
 			if(answer.success === false)
 				return console.log(answer.data);
 
-			return box.find(".meta-image-preview").attr('src', '');
+ 			box.find('.meta-image-delete').removeClass('is-active'); 
+
+			return box.find('.meta-image-preview').attr('src', '');
 		});         
 
 		return wait();

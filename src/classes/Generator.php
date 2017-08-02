@@ -57,13 +57,13 @@ class Generator {
 	private function _image($p) {
 		$im = new ImageManager(array('driver' => 'gd'));  
 
-		$thumb = get_attached_file(get_post_thumbnail_id($p['post']));
+		$thumbnail = get_attached_file(get_post_thumbnail_id($p['post']));
 
-		if(empty($thumb))
+		if(empty($thumbnail))
  			wp_send_json_error(__('Post thumbnail not found', 'meta-image')); 
 		
  		try {
-			$image = $im->make($thumb);
+			$image = $im->make($thumbnail);
 
 			$image->resize(1024, null, function ($constraint) {
                 $constraint->aspectRatio();

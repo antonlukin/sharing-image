@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meta Image\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-31 19:07+0000\n"
-"PO-Revision-Date: 2017-07-31 19:08+0000\n"
+"POT-Creation-Date: 2017-08-02 09:58+0000\n"
+"PO-Revision-Date: 2017-08-02 10:03+0000\n"
 "Last-Translator: Anton Lukin <anton@lukin.me>\n"
 "Language-Team: Russian\n"
 "Language: ru-RU\n"
@@ -14,27 +14,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco - https://localise.biz/"
 
-#: src/classes/MetaBox.php:24
-msgid "Choose image for social sharing"
-msgstr "Выберите изображение для шаринга в соцсети"
+#: src/views/metabox.php:22
+msgid ""
+"To generate social image, you must first add post thumbnail and update the "
+"post"
+msgstr ""
+"Для генерации обложки, необходимо сначала добавить миниатюру поста и&nbsp;"
+"обновить запись"
 
-#: src/views/metabox.php:15
+#: src/views/metabox.php:2
 msgid "Choose from library"
 msgstr "Загрузить из библиотеки"
 
-#: src/views/metabox.php:29
+#: src/views/metabox.php:38
 msgid "Brightness"
 msgstr "Яркость"
 
-#: src/views/metabox.php:34
+#: src/views/metabox.php:43
 msgid "Contrast"
 msgstr "Контрастность"
 
-#: src/views/metabox.php:41
+#: src/views/metabox.php:50
 msgid "Generate"
 msgstr "Сгенерировать"
 
-#: src/views/metabox.php:43
+#: src/views/metabox.php:52
 msgid "Delete"
 msgstr "Удалить"
 
@@ -42,21 +46,29 @@ msgstr "Удалить"
 msgid "Image save error"
 msgstr "Не удалось сохранить изображение"
 
-#: src/classes/Generator.php:96
+#: src/classes/Generator.php:63
+msgid "Post thumbnail not found"
+msgstr "Миниатюра поста не найдена"
+
+#: src/classes/Generator.php:99
 msgid "Image process error"
 msgstr "Не удалось сгенерировать изображение"
 
-#: src/classes/Generator.php:121
+#: src/classes/Generator.php:125
 msgid "Cannot delete meta"
 msgstr "Не удалось удалить данные поста"
 
-#: src/classes/Generator.php:133
+#: src/classes/Generator.php:137
 msgid "Cannot update meta"
 msgstr "Не удалось обновить данные поста"
 
 #: src/classes/MetaBox.php:12
 msgid "Social sharing image"
 msgstr "Изображение соцсети"
+
+#: src/classes/MetaBox.php:24
+msgid "Choose image for social sharing"
+msgstr "Выберите изображение для шаринга в соцсети"
 
 #. Name of the plugin
 msgid "Meta Image"

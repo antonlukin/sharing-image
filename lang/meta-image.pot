@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-31 19:07+0000\n"
+"POT-Creation-Date: 2017-08-02 09:52+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -14,23 +14,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco - https://localise.biz/"
 
-#: src/views/metabox.php:15
+#: src/views/metabox.php:2
 msgid "Choose from library"
 msgstr ""
 
-#: src/views/metabox.php:29
+#: src/views/metabox.php:22
+msgid ""
+"To generate social image, you must first add post thumbnail and update the "
+"post"
+msgstr ""
+
+#: src/views/metabox.php:38
 msgid "Brightness"
 msgstr ""
 
-#: src/views/metabox.php:34
+#: src/views/metabox.php:43
 msgid "Contrast"
 msgstr ""
 
-#: src/views/metabox.php:41
+#: src/views/metabox.php:50
 msgid "Generate"
 msgstr ""
 
-#: src/views/metabox.php:43
+#: src/views/metabox.php:52
 msgid "Delete"
 msgstr ""
 
@@ -38,15 +44,19 @@ msgstr ""
 msgid "Image save error"
 msgstr ""
 
-#: src/classes/Generator.php:96
+#: src/classes/Generator.php:63
+msgid "Post thumbnail not found"
+msgstr ""
+
+#: src/classes/Generator.php:99
 msgid "Image process error"
 msgstr ""
 
-#: src/classes/Generator.php:121
+#: src/classes/Generator.php:125
 msgid "Cannot delete meta"
 msgstr ""
 
-#: src/classes/Generator.php:133
+#: src/classes/Generator.php:137
 msgid "Cannot update meta"
 msgstr ""
 

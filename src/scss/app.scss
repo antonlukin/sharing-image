@@ -42,6 +42,10 @@
     max-width: 100%;
   }
 
+  .meta-image-empty {
+    text-align: left;
+  }
+
   .meta-image-text {
     display: block;
 
@@ -68,12 +72,18 @@
 		display: block;
 		float: left;
 
+    visibility: hidden;
+
 		line-height: 28px;		
 		color: #a00;
 
 		&:hover {
 			color: #dc3232;
 		}
+
+    &.is-active {
+      visibility: visible;
+    }
 	}
 
   .meta-image-option { 

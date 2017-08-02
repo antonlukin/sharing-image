@@ -1,5 +1,7 @@
 <div id="meta-image-generate" class="meta-image-generate" data-ajaxurl='<?php echo admin_url('admin-ajax.php') ?>' data-post="<?php echo get_the_ID() ?>">
- 	<?php
+	<button class="meta-image-library button"><?php _e('Choose from library', 'meta-image') ?></button>
+
+	<?php
 		$preview = get_post_meta(get_the_ID(), 'meta-image', true);
 		$options = get_post_meta(get_the_ID(), 'meta-image-options', true);
 
@@ -10,9 +12,17 @@
 
 		if(empty($options['text']))
 			$options['text'] = get_the_title();
+
+		$thumbnail = get_attached_file(get_post_thumbnail_id(get_the_ID())); 
 	?> 
 
-		<button class="meta-image-library button"><?php _e('Choose from library', 'meta-image') ?></button>
+	<?php if(empty($thumbnail)) : ?>
+
+	<p class="meta-image-empty howto">
+		<?php echo __('To generate social image, you must first add post thumbnail and update the post', 'meta-image') ?>
+	</p>
+
+	<?php else: ?>
 
 	<p class="meta-image-fullsize">
 		<img class="meta-image-preview" src="<?php echo $preview; ?>" />
@@ -22,7 +32,6 @@
 	<p>
 		<textarea class="meta-image-text"><?php echo $options['text'] ?></textarea>
 	</p>
-
 
 	<div class="meta-image-options">
 		<div class="meta-image-option">
@@ -40,10 +49,11 @@
 	<div class="meta-image-manage">
 		<button class="meta-image-run button"><?php _e('Generate', 'meta-image') ?></button>
 
-		<a class="meta-image-delete" href="#delete"><?php _e('Delete', 'meta-image') ?></a>
+		<a class="<?= empty($preview) ? 'meta-image-delete' : 'meta-image-delete is-active' ?>" href="#delete"><?php _e('Delete', 'meta-image') ?></a>
 		<span class="spinner"></span>
 
 		<div class="clear"></div>
 	</div>
+	<?php endif; ?>
 </div>
 
