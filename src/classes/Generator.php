@@ -131,6 +131,9 @@ class Generator {
 			'url' => $_POST['url']
 		];
 
+		if(get_post_meta($p['post'], 'meta-image', true) === $p['url'])
+ 			wp_send_json_success($p['url']);    		
+
 		if(update_post_meta($p['post'], 'meta-image', $p['url']))
 			wp_send_json_success($p['url']);
 

@@ -1,6 +1,4 @@
 <div id="meta-image-generate" class="meta-image-generate" data-ajaxurl='<?php echo admin_url('admin-ajax.php') ?>' data-post="<?php echo get_the_ID() ?>">
-	<button class="meta-image-library button"><?php _e('Choose from library', 'meta-image') ?></button>
-
 	<?php
 		$preview = get_post_meta(get_the_ID(), 'meta-image', true);
 		$options = get_post_meta(get_the_ID(), 'meta-image-options', true);
@@ -16,6 +14,17 @@
 		$thumbnail = get_attached_file(get_post_thumbnail_id(get_the_ID())); 
 	?> 
 
+	<div class="meta-image-top">
+		<div class="meta-image-error">test</div>
+
+		<button class="meta-image-library button"><?php _e('Choose from library', 'meta-image') ?></button>
+
+		<p class="meta-image-fullsize">
+			<img class="meta-image-preview" src="<?php echo $preview; ?>" />
+			<span class="meta-image-search dashicons-before dashicons-search"></span>
+		</p>   
+	</div>
+
 	<?php if(empty($thumbnail)) : ?>
 
 	<p class="meta-image-empty howto">
@@ -23,11 +32,6 @@
 	</p>
 
 	<?php else: ?>
-
-	<p class="meta-image-fullsize">
-		<img class="meta-image-preview" src="<?php echo $preview; ?>" />
-		<span class="meta-image-search dashicons-before dashicons-search"></span>
-	</p>
 
 	<p>
 		<textarea class="meta-image-text"><?php echo $options['text'] ?></textarea>

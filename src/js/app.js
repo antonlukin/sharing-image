@@ -4,9 +4,20 @@ jQuery(document).ready(function($) {
 	var frame;
 	var box = $('#meta-image-generate');
 
-	var wait = function() {
+	var notice = function(text) {
+		var el = box.find('.meta-image-error');
+
+		if(typeof text !== 'undefined')
+			return el.html(text).addClass('is-active');
+
+		return el.removeClass('is-active');
+	}    
+
+	var wait = function(stop) {
 		box.find('.button').toggleClass('disabled');
 		box.find('.spinner').toggleClass('is-active');
+
+		return notice();
 	}
 
 	box.on('click', '.meta-image-fullsize', function(e) {
@@ -32,10 +43,10 @@ jQuery(document).ready(function($) {
 		var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json');
 
 		xhr.done(function(answer) {
-			wait();
+			wait(true);
 
 			if(answer.success === false)
-				return console.log(answer.data);
+				return notice(answer.data);
 
  			box.find('.meta-image-delete').addClass('is-active'); 
 
@@ -69,10 +80,10 @@ jQuery(document).ready(function($) {
 			var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json'); 
 
 			xhr.done(function(answer) {
-				wait();
+				wait(true);
 
 				if(answer.success === false)
-					return console.log(answer.data);
+					return notice(answer.data); 
 
 				box.find('.meta-image-delete').addClass('is-active');
 
@@ -94,18 +105,18 @@ jQuery(document).ready(function($) {
 			post: box.data('post')
 		}                   
 
- 		var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json'); 
- 
+ 		var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json');
+
 		xhr.done(function(answer) {
-			wait();
+			wait(true);
 
 			if(answer.success === false)
-				return console.log(answer.data);
+				return notice(answer.data);  
 
- 			box.find('.meta-image-delete').removeClass('is-active'); 
+			box.find('.meta-image-delete').removeClass('is-active'); 
 
-			return box.find('.meta-image-preview').attr('src', '');
-		});         
+			return box.find('.meta-image-preview').attr('src', '');   
+		});
 
 		return wait();
 	});
