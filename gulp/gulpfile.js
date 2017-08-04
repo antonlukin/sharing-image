@@ -17,7 +17,7 @@ gulp.task('scss', function() {
         .pipe(sass({
             errLogToConsole: true
         }))
-        .pipe(concat('meta-image.css'))
+        .pipe(concat('social-image.css'))
         .pipe(minifyCss({
             compatibility: 'ie8'
         }))
@@ -27,10 +27,10 @@ gulp.task('scss', function() {
 gulp.task('js', function() {
     gulp.src([path.source + 'js/app.js'])
         .pipe(plumber())
-		.pipe(uglify())   
-        .pipe(concat('meta-image.js'))
+		.pipe(uglify())
+        .pipe(concat('social-image.js'))
         .pipe(gulp.dest(path.assets))
-}) 
+})
 
 gulp.task('watch', function() {
     gulp.watch(path.source + '/**/*', ['scss', 'js']);

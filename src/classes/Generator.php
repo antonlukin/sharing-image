@@ -1,29 +1,31 @@
 <?php
 
-namespace MetaImage;
+namespace SocialImage;
 
 use Intervention\Image\ImageManager;
 
 class Generator {
 	function __construct() {
-		add_action('wp_ajax_meta_image_generate', [$this, 'generate']);
-		add_action('wp_ajax_meta_image_library', [$this, 'library']);  
- 		add_action('wp_ajax_meta_image_delete', [$this, 'delete']); 
+		add_action('wp_ajax_social_image_generate', [$this, 'generate']);
+		add_action('wp_ajax_social_image_library', [$this, 'library']);
+ 		add_action('wp_ajax_social_image_delete', [$this, 'delete']);
 	}
 
 	private function _save($image, $p) {
 		try {
 			$upload = wp_upload_dir();
 
-			if(!is_dir($upload['basedir'] . '/meta-image/'))
-				mkdir($upload['basedir'] . '/meta-image/');
+			$create = $upload['basedir'] . '/social-image/';
 
-			$file = "/meta-image/{$p['post']}-" . time() . '.jpg';
+			if(!is_dir($create) && !mkdir($create))
+				wp_send_json_error(__('Check uploads directory permissions', 'social-image'));
+
+			$file = "/social-image/{$p['post']}-" . time() . '.jpg';
 
 			$dir = $upload['basedir'] . $file;
 			$url = $upload['baseurl'] . $file;
 
-			$image->save($dir);                     
+			$image->save($dir);
 
 			$options = [
 				'text' => $p['text'],
@@ -31,14 +33,14 @@ class Generator {
 				'brightness' => $p['brightness']
 			];
 
-			update_post_meta($p['post'], 'meta-image', $url);
- 			update_post_meta($p['post'], 'meta-image-options', serialize($options));
+			update_post_meta($p['post'], 'social-image', $url);
+ 			update_post_meta($p['post'], 'social-image-options', serialize($options));
 
 			wp_send_json_success($url);
 		}
 
 		catch(Exception $e) {
-			wp_send_json_error(__('Image save error', 'meta-image')); 
+			wp_send_json_error(__('Image save error', 'social-image'));
 		}
 	}
 
@@ -49,19 +51,19 @@ class Generator {
 			$font->file($file);
 			$font->size($size);
 			$font->color($color);
-		});    
+		});
 
 		return $image;
 	}
 
 	private function _image($p) {
-		$im = new ImageManager(array('driver' => 'gd'));  
+		$im = new ImageManager(array('driver' => 'gd'));
 
 		$thumbnail = get_attached_file(get_post_thumbnail_id($p['post']));
 
 		if(empty($thumbnail))
- 			wp_send_json_error(__('Post thumbnail not found', 'meta-image')); 
-		
+ 			wp_send_json_error(__('Post thumbnail not found', 'social-image'));
+
  		try {
 			$image = $im->make($thumbnail);
 
@@ -69,9 +71,9 @@ class Generator {
                 $constraint->aspectRatio();
             });
 
-			$image->crop(1024, 512);   
+			$image->crop(1024, 512);
 			$image->contrast($p['contrast']);
-			$image->brightness($p['brightness']);  
+			$image->brightness($p['brightness']);
 
 			$logo = [
 				"text" => "knife.media",
@@ -96,7 +98,7 @@ class Generator {
 			$image = $this->_text($image, $text);
 		}
 		catch(Exception $e) {
-			wp_send_json_error(__('Image process error', 'meta-image'));
+			wp_send_json_error(__('Image process error', 'social-image'));
 		}
 
 		return $image;
@@ -119,10 +121,10 @@ class Generator {
 	public function delete() {
 		$post = intval($_POST['post']);
 
-		if(delete_post_meta($post, 'meta-image'))
+		if(delete_post_meta($post, 'social-image'))
 			wp_send_json_success('');
 
-		wp_send_json_error(__('Cannot delete meta', 'meta-image'));
+		wp_send_json_error(__('Cannot delete meta', 'social-image'));
 	}
 
 	public function library() {
@@ -131,12 +133,12 @@ class Generator {
 			'url' => $_POST['url']
 		];
 
-		if(get_post_meta($p['post'], 'meta-image', true) === $p['url'])
- 			wp_send_json_success($p['url']);    		
+		if(get_post_meta($p['post'], 'social-image', true) === $p['url'])
+ 			wp_send_json_success($p['url']);
 
-		if(update_post_meta($p['post'], 'meta-image', $p['url']))
+		if(update_post_meta($p['post'], 'social-image', $p['url']))
 			wp_send_json_success($p['url']);
 
-		wp_send_json_error(__('Cannot update meta', 'meta-image'));
+		wp_send_json_error(__('Cannot update meta', 'social-image'));
 	}
 }

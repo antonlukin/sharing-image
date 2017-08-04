@@ -5,24 +5,25 @@
  * @since             1.0
  *
  * @wordpress-plugin
- * Plugin Name:       Meta Image
+ * Plugin Name:       Social Image
  * Description:       Create social sharing image for Facebook, VK.com, Telegram and other social networks
  * Version:           1.0
- * Plugin URI:        https://bitbucket.org/antonlukin/meta-image
+ * Plugin URI:        https://github.com/antonlukin/social-image
  * Author:            Anton Lukin
  * Author URI:        https://lukin.me
- * Text Domain:       meta-image
+ * Text Domain:       social-image
  */
 
 if (!defined('WPINC')) {
 	die;
-}      
+}
 
 require_once(__DIR__ . '/vendor/autoload.php');
 
 add_action('init', function() {
-	$generator = new MetaImage\Generator;
- 	$metabox = new MetaImage\MetaBox; 
+	new SocialImage\Generator;
+	new SocialImage\Options;
+	new SocialImage\MetaBox;
 
-	load_plugin_textdomain('meta-image', false, basename(__DIR__) . '/lang');
+	load_plugin_textdomain('social-image', false, basename(__DIR__) . '/lang');
 });

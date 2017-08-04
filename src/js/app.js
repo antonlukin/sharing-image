@@ -1,17 +1,17 @@
-jQuery(document).ready(function($) {  
- 	if (typeof wp.media === 'undefined') return;  
+jQuery(document).ready(function($) {
+ 	if (typeof wp.media === 'undefined') return;
 
 	var frame;
-	var box = $('#meta-image-generate');
+	var box = $('#social-image-metabox');
 
 	var notice = function(text) {
-		var el = box.find('.meta-image-error');
+		var el = box.find('.social-image__error');
 
 		if(typeof text !== 'undefined')
 			return el.html(text).addClass('is-active');
 
 		return el.removeClass('is-active');
-	}    
+	}
 
 	var wait = function(stop) {
 		box.find('.button').toggleClass('disabled');
@@ -20,24 +20,24 @@ jQuery(document).ready(function($) {
 		return notice();
 	}
 
-	box.on('click', '.meta-image-fullsize', function(e) {
+	box.on('click', '.social-image__fullsize', function(e) {
 		e.preventDefault();
 
-		var url = $(this).find('.meta-image-preview').attr('src');
+		var url = $(this).find('.social-image__preview').attr('src');
 
 		if(url.length > 0)
 			return window.open(url, '_blank');
 	});
- 
-	box.on('click', '.meta-image-run', function(e) {
+
+	box.on('click', '.social-image__run', function(e) {
 		e.preventDefault();
 
 		var data = {
-			action: 'meta_image_generate',
+			action: 'social_image_generate',
 			post: box.data('post'),
-			text: box.find('.meta-image-text').val(),
-			contrast: box.find('.meta-image-contrast').val(),
- 			brightness: box.find('.meta-image-brightness').val()
+			text: box.find('.social-image__text').val(),
+			contrast: box.find('.social-image__contrast').val(),
+ 			brightness: box.find('.social-image__brightness').val()
 		}
 
 		var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json');
@@ -48,23 +48,23 @@ jQuery(document).ready(function($) {
 			if(answer.success === false)
 				return notice(answer.data);
 
- 			box.find('.meta-image-delete').addClass('is-active'); 
+ 			box.find('.social-image__delete').addClass('is-active');
 
-			return box.find('.meta-image-preview').attr('src', answer.data);
-		});    
+			return box.find('.social-image__preview').attr('src', answer.data);
+		});
 
 		return wait();
 	});
 
 
-	box.on('click', '.meta-image-library', function(e) {
+	box.on('click', '.social-image__library', function(e) {
 		e.preventDefault();
 
 		if(frame)
 			return frame.open();
 
 		frame = wp.media({
-			title: meta_image_options.choose,
+			title: social_image_options.choose,
 			multiple: false
 		});
 
@@ -72,22 +72,22 @@ jQuery(document).ready(function($) {
 			var attachment = frame.state().get('selection').first().toJSON();
 
 			var data = {
-				action: 'meta_image_library',
+				action: 'social_image__library',
 				post: box.data('post'),
 				url: attachment.url
-			}                   
+			}
 
-			var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json'); 
+			var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json');
 
 			xhr.done(function(answer) {
 				wait(true);
 
 				if(answer.success === false)
-					return notice(answer.data); 
+					return notice(answer.data);
 
-				box.find('.meta-image-delete').addClass('is-active');
+				box.find('.social-image__delete').addClass('is-active');
 
-				return box.find('.meta-image-preview').attr('src', answer.data);             
+				return box.find('.social-image__preview').attr('src', answer.data);
 			});
 
 			return wait();
@@ -97,13 +97,13 @@ jQuery(document).ready(function($) {
 	});
 
 
-	box.on('click' , '.meta-image-delete', function(e) {
+	box.on('click' , '.social-image__delete', function(e) {
 		e.preventDefault();
 
 		var data = {
-			action: 'meta_image_delete',
+			action: 'social_image_delete',
 			post: box.data('post')
-		}                   
+		}
 
  		var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json');
 
@@ -111,11 +111,11 @@ jQuery(document).ready(function($) {
 			wait(true);
 
 			if(answer.success === false)
-				return notice(answer.data);  
+				return notice(answer.data);
 
-			box.find('.meta-image-delete').removeClass('is-active'); 
+			box.find('.social-image__delete').removeClass('is-active');
 
-			return box.find('.meta-image-preview').attr('src', '');   
+			return box.find('.social-image__preview').attr('src', '');
 		});
 
 		return wait();

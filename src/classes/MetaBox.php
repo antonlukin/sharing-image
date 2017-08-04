@@ -1,6 +1,6 @@
 <?php
 
-namespace MetaImage; 
+namespace SocialImage;
 
 class MetaBox {
 	function __construct() {
@@ -9,7 +9,7 @@ class MetaBox {
 	}
 
 	public function add_box() {
-		add_meta_box('meta-image-box', __('Social sharing image', 'meta-image'), [$this, 'display_box'], 'post', 'side', 'low');
+		add_meta_box('social-image-box', __('Social sharing image', 'social-image'), [$this, 'display_box'], null, 'side', 'low');
 	}
 
 	public function display_box() {
@@ -21,13 +21,13 @@ class MetaBox {
 			return;
 
 		$options = [
-			'choose' => __('Choose image for social sharing', 'meta-image')
+			'choose' => __('Choose image for social sharing', 'social-image')
 		];
 
-		wp_enqueue_script('meta-image', plugins_url("assets/meta-image.js", dirname(__DIR__)), ['jquery'], '0.2');
- 		wp_enqueue_style('meta-image', plugins_url("assets/meta-image.css", dirname(__DIR__)), [], '0.2'); 
+		wp_enqueue_script('social-image', plugins_url("assets/social-image.js", dirname(__DIR__)), ['jquery'], '0.2');
+ 		wp_enqueue_style('social-image', plugins_url("assets/social-image.css", dirname(__DIR__)), [], '0.2');
 
-		wp_localize_script('meta-image', 'meta_image_options', $options); 
+		wp_localize_script('social-image', 'social_image_options', $options);
 	}
 }
 
