@@ -1,0 +1,23 @@
+.social-image__options {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  margin-bottom: 1em;
+
+  .social-image__options-text {
+    width: 100%;
+
+    textarea {
+      width: 100%;
+    }
+  }
+
+  .social-image__options-setting {
+    width: 49%;
+
+    input {
+      width: 100%;
+    }
+  }
+}

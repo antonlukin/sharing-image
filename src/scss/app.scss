@@ -1,5 +1,10 @@
 #social-image-metabox {
-  @import "metabox/metabox";
+  margin-top: -8px;
+
+  @import "metabox/showcase";
+  @import "metabox/howto";
+  @import "metabox/options";
+  @import "metabox/manage";
 }
 
 #social-image-options {

@@ -1,0 +1,25 @@
+.social-image__manage {
+  text-align: right;
+
+  .social-image__manage-run {
+    float: right;
+  }
+
+  .social-image__manage-delete {
+		display: block;
+		float: left;
+
+    visibility: hidden;
+
+		line-height: 28px;
+		color: #a00;
+
+		&:hover {
+			color: #dc3232;
+		}
+
+    &.is-active {
+      visibility: visible;
+    }
+	}
+}

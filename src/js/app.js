@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
 	var box = $('#social-image-metabox');
 
 	var notice = function(text) {
-		var el = box.find('.social-image__error');
+		var el = box.find('#social-image-error');
 
 		if(typeof text !== 'undefined')
 			return el.html(text).addClass('is-active');
@@ -20,24 +20,24 @@ jQuery(document).ready(function($) {
 		return notice();
 	}
 
-	box.on('click', '.social-image__fullsize', function(e) {
+	box.on('click', '#social-image-preview', function(e) {
 		e.preventDefault();
 
-		var url = $(this).find('.social-image__preview').attr('src');
+		var url = box.find('#social-image-src').attr('src');
 
 		if(url.length > 0)
 			return window.open(url, '_blank');
 	});
 
-	box.on('click', '.social-image__run', function(e) {
+	box.on('click', '#social-image-run', function(e) {
 		e.preventDefault();
 
 		var data = {
 			action: 'social_image_generate',
 			post: box.data('post'),
-			text: box.find('.social-image__text').val(),
-			contrast: box.find('.social-image__contrast').val(),
- 			brightness: box.find('.social-image__brightness').val()
+			text: box.find('#social-image-text').val(),
+			contrast: box.find('#social-image-contrast').val(),
+ 			brightness: box.find('#social-image-brightness').val()
 		}
 
 		var xhr = $.ajax({method: 'POST', url: box.data('ajaxurl'), data: data}, 'json');
@@ -48,16 +48,16 @@ jQuery(document).ready(function($) {
 			if(answer.success === false)
 				return notice(answer.data);
 
- 			box.find('.social-image__delete').addClass('is-active');
+ 			box.find('#social-image-delete').addClass('is-active');
 
-			return box.find('.social-image__preview').attr('src', answer.data);
+			return box.find('#social-image-src').attr('src', answer.data);
 		});
 
 		return wait();
 	});
 
 
-	box.on('click', '.social-image__library', function(e) {
+	box.on('click', '#social-image-library', function(e) {
 		e.preventDefault();
 
 		if(frame)
@@ -72,7 +72,7 @@ jQuery(document).ready(function($) {
 			var attachment = frame.state().get('selection').first().toJSON();
 
 			var data = {
-				action: 'social_image__library',
+				action: 'social_image_library',
 				post: box.data('post'),
 				url: attachment.url
 			}
@@ -85,9 +85,9 @@ jQuery(document).ready(function($) {
 				if(answer.success === false)
 					return notice(answer.data);
 
-				box.find('.social-image__delete').addClass('is-active');
+				box.find('#social-image-delete').addClass('is-active');
 
-				return box.find('.social-image__preview').attr('src', answer.data);
+				return box.find('#social-image-src').attr('src', answer.data);
 			});
 
 			return wait();
@@ -97,7 +97,7 @@ jQuery(document).ready(function($) {
 	});
 
 
-	box.on('click' , '.social-image__delete', function(e) {
+	box.on('click' , '#social-image-delete', function(e) {
 		e.preventDefault();
 
 		var data = {
@@ -113,9 +113,9 @@ jQuery(document).ready(function($) {
 			if(answer.success === false)
 				return notice(answer.data);
 
-			box.find('.social-image__delete').removeClass('is-active');
+			box.find('#social-image-delete').removeClass('is-active');
 
-			return box.find('.social-image__preview').attr('src', '');
+			return box.find('#social-image-delete').attr('src', '');
 		});
 
 		return wait();
