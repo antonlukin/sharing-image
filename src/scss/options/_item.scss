@@ -63,6 +63,10 @@
     position: absolute;
     right: 10px;
     bottom: 10px;
+
+    @media screen and (max-width: 782px) {
+      bottom: 5px;
+    }
   }
 
   &.social-image__item--new {
@@ -73,6 +77,14 @@
     transition: none;
 
     border: 2px dashed #ddd;
+
+    &:after {
+      content: "";
+
+      display: block;
+
+      padding-top: 33.333%;
+    }
 
     &:hover {
       color: white;
@@ -88,7 +100,14 @@
       .dashicons {
         color: white;
       }
-
     }
+  }
+
+  @media screen and (max-width: 1023px) {
+    width: 31.3333%;
+  }
+
+  @media screen and (max-width: 782px) {
+    width: 48%;
   }
 }
