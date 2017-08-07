@@ -90,7 +90,7 @@ class Generator {
 				"text" => wordwrap($p['text'], 1024 / 20),
 				"posx" => 45,
 				"posy" => 165,
-				"file" => plugin_dir_path(__DIR__) . "fonts/garamond-medium.ttf",
+				"file" => plugin_dir_path(__DIR__) . "fonts/alice.ttf",
 				"size" => 67,
 				"color" => "#ffffff"
 			];

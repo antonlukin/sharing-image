@@ -115,7 +115,7 @@ jQuery(document).ready(function($) {
 
 			box.find('#social-image-delete').removeClass('is-active');
 
-			return box.find('#social-image-delete').attr('src', '');
+			return box.find('#social-image-src').attr('src', '');
 		});
 
 		return wait();
