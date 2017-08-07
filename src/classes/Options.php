@@ -16,6 +16,10 @@ class Options {
  		include(plugin_dir_path(__DIR__) . "views/options.php");
 	}
 
-	public function add_assets() {
+	public function add_assets($hook) {
+ 		if('settings_page_social-image' !== $hook )
+			return;
+
+ 		wp_enqueue_style('social-image', plugins_url("assets/social-image.css", dirname(__DIR__)), [], '0.2');
 	}
 }

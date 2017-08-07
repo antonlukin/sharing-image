@@ -8,6 +8,8 @@
 }
 
 #social-image-options {
+  @import "options/catalog";
+	@import "options/item";
   @import "options/adjust";
   @import "options/preview";
 }
