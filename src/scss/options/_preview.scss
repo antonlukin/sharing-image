@@ -1,5 +1,23 @@
-#social-image-options {
-  .social-image__form {
+.social-image__preview {
+  position: relative;
+  float: left;
 
+  width: 50%;
+
+  .social-image__preview-image {
+    display: block;
+
+    max-width: 100%;
+    margin-top: 32px;
+
+    box-shadow: 0 1px 1px 1px rgba(0,0,0,.2);
+  }
+
+  .social-image__preview-caption {
+    display: block;
+
+    width: 100%;
+    margin-top: 8px;
+    font-style: italic;
   }
 }
