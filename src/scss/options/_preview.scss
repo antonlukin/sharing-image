@@ -1,14 +1,14 @@
 .social-image__preview {
   position: relative;
-  float: left;
+  float: right;
 
-  width: 50%;
+  width: 512px;
 
   .social-image__preview-image {
     display: block;
 
     max-width: 100%;
-    margin-top: 32px;
+    margin-top: 20px;
 
     box-shadow: 0 1px 1px 1px rgba(0,0,0,.2);
   }
@@ -20,4 +20,16 @@
     margin-top: 8px;
     font-style: italic;
   }
+
+	@media screen and (max-width: 1200px) {
+		width: 384px;
+	}
+
+ 	@media screen and (max-width: 1072px) {
+		width: 256px;
+	}
+
+	@media screen and (max-width: 960px) {
+		width: 100%;
+	}
 }
