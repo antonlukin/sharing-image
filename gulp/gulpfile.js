@@ -25,7 +25,7 @@ gulp.task('scss', function() {
 })
 
 gulp.task('js', function() {
-    gulp.src([path.source + 'js/app.js'])
+    gulp.src([path.source + 'js/*.js'])
         .pipe(plumber())
 		.pipe(uglify())
         .pipe(concat('social-image.js'))

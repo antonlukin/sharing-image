@@ -21,9 +21,5 @@ if (!defined('WPINC')) {
 require_once(__DIR__ . '/vendor/autoload.php');
 
 add_action('init', function() {
-	new SocialImage\Generator;
-	new SocialImage\Options;
-	new SocialImage\MetaBox;
-
-	load_plugin_textdomain('social-image', false, basename(__DIR__) . '/lang');
+	new SocialImage\Core;
 });
