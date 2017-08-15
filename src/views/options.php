@@ -47,9 +47,11 @@
 		<hr class="wp-header-end">
 
 		<div class="social-image__preview">
-			<img class="social-image__preview-image" src="https://unsplash.it/512/256" />
+			<figure class="social-image__preview-figure">
+				<img class="social-image__preview-image" src="https://unsplash.it/512/256" />
 
-			<span class="social-image__preview-caption"><?php _e('Audo-updated social image preview', 'social-image') ?></span>
+				<span class="social-image__preview-caption"><?php _e('Audo-updated social image preview', 'social-image') ?></span>
+			</figure>
 		</div>
 
 		<form class="social-image__form" method="post" action="options.php">
@@ -59,11 +61,15 @@
 			<tr>
 				<th scope="row"><?php _e('Image size', 'social-image') ?></th>
 				<td class="social-image__form-stretch">
-					<label for="social-image-form-width"><?php _e('Width', 'social-image') ?></label>
-					<input name="social-image-form-width" type="number" step="1" min="0" id="social-image-form-width" value="" class="small-text">
+					<p>
+						<label for="social-image-form-width"><?php _e('Width', 'social-image') ?></label>
+						<input name="social-image-form-width" type="number" step="1" min="0" id="social-image-form-width" value="" class="small-text">
+					</p>
 
- 					<label for="social-image-form-height"><?php _e('Height', 'social-image') ?></label>
-					<input name="social-image-form-height" type="number" step="1" min="0" id="social-image-form-height" value="" class="small-text">
+					<p>
+						<label for="social-image-form-height"><?php _e('Height', 'social-image') ?></label>
+						<input name="social-image-form-height" type="number" step="1" min="0" id="social-image-form-height" value="" class="small-text">
+					</p>
 
 					<p class="description"><?php _e('In pixels. Recommended: 1024x512') ?></p>
 				</td>
@@ -98,38 +104,90 @@
 					<p class="description"><?php _e('Directory must be writeable') ?></p>
 				</td>
 			</tr>
+			</table>
 
+			<hr>
+
+ 			<h2><?php _e('Logo settings', 'social-image') ?></h2>
+
+			<table class="form-table">
+			<tr>
+				<th scope="row"><?php _e('Type', 'social-image') ?></th>
+				<td class="social-image__form-regular">
+					<select name="social-image-logo-type" id="social-image-logo-type">
+						<option value="image" selected="selected"><?php _e('Image', 'social-image') ?></option>
+ 						<option value="text"><?php _e('Text', 'social-image') ?></option>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<th scope="row"><?php _e('Position', 'social-image') ?></th>
+				<td class="social-image__form-stretch">
+					<p>
+						<label for="social-image-logo-top"><?php _e('Top', 'social-image') ?></label>
+						<input name="social-image-logo-top" type="number" step="1" min="0" id="social-image-logo-top" value="" class="small-text">
+					</p>
+
+					<p>
+						<label for="social-image-logo-left"><?php _e('Left', 'social-image') ?></label>
+						<input name="social-image-logo-left" type="number" step="1" min="0" id="social-image-logo-left" value="" class="small-text">
+					</p>
+				</td>
+			</tr>
+
+ 			<tr>
+				<th scope="row"><?php _e('Path to save', 'social-image') ?></th>
+				<td class="social-image__form-regular">
+					<input id="upload_image_button" type="button" class="button" value="<?php _e('Upload logo', 'social-image'); ?>" />
+					<input type="hidden" name="image_attachment_id" id="image_attachment_id" value="">
+				</td>
+			</tr>
+			</table>
+
+			<hr>
+
+			<h2><?php _e('Caption settings', 'social-image') ?></h2>
+
+			<table class="form-table">
+			<tr>
+				<th scope="row"><?php _e('Type', 'social-image') ?></th>
+				<td class="social-image__form-regular">
+					<select name="social-image-logo-type" id="social-image-logo-type">
+						<option value="image" selected="selected"><?php _e('Image', 'social-image') ?></option>
+ 						<option value="text"><?php _e('Text', 'social-image') ?></option>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<th scope="row"><?php _e('Position', 'social-image') ?></th>
+				<td class="social-image__form-stretch">
+					<p>
+						<label for="social-image-logo-top"><?php _e('Top', 'social-image') ?></label>
+						<input name="social-image-logo-top" type="number" step="1" min="0" id="social-image-logo-top" value="" class="small-text">
+					</p>
+
+					<p>
+						<label for="social-image-logo-left"><?php _e('Left', 'social-image') ?></label>
+						<input name="social-image-logo-left" type="number" step="1" min="0" id="social-image-logo-left" value="" class="small-text">
+					</p>
+				</td>
+			</tr>
+
+ 			<tr>
+				<th scope="row"><?php _e('Path to save', 'social-image') ?></th>
+				<td class="social-image__form-regular">
+					<input id="upload_image_button" type="button" class="button" value="<?php _e('Upload logo', 'social-image'); ?>" />
+					<input type="hidden" name="image_attachment_id" id="image_attachment_id" value="">
+				</td>
+			</tr>
 			</table>
 
 			<?php submit_button() ?>
 		</form>
 
+	 	<div class="clear"></div>
+
 	</div>
-
-	<div class="clear"></div>
-<?php /*
-	<p><?php _e('Adjust the image appearance using custom options', 'social-image') ?></p>
-
-	<div class="social-image_wrapper">
-
-	<form class="social-image__form" method="post" action="options.php">
-		<?php settings_fields('social-image-settings') ?>
-		<p>
-			<strong><?php _e('Font family', 'social-image') ?></strong><br />
-			<select name="social-image-font" value="<?php echo get_option('mailchimp_name'); ?>">
-				<option>Open Sans</option>
-				<option>Roboto</option>
-				<option>Georgia</option>
-			</select>
-		</p>
-
-		<?php submit_button(); ?>
-	</form>
-
- 	<figure class="social-image__preview">
-		<img src="https://unsplash.it/512/256" />
-
-		<caption class="social-image__preview-caption"><?php _e('Audo-updated social image preview', 'social-image') ?>
-	</figure>
- */ ?>
 </div>
