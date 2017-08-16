@@ -1,16 +1,19 @@
 <div class="wrap" id="social-image-options">
 	<?php settings_errors(); ?>
 
-	<div class="social-image__catalog" style="display: none;">
-		<h1 class="wp-heading-inline">
-			<?php _e('Social Image Settings', 'social-image') ?>
-			<span class="title-count theme-count">0</span>
-		</h1>
+	<h1 class="wp-heading-inline">
+		<ul class="social-image__breadcrumbs">
+			<li><?php _e('Social Image Settings', 'social-image') ?></li>
+			<li><a href="#catalog"><?php _e('Schemes', 'social-image') ?></a></li>
+			<li>Primary</li>
+		</ul>
+	</h1>
 
-		<a href="#add-scheme" class="page-title-action" role="button"><?php _e('Add new scheme', 'social-image') ?></a>
+	<a href="#add-scheme" class="page-title-action" role="button"><?php _e('Add new scheme', 'social-image') ?></a>
 
-		<hr class="wp-header-end">
+	<hr class="wp-header-end">
 
+	<div class="social-image__catalog">
 		<div class="social-image__item">
 			<img class="social-image__item-image" src="https://unsplash.it/400/200" alt="" />
 
@@ -34,18 +37,7 @@
 		</a>
 	</div>
 
-	<div class="social-image__adjust">
- 		<h1 class="wp-heading-inline">
-			<ul class="social-image__breadcrumbs">
-				<li><a href="#catalog"><?php _e('Schemes', 'social-image') ?></a></li>
-				<li>Primary</li>
-			</ul>
-		</h1>
-
-		<a href="#add-scheme" class="page-title-action" role="button"><?php _e('Add new scheme', 'social-image') ?></a>
-
-		<hr class="wp-header-end">
-
+	<div class="social-image__adjust social-image--hide">
 		<div class="social-image__preview">
 			<figure class="social-image__preview-figure">
 				<img class="social-image__preview-image" src="https://unsplash.it/512/256" />

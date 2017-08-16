@@ -4,6 +4,7 @@ var concat    = require('gulp-concat');
 var minifyCss = require('gulp-minify-css');
 var uglify    = require('gulp-uglify');
 var plumber   = require('gulp-plumber');
+var prefix    = require('gulp-autoprefixer');
 
 
 var path = {
@@ -17,6 +18,19 @@ gulp.task('scss', function() {
         .pipe(sass({
             errLogToConsole: true
         }))
+				.pipe(prefix({
+					browsers: [
+						'ie >= 10',
+						'ie_mob >= 10',
+						'ff >= 30',
+						'chrome >= 34',
+						'safari >= 7',
+						'opera >= 23',
+						'ios >= 7',
+						'android >= 4.4',
+						'bb >= 10'
+					]
+				}))
         .pipe(concat('social-image.css'))
         .pipe(minifyCss({
             compatibility: 'ie8'

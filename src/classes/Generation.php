@@ -4,7 +4,7 @@ namespace SocialImage;
 
 use Intervention\Image\ImageManager;
 
-class Generator {
+class Generation {
 	function __construct() {
 		add_action('wp_ajax_social_image_generate', [$this, 'generate']);
 		add_action('wp_ajax_social_image_library', [$this, 'library']);

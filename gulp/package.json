@@ -1,8 +1,8 @@
 {
-  "name": "lh-og-generator",
+  "name": "social-image",
   "version": "1.0.0",
   "description": "ERROR: No README data found!",
-  "main": "Gulpfile.js",
+  "main": "gulpfile.js",
   "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.1",
@@ -10,11 +10,12 @@
     "gulp-minify-css": "^1.2.4",
     "gulp-plumber": "^1.1.0",
     "gulp-sass": "^2.3.2",
-    "gulp-uglify": "^1.5.4"
+    "gulp-uglify": "^1.5.4",
+	"gulp-autoprefixer": "^3.1.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Ron Hitin",
+  "author": "Anton Lukin",
   "license": "BSD-2-Clause"
 }

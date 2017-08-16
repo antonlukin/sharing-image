@@ -9,6 +9,14 @@
 
   border: 1px solid #ddd;
 
+  &.ui-sortable-handle {
+    cursor: grab;
+  }
+
+  &.ui-sortable-helper {
+    cursor: grabbing;
+  }
+
   .social-image__item-image {
     display: block;
 
@@ -72,6 +80,7 @@
 
   &.social-image__item--new {
     outline: none;
+    cursor: pointer;
 
     text-decoration: none;
     box-shadow: none;
@@ -103,6 +112,7 @@
       }
     }
   }
+
 
   @media screen and (max-width: 1023px) {
     width: 31.3333%;
