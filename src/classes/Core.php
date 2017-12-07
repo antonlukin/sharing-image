@@ -4,9 +4,6 @@ namespace SocialImage;
 
 class Core {
 	function __construct() {
-		// Load language
-		load_plugin_textdomain('social-image', false, basename(__DIR__) . '/lang');
-
 		// Add plugin's scripts and styles to admin pages
 		add_action('admin_enqueue_scripts', [$this, 'add_assets']);
 
