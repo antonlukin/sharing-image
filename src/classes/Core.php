@@ -15,7 +15,6 @@ class Core {
 
 	private function init_env() {
 		new Generation;
-		new Options;
 		new MetaBox;
 	}
 

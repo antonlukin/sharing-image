@@ -34,7 +34,7 @@ class Generation {
 			];
 
 			update_post_meta($p['post'], 'social-image', $url);
- 			update_post_meta($p['post'], 'social-image-options', serialize($options));
+ 			update_post_meta($p['post'], '_social-image-options', serialize($options));
 
 			wp_send_json_success($url);
 		}
@@ -77,10 +77,10 @@ class Generation {
 
 			$logo = [
 				"text" => "knife.media",
-				"posx" => 45,
-				"posy" => 70,
+				"posx" => 75,
+				"posy" => 65,
 				"file" => plugin_dir_path(__DIR__) . "fonts/gerbera.ttf",
-				"size" => 29,
+				"size" => 22,
 				"color" => "#ffffff"
 			];
 
@@ -88,10 +88,10 @@ class Generation {
 
 			$text = [
 				"text" => wordwrap($p['text'], 1024 / 20),
-				"posx" => 45,
-				"posy" => 165,
-				"file" => plugin_dir_path(__DIR__) . "fonts/alice.ttf",
-				"size" => 67,
+				"posx" => 75,
+				"posy" => 140,
+				"file" => plugin_dir_path(__DIR__) . "fonts/garamond.ttf",
+				"size" => 60,
 				"color" => "#ffffff"
 			];
 

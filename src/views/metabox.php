@@ -1,7 +1,7 @@
 <div id="social-image-metabox" data-ajaxurl='<?php echo admin_url('admin-ajax.php') ?>' data-post="<?php echo get_the_ID() ?>">
 	<?php
 		$preview = get_post_meta(get_the_ID(), 'social-image', true);
-		$options = get_post_meta(get_the_ID(), 'social-image-options', true);
+		$options = get_post_meta(get_the_ID(), '_social-image-options', true);
 
 		$options = unserialize($options);
 
