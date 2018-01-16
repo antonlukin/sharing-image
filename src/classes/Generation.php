@@ -17,7 +17,7 @@ class Generation {
 
 			$create = $upload['basedir'] . '/social-image/';
 
-			if(!is_dir($create) && !mkdir($create))
+			if(!wp_is_writable($create) && !mkdir($create))
 				wp_send_json_error(__('Check uploads directory permissions', 'social-image'));
 
 			$file = "/social-image/{$p['post']}-" . time() . '.jpg';
@@ -76,11 +76,11 @@ class Generation {
 			$image->brightness($p['brightness']);
 
 			$logo = [
-				"text" => "knife.media",
-				"posx" => 75,
-				"posy" => 65,
-				"file" => plugin_dir_path(__DIR__) . "fonts/gerbera.ttf",
-				"size" => 22,
+				"text" => get_bloginfo('name'),
+				"posx" => 65,
+				"posy" => 80,
+				"file" => plugin_dir_path(__DIR__) . "fonts/opensans.ttf",
+				"size" => 24,
 				"color" => "#ffffff"
 			];
 
@@ -88,10 +88,10 @@ class Generation {
 
 			$text = [
 				"text" => wordwrap($p['text'], 1024 / 20),
-				"posx" => 75,
-				"posy" => 140,
-				"file" => plugin_dir_path(__DIR__) . "fonts/garamond.ttf",
-				"size" => 60,
+				"posx" => 65,
+				"posy" => 220,
+				"file" => plugin_dir_path(__DIR__) . "fonts/alice.ttf",
+				"size" => 64,
 				"color" => "#ffffff"
 			];
 

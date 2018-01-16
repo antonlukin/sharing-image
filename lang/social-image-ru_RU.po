@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meta Image\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-08-02 09:58+0000\n"
-"PO-Revision-Date: 2017-08-02 10:03+0000\n"
+"POT-Creation-Date: 2018-01-16 17:22+0000\n"
+"PO-Revision-Date: 2018-01-16 17:24+0000\n"
 "Last-Translator: Anton Lukin <anton@lukin.me>\n"
 "Language-Team: Russian\n"
 "Language: ru-RU\n"
@@ -14,7 +14,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco - https://localise.biz/"
 
-#: src/views/metabox.php:22
+#: ../../../../../../git/social-image/src/classes/Generation.php:21
+msgid "Check uploads directory permissions"
+msgstr "Нет прав на запись в папку uploads"
+
+#: ../../../../../../git/social-image/src/classes/Options.php:11
+msgid "Social Image options"
+msgstr "Настройки генератора"
+
+#. Name of the plugin
+#: ../../../../../../git/social-image/src/classes/Options.php:11
+msgid "Social Image"
+msgstr "Генератор обложек для соцсетей"
+
+#. URI of the plugin
+msgid "https://github.com/antonlukin/social-image"
+msgstr "https://github.com/antonlukin/social-image"
+
+#: ../../../../../../git/social-image/src/views/metabox.php:20
+msgid "Choose from library"
+msgstr "Загрузить из библиотеки"
+
+#: ../../../../../../git/social-image/src/views/metabox.php:32
 msgid ""
 "To generate social image, you must first add post thumbnail and update the "
 "post"
@@ -22,67 +43,55 @@ msgstr ""
 "Для генерации обложки, необходимо сначала добавить миниатюру поста и&nbsp;"
 "обновить запись"
 
-#: src/views/metabox.php:2
-msgid "Choose from library"
-msgstr "Загрузить из библиотеки"
-
-#: src/views/metabox.php:38
+#: ../../../../../../git/social-image/src/views/metabox.php:44
 msgid "Brightness"
 msgstr "Яркость"
 
-#: src/views/metabox.php:43
+#: ../../../../../../git/social-image/src/views/metabox.php:49
 msgid "Contrast"
 msgstr "Контрастность"
 
-#: src/views/metabox.php:50
+#: ../../../../../../git/social-image/src/views/metabox.php:56
 msgid "Generate"
 msgstr "Сгенерировать"
 
-#: src/views/metabox.php:52
+#: ../../../../../../git/social-image/src/views/metabox.php:58
 msgid "Delete"
 msgstr "Удалить"
 
-#: src/classes/Generator.php:41
+#: ../../../../../../git/social-image/src/classes/Generation.php:43
 msgid "Image save error"
 msgstr "Не удалось сохранить изображение"
 
-#: src/classes/Generator.php:63
+#: ../../../../../../git/social-image/src/classes/Generation.php:65
 msgid "Post thumbnail not found"
 msgstr "Миниатюра поста не найдена"
 
-#: src/classes/Generator.php:99
+#: ../../../../../../git/social-image/src/classes/Generation.php:101
 msgid "Image process error"
 msgstr "Не удалось сгенерировать изображение"
 
-#: src/classes/Generator.php:125
+#: ../../../../../../git/social-image/src/classes/Generation.php:127
 msgid "Cannot delete meta"
 msgstr "Не удалось удалить данные поста"
 
-#: src/classes/Generator.php:137
+#: ../../../../../../git/social-image/src/classes/Generation.php:142
 msgid "Cannot update meta"
 msgstr "Не удалось обновить данные поста"
 
-#: src/classes/MetaBox.php:12
-msgid "Social sharing image"
-msgstr "Изображение соцсети"
-
-#: src/classes/MetaBox.php:24
+#: ../../../../../../git/social-image/src/classes/Core.php:20
 msgid "Choose image for social sharing"
 msgstr "Выберите изображение для шаринга в соцсети"
 
-#. Name of the plugin
-msgid "Meta Image"
-msgstr "Meta Image"
+#: ../../../../../../git/social-image/src/classes/MetaBox.php:11
+msgid "Social sharing image"
+msgstr "Изображение соцсети"
 
 #. Description of the plugin
 msgid ""
 "Create social sharing image for Facebook, VK.com, Telegram and other social "
 "networks"
 msgstr "Создание изображения для шаринга в социальных сетях"
-
-#. URI of the plugin
-msgid "https://lukin.me/meta-image"
-msgstr "https://lukin.me/meta-image"
 
 #. Author of the plugin
 msgid "Anton Lukin"
