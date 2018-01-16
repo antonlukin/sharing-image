@@ -1,17 +1,16 @@
-# Meta Image #
+# Social Image
 
-Create social sharing image for Facebook, VK.com, Telegram and other social networks 
+Create social sharing image for Facebook, VK.com, Telegram and other social networks
 
-### Description ###
+## Description
 
 Simple and fast plugin for generate pretty social images with logo and post title.
 
-### Installation ###
+## Installation
 
-1. Upload the `meta-image` folder to the `/wp-content/plugins/` directory
+1. Upload the `social-image` folder to the `/wp-content/plugins/` directory
 2. Activate the Meta Image  plugin through the 'Plugins' menu in WordPress
 
-### Changelog ###
+## Help
 
-= 1.0 = 
-* First release
+Feel free to contact me for any questions via github issues
