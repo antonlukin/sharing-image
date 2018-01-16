@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Meta Image\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-01-16 17:22+0000\n"
-"PO-Revision-Date: 2018-01-16 17:24+0000\n"
+"POT-Creation-Date: 2018-01-16 17:31+0000\n"
+"PO-Revision-Date: 2018-01-16 17:31+0000\n"
 "Last-Translator: Anton Lukin <anton@lukin.me>\n"
 "Language-Team: Russian\n"
 "Language: ru-RU\n"
@@ -13,23 +13,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Loco - https://localise.biz/"
-
-#: ../../../../../../git/social-image/src/classes/Generation.php:21
-msgid "Check uploads directory permissions"
-msgstr "Нет прав на запись в папку uploads"
-
-#: ../../../../../../git/social-image/src/classes/Options.php:11
-msgid "Social Image options"
-msgstr "Настройки генератора"
-
-#. Name of the plugin
-#: ../../../../../../git/social-image/src/classes/Options.php:11
-msgid "Social Image"
-msgstr "Генератор обложек для соцсетей"
-
-#. URI of the plugin
-msgid "https://github.com/antonlukin/social-image"
-msgstr "https://github.com/antonlukin/social-image"
 
 #: ../../../../../../git/social-image/src/views/metabox.php:20
 msgid "Choose from library"
@@ -59,6 +42,10 @@ msgstr "Сгенерировать"
 msgid "Delete"
 msgstr "Удалить"
 
+#: ../../../../../../git/social-image/src/classes/Generation.php:21
+msgid "Check uploads directory permissions"
+msgstr "Нет прав на запись в папку uploads"
+
 #: ../../../../../../git/social-image/src/classes/Generation.php:43
 msgid "Image save error"
 msgstr "Не удалось сохранить изображение"
@@ -83,6 +70,15 @@ msgstr "Не удалось обновить данные поста"
 msgid "Choose image for social sharing"
 msgstr "Выберите изображение для шаринга в соцсети"
 
+#: ../../../../../../git/social-image/src/classes/Options.php:11
+msgid "Social Image options"
+msgstr "Настройки генератора"
+
+#. Name of the plugin
+#: ../../../../../../git/social-image/src/classes/Options.php:11
+msgid "Social Image"
+msgstr "Генератор обложек"
+
 #: ../../../../../../git/social-image/src/classes/MetaBox.php:11
 msgid "Social sharing image"
 msgstr "Изображение соцсети"
@@ -92,6 +88,10 @@ msgid ""
 "Create social sharing image for Facebook, VK.com, Telegram and other social "
 "networks"
 msgstr "Создание изображения для шаринга в социальных сетях"
+
+#. URI of the plugin
+msgid "https://github.com/antonlukin/social-image"
+msgstr "https://github.com/antonlukin/social-image"
 
 #. Author of the plugin
 msgid "Anton Lukin"
