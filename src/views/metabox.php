@@ -6,7 +6,7 @@
 		$options = unserialize($options);
 
 		if(!is_array($options))
-			$options = ['brightness' => -30, 'contrast' => -30, 'text' => ''];
+			$options = ['brightness' => -45, 'contrast' => -30, 'text' => ''];
 
 		if(empty($options['text']))
 			$options['text'] = get_the_title();

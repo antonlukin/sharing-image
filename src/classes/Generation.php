@@ -61,7 +61,7 @@ class Generation {
 
 		$thumbnail = get_attached_file(get_post_thumbnail_id($p['post']));
 
-		if(empty($thumbnail))
+		if(empty($thumbnail) || !file_exists($thumbnail))
  			wp_send_json_error(__('Post thumbnail not found', 'social-image'));
 
  		try {
@@ -75,27 +75,31 @@ class Generation {
 			$image->contrast($p['contrast']);
 			$image->brightness($p['brightness']);
 
-			$logo = [
-				"text" => get_bloginfo('name'),
-				"posx" => 65,
-				"posy" => 80,
-				"file" => plugin_dir_path(__DIR__) . "fonts/opensans.ttf",
-				"size" => 24,
-				"color" => "#ffffff"
+			$texts = [
+				[
+					"text" => get_bloginfo('name'),
+					"posx" => 65,
+					"posy" => 80,
+					"file" => plugin_dir_path(__DIR__) . "fonts/opensans.ttf",
+					"size" => 24,
+					"color" => "#ffffff"
+				],
+
+				[
+					"text" => wordwrap($p['text'], 1024 / 20),
+					"posx" => 65,
+					"posy" => 220,
+					"file" => plugin_dir_path(__DIR__) . "fonts/alice.ttf",
+					"size" => 64,
+					"color" => "#ffffff"
+				]
 			];
 
-			$image = $this->_text($image, $logo);
+			$texts = apply_filters('social_image_texts', $texts, $p);
 
-			$text = [
-				"text" => wordwrap($p['text'], 1024 / 20),
-				"posx" => 65,
-				"posy" => 220,
-				"file" => plugin_dir_path(__DIR__) . "fonts/alice.ttf",
-				"size" => 64,
-				"color" => "#ffffff"
-			];
-
-			$image = $this->_text($image, $text);
+			foreach($texts as $text) {
+				$image = $this->_text($image, $text);
+			}
 		}
 		catch(Exception $e) {
 			wp_send_json_error(__('Image process error', 'social-image'));
@@ -105,7 +109,7 @@ class Generation {
 	}
 
 	public function generate() {
-		$p = [
+		$params = [
 			'post' => intval($_POST['post']),
 			'text' => html_entity_decode($_POST['text']),
 			'contrast' => intval($_POST['contrast']),
@@ -113,9 +117,9 @@ class Generation {
 		];
 
 
-		$image = $this->_image($p);
+		$image = $this->_image($params);
 
-        return $this->_save($image, $p);
+        return $this->_save($image, $params);
 	}
 
 	public function delete() {
