@@ -1,0 +1,60 @@
+[{
+	"width": 1200,
+	"height": 630,
+	"background": {
+		"image": "/path/to/image.png"
+	},
+	"layers": [{
+			"type": "filter",
+			"contrast": 10,
+			"brightness": 10
+		},
+		{
+			"type": "image",
+			"image": "/path/to/image.png",
+			"options": {
+				"width": 400,
+				"height": 200,
+				"x": 40,
+				"y": 200
+			}
+		},
+		{
+			"type": "text",
+			"generator": "static",
+			"text": "knife.media",
+			"options": {
+				"width": 400,
+				"height": 200,
+				"x": 50,
+				"y": 50,
+				"fontFile": "",
+				"fontSize": 14,
+				"liheHeight": 1.25,
+				"alignVertical": "top",
+				"alignHorizontal": "left",
+				"textColor": "#fff",
+				"textOpacity": "0.5"
+			}
+		},
+		{
+			"type": "text",
+			"generator": "dynamic",
+			"placeholder": "Post title",
+			"filler": "title",
+			"options": {
+				"width": 400,
+				"height": 200,
+				"x": 40,
+				"y": 50,
+				"fontFile": "",
+				"fontSize": 14,
+				"liheHeight": 1.25,
+				"alignVertical": "top",
+				"alignHorizontal": "left",
+				"textColor": "#fff",
+				"textOpacity": 1
+			}
+		}
+	]
+}]

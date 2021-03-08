@@ -1,0 +1,150 @@
+body.settings_page_sharing-image #wpcontent {
+  padding-left: 0; }
+
+body.settings_page_sharing-image #sharing-image-settings {
+  display: block;
+  position: relative; }
+  body.settings_page_sharing-image #sharing-image-settings * {
+    box-sizing: border-box; }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-header {
+    display: block;
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #dcdcde; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-header h1 {
+      display: block;
+      position: relative;
+      margin: 0 .8rem 1rem;
+      padding: 9px 0 4px 0;
+      font-weight: 600;
+      font-size: 23px;
+      line-height: 1.3;
+      text-align: center; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-menu {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab {
+      display: block;
+      margin: 0 1rem;
+      padding: .5rem 1rem 1rem;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow .5s ease-in-out; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab:focus-visible {
+        outline: 1px solid #787c82; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab:focus {
+        box-shadow: none; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab.active {
+        box-shadow: inset 0 -3px #3582c4;
+        font-weight: 600; }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-wrapper {
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px; }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-error {
+    margin: 0 0 20px; }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-posters {
+    display: block;
+    position: relative; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-posters textarea {
+      display: none; }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-gap: 20px;
+    position: relative;
+    width: 100%; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-card {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125);
+      border: 1px solid #ccd0d4;
+      border-radius: 4px; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-new {
+      display: block;
+      position: relative;
+      padding-top: calc(52.5% + 48px);
+      text-decoration: none;
+      color: #666;
+      border: 2px dashed rgba(0, 0, 0, 0.125);
+      border-radius: 4px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-new h2 {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin: 0;
+        font-size: 15px;
+        font-weight: 400;
+        color: inherit;
+        transform: translate(-50%, -50%); }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-new h2::before {
+          content: '+';
+          display: block;
+          font-size: 5rem;
+          font-weight: 400;
+          line-height: 1;
+          opacity: 0.25; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-new:hover {
+        color: #eee;
+        background-color: #3582c4;
+        border: solid 2px #2a679c; }
+      @media screen and (max-width: 782px) {
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-new {
+          padding-top: calc(52.5% + 54px); } }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-cover {
+      display: block;
+      position: relative;
+      margin: 0;
+      padding: 52.5% 0 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-cover img {
+        display: block;
+        -o-object-position: center;
+           object-position: center;
+        -o-object-fit: cover;
+           object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-cover.blank {
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII="); }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-footer {
+      display: flex;
+      align-items: center;
+      position: relative;
+      height: 48px;
+      padding: 0 15px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-footer h2 {
+        flex: 1 1 auto;
+        margin-right: 10px;
+        font-size: 15px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-footer .button {
+        margin-bottom: 0; }
+      @media screen and (max-width: 782px) {
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-footer {
+          height: 54px; } }
+    @media screen and (max-width: 782px) {
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog {
+        width: 75%; } }
+    @media screen and (max-width: 600px) {
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog {
+        width: 100%;
+        grid-template-columns: 1fr; } }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-config {
+    display: block;
+    width: 100%;
+    max-width: 800px; }

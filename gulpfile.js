@@ -1,53 +1,65 @@
-var gulp      = require('gulp');
-var sass      = require('gulp-sass');
-var concat    = require('gulp-concat');
-var minifyCss = require('gulp-minify-css');
-var uglify    = require('gulp-uglify');
-var plumber   = require('gulp-plumber');
-var prefix    = require('gulp-autoprefixer');
+const gulp = require( 'gulp' );
+const sass = require( 'gulp-sass' );
+const sassGlob = require( 'gulp-sass-glob' );
+const plumber = require( 'gulp-plumber' );
+const prefix = require( 'gulp-autoprefixer' );
+const babel = require( 'gulp-babel' );
 
+/**
+ * Create styles file from sources/
+ */
+gulp.task( 'styles', ( done ) => {
+	const styles = gulp
+		.src( 'src/styles/*.scss' )
+		.pipe( plumber() )
+		.pipe(
+			sassGlob( {
+				allowEmpty: true,
+			} )
+		)
+		.pipe(
+			sass( {
+				errLogToConsole: true,
+			} )
+		)
+		.pipe( prefix() );
 
-var path = {
-	source: '../src/',
-	assets: '../assets/'
-}
+	styles.pipe( gulp.dest( 'assets/styles/' ) );
 
-gulp.task('scss', function() {
-    gulp.src([path.source + 'scss/app.scss'])
-        .pipe(plumber())
-        .pipe(sass({
-            errLogToConsole: true
-        }))
-				.pipe(prefix({
-					browsers: [
-						'ie >= 10',
-						'ie_mob >= 10',
-						'ff >= 30',
-						'chrome >= 34',
-						'safari >= 7',
-						'opera >= 23',
-						'ios >= 7',
-						'android >= 4.4',
-						'bb >= 10'
-					]
-				}))
-        .pipe(concat('social-image.css'))
-        .pipe(minifyCss({
-            compatibility: 'ie8'
-        }))
-        .pipe(gulp.dest(path.assets))
-})
+	done();
+} );
 
-gulp.task('js', function() {
-    gulp.src([path.source + 'js/*.js'])
-        .pipe(plumber())
-		.pipe(uglify())
-        .pipe(concat('social-image.js'))
-        .pipe(gulp.dest(path.assets))
-})
+/**
+ * Create scripts file from sources.
+ */
+gulp.task( 'scripts', ( done ) => {
+	const scripts = gulp
+		.src( 'src/scripts/*.js' )
+		.pipe( plumber() )
+		.pipe(
+			babel( {
+				presets: [ '@babel/env' ],
+			} )
+		);
 
-gulp.task('watch', function() {
-    gulp.watch(path.source + '/**/*', ['scss', 'js']);
-})
+	scripts.pipe( gulp.dest( 'assets/scripts/' ) );
 
-gulp.task('default', ['js', 'scss', 'watch']);
+	done();
+} );
+
+/**
+ * Watch soruces and update styles and scripts
+ */
+gulp.task( 'watch', () => {
+	gulp.watch( './src/**/*', gulp.series( 'styles', 'scripts' ) );
+} );
+
+/**
+ * Build static files
+ */
+gulp.task( 'build', gulp.series( 'styles', 'scripts' ) );
+
+/**
+ * Build static files and watch changes by default.
+ */
+gulp.task( 'default', gulp.series( 'styles', 'scripts', 'watch' ) );

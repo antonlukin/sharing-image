@@ -1,0 +1,135 @@
+.sharing-image-catalog {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr) ) ;
+  grid-gap: 20px;
+  position: relative;
+
+  width: 100%;
+
+  .sharing-image-card {
+    display: block;
+    position: relative;
+
+    overflow: hidden;
+
+    background: #fff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125);
+
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+  }
+
+  .sharing-image-new {
+    display: block;
+    position: relative;
+
+    padding-top: calc(52.5% + 48px);
+
+    text-decoration: none;
+    color: #666;
+
+    border: 2px dashed rgba(0, 0, 0, 0.125);
+    border-radius: 4px;
+
+    h2 {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
+      justify-content: center;
+
+      position: absolute;
+      top: 50%;
+      left: 50%;
+
+      margin: 0;
+
+      font-size: 15px;
+      font-weight: 400;
+
+      color: inherit;
+
+      transform: translate(-50%, -50%);
+
+      &::before {
+        content: '+';
+
+        display: block;
+
+        font-size: 5rem;
+        font-weight: 400;
+        line-height: 1;
+
+        opacity: 0.25;
+      }
+    }
+
+    &:hover {
+      color: #eee;
+
+      background-color: $color-links;
+      border: solid 2px darken($color-links, 10);
+    }
+
+    @media screen and (max-width: 782px) {
+      padding-top: calc(52.5% + 54px);
+    }
+  }
+
+  .sharing-image-cover {
+    display: block;
+    position: relative;
+
+    margin: 0;
+    padding: 52.5% 0 0;
+
+    img {
+      display: block;
+
+      object-position: center;
+      object-fit: cover;
+
+      @include fill-parent;
+    }
+
+    &.blank {
+      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII=');
+    }
+  }
+
+  .sharing-image-footer {
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    height: 48px;
+    padding: 0 15px;
+
+    h2 {
+      flex: 1 1 auto;
+
+      margin-right: 10px;
+      font-size: 15px;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .button {
+      margin-bottom: 0;
+    }
+
+    @media screen and (max-width: 782px) {
+      height: 54px;
+    }
+  }
+
+  @media screen and (max-width: 782px) {
+    width: 75%;
+  }
+
+  @media screen and (max-width: 600px) {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+}

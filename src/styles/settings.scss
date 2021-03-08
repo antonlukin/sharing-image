@@ -1,0 +1,26 @@
+@import "config/variables";
+@import "config/mixins";
+
+body.settings_page_sharing-image {
+
+  #wpcontent {
+    padding-left: 0;
+  }
+
+  #sharing-image-settings {
+    display: block;
+    position: relative;
+
+    * {
+      box-sizing: border-box;
+    }
+
+    @import "layout/header";
+
+    @import "layout/wrapper";
+    @import "layout/error";
+    @import "layout/posters";
+    @import "layout/catalog";
+    @import "layout/config";
+  }
+}
