@@ -14,10 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-<form class="sharing-image-config" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>" method="post">
+<div class="sharing-image-config">
 	<?php
 	do_settings_sections( self::GROUP_CONFIG );
 	settings_fields( self::GROUP_CONFIG );
 	submit_button();
 	?>
-</form>
+</div>

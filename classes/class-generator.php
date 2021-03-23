@@ -20,26 +20,41 @@ class Generator {
 	 * Generator constructor.
 	 */
 	public function __construct() {
-		add_action( 'init', array( $this, 'generate_poster' ) );
+		//add_action( 'init', array( $this, 'generate_poster' ) );
+	}
 
-		add_action( 'wp_ajax_test', function() {
-			$image = SHARING_IMAGE_DIR . '/assets/posters/1.jpg';
+	public function run( $options ) {
+		$image = SHARING_IMAGE_DIR . '/assets/posters/1.jpg';
 
-			$poster = new ImageText();
+		$poster = new ImageText();
 
-			$poster->setDimensionsFromImage( $image )->draw( $image );
-			$poster->setOutput( 'jpg' );
-			$poster->crop( 1200, 630, true );
+		$poster->setDimensionsFromImage( $image )->draw( $image );
+		$poster->setOutput( 'jpg' );
+		$poster->crop( 1200, 630, true );
 
-			$options = file_get_contents( SHARING_IMAGE_DIR . '/temp/options.json' );
-			$options = json_decode( $options, false );
+		$poster = $this->append_layers( $poster, $options['layers'] );
 
-			$poster = $this->append_layers( $poster, $options->layers );
+		$poster->show();
+		exit;
+	}
 
-			$poster->show();
+	public function save( $options ) {
+		$image = SHARING_IMAGE_DIR . '/assets/posters/1.jpg';
 
-			exit;
-		} );
+		$poster = new ImageText();
+
+		$poster->setDimensionsFromImage( $image )->draw( $image );
+		$poster->setOutput( 'jpg' );
+		$poster->crop( 1200, 630, true );
+
+		$poster = $this->append_layers( $poster, $options['layers'] );
+
+		$filename = '/temp/' . time() . '.jpg';
+
+		$poster->save( SHARING_IMAGE_DIR . $filename );
+
+		wp_send_json_success( SHARING_IMAGE_URL . $filename );
+		exit;
 	}
 
 	/**
@@ -76,11 +91,11 @@ class Generator {
 	 */
 	private function append_layers( $poster, $layers ) {
 		foreach ( $layers as $layer ) {
-			if ( empty( $layer->type ) ) {
+			if ( empty( $layer['type'] ) ) {
 				continue;
 			}
 
-			switch ( $layer->type ) {
+			switch ( $layer['type'] ) {
 				case 'filter':
 					break;
 				case 'text':
@@ -103,13 +118,11 @@ class Generator {
 	 *
 	 * @return ImageText
 	 */
-	private function draw_text( $poster, $layer ) {
-		$options = (array) $layer->options;
+	private function draw_text( $poster, $options ) {
+		$options['font'] = SHARING_IMAGE_DIR . '/temp/open-sans.ttf';
 
-		$options['fontFile'] = SHARING_IMAGE_DIR . '/temp/open-sans.ttf';
-
-		if ( ! empty( $layer->text ) ) {
-			$poster->text( $layer->text, $options );
+		if ( ! empty( $options['inscription'] ) ) {
+			$poster->text( $options['inscription'], $options );
 		}
 
 		return $poster;

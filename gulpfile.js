@@ -3,7 +3,9 @@ const sass = require( 'gulp-sass' );
 const sassGlob = require( 'gulp-sass-glob' );
 const plumber = require( 'gulp-plumber' );
 const prefix = require( 'gulp-autoprefixer' );
-const babel = require( 'gulp-babel' );
+const webpack = require( 'webpack-stream' );
+const rename = require( 'gulp-rename' );
+const named = require( 'vinyl-named' );
 
 /**
  * Create styles file from sources/
@@ -36,9 +38,16 @@ gulp.task( 'scripts', ( done ) => {
 	const scripts = gulp
 		.src( 'src/scripts/*.js' )
 		.pipe( plumber() )
+		.pipe( named() )
 		.pipe(
-			babel( {
-				presets: [ '@babel/env' ],
+			webpack( {
+				config: require( './webpack.config.js' ),
+			} )
+		)
+		.pipe(
+			rename( ( file ) => {
+				file.basename = file.basename;
+				file.extname = '.js';
 			} )
 		);
 

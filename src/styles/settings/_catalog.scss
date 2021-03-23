@@ -6,7 +6,7 @@
 
   width: 100%;
 
-  .sharing-image-card {
+  .sharing-image-catalog-card {
     display: block;
     position: relative;
 
@@ -19,7 +19,7 @@
     border-radius: 4px;
   }
 
-  .sharing-image-new {
+  .sharing-image-catalog-new {
     display: block;
     position: relative;
 
@@ -75,12 +75,14 @@
     }
   }
 
-  .sharing-image-cover {
+  .sharing-image-catalog-preview {
     display: block;
     position: relative;
 
     margin: 0;
     padding: 52.5% 0 0;
+
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII=');
 
     img {
       display: block;
@@ -90,13 +92,9 @@
 
       @include fill-parent;
     }
-
-    &.blank {
-      background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII=');
-    }
   }
 
-  .sharing-image-footer {
+  .sharing-image-catalog-footer {
     display: flex;
     align-items: center;
     position: relative;

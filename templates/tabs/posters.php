@@ -14,9 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 
-<form class="sharing-image-posters" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>" method="post">
+<div class="sharing-image-posters">
 	<?php
 	settings_fields( self::GROUP_POSTERS );
-	$this->print_posters_form();
 	?>
-</form>
+</div>

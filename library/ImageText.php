@@ -738,14 +738,14 @@ class ImageText
             'y' => 0,
             'width' => null,
             'height' => null,
-            'fontSize' => $this->fontSize,
-            'fontColor' => $this->textColor,
+            'fontsize' => $this->fontSize,
+            'color' => $this->textColor,
             'opacity' => $this->textOpacity,
-            'alignHorizontal' => $this->alignHorizontal,
-            'alignVertical' => $this->alignVertical,
+            'horizontal' => $this->alignHorizontal,
+            'vertical' => $this->alignVertical,
             'angle' => $this->textAngle,
-            'fontFile' => $this->fontFile,
-            'lineHeight' => $this->lineHeight,
+            'font' => $this->fontFile,
+            'lineheight' => $this->lineHeight,
             'debug' => false,
         ];
 
@@ -763,8 +763,8 @@ class ImageText
         // Split lines
         $lines = explode("\n", $text);
 
-        $fontHeight = $this->getFontHeight($fontSize, $angle, $fontFile, $lines);
-        $textHeight = $fontSize * $lineHeight;
+        $fontHeight = $this->getFontHeight($fontsize, $angle, $font, $lines);
+        $textHeight = $fontsize * $lineheight;
 
         // Set default boundary
         $boundary = [
@@ -772,17 +772,19 @@ class ImageText
             'width' => 0,
         ];
 
+        $color = sscanf($color, "#%02x%02x%02x");
+
         foreach ($lines as $index => $line) {
             $offsetx = 0;
             $offsety = $fontHeight;
 
             // Get Y offset as it 0 Y is the lower-left corner of the character
-            $testbox = imageftbbox($fontSize, $angle, $fontFile, $line);
+            $testbox = imageftbbox($fontsize, $angle, $font, $line);
 
             $textWidth = abs($testbox[6] - $testbox[4]);
             $lineY = $y + ($textHeight * $index);
 
-            switch ($alignHorizontal) {
+            switch ($horizontal) {
             case 'center':
                 $offsetx += (($width - $textWidth) / 2);
                 break;
@@ -791,7 +793,7 @@ class ImageText
                 break;
             }
 
-            switch ($alignVertical) {
+            switch ($vertical) {
             case 'center':
                 $offsety += (($height - ($textHeight * count($lines))) / 2);
                 break;
@@ -805,10 +807,10 @@ class ImageText
                 $this->rectangle($x + $offsetx, $lineY + $offsety - $fontHeight, $textWidth, $textHeight, $blockColor, 0.5);
             }
 
-            $textColor = imagecolorallocatealpha($this->img, $fontColor[0], $fontColor[1], $fontColor[2], (1 - $opacity) * 127);
+            $textColor = imagecolorallocatealpha($this->img, $color[0], $color[1], $color[2], (1 - $opacity) * 127);
 
             // Draw text
-            $textSize = imagefttext($this->img, $fontSize, $angle, $x + $offsetx, $lineY + $offsety, $textColor, $fontFile, $line);
+            $textSize = imagefttext($this->img, $fontsize, $angle, $x + $offsetx, $lineY + $offsety, $textColor, $font, $line);
 
             // Calc block height
             $boundary['height'] += $textHeight;

@@ -26,6 +26,11 @@ class Settings {
 	const SCREEN_ID = 'settings_page_sharing-image';
 
 	/**
+	 * Settings AJAX action.
+	 */
+	const AJAX_ACTION = 'sharing-image-settings';
+
+	/**
 	 * Sharing Image posters options name.
 	 *
 	 * @var string
@@ -65,33 +70,24 @@ class Settings {
 	 */
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
-		add_action( 'admin_init', array( $this, 'register_config_fields' ) );
-		add_action( 'admin_init', array( $this, 'register_posters_fields' ) );
 
 		// Add settings link to plugins list.
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 
+		// Add settings form fields.
+		add_action( 'admin_init', array( $this, 'register_config_fields' ) );
+		add_action( 'admin_init', array( $this, 'register_posters_fields' ) );
+
+		// Delete poster field action.
+		add_action( 'admin_post_' . SHARING_IMAGE_SLUG . '-delete', array( $this, 'delete_poster_field' ) );
+
+		// Sanitize posters fields before save.
+		add_action( 'pre_update_option', array( $this, 'sanitize_posters_fields' ), 10, 2 );
+
+		// Process settings AJAX actions.
+		add_action( 'wp_ajax_' . self::AJAX_ACTION, array( $this, 'process_ajax' ) );
+
 		$this->init_tabs();
-	}
-
-	/**
-	 * Add settings link to plugins list.
-	 *
-	 * @param array  $actions     An array of plugin action links.
-	 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
-	 */
-	public function add_settings_link( $actions, $plugin_file ) {
-		$actions = (array) $actions;
-
-		if ( plugin_basename( SHARING_IMAGE_FILE ) === $plugin_file ) {
-			$actions[] = sprintf(
-				'<a href="%s">%s</a>',
-				admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG ),
-				__( 'Settings', 'sharing-image' )
-			);
-		}
-
-		return $actions;
 	}
 
 	/**
@@ -120,6 +116,47 @@ class Settings {
 		// Add required assets and objects.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+	}
+
+	/**
+	 * Add settings link to plugins list.
+	 *
+	 * @param array  $actions     An array of plugin action links.
+	 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+	 */
+	public function add_settings_link( $actions, $plugin_file ) {
+		$actions = (array) $actions;
+
+		if ( plugin_basename( SHARING_IMAGE_FILE ) === $plugin_file ) {
+			$actions[] = sprintf(
+				'<a href="%s">%s</a>',
+				admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG ),
+				__( 'Settings', 'sharing-image' )
+			);
+		}
+
+		return $actions;
+	}
+
+	/**
+	 * Action to delete poster from editor page.
+	 */
+	public function delete_poster_field() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		check_admin_referer( self::GROUP_POSTERS . '-options' );
+
+		if ( isset( $_REQUEST['poster'] ) ) {
+			// Get index from poster ID.
+			$index = absint( $_REQUEST['poster'] ) - 1;
+
+			$this->delete_poster( $index );
+		}
+
+		wp_safe_redirect( admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG ) );
+		exit;
 	}
 
 	/**
@@ -219,43 +256,85 @@ class Settings {
 			true
 		);
 
+		wp_enqueue_media();
+
 		wp_set_script_translations(
 			'sharing-image-settings',
 			'sharing-image',
 			plugin_dir_path( SHARING_IMAGE_FILE ) . 'languages'
 		);
+
+		$object = array(
+			'option'  => self::OPTION_POSTERS,
+			'action'  => self::AJAX_ACTION,
+
+			'links'   => array(
+				'delete'  => esc_url( admin_url( 'admin-post.php?action=' . SHARING_IMAGE_SLUG . '-delete' ) ),
+				'uploads' => esc_url( admin_url( 'upload.php' ) ),
+			),
+
+			'posters' => $this->get_posters(),
+		);
+
+		wp_localize_script( 'sharing-image-settings', 'sharingImageSettings', $object );
 	}
 
 	/**
-	 * Filters an option before its value is (maybe) serialized and updated.
+	 * Process settings AJAX actions.
+	 */
+	public function process_ajax() {
+		check_ajax_referer( self::GROUP_POSTERS . '-options' );
+
+		if ( empty( $_POST['handler'] ) ) {
+			wp_send_json_error();
+		}
+
+		$handler = sanitize_key( $_POST['handler'] );
+
+		if ( 'show' === $handler ) {
+			$posters = $_POST['sharing_image_posters'];
+
+			foreach ( $posters as $poster ) {
+				$generator = new Generator();
+				$generator->run( $poster );
+			}
+		}
+
+		if ( 'save' === $handler ) {
+			$posters = $_POST['sharing_image_posters'];
+
+			foreach ( $posters as $poster ) {
+				$generator = new Generator();
+				$generator->save( $poster );
+			}
+		}
+	}
+
+	/**
+	 * Update posters option before saving in database.
 	 *
 	 * @param mixed  $value The new, unserialized option value.
 	 * @param string $name  Option name.
 	 * @return array
 	 */
-	public function sanitize_option( $value, $name ) {
+	public function sanitize_posters_fields( $value, $name ) {
+		print_r( $value ); exit;
+
 		if ( self::OPTION_POSTERS !== $name ) {
 			return $value;
 		}
 
-		$sanitized = array();
+		$posters = $this->get_posters();
 
-		foreach ( $value as $key => $field ) {
-			$key = sanitize_key( $key );
-
-			// Sanitize values.
-			$sanitized[ $key ] = array_map( 'sanitize_text_field', $field );
-		}
-
-		return $sanitized;
+		return array_replace( $posters, $value );
 	}
 
 	/**
-	 * Get posters list from options
+	 * Get posters list from options.
 	 *
 	 * @return array List of posters.
 	 */
-	public function get_posters() {
+	private function get_posters() {
 		$posters = get_option( self::OPTION_POSTERS, array() );
 
 		/**
@@ -267,16 +346,19 @@ class Settings {
 	}
 
 	/**
-	 * Show hidden posters fields.
+	 * Delete poster by index.
+	 *
+	 * @param int $index Poster index.
 	 */
-	private function print_posters_form() {
+	private function delete_poster( $index ) {
 		$posters = $this->get_posters();
 
-		printf(
-			'<textarea name="%s">%s</textarea>',
-			esc_attr( self::OPTION_POSTERS ),
-			wp_json_encode( $posters )
-		);
+		unset( $posters[ $index ] );
+
+		// Reindex posters array.
+		$posters = array_values( $posters );
+
+		update_option( self::OPTION_POSTERS, $posters );
 	}
 
 	/**
@@ -310,7 +392,7 @@ class Settings {
 	/**
 	 * Show settings tab template.
 	 */
-	private function show_settings_tab() {
+	private function show_settings_section() {
 		$tab = $this->get_current_tab();
 
 		if ( ! empty( $tab ) ) {
@@ -339,47 +421,6 @@ class Settings {
 				esc_url( $config['link'] ),
 				esc_html( $config['label'] )
 			);
-		}
-	}
-
-	/**
-	 * Print card cover.
-	 *
-	 * @param array $poster Poster settings.
-	 */
-	private function show_card_cover( $poster ) {
-		return wp_upload_dir()->url . $poster['sample'];
-	}
-
-	/**
-	 * Print card name.
-	 *
-	 * @param array $poster Poster settings.
-	 */
-	private function show_card_name( $poster ) {
-		if ( empty( $poster['name'] ) ) {
-			$poster['name'] = __( 'Untitled', 'sharing-image' );
-		}
-
-		return $poster['name'];
-	}
-
-	/**
-	 * Print card link.
-	 *
-	 * @param array $poster Poster settings.
-	 */
-	private function get_card_link( $poster ) {
-		$link = add_query_arg(
-			array(
-				'page'   => SHARING_IMAGE_SLUG,
-				'poster' => absint( $i ),
-			),
-			admin_url( 'options-general.php' )
-		);
-
-		if ( empty( $poster['name'] ) ) {
-			$poster['name'] = __( 'Untitled', 'sharing-image' );
 		}
 	}
 

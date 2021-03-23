@@ -1,0 +1,25 @@
+@mixin fill-parent {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+@mixin button-focus {
+  border-color: #007cba;
+  color: #016087;
+  outline: none;
+}
+
+@mixin label-focus {
+  border-color: #007cba;
+  box-shadow: 0 0 0 1px #007cba;
+  outline: 2px solid transparent;
+}
+
+@mixin link-focus {
+  box-shadow: 0 0 0 1px #5b9dd9, 0 0 2px 1px rgba(30,140,190,.8);
+  outline: 1px solid transparent;
+}

@@ -1,10 +1,30 @@
-@import "config/variables";
-@import "config/mixins";
+@import "includes/variables";
+@import "includes/mixins";
+@import "includes/animations";
 
 body.settings_page_sharing-image {
 
   #wpcontent {
     padding-left: 0;
+  }
+
+  .update-nag {
+    margin: 20px;
+
+    @media screen and (max-width: 782px) {
+      margin: 10px;
+    }
+  }
+
+  .settings-error {
+    margin: 0 0 10px;
+    font-weight: 600;
+
+    border-right: none;
+    border-top: 1px solid #dcdcde;
+    border-bottom: 1px solid #dcdcde;
+
+    box-shadow: none;
   }
 
   #sharing-image-settings {
@@ -15,12 +35,6 @@ body.settings_page_sharing-image {
       box-sizing: border-box;
     }
 
-    @import "layout/header";
-
-    @import "layout/wrapper";
-    @import "layout/error";
-    @import "layout/posters";
-    @import "layout/catalog";
-    @import "layout/config";
+    @import "settings/*";
   }
 }
