@@ -53,6 +53,7 @@ function buildMedia( args ) {
 	// Helper function to update attachment value.
 	const setAttachment = ( id ) => {
 		attachment.setAttribute( 'value', id );
+		attachment.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 
 		const link = new URL( args.link );
 		link.searchParams.set( 'item', id );

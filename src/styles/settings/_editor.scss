@@ -3,11 +3,17 @@
   flex-flow: row nowrap;
   position: relative;
 
+  @include settings-screen;
+
   .sharing-image-editor-fieldset {
     display: block;
     flex: 1 1 auto;
-
     margin-right: 50px;
+
+    @media screen and (max-width: 1279px) {
+      flex: 0 1 640px;
+      margin-right: 0;
+    }
   }
 
   .sharing-image-editor-control {
@@ -72,6 +78,23 @@
       &>*:last-child {
         margin-right: 0;
       }
+
+      @media screen and (max-width: 782px) {
+        flex-flow: row wrap;
+
+        &>* {
+          width: calc(50% - 7px);
+        }
+
+        &>*:first-child {
+          margin-bottom: 14px;
+        }
+
+        &>*:nth-child(2) {
+          margin-right: 0;
+          margin-bottom: 14px;
+        }
+      }
     }
 
     &.control-single {
@@ -87,6 +110,19 @@
 
       &>*:first-child {
         margin-right: 54px;
+      }
+
+      @media screen and (max-width: 782px) {
+        flex-flow: row wrap;
+
+        &>* {
+          width: 100%;
+        }
+
+        &>*:first-child {
+          margin-right: 0;
+          margin-bottom: 14px;
+        }
       }
     }
 
@@ -147,6 +183,10 @@
     input[type="radio"] {
       margin-right: 8px;
     }
+
+    @media screen and (max-width: 782px) {
+      margin-top: 10px;
+    }
   }
 
   .sharing-image-editor-color {
@@ -177,6 +217,7 @@
     input[type="range"] {
       display: block;
       width: 100%;
+      margin: 8px 0;
     }
   }
 
@@ -198,7 +239,7 @@
     display: block;
     width: 100%;
 
-   textarea {
+    textarea {
       display: block;
       width: calc(100% - 2px);
       min-height: 30px;
@@ -207,7 +248,7 @@
 
   .sharing-image-editor-select {
     display: block;
-    width: 100%;
+    flex: 1 1 100%;
 
     select {
       display: block;
@@ -347,11 +388,16 @@
     }
   }
 
-
   .sharing-image-editor-monitor {
     display: block;
     flex: 0 0 480px;
+    max-width: 100%;
+
     order: 2;
+
+    @media screen and (max-width: 1279px) {
+      flex: 0 1 640px;
+    }
   }
 
   .sharing-image-editor-viewport {
@@ -407,6 +453,8 @@
     border-radius: 3px;
     box-shadow: 0 0 3px 0 #777;
 
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII=");
+
     img {
       display: block;
 
@@ -420,8 +468,6 @@
 
     &.preview-blank {
       padding-top: 52.5%;
-
-      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII=");
     }
 
     &.preview-loader {
@@ -431,25 +477,62 @@
     }
   }
 
+  .sharing-image-editor-warning {
+    display: none;
+    position: relative;
+
+    margin: 12px 0 -5px;
+    padding: 8px 12px;
+
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-left: 4px solid #b32d2e;
+    border-radius: 3px;
+
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125);
+
+    &.warning-visible {
+      display: block;
+    }
+  }
+
   .sharing-image-editor-manager {
     display: flex;
+    align-items: center;
+    flex-flow: row wrap;
 
     width: 100%;
     margin-top: 15px;
 
     button {
       margin-right: 14px;
+
+      &:last-child {
+        margin-right: 0;
+      }
     }
   }
 
   .sharing-image-editor-suspend {
     display: flex;
     align-items: center;
+    order: 2;
 
-    margin-left: auto;
+    margin: 10px 0 10px auto;
 
     input {
       margin: 0 8px 0 0;
     }
+
+    @media screen and (max-width: 782px) {
+      order: 0;
+
+      width: 100%;
+      margin-bottom: 25px;
+    }
+  }
+
+  @media screen and (max-width: 1279px) {
+    flex-flow: row wrap;
   }
 }

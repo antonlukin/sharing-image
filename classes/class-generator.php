@@ -9,6 +9,7 @@
 namespace Sharing_Image;
 
 use ImageText;
+use WP_Error;
 
 /**
  * Poster generator class
@@ -17,15 +18,22 @@ use ImageText;
  */
 class Generator {
 	/**
+	 * Store plugin settings.
+	 *
+	 * @var array
+	 */
+	private $config = array();
+
+	/**
 	 * Generator constructor.
 	 */
 	public function __construct() {
-		//add_action( 'init', array( $this, 'generate_poster' ) );
+		$settings = new Settings();
+
+		$this->config = $settings->get_config();
 	}
 
-	public function run( $options ) {
-		$image = SHARING_IMAGE_DIR . '/assets/posters/1.jpg';
-
+	public function show( $options, $image ) {
 		$poster = new ImageText();
 
 		$poster->setDimensionsFromImage( $image )->draw( $image );
@@ -38,9 +46,7 @@ class Generator {
 		exit;
 	}
 
-	public function save( $options ) {
-		$image = SHARING_IMAGE_DIR . '/assets/posters/1.jpg';
-
+	public function save( $options, $image ) {
 		$poster = new ImageText();
 
 		$poster->setDimensionsFromImage( $image )->draw( $image );
@@ -53,37 +59,11 @@ class Generator {
 
 		$poster->save( SHARING_IMAGE_DIR . $filename );
 
-		wp_send_json_success( SHARING_IMAGE_URL . $filename );
-		exit;
+		return SHARING_IMAGE_URL . $filename;
 	}
 
-	/**
-	 * Generate poster.
-	 */
-	public function generate_poster() {
-		if ( ! isset( $_GET['generate'] ) ) {
-			return;
-		}
-
-		if ( ! class_exists( 'ImageText' ) ) {
-			return;
-		}
-
-		$image = SHARING_IMAGE_DIR . '/assets/posters/1.jpg';
-
-		$poster = new ImageText();
-
-		$poster->setDimensionsFromImage( $image )->draw( $image );
-		$poster->setOutput( 'jpg' );
-		$poster->crop( 1200, 630, true );
-
-		$options = file_get_contents( SHARING_IMAGE_DIR . '/temp/options.json' );
-		$options = json_decode( $options, false );
-
-		$poster = $this->append_layers( $poster, $options->layers );
-
-		$poster->show();
-		exit;
+	private function prepare_options( $options, $image ) {
+		print_r( $options );
 	}
 
 	/**

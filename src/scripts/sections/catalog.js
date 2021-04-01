@@ -3,16 +3,16 @@ import Build from '../builders';
 const { __ } = wp.i18n;
 
 /**
- * Create poster card in catalog.
+ * Create template card in catalog.
  *
- * @param {HTMLElement} catalog Catalog HTML element.
+ * @param {HTMLElement} form Form HTML element.
  * @param {number} index Current card index.
- * @param {Object} option List of poster options.
+ * @param {Object} option List of template options.
  */
-function createCard( catalog, index, option ) {
+function createCard( form, index, option ) {
 	const card = Build.element( 'div', {
 		classes: [ 'sharing-image-catalog-card' ],
-		append: catalog,
+		append: form,
 	} );
 
 	const preview = Build.element( 'figure', {
@@ -41,11 +41,11 @@ function createCard( catalog, index, option ) {
 	} );
 
 	const link = new URL( document.location.href );
-	link.searchParams.set( 'poster', index );
+	link.searchParams.set( 'template', index );
 
 	Build.element( 'a', {
 		classes: [ 'button' ],
-		text: __( 'Edit poster', 'sharing-image' ),
+		text: __( 'Edit template', 'sharing-image' ),
 		attributes: {
 			href: link,
 		},
@@ -54,21 +54,21 @@ function createCard( catalog, index, option ) {
 }
 
 /**
- * Create new poster button in catalog.
+ * Create new template button in catalog.
  *
- * @param {HTMLElement} catalog Catalog HTML element.
+ * @param {HTMLElement} form Form HTML element.
  * @param {number} index New card index.
  */
-function createNewButton( catalog, index ) {
+function createNewButton( form, index ) {
 	const link = new URL( document.location.href );
-	link.searchParams.set( 'poster', index );
+	link.searchParams.set( 'template', index );
 
 	const button = Build.element( 'a', {
 		classes: [ 'sharing-image-catalog-new' ],
 		attributes: {
 			href: link,
 		},
-		append: catalog,
+		append: form,
 	} );
 
 	Build.element( 'h2', {
@@ -78,24 +78,21 @@ function createNewButton( catalog, index ) {
 }
 
 /**
- * Create posters catalog from options.
+ * Create templates catalog from options.
  *
  * @param {HTMLElement} form Settings form element.
  * @param {Object} settings Global settings field.
  */
 function createCatalog( form, settings ) {
-	const catalog = Build.element( 'div', {
-		classes: [ 'sharing-image-catalog' ],
-		prepend: form,
-	} );
+	form.classList.add( 'sharing-image-catalog' );
 
 	let index = 1;
 
-	settings.posters.forEach( ( poster ) => {
-		createCard( catalog, index++, poster );
+	settings.templates.forEach( ( template ) => {
+		createCard( form, index++, template );
 	} );
 
-	createNewButton( catalog, index );
+	createNewButton( form, index );
 }
 
 export default createCatalog;

@@ -14,6 +14,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ?>
 <div id="sharing-image-settings">
+	<?php
+		$this->show_settings_message();
+	?>
+
 	<div class="settings-error error hide-if-js">
 		<p><?php esc_html_e( 'This page requires JavaScript. Enable it in your browser settings, please.', 'sharing-image' ); ?></p>
 	</div>
@@ -22,15 +26,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<h1><?php esc_html_e( 'Sharing Image', 'sharing-image' ); ?></h1>
 
 		<nav class="sharing-image-menu">
-			<?php
-				$this->show_settings_menu();
-			?>
+		<?php
+			$this->show_settings_menu();
+		?>
 		</nav>
 	</header>
 
-	<form class="sharing-image-form" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>" method="post">
-		<?php
+	<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+	<?php
 		$this->show_settings_section();
-		?>
+	?>
 	</form>
 </div>

@@ -37,7 +37,10 @@ body.settings_page_sharing-image #sharing-image-settings {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     grid-gap: 20px;
     position: relative;
-    width: 100%; }
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-catalog-card {
       display: block;
       position: relative;
@@ -130,11 +133,19 @@ body.settings_page_sharing-image #sharing-image-settings {
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor {
     display: flex;
     flex-flow: row nowrap;
-    position: relative; }
+    position: relative;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-fieldset {
       display: block;
       flex: 1 1 auto;
       margin-right: 50px; }
+      @media screen and (max-width: 1279px) {
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-fieldset {
+          flex: 0 1 640px;
+          margin-right: 0; } }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control {
       display: flex;
       flex-flow: column nowrap;
@@ -172,6 +183,16 @@ body.settings_page_sharing-image #sharing-image-settings {
           margin-right: 54px; }
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > *:last-child {
           margin-right: 0; }
+        @media screen and (max-width: 782px) {
+          body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid {
+            flex-flow: row wrap; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > * {
+              width: calc(50% - 7px); }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > *:first-child {
+              margin-bottom: 14px; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > *:nth-child(2) {
+              margin-right: 0;
+              margin-bottom: 14px; } }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-single {
         flex-flow: row nowrap; }
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-single > * {
@@ -180,6 +201,14 @@ body.settings_page_sharing-image #sharing-image-settings {
         flex-flow: row nowrap; }
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double > *:first-child {
           margin-right: 54px; }
+        @media screen and (max-width: 782px) {
+          body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double {
+            flex-flow: row wrap; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double > * {
+              width: 100%; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double > *:first-child {
+              margin-right: 0;
+              margin-bottom: 14px; } }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-hidden {
         display: none; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-details {
@@ -214,6 +243,9 @@ body.settings_page_sharing-image #sharing-image-settings {
                 user-select: none; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio input[type="radio"] {
         margin-right: 8px; }
+      @media screen and (max-width: 782px) {
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio {
+          margin-top: 10px; } }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-color {
       display: block; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-color input[type="color"] {
@@ -233,7 +265,8 @@ body.settings_page_sharing-image #sharing-image-settings {
       width: 100%; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-range input[type="range"] {
         display: block;
-        width: 100%; }
+        width: 100%;
+        margin: 8px 0; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-button {
       display: block; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-input {
@@ -251,7 +284,7 @@ body.settings_page_sharing-image #sharing-image-settings {
         min-height: 30px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-select {
       display: block;
-      width: 100%; }
+      flex: 1 1 100%; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-select select {
         display: block;
         width: calc(100% - 2px); }
@@ -343,7 +376,11 @@ body.settings_page_sharing-image #sharing-image-settings {
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-monitor {
       display: block;
       flex: 0 0 480px;
+      max-width: 100%;
       order: 2; }
+      @media screen and (max-width: 1279px) {
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-monitor {
+          flex: 0 1 640px; } }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-viewport {
       display: block;
       position: -webkit-sticky;
@@ -380,7 +417,8 @@ body.settings_page_sharing-image #sharing-image-settings {
       width: 100%;
       overflow: hidden;
       border-radius: 3px;
-      box-shadow: 0 0 3px 0 #777; }
+      box-shadow: 0 0 3px 0 #777;
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII="); }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-preview img {
         display: block;
         -o-object-fit: contain;
@@ -391,29 +429,46 @@ body.settings_page_sharing-image #sharing-image-settings {
         height: auto;
         max-height: 400px; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-preview.preview-blank {
-        padding-top: 52.5%;
-        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII="); }
+        padding-top: 52.5%; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-preview.preview-loader .sharing-image-editor-loader {
+        display: block; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-warning {
+      display: none;
+      position: relative;
+      margin: 12px 0 -5px;
+      padding: 8px 12px;
+      background: #fff;
+      border: 1px solid #c3c4c7;
+      border-left: 4px solid #b32d2e;
+      border-radius: 3px;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125); }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-warning.warning-visible {
         display: block; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-manager {
       display: flex;
+      align-items: center;
+      flex-flow: row wrap;
       width: 100%;
       margin-top: 15px; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-manager button {
         margin-right: 14px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-manager button:last-child {
+          margin-right: 0; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-suspend {
       display: flex;
       align-items: center;
-      margin-left: auto; }
+      order: 2;
+      margin: 10px 0 10px auto; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-suspend input {
         margin: 0 8px 0 0; }
-  body.settings_page_sharing-image #sharing-image-settings .sharing-image-form {
-    display: block;
-    position: relative;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 20px; }
+      @media screen and (max-width: 782px) {
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-suspend {
+          order: 0;
+          width: 100%;
+          margin-bottom: 25px; } }
+    @media screen and (max-width: 1279px) {
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor {
+        flex-flow: row wrap; } }
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-header {
     display: block;
     width: 100%;
@@ -436,7 +491,7 @@ body.settings_page_sharing-image #sharing-image-settings {
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab {
       display: block;
       margin: 0 1rem;
-      padding: .5rem 1rem 1rem;
+      padding: 0.5rem 1rem 1rem;
       text-decoration: none;
       color: inherit;
       transition: box-shadow .5s ease-in-out; }
@@ -447,6 +502,7 @@ body.settings_page_sharing-image #sharing-image-settings {
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab.active {
         box-shadow: inset 0 -3px #3582c4;
         font-weight: 600; }
-  body.settings_page_sharing-image #sharing-image-settings .sharing-image-posters {
-    display: none;
-    position: relative; }
+      @media screen and (max-width: 767px) {
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab {
+          margin: 0 0.5rem;
+          padding: 0.5rem 0.5rem 1rem; } }

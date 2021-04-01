@@ -47,23 +47,9 @@ define( 'SHARING_IMAGE_DIR', dirname( __FILE__ ) );
 define( 'SHARING_IMAGE_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
 
 /**
- * Init plugin on plugin load.
+ * Init autoload.
  */
 require_once constant( 'SHARING_IMAGE_DIR' ) . '/vendor/autoload.php';
 
 global $sharing_image_plugin;
 $sharing_image_plugin = new Core();
-
-
-
-add_action( 'init', function() {
-	wp_register_script(
-		'plugin-sidebar-js',
-		plugins_url( 'temp/plugin-sidebar.js', __FILE__ ),
-		array( 'wp-plugins', 'wp-edit-post', 'wp-element' )
-	);
-} );
-
-add_action( 'enqueue_block_editor_assets', function() {
-	wp_enqueue_script( 'plugin-sidebar-js' );
-} );

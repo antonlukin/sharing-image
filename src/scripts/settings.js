@@ -16,24 +16,28 @@ function initConfigTab() {}
  *
  * @param {HTMLElement} form Settings form element.
  */
-function initPostersTab( form ) {
+function initTemplatesTab( form ) {
 	const settings = window.sharingImageSettings || {};
 
 	// Get index from URL search parameter.
-	const index = parseInt( Helper.param( 'poster' ) ) - 1;
+	let index = null;
 
-	// Get posters from settings.
-	settings.posters = settings.posters || [];
+	// Get templates from settings.
+	settings.templates = settings.templates || [];
 
-	const data = settings.posters[ index ];
+	if ( Helper.param( 'template' ) ) {
+		index = parseInt( Helper.param( 'template' ) ) - 1;
+	}
 
-	// Create editor for existing poster.
+	const data = settings.templates[ index ];
+
+	// Create editor for existing template.
 	if ( undefined !== data ) {
 		return Section.editor( form, settings, index, data );
 	}
 
-	// Create editor for new poster.
-	if ( settings.posters.length === index ) {
+	// Create editor for new template.
+	if ( settings.templates.length === index ) {
 		return Section.editor( form, settings, index );
 	}
 
@@ -48,14 +52,8 @@ const routeSettings = () => {
 		return;
 	}
 
-	// Find root settings element.
-	const screen = document.getElementById( 'sharing-image-settings' );
-
-	if ( null === screen ) {
-		return;
-	}
-
-	const form = screen.querySelector( '.sharing-image-form' );
+	// Find settings form element.
+	const form = document.querySelector( '#sharing-image-settings > form' );
 
 	if ( null === form ) {
 		return;
@@ -71,7 +69,7 @@ const routeSettings = () => {
 			return initPremiumTab();
 
 		default:
-			return initPostersTab( form );
+			return initTemplatesTab( form );
 	}
 };
 

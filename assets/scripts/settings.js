@@ -622,6 +622,9 @@ function buildMedia(args) {
 
   var setAttachment = function setAttachment(id) {
     attachment.setAttribute('value', id);
+    attachment.dispatchEvent(new Event('change', {
+      bubbles: true
+    }));
     var link = new URL(args.link);
     link.searchParams.set('item', id);
     details.setAttribute('href', link);
@@ -668,17 +671,17 @@ var Build = {
 
 var __ = wp.i18n.__;
 /**
- * Create poster card in catalog.
+ * Create template card in catalog.
  *
- * @param {HTMLElement} catalog Catalog HTML element.
+ * @param {HTMLElement} form Form HTML element.
  * @param {number} index Current card index.
- * @param {Object} option List of poster options.
+ * @param {Object} option List of template options.
  */
 
-function createCard(catalog, index, option) {
+function createCard(form, index, option) {
   var card = builders.element('div', {
     classes: ['sharing-image-catalog-card'],
-    append: catalog
+    append: form
   });
   var preview = builders.element('figure', {
     classes: ['sharing-image-catalog-preview'],
@@ -704,10 +707,10 @@ function createCard(catalog, index, option) {
     append: footer
   });
   var link = new URL(document.location.href);
-  link.searchParams.set('poster', index);
+  link.searchParams.set('template', index);
   builders.element('a', {
     classes: ['button'],
-    text: __('Edit poster', 'sharing-image'),
+    text: __('Edit template', 'sharing-image'),
     attributes: {
       href: link
     },
@@ -715,22 +718,22 @@ function createCard(catalog, index, option) {
   });
 }
 /**
- * Create new poster button in catalog.
+ * Create new template button in catalog.
  *
- * @param {HTMLElement} catalog Catalog HTML element.
+ * @param {HTMLElement} form Form HTML element.
  * @param {number} index New card index.
  */
 
 
-function createNewButton(catalog, index) {
+function createNewButton(form, index) {
   var link = new URL(document.location.href);
-  link.searchParams.set('poster', index);
+  link.searchParams.set('template', index);
   var button = builders.element('a', {
     classes: ['sharing-image-catalog-new'],
     attributes: {
       href: link
     },
-    append: catalog
+    append: form
   });
   builders.element('h2', {
     text: __('Add new template', 'sharing-image'),
@@ -738,7 +741,7 @@ function createNewButton(catalog, index) {
   });
 }
 /**
- * Create posters catalog from options.
+ * Create templates catalog from options.
  *
  * @param {HTMLElement} form Settings form element.
  * @param {Object} settings Global settings field.
@@ -746,82 +749,150 @@ function createNewButton(catalog, index) {
 
 
 function createCatalog(form, settings) {
-  var catalog = builders.element('div', {
-    classes: ['sharing-image-catalog'],
-    prepend: form
-  });
+  form.classList.add('sharing-image-catalog');
   var index = 1;
-  settings.posters.forEach(function (poster) {
-    createCard(catalog, index++, poster);
+  settings.templates.forEach(function (template) {
+    createCard(form, index++, template);
   });
-  createNewButton(catalog, index);
+  createNewButton(form, index);
 }
 
-/* harmony default export */ var sections_catalog = (createCatalog);
+/* harmony default export */ var catalog = (createCatalog);
 // CONCATENATED MODULE: ./src/scripts/sections/editor.js
 /**
- * Editor settings.
+ * editor settings.
  */
 
 /* global ajaxurl:true */
 
-var editor_ = wp.i18n.__; // Store global DOM elements.
+var editor_ = wp.i18n.__; // Store global settings for template editor.
 
-var editor_screen = {}; // Store global settings for poster editor.
+var params = null; // Preview element.
 
-var config = null;
+var editor_preview = null;
 /**
- * Geneate poster using form data.
+ * Show template warning message.
+ *
+ * @param {string} message Warning message.
  */
 
-function generatePoster() {
+function showTemplateError(message) {
+  var viewport = editor_preview.parentNode; // Try to find warning element.
+
+  var warning = viewport.querySelector('.sharing-image-editor-warning');
+  warning.classList.add('warning-visible');
+  warning.textContent = message || editor_('Unknown generation error', 'sharing-image');
+}
+/**
+ * Remove warning message block.
+ */
+
+
+function hideTemplateError() {
+  var viewport = editor_preview.parentNode; // Try to find warning element.
+
+  var warning = viewport.querySelector('.sharing-image-editor-warning');
+
+  if (null !== warning) {
+    warning.classList.remove('warning-visible');
+  }
+}
+/**
+ * Geneate template using form data.
+ *
+ * @param {HTMLElement} form Settings form element.
+ */
+
+
+function generateTemplate(form) {
   var request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'blob';
-  var preview = editor_screen.preview;
-  preview.classList.add('preview-loader');
+  editor_preview.classList.add('preview-loader'); // Create data bundle using form data.
+
+  var bundle = new window.FormData(form);
+  bundle.set('action', 'sharing-image-show');
+  hideTemplateError(); // Set blob for success response.
+
+  request.onreadystatechange = function () {
+    if (request.readyState === 2) {
+      request.responseType = 'blob';
+
+      if (request.status !== 200) {
+        request.responseType = 'json';
+      }
+    }
+  }; // Hide preview loader on request complete.
+
+
+  request.onreadystatechange = function () {
+    if (request.readyState === 4) {
+      editor_preview.classList.remove('preview-blank', 'preview-loader');
+    }
+  };
 
   request.onload = function () {
-    var image = preview.querySelector('img');
+    var response = request.response || {};
+
+    if (request.status !== 200) {
+      return showTemplateError(response.data);
+    }
+
+    var image = editor_preview.querySelector('img');
 
     if (null === image) {
       image = builders.element('img', {
-        append: preview
+        append: editor_preview
       });
-    }
+    } // Set new blob image source.
 
-    preview.classList.remove('preview-blank', 'preview-loader'); // Set new blob image source.
 
-    image.src = window.URL.createObjectURL(request.response);
+    image.src = window.URL.createObjectURL(response);
   };
 
-  var data = new window.FormData(editor_screen.form);
-  data.set('action', config.action);
-  data.set('handler', 'show');
-  request.send(data);
+  request.onerror = function () {
+    showTemplateError();
+  };
+
+  request.send(bundle);
 }
 /**
- * Save poster while form submiting.
+ * Save template while form submiting.
  *
- * @param {HTMLElement} field Hidden preview input field.
+ * @param {HTMLElement} form Settings form element.
  */
 
 
-function savePoster(field) {
+function saveTemplate(form) {
   var request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
+  editor_preview.classList.add('preview-loader'); // Create data bundle using form data.
+
+  var bundle = new window.FormData(form);
+  bundle.set('action', 'sharing-image-save');
 
   request.onload = function () {
-    field.value = request.response.data; // Trigger form submitting.
+    var response = request.response || {};
 
-    editor_screen.form.submit();
+    if (request.status !== 200) {
+      return showTemplateError(response.data);
+    }
+
+    var field = editor_preview.querySelector('input');
+
+    if (null !== field) {
+      field.value = response.data || '';
+    }
+
+    form.submit();
   };
 
-  var data = new window.FormData(editor_screen.form);
-  data.set('action', config.action);
-  data.set('handler', 'save');
-  request.send(data);
+  request.onerror = function () {
+    showTemplateError();
+  };
+
+  request.send(bundle);
 }
 /**
  * Update form fields name attributes for layers
@@ -853,10 +924,10 @@ function reorderLayers(designer) {
   }
 }
 /**
- * Update poster background settings with custom logic.
+ * Update template background settings with custom logic.
  *
  * @param {HTMLElement} fieldset Fieldset HTML element.
- * @param {Object} data Current poster data.
+ * @param {Object} data Current template data.
  */
 
 
@@ -865,12 +936,12 @@ function createPermanentAttachment(fieldset, data) {
 
   var control = builders.control({
     classes: ['sharing-image-editor-control', 'control-half-bottom'],
-    label: editor_('Poster background settings', 'sharing-image'),
+    label: editor_('Template background settings', 'sharing-image'),
     fields: [{
       group: 'radio',
       classes: ['sharing-image-editor-radio'],
       attributes: {
-        name: config.name + '[background]',
+        name: params.name + '[background]',
         value: 'dynamic'
       },
       label: editor_('Select for each post separately', 'sharing-image'),
@@ -879,7 +950,7 @@ function createPermanentAttachment(fieldset, data) {
       group: 'radio',
       classes: ['sharing-image-editor-radio'],
       attributes: {
-        name: config.name + '[background]',
+        name: params.name + '[background]',
         value: 'thumbnail'
       },
       label: editor_('Use post thumbnail image', 'sharing-image'),
@@ -888,7 +959,7 @@ function createPermanentAttachment(fieldset, data) {
       group: 'radio',
       classes: ['sharing-image-editor-radio'],
       attributes: {
-        name: config.name + '[background]',
+        name: params.name + '[background]',
         value: 'permanent'
       },
       label: editor_('Upload permanent background', 'sharing-image'),
@@ -896,12 +967,12 @@ function createPermanentAttachment(fieldset, data) {
     }],
     append: fieldset
   });
-  config.links = config.links || {};
+  params.links = params.links || {};
   var media = builders.media({
-    name: config.name + '[attachment]',
+    name: params.name + '[attachment]',
     classes: ['sharing-image-editor-control', 'control-details'],
     value: data.attachment || '',
-    link: config.links.uploads,
+    link: params.links.uploads,
     labels: {
       button: editor_('Upload image', 'sharing-image'),
       heading: editor_('Select layer image', 'sharing-image'),
@@ -963,6 +1034,21 @@ function createDynamicFields(layer, name, data) {
         value: data.title || ''
       },
       label: editor_('Field name', 'sharing-image')
+    }],
+    append: layer
+  });
+  fields[fields.length] = builders.control({
+    classes: ['sharing-image-editor-control', 'control-hidden'],
+    help: editor_('This field is used for example only, to see how the editor will look.', 'sharing-image'),
+    fields: [{
+      group: 'textarea',
+      classes: ['sharing-image-editor-textarea'],
+      content: data.sample || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+      attributes: {
+        name: name + '[sample]',
+        rows: 2
+      },
+      label: editor_('Text sample', 'sharing-image')
     }],
     append: layer
   });
@@ -1134,7 +1220,7 @@ function createMoreFields(layer, name, data) {
 
 function createCatalogButton(footer) {
   var link = new URL(document.location.href);
-  link.searchParams.delete('poster');
+  link.searchParams.delete('template');
   builders.element('a', {
     classes: ['button'],
     text: editor_('← Back to Catalog', 'sharing-image'),
@@ -1145,30 +1231,26 @@ function createCatalogButton(footer) {
   });
 }
 /**
- * Create poster deletion button in footer.
+ * Create template deletion button in footer.
  *
+ * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} footer Footer HTML element.
  */
 
 
-function createDeleteButton(footer) {
-  config.links = config.links || {};
-  var href = new URL(document.location.href); // Get poster index from current link.
+function createDeleteButton(form, footer) {
+  params.links = params.links || {};
+  var href = new URL(document.location.href); // Get template index from current link.
 
-  var index = href.searchParams.get('poster'); // Set poster index to delete link.
+  var index = href.searchParams.get('template'); // Set template index to delete link.
 
-  var link = new URL(config.links.delete);
-  link.searchParams.set('poster', index); // Get form nonce.
-
-  var nonce = document.getElementById('_wpnonce');
-
-  if (null !== nonce) {
-    link.searchParams.set('_wpnonce', nonce.value);
-  }
-
+  var link = new URL(form.action);
+  link.searchParams.set('action', 'sharing-image-delete');
+  link.searchParams.set('template', index);
+  link.searchParams.set('nonce', params.nonce);
   builders.element('a', {
     classes: ['sharing-image-editor-delete'],
-    text: editor_('Delete poster', 'sharing-image'),
+    text: editor_('Delete template', 'sharing-image'),
     attributes: {
       href: link
     },
@@ -1179,16 +1261,15 @@ function createDeleteButton(footer) {
  * Create preview element.
  *
  * @param {HTMLElement} viewport Monitor viewport element.
- * @param {Object} data Poster data object.
+ * @param {Object} data Template data object.
  */
 
 
 function createPreview(viewport, data) {
-  var preview = builders.element('div', {
+  editor_preview = builders.element('div', {
     classes: ['sharing-image-editor-preview', 'preview-blank'],
     append: viewport
   });
-  editor_screen.preview = preview;
 
   if (data.preview) {
     builders.element('img', {
@@ -1196,29 +1277,24 @@ function createPreview(viewport, data) {
         src: data.preview,
         alt: ''
       },
-      append: preview
+      append: editor_preview
     });
-    preview.classList.remove('preview-blank');
+    editor_preview.classList.remove('preview-blank');
   }
 
   builders.element('span', {
     classes: ['sharing-image-editor-loader'],
-    append: preview
+    append: editor_preview
   });
-  var field = builders.element('input', {
+  builders.element('input', {
     attributes: {
       type: 'hidden',
-      name: config.name + '[preview]',
+      name: params.name + '[preview]',
       value: data.preview || ''
     },
-    append: preview
+    append: editor_preview
   });
-  editor_screen.form.addEventListener('submit', function (e) {
-    e.preventDefault(); // Show preview preloader.
-
-    preview.classList.add('preview-loader');
-    savePoster(field);
-  });
+  return editor_preview;
 }
 /**
  * Create button inside layer box to change order.
@@ -1275,7 +1351,7 @@ function createDeleteLayerButton(designer, layer) {
  * Create image layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current poster layer data.
+ * @param {Object} data Current template layer data.
  */
 
 
@@ -1289,7 +1365,7 @@ function createLayerImage(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = config.name + "[layers][".concat(index, "]");
+  var name = params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1298,12 +1374,12 @@ function createLayerImage(index, data) {
     },
     append: layer
   });
-  config.links = config.links || {};
+  params.links = params.links || {};
   builders.media({
     name: name + '[attachment]',
     classes: ['sharing-image-editor-control', 'control-details'],
     value: data.attachment || '',
-    link: config.links.uploads,
+    link: params.links.uploads,
     labels: {
       button: editor_('Upload image', 'sharing-image'),
       heading: editor_('Select layer image', 'sharing-image'),
@@ -1358,7 +1434,7 @@ function createLayerImage(index, data) {
  * Create text layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current poster data.
+ * @param {Object} data Current template data.
  */
 
 
@@ -1372,7 +1448,7 @@ function createLayerText(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = config.name + "[layers][".concat(index, "]");
+  var name = params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1465,13 +1541,13 @@ function createLayerText(index, data) {
  * Create filter layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current poster data.
+ * @param {Object} data Current template data.
  */
 
 
 function createLayerFilter(index, data) {
   var description = [];
-  description.push(editor_('Filters are applied one after another to the entire poster image.', 'sharing-image'));
+  description.push(editor_('Filters are applied one after another to the entire editor image.', 'sharing-image'));
   description.push(editor_('If you want to control their order, create multiple layers.', 'sharing-image'));
   var layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
@@ -1479,7 +1555,7 @@ function createLayerFilter(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = config.name + "[layers][".concat(index, "]");
+  var name = params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1542,7 +1618,7 @@ function createLayerFilter(index, data) {
  * Create line layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current poster data.
+ * @param {Object} data Current template data.
  */
 
 
@@ -1556,7 +1632,7 @@ function createLayerLine(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = config.name + "[layers][".concat(index, "]");
+  var name = params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1661,7 +1737,7 @@ function createLayerLine(index, data) {
  * Create rectangle layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current poster data.
+ * @param {Object} data Current template data.
  */
 
 
@@ -1675,7 +1751,7 @@ function createLayerRectangle(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = config.name + "[layers][".concat(index, "]");
+  var name = params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1780,7 +1856,7 @@ function createLayerRectangle(index, data) {
  * Create ellipse layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current poster data.
+ * @param {Object} data Current template data.
  */
 
 
@@ -1794,7 +1870,7 @@ function createLayerEllipse(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = config.name + "[layers][".concat(index, "]");
+  var name = params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1939,7 +2015,8 @@ function createLayer(designer, type, index) {
     return;
   }
 
-  designer.insertBefore(layer, designer.firstChild); // Delete this layer button.
+  designer.insertBefore(layer, designer.firstChild);
+  reorderLayers(designer); // Delete this layer button.
 
   createDeleteLayerButton(designer, layer); // Reorder layers button.
 
@@ -1949,7 +2026,7 @@ function createLayer(designer, type, index) {
  * Create layers designer control.
  *
  * @param {HTMLElement} fieldset Fieldset HTML element.
- * @param {Object} data Current poster data.
+ * @param {Object} data Current template data.
  */
 
 
@@ -1984,6 +2061,7 @@ function createDesigner(fieldset, data) {
   }); // Set default layers set.
 
   var layers = data.layers || [];
+  layers = layers.reverse();
   layers.forEach(function (layer, index) {
     if (layer.hasOwnProperty('type')) {
       createLayer(designer, layer.type, index++, layer);
@@ -2000,18 +2078,18 @@ function createDesigner(fieldset, data) {
   });
 }
 /**
- * Create common poster settings on poster editor screen.
+ * Create common template settings on template editor screen.
  *
- * @param {HTMLElement} section Section HTML element.
- * @param {Object} data Current poster data.
+ * @param {HTMLElement} form Form HTML element.
+ * @param {Object} data Current template data.
  */
 
 
-function createFieldset(section, data) {
+function createFieldset(form, data) {
   var fieldset = builders.element('div', {
     classes: ['sharing-image-editor-fieldset'],
-    append: section
-  }); // Create poster title control.
+    append: form
+  }); // Create template title control.
 
   builders.control({
     classes: ['sharing-image-editor-control', 'control-compact'],
@@ -2020,7 +2098,7 @@ function createFieldset(section, data) {
       group: 'input',
       classes: ['sharing-image-editor-input'],
       attributes: {
-        name: config.name + '[title]',
+        name: params.name + '[title]',
         value: data.title || ''
       },
       label: editor_('Template title', 'sharing-image')
@@ -2036,25 +2114,25 @@ function createFieldset(section, data) {
       group: 'input',
       classes: ['sharing-image-editor-input'],
       attributes: {
-        name: config.name + '[width]',
+        name: params.name + '[width]',
         value: data.width || '1200',
         placeholder: '1200'
       },
-      label: editor_('Poster width', 'sharing-image')
+      label: editor_('Editor width', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-input'],
       attributes: {
-        name: config.name + '[height]',
+        name: params.name + '[height]',
         value: data.height || '630',
         placeholder: '630'
       },
-      label: editor_('Poster height', 'sharing-image')
+      label: editor_('Editor height', 'sharing-image')
     }],
     append: fieldset
   });
   var description = [];
-  description.push(editor_('You can add multiple layers on your poster.', 'sharing-image'));
+  description.push(editor_('You can add multiple layers on your editor.', 'sharing-image'));
   description.push(editor_('Note that the stacking order of the layers is important.', 'sharing-image'));
   description.push(editor_('You can change the order using the arrows in the corner of each box.', 'sharing-image'));
   builders.control({
@@ -2070,29 +2148,30 @@ function createFieldset(section, data) {
     append: fieldset
   }); // Create back to catalog button.
 
-  createCatalogButton(footer); // Create poster deletion button.
+  createCatalogButton(footer); // Create template deletion button.
 
-  createDeleteButton(footer);
+  createDeleteButton(form, footer);
   fieldset.addEventListener('change', function (e) {
-    if (editor_screen.suspend.checked) {
+    if (form.classList.contains('editor-suspend')) {
       return;
     }
 
     var target = e.target;
 
     if (target.hasAttribute('name')) {
-      generatePoster();
+      generateTemplate(form);
     }
   });
 }
 /**
  * Create button to submit editor form.
  *
+ * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  */
 
 
-function createSubmitButton(manager) {
+function createSubmitButton(form, manager) {
   builders.element('button', {
     text: editor_('Save changes', 'sharing-image'),
     classes: ['button', 'button-primary'],
@@ -2103,13 +2182,14 @@ function createSubmitButton(manager) {
   });
 }
 /**
- * Create button to generate new poster manually.
+ * Create button to generate new template manually.
  *
+ * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  */
 
 
-function createGenerateButton(manager) {
+function createGenerateButton(form, manager) {
   var button = builders.element('button', {
     text: editor_('Generate preview', 'sharing-image'),
     classes: ['button'],
@@ -2118,81 +2198,135 @@ function createGenerateButton(manager) {
     },
     append: manager
   });
-  button.addEventListener('click', generatePoster);
+  button.addEventListener('click', function () {
+    generateTemplate(form);
+  });
 }
 /**
  * Create disable live-reloading checkbox.
  *
+ * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
- * @param {Object} data Poster data.
+ * @param {Object} data Template data.
  */
 
 
-function createSuspendCheckbox(manager, data) {
+function createSuspendCheckbox(form, manager, data) {
   var checkbox = builders.checkbox({
     classes: ['sharing-image-editor-suspend'],
     attributes: {
-      name: config.name + '[suspend]',
+      name: params.name + '[suspend]',
       value: 'suspend'
     },
     label: editor_('Disable live-reload', 'sharing-image'),
     checked: data.suspend
   }, manager);
-  editor_screen.suspend = checkbox;
+
+  if (data.suspend) {
+    form.classList.add('editor-suspend');
+  }
+
+  checkbox.addEventListener('change', function () {
+    form.classList.remove('editor-suspend');
+
+    if (checkbox.checked) {
+      form.classList.add('editor-suspend');
+    }
+  });
 }
 /**
- * Create poster settings preview.
+ * Create template settings preview.
  *
- * @param {HTMLElement} section Section HTML element.
- * @param {Object} data Current poster data.
+ * @param {HTMLElement} form Form HTML element.
+ * @param {Object} data Current template data.
  */
 
 
-function createMonitor(section, data) {
+function createMonitor(form, data) {
   var monitor = builders.element('div', {
     classes: ['sharing-image-editor-monitor'],
-    append: section
+    append: form
   });
   var viewport = builders.element('div', {
     classes: ['sharing-image-editor-viewport'],
     append: monitor
   });
   createPreview(viewport, data);
+  builders.element('div', {
+    classes: ['sharing-image-editor-warning'],
+    append: viewport
+  });
   var manager = builders.element('div', {
     classes: ['sharing-image-editor-manager'],
     append: viewport
-  }); // Create submit form button.
+  }); // Create live-reload manager checkbox.
 
-  createSubmitButton(manager); // Create poster generator button.
+  createSuspendCheckbox(form, manager, data); // Create submit form button.
 
-  createGenerateButton(manager); // Create live-reload manager checkbox.
+  createSubmitButton(form, manager); // Create template generator button.
 
-  createSuspendCheckbox(manager, data);
+  createGenerateButton(form, manager);
 }
 /**
- * Create poster editor page.
+ * Create form hidden settings fields.
+ *
+ * @param {HTMLElement} form Settings form element.
+ * @param {number} index Current option index.
+ */
+
+
+function prepareEditor(form, index) {
+  form.classList.add('sharing-image-editor');
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing-image-index',
+      value: index
+    },
+    append: form
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'action',
+      value: params.name
+    },
+    append: form
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'nonce',
+      value: params.nonce
+    },
+    append: form
+  });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    saveTemplate(form);
+  });
+}
+/**
+ * Create template editor page.
  *
  * @param {HTMLElement} form Settings form element.
  * @param {Object} settings Global settings field.
  * @param {number} index Current option index.
- * @param {Object} data Poster data.
+ * @param {Object} data Template data.
  */
 
 
 function createEditor(form, settings, index) {
   var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  config = settings; // Set config name for poster form fields.
+  params = settings; // Set params name for template form fields.
 
-  config.name = config.option + '[' + index + ']';
-  var section = builders.element('div', {
-    classes: ['sharing-image-editor'],
-    prepend: form
-  });
-  editor_screen.form = form; // Create monitor section part.
+  params.name = 'sharing-image-editor'; // Create monitor section part.
 
-  createMonitor(section, data); // Create fieldset section part.
+  createMonitor(form, data); // Create fieldset section part.
 
-  createFieldset(section, data);
+  createFieldset(form, data); // Prepare form with hidden fields and events.
+
+  prepareEditor(form, index);
 }
 
 /* harmony default export */ var editor = (createEditor);
@@ -2200,7 +2334,7 @@ function createEditor(form, settings, index) {
 
 
 var Section = {
-  catalog: sections_catalog,
+  catalog: catalog,
   editor: editor
 };
 /* harmony default export */ var sections = (Section);
@@ -2226,20 +2360,25 @@ function initConfigTab() {}
  */
 
 
-function initPostersTab(form) {
+function initTemplatesTab(form) {
   var settings = window.sharingImageSettings || {}; // Get index from URL search parameter.
 
-  var index = parseInt(helpers.param('poster')) - 1; // Get posters from settings.
+  var index = null; // Get templates from settings.
 
-  settings.posters = settings.posters || [];
-  var data = settings.posters[index]; // Create editor for existing poster.
+  settings.templates = settings.templates || [];
+
+  if (helpers.param('template')) {
+    index = parseInt(helpers.param('template')) - 1;
+  }
+
+  var data = settings.templates[index]; // Create editor for existing template.
 
   if (undefined !== data) {
     return sections.editor(form, settings, index, data);
-  } // Create editor for new poster.
+  } // Create editor for new template.
 
 
-  if (settings.posters.length === index) {
+  if (settings.templates.length === index) {
     return sections.editor(form, settings, index);
   }
 
@@ -2253,16 +2392,10 @@ function initPostersTab(form) {
 var settings_routeSettings = function routeSettings() {
   if (typeof_default()('undefined') === wp) {
     return;
-  } // Find root settings element.
+  } // Find settings form element.
 
 
-  var screen = document.getElementById('sharing-image-settings');
-
-  if (null === screen) {
-    return;
-  }
-
-  var form = screen.querySelector('.sharing-image-form');
+  var form = document.querySelector('#sharing-image-settings > form');
 
   if (null === form) {
     return;
@@ -2278,7 +2411,7 @@ var settings_routeSettings = function routeSettings() {
       return initPremiumTab();
 
     default:
-      return initPostersTab(form);
+      return initTemplatesTab(form);
   }
 };
 
