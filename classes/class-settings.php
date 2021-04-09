@@ -45,6 +45,7 @@ class Settings {
 	 * @var array
 	 */
 	private $tabs = array();
+
 	/**
 	 * Settings constructor.
 	 */
@@ -102,7 +103,7 @@ class Settings {
 		);
 
 		foreach ( $actions as $key => $method ) {
-			$action = 'sharing-image-' . $key;
+			$action = 'sharing_image_' . $key;
 
 			if ( method_exists( $this, $method ) ) {
 				add_action( 'admin_post_' . $action, array( $this, $method ) );
@@ -120,7 +121,7 @@ class Settings {
 		);
 
 		foreach ( $actions as $key => $method ) {
-			$action = 'sharing-image-' . $key;
+			$action = 'sharing_image_' . $key;
 
 			if ( method_exists( $this, $method ) ) {
 				add_action( 'wp_ajax_' . $action, array( $this, $method ) );
@@ -152,7 +153,7 @@ class Settings {
 	 * Save template editor fields.
 	 */
 	public function save_settings_template() {
-		check_admin_referer( 'sharing-image-settings', 'nonce' );
+		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
@@ -160,20 +161,20 @@ class Settings {
 
 		$link = admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG );
 
-		if ( ! isset( $_POST['sharing-image-index'] ) ) {
+		if ( ! isset( $_POST['sharing_image_index'] ) ) {
 			return $this->redirect_with_message( $link, 2 );
 		}
 
-		$index = absint( wp_unslash( $_POST['sharing-image-index'] ) );
+		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
 
-		if ( ! isset( $_POST['sharing-image-editor'] ) ) {
+		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
 			return $this->redirect_with_message( $link, 2 );
 		}
 
 		$link = add_query_arg( array( 'template' => $index + 1 ), $link );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing-image-editor'] ) );
+		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
 		// Update settings template.
 		$this->update_template( $editor, $index );
@@ -185,7 +186,7 @@ class Settings {
 	 * Action to delete template from editor page.
 	 */
 	public function delete_settings_template() {
-		check_admin_referer( 'sharing-image-settings', 'nonce' );
+		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
@@ -211,28 +212,27 @@ class Settings {
 	 * Show generated template from AJAX request.
 	 */
 	public function show_template_preview() {
-		check_ajax_referer( 'sharing-image-settings', 'nonce' );
+		$verify = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
-		$generator = new Generator();
+		if ( false === $verify ) {
+			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+		}
 
-		if ( ! isset( $_POST['sharing-image-index'] ) ) {
+		if ( ! isset( $_POST['sharing_image_index'] ) ) {
 			wp_send_json_error( __( 'Poster index undefined.', 'sharing-image' ), 400 );
 		}
 
-		$index = absint( wp_unslash( $_POST['sharing-image-index'] ) );
+		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
 
-		if ( ! isset( $_POST['sharing-image-editor'] ) ) {
+		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
 			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing-image-editor'] ) );
+		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
-		// Get background sample image.
-		$image = sprintf( SHARING_IMAGE_DIR . '/assets/images/%d.jpg', ( $index % 12 ) + 1 );
-
-		// Prepare generator.
-		$poster = $generator->show( $editor, $image );
+		// Show poster using generator class.
+		$poster = ( new Generator() )->show( $editor, $index );
 
 		if ( is_wp_error( $poster ) ) {
 			wp_send_json_error( $poster->get_error_message(), 400 );
@@ -243,28 +243,27 @@ class Settings {
 	 * Show generated template from AJAX request.
 	 */
 	public function save_template_preview() {
-		check_ajax_referer( 'sharing-image-settings', 'nonce' );
+		$verify = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
-		$generator = new Generator();
+		if ( false === $verify ) {
+			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+		}
 
-		if ( ! isset( $_POST['sharing-image-index'] ) ) {
+		if ( ! isset( $_POST['sharing_image_index'] ) ) {
 			wp_send_json_error( __( 'Poster index undefined.', 'sharing-image' ), 400 );
 		}
 
-		$index = absint( wp_unslash( $_POST['sharing-image-index'] ) );
+		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
 
-		if ( ! isset( $_POST['sharing-image-editor'] ) ) {
+		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
 			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing-image-editor'] ) );
+		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
-		// Get background sample image.
-		$image = sprintf( SHARING_IMAGE_DIR . '/assets/images/%d.jpg', ( $index % 12 ) + 1 );
-
-		// Prepare generator.
-		$poster = $generator->save( $editor, $image );
+		// Save poster using generator class.
+		$poster = ( new Generator() )->save( $editor, $index );
 
 		if ( is_wp_error( $poster ) ) {
 			wp_send_json_error( $poster->get_error_message(), 400 );
@@ -282,6 +281,11 @@ class Settings {
 		}
 
 		include_once SHARING_IMAGE_DIR . '/templates/settings.php';
+
+		/**
+		 * Fires on settings template including.
+		 */
+		do_action( 'sharing_image_settings' );
 	}
 
 	/**
@@ -319,10 +323,11 @@ class Settings {
 
 		wp_enqueue_media();
 
+		// Translations availible only for WP 5.0+.
 		wp_set_script_translations( 'sharing-image-settings', 'sharing-image' );
 
 		$object = array(
-			'nonce'     => wp_create_nonce( 'sharing-image-settings' ),
+			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
 
 			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
@@ -335,11 +340,92 @@ class Settings {
 	}
 
 	/**
+	 * Get plugin config settings.
+	 *
+	 * @return array List of plugin config settings.
+	 */
+	public function get_config() {
+		$config = get_option( self::OPTION_CONFIG, array() );
+
+		/**
+		 * Filters settigns config.
+		 *
+		 * @return array List of plugin config settings.
+		 */
+		return apply_filters( 'sharing_image_get_config', $config );
+	}
+
+	/**
+	 * Get templates list from options.
+	 *
+	 * @return array List of templates.
+	 */
+	public function get_templates() {
+		$templates = get_option( self::OPTION_TEMPLATES, array() );
+
+		/**
+		 * Filters list of templates.
+		 *
+		 * @param array $templates List of templates.
+		 */
+		return apply_filters( 'sharing_image_get_templates', $templates );
+	}
+
+	/**
+	 * Update templates in options.
+	 *
+	 * @param array $templates List of new templates.
+	 */
+	public function update_templates( $templates ) {
+		/**
+		 * Filters list of templates before update in database.
+		 *
+		 * @param array $templates List of templates.
+		 */
+		$templates = apply_filters( 'sharing_image_update_templates', $templates );
+
+		return update_option( self::OPTION_TEMPLATES, $templates );
+	}
+
+	/**
+	 * Update single template by index.
+	 *
+	 * @param array $editor New template data.
+	 * @param int   $index  Template index to update.
+	 */
+	public function update_template( $editor, $index ) {
+		$templates = $this->get_templates();
+
+		$templates[ $index ] = $editor;
+
+		// Reindex templates array.
+		$templates = array_values( $templates );
+
+		return $this->update_templates( $templates );
+	}
+
+	/**
+	 * Delete template by index.
+	 *
+	 * @param int $index Template index to delete.
+	 */
+	public function delete_template( $index ) {
+		$templates = $this->get_templates();
+
+		unset( $templates[ $index ] );
+
+		// Reindex templates array.
+		$templates = array_values( $templates );
+
+		return $this->update_templates( $templates );
+	}
+
+	/**
 	 * Sanitize editor template settings.
 	 *
 	 * @param array $editor Template editor settings.
 	 */
-	public function sanitize_editor( $editor ) {
+	private function sanitize_editor( $editor ) {
 		$sanitized = array();
 
 		if ( isset( $editor['preview'] ) ) {
@@ -438,7 +524,7 @@ class Settings {
 	 *
 	 * @param array $layer Layer settings.
 	 */
-	public function sanitize_text_layer( $layer ) {
+	private function sanitize_text_layer( $layer ) {
 		$sanitized = array();
 
 		// No need to sanitize after switch.
@@ -524,7 +610,7 @@ class Settings {
 	 *
 	 * @param array $layer Layer settings.
 	 */
-	public function sanitize_image_layer( $layer ) {
+	private function sanitize_image_layer( $layer ) {
 		$sanitized = array();
 
 		// No need to sanitize after switch.
@@ -554,7 +640,7 @@ class Settings {
 	 *
 	 * @param array $layer Layer settings.
 	 */
-	public function sanitize_filter_layer( $layer ) {
+	private function sanitize_filter_layer( $layer ) {
 		$sanitized = array();
 
 		// No need to sanitize after switch.
@@ -592,7 +678,7 @@ class Settings {
 	 *
 	 * @param array $layer Layer settings.
 	 */
-	public function sanitize_figure_layer( $layer ) {
+	private function sanitize_figure_layer( $layer ) {
 		$sanitized = array();
 
 		// No need to sanitize after switch.
@@ -634,7 +720,7 @@ class Settings {
 	 *
 	 * @param array $layer Layer settings.
 	 */
-	public function sanitize_line_layer( $layer ) {
+	private function sanitize_line_layer( $layer ) {
 		$sanitized = array();
 
 		// No need to sanitize after switch.
@@ -669,87 +755,6 @@ class Settings {
 		}
 
 		return $sanitized;
-	}
-
-	/**
-	 * Get plugin config settings.
-	 *
-	 * @return array List of plugin config settings.
-	 */
-	public function get_config() {
-		$config = get_option( self::OPTION_CONFIG, array() );
-
-		/**
-		 * Filters settigns config.
-		 *
-		 * @return array List of plugin config settings.
-		 */
-		return apply_filters( 'sharing_image_get_config', $config );
-	}
-
-	/**
-	 * Get templates list from options.
-	 *
-	 * @return array List of templates.
-	 */
-	public function get_templates() {
-		$templates = get_option( self::OPTION_TEMPLATES, array() );
-
-		/**
-		 * Filters list of templates.
-		 *
-		 * @param array $templates List of templates.
-		 */
-		return apply_filters( 'sharing_image_get_templates', $templates );
-	}
-
-	/**
-	 * Update templates in options.
-	 *
-	 * @param array $templates List of new templates.
-	 */
-	public function update_templates( $templates ) {
-		/**
-		 * Filters list of templates before update in database.
-		 *
-		 * @param array $templates List of templates.
-		 */
-		$templates = apply_filters( 'sharing_image_update_templates', $templates );
-
-		return update_option( self::OPTION_TEMPLATES, $templates );
-	}
-
-	/**
-	 * Update single template by index.
-	 *
-	 * @param array $editor New template data.
-	 * @param int   $index  Template index to update.
-	 */
-	public function update_template( $editor, $index ) {
-		$templates = $this->get_templates();
-
-		$templates[ $index ] = $editor;
-
-		// Reindex templates array.
-		$templates = array_values( $templates );
-
-		return $this->update_templates( $templates );
-	}
-
-	/**
-	 * Delete template by index.
-	 *
-	 * @param int $index Template index to delete.
-	 */
-	public function delete_template( $index ) {
-		$templates = $this->get_templates();
-
-		unset( $templates[ $index ] );
-
-		// Reindex templates array.
-		$templates = array_values( $templates );
-
-		return $this->update_templates( $templates );
 	}
 
 	/**

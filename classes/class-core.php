@@ -8,7 +8,7 @@ class Core {
 	}
 
 	private function init_env() {
-		new MetaBox();
+		new Metabox();
 		new Settings();
 	}
 }

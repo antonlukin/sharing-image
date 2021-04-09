@@ -13,10 +13,13 @@ function buildInput( args, parent ) {
 	} );
 
 	if ( args.hasOwnProperty( 'label' ) ) {
-		buildElement( 'strong', {
+		const label = buildElement( 'strong', {
 			text: args.label,
-			append: field,
 		} );
+
+		if ( null !== args.label ) {
+			field.appendChild( label );
+		}
 	}
 
 	const input = buildElement( 'input', {

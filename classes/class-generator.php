@@ -18,23 +18,43 @@ use WP_Error;
  */
 class Generator {
 	/**
-	 * Store plugin settings.
+	 * The instance of settings class.
 	 *
-	 * @var array
+	 * @var instance
 	 */
-	private $config = array();
+	private $settings;
 
 	/**
 	 * Generator constructor.
 	 */
 	public function __construct() {
-		$settings = new Settings();
-
-		$this->config = $settings->get_config();
+		$this->settings = new Settings();
 	}
 
-	public function show( $options, $image ) {
+	/**
+	 * Generate image using picker data.
+	 *
+	 * @param array $picker Picker data from metabox.
+	 */
+	public function generate( $picker ) {
+		$template = $picker['template'];
+
+		$templates = $this->settings->get_templates();
+
+		return $templates[ $template ]['preview'];
+	}
+
+	/**
+	 * Show image for settings page using editor data.
+	 *
+	 * @param array $editor Editor data from settings page.
+	 * @param int   $index  Template index.
+	 */
+	public function show( $editor, $index ) {
 		$poster = new ImageText();
+
+		// Get background sample image.
+		$image = sprintf( SHARING_IMAGE_DIR . '/assets/images/%d.jpg', ( $index % 12 ) + 1 );
 
 		$poster->setDimensionsFromImage( $image )->draw( $image );
 		$poster->setOutput( 'jpg' );
@@ -46,7 +66,10 @@ class Generator {
 		exit;
 	}
 
-	public function save( $options, $image ) {
+	public function save( $options, $index ) {
+		// Get background sample image.
+		$image = sprintf( SHARING_IMAGE_DIR . '/assets/images/%d.jpg', ( $index % 12 ) + 1 );
+
 		$poster = new ImageText();
 
 		$poster->setDimensionsFromImage( $image )->draw( $image );
@@ -60,10 +83,6 @@ class Generator {
 		$poster->save( SHARING_IMAGE_DIR . $filename );
 
 		return SHARING_IMAGE_URL . $filename;
-	}
-
-	private function prepare_options( $options, $image ) {
-		print_r( $options );
 	}
 
 	/**

@@ -1,0 +1,14 @@
+@import "includes/variables";
+@import "includes/mixins";
+@import "includes/gutenberg";
+
+#sharing-image-metabox {
+  display: block;
+  position: relative;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  @import "metabox/*";
+}

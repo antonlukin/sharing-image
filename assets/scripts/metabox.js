@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -2681,98 +2681,43 @@ module.exports = _typeof;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
-/* 3 */,
-/* 4 */,
-/* 5 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(6);
+module.exports = __webpack_require__(4);
 
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
 /* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(0);
-/* harmony import */ var _sections__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1);
-
+/* harmony import */ var _sections__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(1);
 
 
 /**
- * Init premium settings tab.
+ * Init metabox handler.
  */
-
-function initPremiumTab() {}
-/**
- * Init config settings tab.
- */
-
-
-function initConfigTab() {}
-/**
- * Init config settings tab.
- *
- * @param {HTMLElement} form Settings form element.
- */
-
-
-function initTemplatesTab(form) {
-  var object = window.sharingImageSettings || {}; // Get index from URL search parameter.
-
-  var index = null; // Set default templates empty list.
-
-  object.templates = object.templates || [];
-
-  if (_helpers__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].param('template')) {
-    index = parseInt(_helpers__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].param('template')) - 1;
-  }
-
-  var data = object.templates[index]; // Create editor for existing template.
-
-  if (undefined !== data) {
-    return _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].editor(form, object, index, data);
-  } // Create editor for new template.
-
-
-  if (object.templates.length === index) {
-    return _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].editor(form, object, index);
-  }
-
-  return _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].catalog(form, object);
-}
-/**
- * Init settings page handler.
- */
-
 
 (function () {
   if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()('undefined') === wp) {
     return;
-  } // Find settings form element.
+  } // Find metabox element.
 
 
-  var form = document.querySelector('#sharing-image-settings > form');
+  var inside = document.querySelector('#sharing-image-metabox > .inside');
 
-  if (null === form) {
+  if (null === inside) {
     return;
   }
 
-  var tab = _helpers__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].param('tab');
+  var object = window.sharingImageMetabox || {}; // Set default templates empty list.
 
-  switch (tab) {
-    case 'config':
-      return initConfigTab();
-
-    case 'premium':
-      return initPremiumTab();
-
-    default:
-      return initTemplatesTab(form);
-  }
+  object.templates = object.templates || [];
+  _sections__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].picker(inside, object);
 })();
 
 /***/ })

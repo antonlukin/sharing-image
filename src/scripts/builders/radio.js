@@ -35,10 +35,13 @@ function buildRadio( args, parent ) {
 	}
 
 	if ( args.hasOwnProperty( 'label' ) ) {
-		buildElement( 'span', {
+		const label = buildElement( 'span', {
 			text: args.label,
-			append: field,
 		} );
+
+		if ( null !== args.label ) {
+			field.appendChild( label );
+		}
 	}
 
 	return radio;

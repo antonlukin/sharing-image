@@ -16,7 +16,7 @@ const Build = {
 	checkbox: buildCheckbox,
 	media: buildMedia,
 	input: buildInput,
-	textareal: buildTextarea,
+	textarea: buildTextarea,
 	radio: buildRadio,
 	select: buildSelect,
 };

@@ -15,6 +15,7 @@ module.exports = {
 				SwitchCase: 1,
 			},
 		],
+		'object-shorthand': 0,
 		'linebreak-style': [ 'error', 'unix' ],
 		quotes: [ 'error', 'single' ],
 		semi: [ 'error', 'always' ],

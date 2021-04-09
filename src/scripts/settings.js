@@ -17,37 +17,37 @@ function initConfigTab() {}
  * @param {HTMLElement} form Settings form element.
  */
 function initTemplatesTab( form ) {
-	const settings = window.sharingImageSettings || {};
+	const object = window.sharingImageSettings || {};
 
 	// Get index from URL search parameter.
 	let index = null;
 
-	// Get templates from settings.
-	settings.templates = settings.templates || [];
+	// Set default templates empty list.
+	object.templates = object.templates || [];
 
 	if ( Helper.param( 'template' ) ) {
 		index = parseInt( Helper.param( 'template' ) ) - 1;
 	}
 
-	const data = settings.templates[ index ];
+	const data = object.templates[ index ];
 
 	// Create editor for existing template.
 	if ( undefined !== data ) {
-		return Section.editor( form, settings, index, data );
+		return Section.editor( form, object, index, data );
 	}
 
 	// Create editor for new template.
-	if ( settings.templates.length === index ) {
-		return Section.editor( form, settings, index );
+	if ( object.templates.length === index ) {
+		return Section.editor( form, object, index );
 	}
 
-	return Section.catalog( form, settings );
+	return Section.catalog( form, object );
 }
 
 /**
- * Route settings by url parameter.
+ * Init settings page handler.
  */
-const routeSettings = () => {
+( function () {
 	if ( typeof 'undefined' === wp ) {
 		return;
 	}
@@ -71,6 +71,4 @@ const routeSettings = () => {
 		default:
 			return initTemplatesTab( form );
 	}
-};
-
-routeSettings();
+} )();

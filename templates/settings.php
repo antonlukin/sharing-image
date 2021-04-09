@@ -1,6 +1,6 @@
 <?php
 /**
- * Sharing Image main settings template
+ * Sharing Image main settings template.
  *
  * @package sharing-image
  * @author  Anton Lukin

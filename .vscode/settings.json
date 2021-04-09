@@ -6,4 +6,7 @@
     "phpcs.composerJsonPath": "composer.json",
     "eslint.format.enable": true,
     "eslint.lintTask.enable": true,
+    "phpcs.ignorePatterns": [
+        "library/"
+    ],
 }

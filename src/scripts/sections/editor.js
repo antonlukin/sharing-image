@@ -1,5 +1,5 @@
 /**
- * editor settings.
+ * Editor settings.
  */
 /* global ajaxurl:true */
 
@@ -7,7 +7,7 @@ import Build from '../builders';
 
 const { __ } = wp.i18n;
 
-// Store global settings for template editor.
+// Store global scriot object for settings page.
 let params = null;
 
 // Preview element.
@@ -56,7 +56,7 @@ function generateTemplate( form ) {
 
 	// Create data bundle using form data.
 	const bundle = new window.FormData( form );
-	bundle.set( 'action', 'sharing-image-show' );
+	bundle.set( 'action', 'sharing_image_show' );
 
 	hideTemplateError();
 
@@ -118,7 +118,7 @@ function saveTemplate( form ) {
 
 	// Create data bundle using form data.
 	const bundle = new window.FormData( form );
-	bundle.set( 'action', 'sharing-image-save' );
+	bundle.set( 'action', 'sharing_image_save' );
 
 	request.onload = () => {
 		const response = request.response || {};
@@ -127,10 +127,10 @@ function saveTemplate( form ) {
 			return showTemplateError( response.data );
 		}
 
-		const field = preview.querySelector( 'input' );
+		const input = preview.querySelector( 'input' );
 
-		if ( null !== field ) {
-			field.value = response.data || '';
+		if ( null !== input ) {
+			input.value = response.data || '';
 		}
 
 		form.submit();
@@ -534,7 +534,7 @@ function createDeleteButton( form, footer ) {
 	// Set template index to delete link.
 	const link = new URL( form.action );
 
-	link.searchParams.set( 'action', 'sharing-image-delete' );
+	link.searchParams.set( 'action', 'sharing_image_delete' );
 	link.searchParams.set( 'template', index );
 	link.searchParams.set( 'nonce', params.nonce );
 
@@ -1696,15 +1696,6 @@ function prepareEditor( form, index ) {
 	Build.element( 'input', {
 		attributes: {
 			type: 'hidden',
-			name: 'sharing-image-index',
-			value: index,
-		},
-		append: form,
-	} );
-
-	Build.element( 'input', {
-		attributes: {
-			type: 'hidden',
 			name: 'action',
 			value: params.name,
 		},
@@ -1714,7 +1705,16 @@ function prepareEditor( form, index ) {
 	Build.element( 'input', {
 		attributes: {
 			type: 'hidden',
-			name: 'nonce',
+			name: 'sharing_image_index',
+			value: index,
+		},
+		append: form,
+	} );
+
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: 'sharing_image_nonce',
 			value: params.nonce,
 		},
 		append: form,
@@ -1731,15 +1731,15 @@ function prepareEditor( form, index ) {
  * Create template editor page.
  *
  * @param {HTMLElement} form Settings form element.
- * @param {Object} settings Global settings field.
+ * @param {Object} object Global object field.
  * @param {number} index Current option index.
  * @param {Object} data Template data.
  */
-function createEditor( form, settings, index, data = {} ) {
-	params = settings;
+function createEditor( form, object, index, data = {} ) {
+	params = object;
 
 	// Set params name for template form fields.
-	params.name = 'sharing-image-editor';
+	params.name = 'sharing_image_editor';
 
 	// Create monitor section part.
 	createMonitor( form, data );
