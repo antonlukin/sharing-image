@@ -1,4 +1,5 @@
 import buildElement from './element.js';
+import Build from './index.js';
 
 /**
  * Helper to create input field.
@@ -32,8 +33,25 @@ function buildInput( args, parent ) {
 	// Set attributes
 	if ( args.hasOwnProperty( 'attributes' ) ) {
 		for ( const key in args.attributes ) {
-			input.setAttribute( key, args.attributes[ key ] );
+			const value = args.attributes[ key ];
+
+			if ( undefined === value ) {
+				continue;
+			}
+
+			input.setAttribute( key, value );
 		}
+	}
+
+	if ( 'range' === input.type ) {
+		const counter = Build.element( 'em', {
+			text: input.value,
+			append: field,
+		} );
+
+		input.addEventListener( 'change', () => {
+			counter.textContent = input.value;
+		} );
 	}
 
 	return input;

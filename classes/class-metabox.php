@@ -174,8 +174,8 @@ class Metabox {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$picker = $this->sanitize_picker( wp_unslash( $_POST['sharing_image_picker'] ) );
 
-		// Generate new poster.
-		$poster = ( new Generator() )->generate( $picker );
+		// Compose new poster.
+		$poster = ( new Generator() )->compose( $picker );
 
 		if ( is_wp_error( $poster ) ) {
 			wp_send_json_error( $poster->get_error_message(), 400 );

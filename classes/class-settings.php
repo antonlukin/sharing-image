@@ -50,6 +50,13 @@ class Settings {
 	 * Settings constructor.
 	 */
 	public function __construct() {
+		$this->init_tabs();
+	}
+
+	/**
+	 * Init class actions and filters.
+	 */
+	public function init() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 
 		// Handle settings POST requests.
@@ -61,9 +68,12 @@ class Settings {
 		// Add settings link to plugins list.
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 
-		$this->init_tabs();
-	}
+		// Allow True Type fonts uploading.
+		add_filter( 'wp_check_filetype_and_ext', array( $this, 'fix_ttf_mime_type' ), 10, 3 );
 
+		// Add new .ttf font mime type.
+		add_filter( 'upload_mimes', array( $this, 'add_ttf_mime_type' ) );
+	}
 
 	/**
 	 * Add plugin settings page in WordPress menu.
@@ -186,7 +196,7 @@ class Settings {
 	 * Action to delete template from editor page.
 	 */
 	public function delete_settings_template() {
-		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
+		check_admin_referer( basename( __FILE__ ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
@@ -289,6 +299,39 @@ class Settings {
 	}
 
 	/**
+	 * Fix .ttf files mime.
+	 *
+	 * @param array  $types    Values for the extension, mime type, and corrected filename.
+	 * @param string $file     Full path to the file.
+	 * @param string $filename The name of the file (may differ from $file due to.
+	 */
+	public function fix_ttf_mime_type( $types, $file, $filename ) {
+		$extension = pathinfo( $filename, PATHINFO_EXTENSION );
+
+		if ( 'ttf' === $extension ) {
+			$types['ext'] = false;
+
+			if ( current_user_can( 'manage_options' ) ) {
+				$types['ext']  = 'ttf';
+				$types['type'] = 'application/x-font-ttf';
+			}
+		}
+
+		return $types;
+	}
+
+	/**
+	 * Add new .ttf font mime type.
+	 *
+	 * @param array $types Allowed file types to upload.
+	 */
+	public function add_ttf_mime_type( $types ) {
+		$types['ttf'] = 'application/x-font-ttf';
+
+		return $types;
+	}
+
+	/**
 	 * Enqueue settings styles.
 	 */
 	public function enqueue_styles() {
@@ -332,11 +375,35 @@ class Settings {
 			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
 			),
+			'fonts'     => $this->get_fonts(),
 			'config'    => $this->get_config(),
 			'templates' => $this->get_templates(),
 		);
 
 		wp_localize_script( 'sharing-image-settings', 'sharingImageSettings', $object );
+	}
+
+	/**
+	 * Get availible fonts.
+	 *
+	 * @return array List of availible poster fonts.
+	 */
+	public function get_fonts() {
+		$fonts = array(
+			'open-sans'    => 'Open Sans',
+			'merriweather' => 'Merriweather',
+			'roboto-slab'  => 'Roboto Slab',
+			'ubuntu'       => 'Ubuntu',
+			'rubik-bold'   => 'Rubik Bold',
+			'montserrat'   => 'Montserrat',
+		);
+
+		/**
+		 * Filters settigns config.
+		 *
+		 * @param array List of availible poster fonts.
+		 */
+		return apply_filters( 'sharing_image_get_fonts', $fonts );
 	}
 
 	/**
@@ -350,7 +417,7 @@ class Settings {
 		/**
 		 * Filters settigns config.
 		 *
-		 * @return array List of plugin config settings.
+		 * @param array List of plugin config settings.
 		 */
 		return apply_filters( 'sharing_image_get_config', $config );
 	}
@@ -459,20 +526,16 @@ class Settings {
 			}
 		}
 
-		if ( isset( $editor['width'] ) ) {
-			$match = preg_match( '/^[\d]+%?$/', $editor['width'] );
+		$sanitized['width'] = 1200;
 
-			if ( $match ) {
-				$sanitized['width'] = $editor['width'];
-			}
+		if ( ! empty( $editor['width'] ) ) {
+			$sanitized['width'] = absint( $editor['width'] );
 		}
 
-		if ( isset( $editor['height'] ) ) {
-			$match = preg_match( '/^[\d]+%?$/', $editor['height'] );
+		$sanitized['height'] = 630;
 
-			if ( $match ) {
-				$sanitized['height'] = $editor['height'];
-			}
+		if ( ! empty( $editor['height'] ) ) {
+			$sanitized['height'] = absint( $editor['height'] );
 		}
 
 		if ( isset( $editor['layers'] ) && is_array( $editor['layers'] ) ) {
@@ -496,13 +559,8 @@ class Settings {
 						$layers[] = $this->sanitize_filter_layer( $layer );
 						break;
 
-					case 'line':
-						$layers[] = $this->sanitize_line_layer( $layer );
-						break;
-
 					case 'rectangle':
-					case 'ellipse':
-						$layers[] = $this->sanitize_figure_layer( $layer );
+						$layers[] = $this->sanitize_rectangle_layer( $layer );
 						break;
 				}
 			}
@@ -556,7 +614,7 @@ class Settings {
 			}
 		}
 
-		$sanitized['color'] = '#000000';
+		$sanitized['color'] = '#ffffff';
 
 		if ( ! empty( $layer['color'] ) ) {
 			$sanitized['color'] = sanitize_hex_color( $layer['color'] );
@@ -590,16 +648,22 @@ class Settings {
 			$sanitized['lineheight'] = (float) $layer['lineheight'];
 		}
 
-		if ( isset( $layer['font'] ) ) {
-			$sanitized['font'] = sanitize_text_field( $layer['font'] );
+		if ( isset( $layer['fontname'] ) ) {
+			$sanitized['fontname'] = sanitize_text_field( $layer['fontname'] );
+		}
+
+		if ( ! empty( $layer['fontfile'] ) ) {
+			$sanitized['fontfile'] = absint( $layer['fontfile'] );
 		}
 
 		$sizes = array( 'x', 'y', 'width', 'height' );
 
 		foreach ( $sizes as $size ) {
-			if ( isset( $layer[ $size ] ) ) {
-				$sanitized[ $size ] = absint( $layer[ $size ] );
+			if ( ! isset( $layer[ $size ] ) || '' === $layer[ $size ] ) {
+				continue;
 			}
+
+			$sanitized[ $size ] = absint( $layer[ $size ] );
 		}
 
 		return $sanitized;
@@ -623,13 +687,11 @@ class Settings {
 		$sizes = array( 'x', 'y', 'width', 'height' );
 
 		foreach ( $sizes as $size ) {
-			if ( isset( $layer[ $size ] ) ) {
-				$match = preg_match( '/^[\d]+%?$/', $layer[ $size ] );
-
-				if ( $match ) {
-					$sanitized[ $size ] = $layer[ $size ];
-				}
+			if ( ! isset( $layer[ $size ] ) || '' === $layer[ $size ] ) {
+				continue;
 			}
+
+			$sanitized[ $size ] = absint( $layer[ $size ] );
 		}
 
 		return $sanitized;
@@ -650,12 +712,16 @@ class Settings {
 			$sanitized['grayscale'] = 'grayscale';
 		}
 
+		if ( ! empty( $layer['blur'] ) ) {
+			$sanitized['blur'] = 'blur';
+		}
+
 		$sanitized['brightness'] = 0;
 
 		if ( isset( $layer['brightness'] ) ) {
 			$brightness = (int) $layer['brightness'];
 
-			if ( $brightness >= -255 && $brightness <= 255 ) {
+			if ( $brightness >= -100 && $brightness <= 100 ) {
 				$sanitized['brightness'] = $brightness;
 			}
 		}
@@ -670,15 +736,25 @@ class Settings {
 			}
 		}
 
+		$sanitized['blackout'] = 0;
+
+		if ( isset( $layer['blackout'] ) ) {
+			$blackout = (int) $layer['blackout'];
+
+			if ( $blackout >= 0 && $blackout <= 100 ) {
+				$sanitized['blackout'] = $blackout;
+			}
+		}
+
 		return $sanitized;
 	}
 
 	/**
-	 * Sanitize template editor ellipse and rectagle layers.
+	 * Sanitize template editor rectagle layer.
 	 *
 	 * @param array $layer Layer settings.
 	 */
-	private function sanitize_figure_layer( $layer ) {
+	private function sanitize_rectangle_layer( $layer ) {
 		$sanitized = array();
 
 		// No need to sanitize after switch.
@@ -688,7 +764,7 @@ class Settings {
 			$sanitized['outline'] = 'outline';
 		}
 
-		$sanitized['color'] = '#000000';
+		$sanitized['color'] = '#ffffff';
 
 		if ( ! empty( $layer['color'] ) ) {
 			$sanitized['color'] = sanitize_hex_color( $layer['color'] );
@@ -699,59 +775,29 @@ class Settings {
 		if ( isset( $layer['opacity'] ) ) {
 			$opacity = (float) $layer['opacity'];
 
-			if ( $opacity >= 0 && $opacity <= 1 ) {
+			if ( $opacity >= 0 && $opacity <= 100 ) {
 				$sanitized['opacity'] = $opacity;
+			}
+		}
+
+		$sanitized['thickness'] = 0;
+
+		if ( isset( $layer['thickness'] ) ) {
+			$thickness = (int) $layer['thickness'];
+
+			if ( $thickness >= 0 && $thickness <= 50 ) {
+				$sanitized['thickness'] = $thickness;
 			}
 		}
 
 		$sizes = array( 'x', 'y', 'width', 'height' );
 
 		foreach ( $sizes as $size ) {
-			if ( isset( $layer[ $size ] ) ) {
-				$sanitized[ $size ] = absint( $layer[ $size ] );
+			if ( ! isset( $layer[ $size ] ) || '' === $layer[ $size ] ) {
+				continue;
 			}
-		}
 
-		return $sanitized;
-	}
-
-	/**
-	 * Sanitize template editor line layer.
-	 *
-	 * @param array $layer Layer settings.
-	 */
-	private function sanitize_line_layer( $layer ) {
-		$sanitized = array();
-
-		// No need to sanitize after switch.
-		$sanitized['type'] = $layer['type'];
-
-		if ( ! empty( $layer['dashed'] ) ) {
-			$sanitized['dashed'] = 'dashed';
-		}
-
-		$sanitized['color'] = '#000000';
-
-		if ( ! empty( $layer['color'] ) ) {
-			$sanitized['color'] = sanitize_hex_color( $layer['color'] );
-		}
-
-		$sanitized['opacity'] = 0;
-
-		if ( isset( $layer['opacity'] ) ) {
-			$opacity = (float) $layer['opacity'];
-
-			if ( $opacity >= 0 && $opacity <= 1 ) {
-				$sanitized['opacity'] = $opacity;
-			}
-		}
-
-		$sizes = array( 'x1', 'y1', 'x2', 'y2' );
-
-		foreach ( $sizes as $size ) {
-			if ( isset( $layer[ $size ] ) ) {
-				$sanitized[ $size ] = absint( $layer[ $size ] );
-			}
+			$sanitized[ $size ] = absint( $layer[ $size ] );
 		}
 
 		return $sanitized;
@@ -767,11 +813,11 @@ class Settings {
 				'link'    => admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG ),
 				'default' => true,
 			),
-			'config'  => array(
+			'config'    => array(
 				'label' => __( 'Configuration', 'sharing-image' ),
 				'link'  => admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG . '&tab=config' ),
 			),
-			'premium' => array(
+			'premium'   => array(
 				'label' => __( 'Premium', 'sharing-image' ),
 				'link'  => admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG . '&tab=premium' ),
 			),

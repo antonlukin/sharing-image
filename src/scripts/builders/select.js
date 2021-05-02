@@ -29,7 +29,13 @@ function buildSelect( args, parent ) {
 	// Set attributes
 	if ( args.hasOwnProperty( 'attributes' ) ) {
 		for ( const key in args.attributes ) {
-			select.setAttribute( key, args.attributes[ key ] );
+			const value = args.attributes[ key ];
+
+			if ( undefined === value ) {
+				continue;
+			}
+
+			select.setAttribute( key, value );
 		}
 	}
 

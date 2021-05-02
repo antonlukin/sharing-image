@@ -29,13 +29,23 @@ function buildTextarea( args, parent ) {
 	// Set attributes
 	if ( args.hasOwnProperty( 'attributes' ) ) {
 		for ( const key in args.attributes ) {
-			textarea.setAttribute( key, args.attributes[ key ] );
+			const value = args.attributes[ key ];
+
+			if ( undefined === value ) {
+				continue;
+			}
+
+			textarea.setAttribute( key, value );
 		}
 	}
 
 	// Set content
 	if ( args.hasOwnProperty( 'content' ) ) {
-		textarea.innerHTML = args.content;
+		const content = args.content;
+
+		if ( undefined !== content ) {
+			textarea.innerHTML = content;
+		}
 	}
 
 	return textarea;

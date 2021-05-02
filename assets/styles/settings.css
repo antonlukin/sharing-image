@@ -209,6 +209,12 @@ body.settings_page_sharing-image #sharing-image-settings {
             body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double > *:first-child {
               margin-right: 0;
               margin-bottom: 14px; } }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-upload {
+        flex-flow: row wrap;
+        align-items: flex-end; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-upload > *:first-child {
+          flex: 1 1 auto;
+          margin-right: 14px; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-hidden {
         display: none; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-details {
@@ -233,8 +239,17 @@ body.settings_page_sharing-image #sharing-image-settings {
           margin-right: 28px; }
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-overlined > *:last-child {
           margin-right: 0; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-media {
+      display: flex;
+      align-items: center;
+      margin-top: 8px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-media a {
+        margin-left: 14px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-media button {
+        margin-bottom: 0; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio {
       display: block;
+      position: relative;
       margin-top: 5px; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio span {
         -webkit-user-select: none;
@@ -247,11 +262,13 @@ body.settings_page_sharing-image #sharing-image-settings {
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio {
           margin-top: 10px; } }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-color {
-      display: block; }
+      display: block;
+      position: relative; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-color input[type="color"] {
         cursor: pointer; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-checkbox {
       display: block;
+      position: relative;
       margin-top: 5px; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-checkbox span {
         -webkit-user-select: none;
@@ -262,21 +279,33 @@ body.settings_page_sharing-image #sharing-image-settings {
         margin-right: 8px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-range {
       display: block;
+      position: relative;
       width: 100%; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-range input[type="range"] {
         display: block;
         width: 100%;
         margin: 8px 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-range em {
+        display: block;
+        cursor: default;
+        position: absolute;
+        right: 0;
+        top: 4px;
+        font-size: 10px;
+        font-style: normal;
+        color: #4a76bb; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-button {
       display: block; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-input {
       display: block;
+      position: relative;
       width: 100%; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-input input[type="text"] {
         display: block;
         width: calc(100% - 2px); }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-textarea {
       display: block;
+      position: relative;
       width: 100%; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-textarea textarea {
         display: block;
@@ -284,10 +313,12 @@ body.settings_page_sharing-image #sharing-image-settings {
         min-height: 30px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-select {
       display: block;
+      position: relative;
       flex: 1 1 100%; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-select select {
         display: block;
-        width: calc(100% - 2px); }
+        width: calc(100% - 2px);
+        max-width: none; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-designer {
       display: block;
       width: 100%; }

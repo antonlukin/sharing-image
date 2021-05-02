@@ -169,7 +169,13 @@ function buildElement(tag, args) {
 
   if (args.hasOwnProperty('attributes')) {
     for (var key in args.attributes) {
-      element.setAttribute(key, args.attributes[key]);
+      var value = args.attributes[key];
+
+      if (undefined === value) {
+        continue;
+      }
+
+      element.setAttribute(key, value);
     }
   } // Set data attributes
 
@@ -195,6 +201,7 @@ function buildElement(tag, args) {
 
 /* harmony default export */ var builders_element = (buildElement);
 // CONCATENATED MODULE: ./src/scripts/builders/input.js
+
 
 /**
  * Helper to create input field.
@@ -228,8 +235,24 @@ function buildInput(args, parent) {
 
   if (args.hasOwnProperty('attributes')) {
     for (var key in args.attributes) {
-      input.setAttribute(key, args.attributes[key]);
+      var value = args.attributes[key];
+
+      if (undefined === value) {
+        continue;
+      }
+
+      input.setAttribute(key, value);
     }
+  }
+
+  if ('range' === input.type) {
+    var counter = builders.element('em', {
+      text: input.value,
+      append: field
+    });
+    input.addEventListener('change', function () {
+      counter.textContent = input.value;
+    });
   }
 
   return input;
@@ -259,7 +282,13 @@ function buildCheckbox(args, parent) {
 
   if (args.hasOwnProperty('attributes')) {
     for (var key in args.attributes) {
-      checkbox.setAttribute(key, args.attributes[key]);
+      var value = args.attributes[key];
+
+      if (undefined === value) {
+        continue;
+      }
+
+      checkbox.setAttribute(key, value);
     }
   }
 
@@ -308,7 +337,13 @@ function buildRadio(args, parent) {
 
   if (args.hasOwnProperty('attributes')) {
     for (var key in args.attributes) {
-      radio.setAttribute(key, args.attributes[key]);
+      var value = args.attributes[key];
+
+      if (undefined === value) {
+        continue;
+      }
+
+      radio.setAttribute(key, value);
     }
   }
 
@@ -365,7 +400,13 @@ function buildSelect(args, parent) {
 
   if (args.hasOwnProperty('attributes')) {
     for (var key in args.attributes) {
-      select.setAttribute(key, args.attributes[key]);
+      var value = args.attributes[key];
+
+      if (undefined === value) {
+        continue;
+      }
+
+      select.setAttribute(key, value);
     }
   }
 
@@ -424,13 +465,23 @@ function buildTextarea(args, parent) {
 
   if (args.hasOwnProperty('attributes')) {
     for (var key in args.attributes) {
-      textarea.setAttribute(key, args.attributes[key]);
+      var value = args.attributes[key];
+
+      if (undefined === value) {
+        continue;
+      }
+
+      textarea.setAttribute(key, value);
     }
   } // Set content
 
 
   if (args.hasOwnProperty('content')) {
-    textarea.innerHTML = args.content;
+    var content = args.content;
+
+    if (undefined !== content) {
+      textarea.innerHTML = content;
+    }
   }
 
   return textarea;
@@ -601,19 +652,43 @@ function buildMedia(args) {
     text: args.labels.details,
     attributes: {
       target: '_blank'
-    },
-    append: media
-  }); // Helper function to update attachment value.
+    }
+  });
+
+  if (args.hasOwnProperty('link')) {
+    media.appendChild(details);
+  } // Helper function to update attachment value.
+
 
   var setAttachment = function setAttachment(id) {
     attachment.setAttribute('value', id);
     attachment.dispatchEvent(new Event('change', {
       bubbles: true
     }));
-    var link = new URL(args.link);
-    link.searchParams.set('item', id);
-    details.setAttribute('href', link);
+    var link = null;
+
+    if (args.hasOwnProperty('link')) {
+      link = new URL(args.link);
+      link.searchParams.set('item', id);
+      details.setAttribute('href', link.href);
+    }
+
+    if (args.remove) {
+      upload.textContent = args.labels.remove;
+    }
+
     details.classList.remove('hidden');
+  }; // Helper function to remove attachment value.
+
+
+  var removeAttachment = function removeAttachment() {
+    attachment.setAttribute('value', '');
+    attachment.dispatchEvent(new Event('change', {
+      bubbles: true
+    })); // Set default button title.
+
+    upload.textContent = args.labels.button;
+    details.classList.add('hidden');
   }; // Update fields if this layer has attachment.
 
 
@@ -622,6 +697,10 @@ function buildMedia(args) {
   }
 
   upload.addEventListener('click', function () {
+    if (args.remove && attachment.value) {
+      return removeAttachment();
+    }
+
     helpers["a" /* default */].attachment(args.labels.heading, function (id) {
       setAttachment(id);
     });
@@ -754,7 +833,9 @@ var editor_ = wp.i18n.__; // Store global scriot object for settings page.
 
 var params = null; // Preview element.
 
-var editor_preview = null;
+var editor_preview = null; // Root editor element.
+
+var editor = null;
 /**
  * Show template warning message.
  *
@@ -783,38 +864,35 @@ function hideTemplateError() {
   }
 }
 /**
- * Geneate template using form data.
- *
- * @param {HTMLElement} form Settings form element.
+ * Geneate template using editor data.
  */
 
 
-function generateTemplate(form) {
+function generateTemplate() {
+  editor_preview.classList.add('preview-loader');
   var request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
-  request.responseType = 'blob';
-  editor_preview.classList.add('preview-loader'); // Create data bundle using form data.
+  request.responseType = 'blob'; // Create data bundle using form data.
 
-  var bundle = new window.FormData(form);
+  var bundle = new window.FormData(editor);
   bundle.set('action', 'sharing_image_show');
   hideTemplateError(); // Set blob for success response.
 
-  request.onreadystatechange = function () {
+  request.addEventListener('readystatechange', function () {
     if (request.readyState === 2) {
-      request.responseType = 'blob';
+      request.responseType = 'json';
 
-      if (request.status !== 200) {
-        request.responseType = 'json';
+      if (request.status === 200) {
+        request.responseType = 'blob';
       }
     }
-  }; // Hide preview loader on request complete.
+  }); // Hide preview loader on request complete.
 
-
-  request.onreadystatechange = function () {
+  request.addEventListener('readystatechange', function () {
     if (request.readyState === 4) {
       editor_preview.classList.remove('preview-blank', 'preview-loader');
     }
-  };
+  });
 
   request.onload = function () {
     var response = request.response || {};
@@ -842,19 +920,17 @@ function generateTemplate(form) {
   request.send(bundle);
 }
 /**
- * Save template while form submiting.
- *
- * @param {HTMLElement} form Settings form element.
+ * Save template while editor submiting.
  */
 
 
-function saveTemplate(form) {
+function saveTemplate() {
   var request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
-  editor_preview.classList.add('preview-loader'); // Create data bundle using form data.
+  editor_preview.classList.add('preview-loader'); // Create data bundle using editor data.
 
-  var bundle = new window.FormData(form);
+  var bundle = new window.FormData(editor);
   bundle.set('action', 'sharing_image_save');
 
   request.onload = function () {
@@ -866,11 +942,11 @@ function saveTemplate(form) {
 
     var input = editor_preview.querySelector('input');
 
-    if (null !== input) {
-      input.value = response.data || '';
+    if (null !== input && response.data) {
+      input.setAttribute('value', response.data);
     }
 
-    form.submit();
+    editor.submit();
   };
 
   request.onerror = function () {
@@ -956,7 +1032,7 @@ function createPermanentAttachment(fieldset, data) {
   var media = builders.media({
     name: params.name + '[attachment]',
     classes: ['sharing-image-editor-control', 'control-details'],
-    value: data.attachment || '',
+    value: data.attachment,
     link: params.links.uploads,
     labels: {
       button: editor_('Upload image', 'sharing-image'),
@@ -1016,7 +1092,7 @@ function createDynamicFields(layer, name, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         name: name + '[title]',
-        value: data.title || ''
+        value: data.title
       },
       label: editor_('Field name', 'sharing-image')
     }],
@@ -1076,7 +1152,7 @@ function createDynamicFields(layer, name, data) {
     fields: [{
       group: 'textarea',
       classes: ['sharing-image-editor-textarea'],
-      content: data.inscription || '',
+      content: data.inscription,
       attributes: {
         name: name + '[inscription]',
         rows: 2
@@ -1111,26 +1187,7 @@ function createDynamicFields(layer, name, data) {
 
 function createMoreFields(layer, name, data) {
   var fields = [];
-  fields[fields.length] = builders.control({
-    classes: ['sharing-image-editor-control', 'control-single', 'control-hidden'],
-    fields: [{
-      group: 'select',
-      classes: ['sharing-image-editor-select'],
-      options: {
-        opensans: 'Open Sans',
-        roboto: 'Roboto',
-        montserrat: 'Montserrat',
-        merriweather: 'Merriweather',
-        alice: 'Alice'
-      },
-      attributes: {
-        name: name + '[font]'
-      },
-      label: editor_('Font family', 'sharing-image'),
-      selected: data.font
-    }],
-    append: layer
-  });
+  fields[fields.length] = createFontField(layer, name, data);
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-single', 'control-hidden'],
     fields: [{
@@ -1139,7 +1196,7 @@ function createMoreFields(layer, name, data) {
       attributes: {
         type: 'color',
         name: name + '[color]',
-        value: data.color || '#cccccc'
+        value: data.color || '#ffffff'
       },
       label: editor_('Color', 'sharing-image')
     }],
@@ -1194,6 +1251,121 @@ function createMoreFields(layer, name, data) {
     }); // Remove button on expand.
 
     layer.removeChild(control);
+  }); // Open more fields for existing layers.
+
+  if (Object.keys(data).length > 0) {
+    button.click();
+  }
+}
+/**
+ * Create font field in text layer.
+ *
+ * @param {HTMLElement} layer Current layer element.
+ * @param {string} name Fields name attribute prefix.
+ * @param {Object} data Layer data object.
+ */
+
+
+function createFontField(layer, name, data) {
+  var control = builders.control({
+    classes: ['sharing-image-editor-control', 'control-upload', 'control-hidden'],
+    append: layer
+  });
+  params.fonts = params.fonts || {};
+  var select = builders.select({
+    classes: ['sharing-image-editor-select'],
+    options: params.fonts,
+    attributes: {
+      name: name + '[fontname]'
+    },
+    label: editor_('Font family', 'sharing-image'),
+    selected: data.fontname
+  }, control);
+  var media = builders.media({
+    name: name + '[fontfile]',
+    classes: ['sharing-image-editor-media'],
+    value: data.fontfile,
+    link: params.links.uploads,
+    labels: {
+      button: editor_('Upload custom font', 'sharing-image'),
+      heading: editor_('Upload custom font', 'sharing-image'),
+      details: editor_('Font attachment', 'sharing-image'),
+      remove: editor_('Remove font', 'sharing-image')
+    },
+    remove: true,
+    append: control
+  });
+  builders.element('small', {
+    text: editor_('Custom font can only be in .ttf format.'),
+    append: control
+  });
+
+  if (data.fontfile) {
+    select.setAttribute('disabled', 'disabled');
+  } // Find media attachment input.
+
+
+  var input = media.querySelector('input');
+  input.addEventListener('change', function () {
+    select.removeAttribute('disabled');
+
+    if (input.value) {
+      select.setAttribute('disabled', 'disabled');
+    }
+  });
+  return control;
+}
+/**
+ * Rectangle layer outline option.
+ *
+ * @param {HTMLElement} layer Current layer element.
+ * @param {string} name Fields name attribute prefix.
+ * @param {Object} data Layer data object.
+ */
+
+
+function createRectangleOutline(layer, name, data) {
+  var control = builders.control({
+    classes: ['sharing-image-editor-control'],
+    append: layer
+  });
+  var checkbox = builders.checkbox({
+    classes: ['sharing-image-editor-checkbox'],
+    attributes: {
+      name: name + '[outline]',
+      value: 'outline'
+    },
+    label: editor_('Outline rectangle.', 'sharing-image'),
+    checked: data.outline
+  }, control);
+  var range = builders.control({
+    classes: ['sharing-image-editor-control', 'control-hidden'],
+    fields: [{
+      group: 'input',
+      classes: ['sharing-image-editor-range'],
+      attributes: {
+        type: 'range',
+        name: name + '[thickness]',
+        min: 0,
+        max: 50,
+        step: 1,
+        value: data.thickness || '0'
+      },
+      label: editor_('Border width', 'sharing-image')
+    }],
+    append: layer
+  });
+
+  if (data.outline) {
+    range.classList.remove('control-hidden');
+  }
+
+  checkbox.addEventListener('change', function () {
+    range.classList.add('control-hidden');
+
+    if (checkbox.checked) {
+      range.classList.remove('control-hidden');
+    }
   });
 }
 /**
@@ -1210,7 +1382,7 @@ function createCatalogButton(footer) {
     classes: ['button'],
     text: editor_('← Back to Catalog', 'sharing-image'),
     attributes: {
-      href: link
+      href: link.href
     },
     append: footer
   });
@@ -1218,18 +1390,17 @@ function createCatalogButton(footer) {
 /**
  * Create template deletion button in footer.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} footer Footer HTML element.
  */
 
 
-function createDeleteButton(form, footer) {
+function createDeleteButton(footer) {
   params.links = params.links || {};
   var href = new URL(document.location.href); // Get template index from current link.
 
   var index = href.searchParams.get('template'); // Set template index to delete link.
 
-  var link = new URL(form.action);
+  var link = new URL(editor.getAttribute('action'));
   link.searchParams.set('action', 'sharing_image_delete');
   link.searchParams.set('template', index);
   link.searchParams.set('nonce', params.nonce);
@@ -1237,7 +1408,7 @@ function createDeleteButton(form, footer) {
     classes: ['sharing-image-editor-delete'],
     text: editor_('Delete template', 'sharing-image'),
     attributes: {
-      href: link
+      href: link.href
     },
     append: footer
   });
@@ -1275,7 +1446,7 @@ function createPreview(viewport, data) {
     attributes: {
       type: 'hidden',
       name: params.name + '[preview]',
-      value: data.preview || ''
+      value: data.preview
     },
     append: editor_preview
   });
@@ -1301,9 +1472,16 @@ function createOrderLayersButton(designer, layer) {
   button.addEventListener('click', function () {
     if (layer.previousSibling) {
       designer.insertBefore(layer, layer.previousSibling);
-    }
+    } // Update fields name attributes.
+
 
     reorderLayers(designer);
+
+    if (editor.classList.contains('editor-suspend')) {
+      return;
+    }
+
+    generateTemplate();
   });
 }
 /**
@@ -1328,8 +1506,15 @@ function createDeleteLayerButton(designer, layer) {
     append: control
   });
   button.addEventListener('click', function () {
-    designer.removeChild(layer);
+    designer.removeChild(layer); // Update fields name attributes.
+
     reorderLayers(designer);
+
+    if (editor.classList.contains('editor-suspend')) {
+      return;
+    }
+
+    generateTemplate();
   });
 }
 /**
@@ -1343,7 +1528,8 @@ function createDeleteLayerButton(designer, layer) {
 function createLayerImage(index, data) {
   var description = [];
   description.push(editor_('Use jpg, gif or png image formats.', 'sharing-image'));
-  description.push(editor_('All sizes can be set in pixels or percentages. ', 'sharing-image'));
+  description.push(editor_('Leave width and height fields blank to use the original image size.', 'sharing-image'));
+  description.push(editor_('Sizes are calculated proportionally if not filled.', 'sharing-image'));
   var layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-image'],
     label: editor_('Image', 'sharing-image'),
@@ -1363,7 +1549,7 @@ function createLayerImage(index, data) {
   builders.media({
     name: name + '[attachment]',
     classes: ['sharing-image-editor-control', 'control-details'],
-    value: data.attachment || '',
+    value: data.attachment,
     link: params.links.uploads,
     labels: {
       button: editor_('Upload image', 'sharing-image'),
@@ -1379,8 +1565,8 @@ function createLayerImage(index, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         name: name + '[x]',
-        placeholder: '50%',
-        value: data.x || ''
+        value: data.x,
+        placeholder: '10'
       },
       label: editor_('X starting point', 'sharing-image')
     }, {
@@ -1388,8 +1574,8 @@ function createLayerImage(index, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         name: name + '[y]',
-        placeholder: '20',
-        value: data.y || ''
+        value: data.y,
+        placeholder: '10'
       },
       label: editor_('Y starting point', 'sharing-image')
     }, {
@@ -1397,8 +1583,7 @@ function createLayerImage(index, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         name: name + '[width]',
-        placeholder: '100',
-        value: data.width || ''
+        value: data.width
       },
       label: editor_('Width', 'sharing-image')
     }, {
@@ -1406,8 +1591,7 @@ function createLayerImage(index, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         name: name + '[height]',
-        placeholder: '100',
-        value: data.height || ''
+        value: data.height
       },
       label: editor_('Height', 'sharing-image')
     }],
@@ -1427,6 +1611,7 @@ function createLayerText(index, data) {
   var description = [];
   description.push(editor_('Write a text to the current image.', 'sharing-image'));
   description.push(editor_('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
+  description.push(editor_('Avoid using large font sizes for long text – this affects performance.', 'sharing-image'));
   var layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: editor_('Text', 'sharing-image'),
@@ -1450,7 +1635,7 @@ function createLayerText(index, data) {
       attributes: {
         type: 'text',
         name: name + '[x]',
-        value: data.x || '',
+        value: data.x,
         placeholder: '10'
       },
       label: editor_('X starting point', 'sharing-image')
@@ -1460,7 +1645,7 @@ function createLayerText(index, data) {
       attributes: {
         type: 'text',
         name: name + '[y]',
-        value: data.y || '',
+        value: data.y,
         placeholder: '10'
       },
       label: editor_('Y starting point', 'sharing-image')
@@ -1470,8 +1655,8 @@ function createLayerText(index, data) {
       attributes: {
         type: 'text',
         name: name + '[width]',
-        value: data.width || '',
-        placeholder: '100'
+        value: data.width,
+        placeholder: '1000'
       },
       label: editor_('Width', 'sharing-image')
     }, {
@@ -1480,8 +1665,7 @@ function createLayerText(index, data) {
       attributes: {
         type: 'text',
         name: name + '[height]',
-        value: data.height || '',
-        placeholder: '100'
+        value: data.height
       },
       label: editor_('Height', 'sharing-image')
     }],
@@ -1513,7 +1697,7 @@ function createLayerText(index, data) {
         name: name + '[lineheight]',
         min: 0,
         max: 4,
-        step: 0.25,
+        step: 0.125,
         value: data.lineheight || '1.5'
       },
       label: editor_('Line height', 'sharing-image')
@@ -1566,14 +1750,45 @@ function createLayerFilter(index, data) {
   builders.control({
     classes: ['sharing-image-editor-control'],
     fields: [{
+      group: 'checkbox',
+      classes: ['sharing-image-editor-checkbox'],
+      attributes: {
+        name: name + '[blur]',
+        value: 'blur'
+      },
+      label: editor_('Blur image by Gaussian effect', 'sharing-image'),
+      checked: data.blur
+    }],
+    append: layer
+  });
+  builders.control({
+    classes: ['sharing-image-editor-control'],
+    fields: [{
+      group: 'input',
+      classes: ['sharing-image-editor-range'],
+      attributes: {
+        type: 'range',
+        name: name + '[contrast]',
+        min: -50,
+        max: 50,
+        step: 5,
+        value: data.contrast || '0'
+      },
+      label: editor_('Contrast', 'sharing-image')
+    }],
+    append: layer
+  });
+  builders.control({
+    classes: ['sharing-image-editor-control'],
+    fields: [{
       group: 'input',
       classes: ['sharing-image-editor-range'],
       attributes: {
         type: 'range',
         name: name + '[brightness]',
-        min: -255,
-        max: 255,
-        step: 10,
+        min: -50,
+        max: 50,
+        step: 5,
         value: data.brightness || '0'
       },
       label: editor_('Brightness', 'sharing-image')
@@ -1587,132 +1802,13 @@ function createLayerFilter(index, data) {
       classes: ['sharing-image-editor-range'],
       attributes: {
         type: 'range',
-        name: name + '[contrast]',
-        min: -100,
-        max: 100,
-        step: 10,
-        value: data.contrast || '0'
-      },
-      label: editor_('Contrast', 'sharing-image')
-    }],
-    append: layer
-  });
-  return layer;
-}
-/**
- * Create line layer.
- *
- * @param {number} index Current layer index.
- * @param {Object} data Current template data.
- */
-
-
-function createLayerLine(index, data) {
-  var description = [];
-  description.push(editor_('Draw a line from x,y starting point to x,y end point on current image.', 'sharing-image'));
-  description.push(editor_('Use rectangle layer to draw a line with a variable width.', 'sharing-image'));
-  var layer = builders.layer({
-    classes: ['sharing-image-editor-layer', 'layer-text'],
-    label: editor_('Line', 'sharing-image'),
-    description: description.join(' ')
-  }); // Form fields name for this layer.
-
-  var name = params.name + "[layers][".concat(index, "]");
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: name + '[type]',
-      value: 'line'
-    },
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control', 'control-single'],
-    fields: [{
-      group: 'input',
-      classes: ['sharing-image-editor-color'],
-      attributes: {
-        type: 'color',
-        name: name + '[color]',
-        value: data.color || '#cccccc'
-      },
-      label: editor_('Line color', 'sharing-image')
-    }],
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control', 'control-grid'],
-    fields: [{
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[x1]',
-        value: data.y1 || '',
-        placeholder: '10'
-      },
-      label: editor_('X starting point', 'sharing-image')
-    }, {
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[y1]',
-        value: data.y1 || '',
-        placeholder: '10'
-      },
-      label: editor_('Y starting point', 'sharing-image')
-    }, {
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[x2]',
-        value: data.x2 || '',
-        placeholder: '100'
-      },
-      label: editor_('X end point', 'sharing-image')
-    }, {
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[y2]',
-        value: data.y2 || '',
-        placeholder: '10'
-      },
-      label: editor_('Y end point', 'sharing-image')
-    }],
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control'],
-    fields: [{
-      group: 'checkbox',
-      classes: ['sharing-image-editor-checkbox'],
-      attributes: {
-        name: name + '[dashed]',
-        value: 'dashed'
-      },
-      label: editor_('Draw a dashed line', 'sharing-image'),
-      checked: data.dashed
-    }],
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control'],
-    fields: [{
-      group: 'input',
-      classes: ['sharing-image-editor-range'],
-      attributes: {
-        type: 'range',
-        name: name + '[opacity]',
+        name: name + '[blackout]',
         min: 0,
-        max: 1,
-        step: 0.05,
-        value: data.opacity || '0'
+        max: 100,
+        step: 5,
+        value: data.blackout || '0'
       },
-      label: editor_('Opacity', 'sharing-image')
+      label: editor_('Blackout', 'sharing-image')
     }],
     append: layer
   });
@@ -1730,6 +1826,7 @@ function createLayerRectangle(index, data) {
   var description = [];
   description.push(editor_('Draw a colored rectangle on current image.', 'sharing-image'));
   description.push(editor_('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
+  description.push(editor_('Use small height to draw the line.', 'sharing-image'));
   var layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: editor_('Rectangle', 'sharing-image'),
@@ -1753,7 +1850,7 @@ function createLayerRectangle(index, data) {
       attributes: {
         type: 'color',
         name: name + '[color]',
-        value: data.color || '#cccccc'
+        value: data.color || '#ffffff'
       },
       label: editor_('Rectangle color', 'sharing-image')
     }],
@@ -1766,9 +1863,8 @@ function createLayerRectangle(index, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         type: 'text',
-        name: name + '[x]',
-        value: data.x || '',
-        placeholder: '10'
+        name: name + '[x]' || false,
+        value: data.x
       },
       label: editor_('X starting point', 'sharing-image')
     }, {
@@ -1776,9 +1872,8 @@ function createLayerRectangle(index, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         type: 'text',
-        name: name + '[y]',
-        value: data.y || '',
-        placeholder: '10'
+        name: name + '[y]' || false,
+        value: data.y
       },
       label: editor_('Y starting point', 'sharing-image')
     }, {
@@ -1787,8 +1882,7 @@ function createLayerRectangle(index, data) {
       attributes: {
         type: 'text',
         name: name + '[width]',
-        value: data.width || '',
-        placeholder: '100'
+        value: data.width
       },
       label: editor_('Width', 'sharing-image')
     }, {
@@ -1797,27 +1891,13 @@ function createLayerRectangle(index, data) {
       attributes: {
         type: 'text',
         name: name + '[height]',
-        value: data.height || '',
-        placeholder: '100'
+        value: data.height
       },
       label: editor_('Height', 'sharing-image')
     }],
     append: layer
   });
-  builders.control({
-    classes: ['sharing-image-editor-control'],
-    fields: [{
-      group: 'checkbox',
-      classes: ['sharing-image-editor-checkbox'],
-      attributes: {
-        name: name + '[outline]',
-        value: 'outline'
-      },
-      label: editor_('Outline rectangle', 'sharing-image'),
-      checked: data.outline
-    }],
-    append: layer
-  });
+  createRectangleOutline(layer, name, data);
   builders.control({
     classes: ['sharing-image-editor-control'],
     fields: [{
@@ -1827,127 +1907,8 @@ function createLayerRectangle(index, data) {
         type: 'range',
         name: name + '[opacity]',
         min: 0,
-        max: 1,
-        step: 0.05,
-        value: data.opacity || '0'
-      },
-      label: editor_('Opacity', 'sharing-image')
-    }],
-    append: layer
-  });
-  return layer;
-}
-/**
- * Create ellipse layer.
- *
- * @param {number} index Current layer index.
- * @param {Object} data Current template data.
- */
-
-
-function createLayerEllipse(index, data) {
-  var description = [];
-  description.push(editor_('Draw a colored ellipse at given x,y center coordinates and size.', 'sharing-image'));
-  description.push(editor_('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
-  var layer = builders.layer({
-    classes: ['sharing-image-editor-layer', 'layer-text'],
-    label: editor_('Ellipse', 'sharing-image'),
-    description: description.join(' ')
-  }); // Form fields name for this layer.
-
-  var name = params.name + "[layers][".concat(index, "]");
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: name + '[type]',
-      value: 'ellipse'
-    },
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control', 'control-single'],
-    fields: [{
-      group: 'input',
-      classes: ['sharing-image-editor-color'],
-      attributes: {
-        type: 'color',
-        name: name + '[color]',
-        value: data.color || '#cccccc'
-      },
-      label: editor_('Ellipse color', 'sharing-image')
-    }],
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control', 'control-grid'],
-    fields: [{
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[x]',
-        value: data.x || '',
-        placeholder: '10'
-      },
-      label: editor_('X center point', 'sharing-image')
-    }, {
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[y]',
-        value: data.y || '',
-        placeholder: '10'
-      },
-      label: editor_('Y center point', 'sharing-image')
-    }, {
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[width]',
-        value: data.width || '',
-        placeholder: '100'
-      },
-      label: editor_('Width', 'sharing-image')
-    }, {
-      group: 'input',
-      classes: ['sharing-image-editor-input'],
-      attributes: {
-        type: 'text',
-        name: name + '[height]',
-        value: data.height || '',
-        placeholder: '100'
-      },
-      label: editor_('Height', 'sharing-image')
-    }],
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control'],
-    fields: [{
-      group: 'checkbox',
-      classes: ['sharing-image-editor-checkbox'],
-      attributes: {
-        name: name + '[outline]',
-        value: 'outline'
-      },
-      label: editor_('Outline ellipse', 'sharing-image'),
-      checked: data.outline
-    }],
-    append: layer
-  });
-  builders.control({
-    classes: ['sharing-image-editor-control'],
-    fields: [{
-      group: 'input',
-      classes: ['sharing-image-editor-range'],
-      attributes: {
-        type: 'range',
-        name: name + '[opacity]',
-        min: 0,
-        max: 1,
-        step: 0.05,
+        max: 100,
+        step: 5,
         value: data.opacity || '0'
       },
       label: editor_('Opacity', 'sharing-image')
@@ -1981,14 +1942,6 @@ function createLayer(designer, type, index) {
 
     case 'filter':
       layer = createLayerFilter(index, data);
-      break;
-
-    case 'line':
-      layer = createLayerLine(index, data);
-      break;
-
-    case 'ellipse':
-      layer = createLayerEllipse(index, data);
       break;
 
     case 'rectangle':
@@ -2025,9 +1978,7 @@ function createDesigner(fieldset, data) {
         text: editor_('Text', 'sharing-image'),
         image: editor_('Image', 'sharing-image'),
         filter: editor_('Filter', 'sharing-image'),
-        rectangle: editor_('Rectangle', 'sharing-image'),
-        line: editor_('Line', 'sharing-image'),
-        ellipse: editor_('Ellipse', 'sharing-image')
+        rectangle: editor_('Rectangle', 'sharing-image')
       }
     }],
     append: fieldset
@@ -2065,15 +2016,14 @@ function createDesigner(fieldset, data) {
 /**
  * Create common template settings on template editor screen.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {Object} data Current template data.
  */
 
 
-function createFieldset(form, data) {
+function createFieldset(data) {
   var fieldset = builders.element('div', {
     classes: ['sharing-image-editor-fieldset'],
-    append: form
+    append: editor
   }); // Create template title control.
 
   builders.control({
@@ -2084,7 +2034,7 @@ function createFieldset(form, data) {
       classes: ['sharing-image-editor-input'],
       attributes: {
         name: params.name + '[title]',
-        value: data.title || ''
+        value: data.title
       },
       label: editor_('Template title', 'sharing-image')
     }],
@@ -2135,28 +2085,27 @@ function createFieldset(form, data) {
 
   createCatalogButton(footer); // Create template deletion button.
 
-  createDeleteButton(form, footer);
+  createDeleteButton(footer);
   fieldset.addEventListener('change', function (e) {
-    if (form.classList.contains('editor-suspend')) {
+    if (editor.classList.contains('editor-suspend')) {
       return;
     }
 
     var target = e.target;
 
     if (target.hasAttribute('name')) {
-      generateTemplate(form);
+      generateTemplate();
     }
   });
 }
 /**
  * Create button to submit editor form.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  */
 
 
-function createSubmitButton(form, manager) {
+function createSubmitButton(manager) {
   builders.element('button', {
     text: editor_('Save changes', 'sharing-image'),
     classes: ['button', 'button-primary'],
@@ -2169,12 +2118,11 @@ function createSubmitButton(form, manager) {
 /**
  * Create button to generate new template manually.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  */
 
 
-function createGenerateButton(form, manager) {
+function createGenerateButton(manager) {
   var button = builders.element('button', {
     text: editor_('Generate preview', 'sharing-image'),
     classes: ['button'],
@@ -2184,19 +2132,18 @@ function createGenerateButton(form, manager) {
     append: manager
   });
   button.addEventListener('click', function () {
-    generateTemplate(form);
+    generateTemplate();
   });
 }
 /**
  * Create disable live-reloading checkbox.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  * @param {Object} data Template data.
  */
 
 
-function createSuspendCheckbox(form, manager, data) {
+function createSuspendCheckbox(manager, data) {
   var checkbox = builders.checkbox({
     classes: ['sharing-image-editor-suspend'],
     attributes: {
@@ -2208,29 +2155,28 @@ function createSuspendCheckbox(form, manager, data) {
   }, manager);
 
   if (data.suspend) {
-    form.classList.add('editor-suspend');
+    editor.classList.add('editor-suspend');
   }
 
   checkbox.addEventListener('change', function () {
-    form.classList.remove('editor-suspend');
+    editor.classList.remove('editor-suspend');
 
     if (checkbox.checked) {
-      form.classList.add('editor-suspend');
+      editor.classList.add('editor-suspend');
     }
   });
 }
 /**
  * Create template settings preview.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {Object} data Current template data.
  */
 
 
-function createMonitor(form, data) {
+function createMonitor(data) {
   var monitor = builders.element('div', {
     classes: ['sharing-image-editor-monitor'],
-    append: form
+    append: editor
   });
   var viewport = builders.element('div', {
     classes: ['sharing-image-editor-viewport'],
@@ -2246,11 +2192,11 @@ function createMonitor(form, data) {
     append: viewport
   }); // Create live-reload manager checkbox.
 
-  createSuspendCheckbox(form, manager, data); // Create submit form button.
+  createSuspendCheckbox(manager, data); // Create submit form button.
 
-  createSubmitButton(form, manager); // Create template generator button.
+  createSubmitButton(manager); // Create template generator button.
 
-  createGenerateButton(form, manager);
+  createGenerateButton(manager);
 }
 /**
  * Create form hidden settings fields.
@@ -2288,8 +2234,9 @@ function prepareEditor(form, index) {
   });
   form.addEventListener('submit', function (e) {
     e.preventDefault();
-    saveTemplate(form);
+    saveTemplate();
   });
+  return form;
 }
 /**
  * Create template editor page.
@@ -2305,16 +2252,16 @@ function createEditor(form, object, index) {
   var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   params = object; // Set params name for template form fields.
 
-  params.name = 'sharing_image_editor'; // Create monitor section part.
+  params.name = 'sharing_image_editor'; // Prepare form with hidden fields and events.
 
-  createMonitor(form, data); // Create fieldset section part.
+  editor = prepareEditor(form, index); // Create monitor section part.
 
-  createFieldset(form, data); // Prepare form with hidden fields and events.
+  createMonitor(data); // Create fieldset section part.
 
-  prepareEditor(form, index);
+  createFieldset(data);
 }
 
-/* harmony default export */ var editor = (createEditor);
+/* harmony default export */ var sections_editor = (createEditor);
 // CONCATENATED MODULE: ./src/scripts/sections/picker.js
 /**
  * Metabox handler.
@@ -2648,7 +2595,7 @@ function createPicker(inside, object) {
 
 var Section = {
   catalog: catalog,
-  editor: editor,
+  editor: sections_editor,
   picker: sections_picker
 };
 /* harmony default export */ var sections = __webpack_exports__["a"] = (Section);

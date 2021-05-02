@@ -22,7 +22,13 @@ function buildCheckbox( args, parent ) {
 	// Set attributes
 	if ( args.hasOwnProperty( 'attributes' ) ) {
 		for ( const key in args.attributes ) {
-			checkbox.setAttribute( key, args.attributes[ key ] );
+			const value = args.attributes[ key ];
+
+			if ( undefined === value ) {
+				continue;
+			}
+
+			checkbox.setAttribute( key, value );
 		}
 	}
 

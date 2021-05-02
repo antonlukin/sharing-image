@@ -47,19 +47,42 @@ function buildMedia( args ) {
 		attributes: {
 			target: '_blank',
 		},
-		append: media,
 	} );
+
+	if ( args.hasOwnProperty( 'link' ) ) {
+		media.appendChild( details );
+	}
 
 	// Helper function to update attachment value.
 	const setAttachment = ( id ) => {
 		attachment.setAttribute( 'value', id );
 		attachment.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 
-		const link = new URL( args.link );
-		link.searchParams.set( 'item', id );
+		let link = null;
 
-		details.setAttribute( 'href', link );
+		if ( args.hasOwnProperty( 'link' ) ) {
+			link = new URL( args.link );
+			link.searchParams.set( 'item', id );
+
+			details.setAttribute( 'href', link.href );
+		}
+
+		if ( args.remove ) {
+			upload.textContent = args.labels.remove;
+		}
+
 		details.classList.remove( 'hidden' );
+	};
+
+	// Helper function to remove attachment value.
+	const removeAttachment = () => {
+		attachment.setAttribute( 'value', '' );
+		attachment.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+
+		// Set default button title.
+		upload.textContent = args.labels.button;
+
+		details.classList.add( 'hidden' );
 	};
 
 	// Update fields if this layer has attachment.
@@ -68,6 +91,10 @@ function buildMedia( args ) {
 	}
 
 	upload.addEventListener( 'click', () => {
+		if ( args.remove && attachment.value ) {
+			return removeAttachment();
+		}
+
 		Helper.attachment( args.labels.heading, ( id ) => {
 			setAttachment( id );
 		} );

@@ -4,12 +4,14 @@
     "description": "Sharing Image",
 	"autoload": {
         "classmap": [
-            "classes",
-            "library"
+            "classes"
         ]
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
         "wp-coding-standards/wpcs": "^2.3"
+    },
+    "require": {
+        "antonlukin/poster-editor": "^3.0"
     }
 }

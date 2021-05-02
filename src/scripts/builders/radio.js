@@ -22,7 +22,13 @@ function buildRadio( args, parent ) {
 	// Set attributes
 	if ( args.hasOwnProperty( 'attributes' ) ) {
 		for ( const key in args.attributes ) {
-			radio.setAttribute( key, args.attributes[ key ] );
+			const value = args.attributes[ key ];
+
+			if ( undefined === value ) {
+				continue;
+			}
+
+			radio.setAttribute( key, value );
 		}
 	}
 

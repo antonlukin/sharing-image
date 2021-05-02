@@ -126,6 +126,16 @@
       }
     }
 
+    &.control-upload {
+      flex-flow: row wrap;
+      align-items: flex-end;
+
+      &>*:first-child {
+        flex: 1 1 auto;
+        margin-right: 14px;
+      }
+    }
+
     &.control-hidden {
       display: none;
     }
@@ -172,8 +182,25 @@
     }
   }
 
+  .sharing-image-editor-media {
+    display: flex;
+    align-items: center;
+
+    margin-top: 8px;
+
+    a {
+      margin-left: 14px;
+    }
+
+    button {
+      margin-bottom: 0;
+    }
+  }
+
   .sharing-image-editor-radio {
     display: block;
+    position: relative;
+
     margin-top: 5px;
 
     span {
@@ -191,6 +218,7 @@
 
   .sharing-image-editor-color {
     display: block;
+    position: relative;
 
     input[type="color"] {
       cursor: pointer;
@@ -199,6 +227,8 @@
 
   .sharing-image-editor-checkbox {
     display: block;
+    position: relative;
+
     margin-top: 5px;
 
     span {
@@ -212,12 +242,27 @@
 
   .sharing-image-editor-range {
     display: block;
+    position: relative;
     width: 100%;
 
     input[type="range"] {
       display: block;
       width: 100%;
       margin: 8px 0;
+    }
+
+    em {
+      display: block;
+      cursor: default;
+
+      position: absolute;
+      right: 0;
+      top: 4px;
+
+      font-size: 10px;
+      font-style: normal;
+
+      color: #4a76bb;
     }
   }
 
@@ -227,6 +272,8 @@
 
   .sharing-image-editor-input {
     display: block;
+    position: relative;
+
     width: 100%;
 
     input[type="text"] {
@@ -237,6 +284,8 @@
 
   .sharing-image-editor-textarea {
     display: block;
+    position: relative;
+
     width: 100%;
 
     textarea {
@@ -248,11 +297,14 @@
 
   .sharing-image-editor-select {
     display: block;
+    position: relative;
+
     flex: 1 1 100%;
 
     select {
       display: block;
       width: calc(100% - 2px);
+      max-width: none;
     }
   }
 

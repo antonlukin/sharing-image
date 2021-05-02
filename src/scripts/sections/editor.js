@@ -13,6 +13,9 @@ let params = null;
 // Preview element.
 let preview = null;
 
+// Root editor element.
+let editor = null;
+
 /**
  * Show template warning message.
  *
@@ -43,40 +46,38 @@ function hideTemplateError() {
 }
 
 /**
- * Geneate template using form data.
- *
- * @param {HTMLElement} form Settings form element.
+ * Geneate template using editor data.
  */
-function generateTemplate( form ) {
+function generateTemplate() {
+	preview.classList.add( 'preview-loader' );
+
 	const request = new XMLHttpRequest();
 	request.open( 'POST', ajaxurl );
 	request.responseType = 'blob';
 
-	preview.classList.add( 'preview-loader' );
-
 	// Create data bundle using form data.
-	const bundle = new window.FormData( form );
+	const bundle = new window.FormData( editor );
 	bundle.set( 'action', 'sharing_image_show' );
 
 	hideTemplateError();
 
 	// Set blob for success response.
-	request.onreadystatechange = () => {
+	request.addEventListener( 'readystatechange', () => {
 		if ( request.readyState === 2 ) {
-			request.responseType = 'blob';
+			request.responseType = 'json';
 
-			if ( request.status !== 200 ) {
-				request.responseType = 'json';
+			if ( request.status === 200 ) {
+				request.responseType = 'blob';
 			}
 		}
-	};
+	} );
 
 	// Hide preview loader on request complete.
-	request.onreadystatechange = () => {
+	request.addEventListener( 'readystatechange', () => {
 		if ( request.readyState === 4 ) {
 			preview.classList.remove( 'preview-blank', 'preview-loader' );
 		}
-	};
+	} );
 
 	request.onload = () => {
 		const response = request.response || {};
@@ -105,19 +106,17 @@ function generateTemplate( form ) {
 }
 
 /**
- * Save template while form submiting.
- *
- * @param {HTMLElement} form Settings form element.
+ * Save template while editor submiting.
  */
-function saveTemplate( form ) {
+function saveTemplate() {
 	const request = new XMLHttpRequest();
 	request.open( 'POST', ajaxurl );
 	request.responseType = 'json';
 
 	preview.classList.add( 'preview-loader' );
 
-	// Create data bundle using form data.
-	const bundle = new window.FormData( form );
+	// Create data bundle using editor data.
+	const bundle = new window.FormData( editor );
 	bundle.set( 'action', 'sharing_image_save' );
 
 	request.onload = () => {
@@ -129,11 +128,11 @@ function saveTemplate( form ) {
 
 		const input = preview.querySelector( 'input' );
 
-		if ( null !== input ) {
-			input.value = response.data || '';
+		if ( null !== input && response.data ) {
+			input.setAttribute( 'value', response.data );
 		}
 
-		form.submit();
+		editor.submit();
 	};
 
 	request.onerror = () => {
@@ -222,7 +221,7 @@ function createPermanentAttachment( fieldset, data ) {
 	const media = Build.media( {
 		name: params.name + '[attachment]',
 		classes: [ 'sharing-image-editor-control', 'control-details' ],
-		value: data.attachment || '',
+		value: data.attachment,
 		link: params.links.uploads,
 		labels: {
 			button: __( 'Upload image', 'sharing-image' ),
@@ -291,7 +290,7 @@ function createDynamicFields( layer, name, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					name: name + '[title]',
-					value: data.title || '',
+					value: data.title,
 				},
 				label: __( 'Field name', 'sharing-image' ),
 			},
@@ -362,7 +361,7 @@ function createDynamicFields( layer, name, data ) {
 			{
 				group: 'textarea',
 				classes: [ 'sharing-image-editor-textarea' ],
-				content: data.inscription || '',
+				content: data.inscription,
 				attributes: {
 					name: name + '[inscription]',
 					rows: 2,
@@ -399,28 +398,7 @@ function createDynamicFields( layer, name, data ) {
 function createMoreFields( layer, name, data ) {
 	const fields = [];
 
-	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-single', 'control-hidden' ],
-		fields: [
-			{
-				group: 'select',
-				classes: [ 'sharing-image-editor-select' ],
-				options: {
-					opensans: 'Open Sans',
-					roboto: 'Roboto',
-					montserrat: 'Montserrat',
-					merriweather: 'Merriweather',
-					alice: 'Alice',
-				},
-				attributes: {
-					name: name + '[font]',
-				},
-				label: __( 'Font family', 'sharing-image' ),
-				selected: data.font,
-			},
-		],
-		append: layer,
-	} );
+	fields[ fields.length ] = createFontField( layer, name, data );
 
 	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-single', 'control-hidden' ],
@@ -431,7 +409,7 @@ function createMoreFields( layer, name, data ) {
 				attributes: {
 					type: 'color',
 					name: name + '[color]',
-					value: data.color || '#cccccc',
+					value: data.color || '#ffffff',
 				},
 				label: __( 'Color', 'sharing-image' ),
 			},
@@ -496,6 +474,136 @@ function createMoreFields( layer, name, data ) {
 		// Remove button on expand.
 		layer.removeChild( control );
 	} );
+
+	// Open more fields for existing layers.
+	if ( Object.keys( data ).length > 0 ) {
+		button.click();
+	}
+}
+
+/**
+ * Create font field in text layer.
+ *
+ * @param {HTMLElement} layer Current layer element.
+ * @param {string} name Fields name attribute prefix.
+ * @param {Object} data Layer data object.
+ */
+function createFontField( layer, name, data ) {
+	const control = Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-upload', 'control-hidden' ],
+		append: layer,
+	} );
+
+	params.fonts = params.fonts || {};
+
+	const select = Build.select(
+		{
+			classes: [ 'sharing-image-editor-select' ],
+			options: params.fonts,
+			attributes: {
+				name: name + '[fontname]',
+			},
+			label: __( 'Font family', 'sharing-image' ),
+			selected: data.fontname,
+		},
+		control
+	);
+
+	const media = Build.media( {
+		name: name + '[fontfile]',
+		classes: [ 'sharing-image-editor-media' ],
+		value: data.fontfile,
+		link: params.links.uploads,
+		labels: {
+			button: __( 'Upload custom font', 'sharing-image' ),
+			heading: __( 'Upload custom font', 'sharing-image' ),
+			details: __( 'Font attachment', 'sharing-image' ),
+			remove: __( 'Remove font', 'sharing-image' ),
+		},
+		remove: true,
+		append: control,
+	} );
+
+	Build.element( 'small', {
+		text: __( 'Custom font can only be in .ttf format.' ),
+		append: control,
+	} );
+
+	if ( data.fontfile ) {
+		select.setAttribute( 'disabled', 'disabled' );
+	}
+
+	// Find media attachment input.
+	const input = media.querySelector( 'input' );
+
+	input.addEventListener( 'change', () => {
+		select.removeAttribute( 'disabled' );
+
+		if ( input.value ) {
+			select.setAttribute( 'disabled', 'disabled' );
+		}
+	} );
+
+	return control;
+}
+
+/**
+ * Rectangle layer outline option.
+ *
+ * @param {HTMLElement} layer Current layer element.
+ * @param {string} name Fields name attribute prefix.
+ * @param {Object} data Layer data object.
+ */
+function createRectangleOutline( layer, name, data ) {
+	const control = Build.control( {
+		classes: [ 'sharing-image-editor-control' ],
+		append: layer,
+	} );
+
+	const checkbox = Build.checkbox(
+		{
+			classes: [ 'sharing-image-editor-checkbox' ],
+			attributes: {
+				name: name + '[outline]',
+				value: 'outline',
+			},
+			label: __( 'Outline rectangle.', 'sharing-image' ),
+			checked: data.outline,
+		},
+		control
+	);
+
+	const range = Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
+		fields: [
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-range' ],
+				attributes: {
+					type: 'range',
+					name: name + '[thickness]',
+					min: 0,
+					max: 50,
+					step: 1,
+					value: data.thickness || '0',
+				},
+				label: __( 'Border width', 'sharing-image' ),
+			},
+		],
+		append: layer,
+	} );
+
+	if ( data.outline ) {
+		range.classList.remove( 'control-hidden' );
+	}
+
+	checkbox.addEventListener( 'change', () => {
+		range.classList.add( 'control-hidden' );
+
+		if ( checkbox.checked ) {
+			range.classList.remove( 'control-hidden' );
+		}
+	} );
 }
 
 /**
@@ -511,7 +619,7 @@ function createCatalogButton( footer ) {
 		classes: [ 'button' ],
 		text: __( '← Back to Catalog', 'sharing-image' ),
 		attributes: {
-			href: link,
+			href: link.href,
 		},
 		append: footer,
 	} );
@@ -520,10 +628,9 @@ function createCatalogButton( footer ) {
 /**
  * Create template deletion button in footer.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} footer Footer HTML element.
  */
-function createDeleteButton( form, footer ) {
+function createDeleteButton( footer ) {
 	params.links = params.links || {};
 
 	const href = new URL( document.location.href );
@@ -532,7 +639,7 @@ function createDeleteButton( form, footer ) {
 	const index = href.searchParams.get( 'template' );
 
 	// Set template index to delete link.
-	const link = new URL( form.action );
+	const link = new URL( editor.getAttribute( 'action' ) );
 
 	link.searchParams.set( 'action', 'sharing_image_delete' );
 	link.searchParams.set( 'template', index );
@@ -542,7 +649,7 @@ function createDeleteButton( form, footer ) {
 		classes: [ 'sharing-image-editor-delete' ],
 		text: __( 'Delete template', 'sharing-image' ),
 		attributes: {
-			href: link,
+			href: link.href,
 		},
 		append: footer,
 	} );
@@ -581,7 +688,7 @@ function createPreview( viewport, data ) {
 		attributes: {
 			type: 'hidden',
 			name: params.name + '[preview]',
-			value: data.preview || '',
+			value: data.preview,
 		},
 		append: preview,
 	} );
@@ -610,7 +717,14 @@ function createOrderLayersButton( designer, layer ) {
 			designer.insertBefore( layer, layer.previousSibling );
 		}
 
+		// Update fields name attributes.
 		reorderLayers( designer );
+
+		if ( editor.classList.contains( 'editor-suspend' ) ) {
+			return;
+		}
+
+		generateTemplate();
 	} );
 }
 
@@ -637,7 +751,15 @@ function createDeleteLayerButton( designer, layer ) {
 
 	button.addEventListener( 'click', () => {
 		designer.removeChild( layer );
+
+		// Update fields name attributes.
 		reorderLayers( designer );
+
+		if ( editor.classList.contains( 'editor-suspend' ) ) {
+			return;
+		}
+
+		generateTemplate();
 	} );
 }
 
@@ -651,7 +773,8 @@ function createLayerImage( index, data ) {
 	const description = [];
 
 	description.push( __( 'Use jpg, gif or png image formats.', 'sharing-image' ) );
-	description.push( __( 'All sizes can be set in pixels or percentages. ', 'sharing-image' ) );
+	description.push( __( 'Leave width and height fields blank to use the original image size.', 'sharing-image' ) );
+	description.push( __( 'Sizes are calculated proportionally if not filled.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-image' ],
@@ -676,7 +799,7 @@ function createLayerImage( index, data ) {
 	Build.media( {
 		name: name + '[attachment]',
 		classes: [ 'sharing-image-editor-control', 'control-details' ],
-		value: data.attachment || '',
+		value: data.attachment,
 		link: params.links.uploads,
 		labels: {
 			button: __( 'Upload image', 'sharing-image' ),
@@ -694,8 +817,8 @@ function createLayerImage( index, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					name: name + '[x]',
-					placeholder: '50%',
-					value: data.x || '',
+					value: data.x,
+					placeholder: '10',
 				},
 				label: __( 'X starting point', 'sharing-image' ),
 			},
@@ -704,8 +827,8 @@ function createLayerImage( index, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					name: name + '[y]',
-					placeholder: '20',
-					value: data.y || '',
+					value: data.y,
+					placeholder: '10',
 				},
 				label: __( 'Y starting point', 'sharing-image' ),
 			},
@@ -714,8 +837,7 @@ function createLayerImage( index, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					name: name + '[width]',
-					placeholder: '100',
-					value: data.width || '',
+					value: data.width,
 				},
 				label: __( 'Width', 'sharing-image' ),
 			},
@@ -724,8 +846,7 @@ function createLayerImage( index, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					name: name + '[height]',
-					placeholder: '100',
-					value: data.height || '',
+					value: data.height,
 				},
 				label: __( 'Height', 'sharing-image' ),
 			},
@@ -747,6 +868,7 @@ function createLayerText( index, data ) {
 
 	description.push( __( 'Write a text to the current image.', 'sharing-image' ) );
 	description.push( __( 'If the font does not fit within your limits, its size will decrease.', 'sharing-image' ) );
+	description.push( __( 'Avoid using large font sizes for long text – this affects performance.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-text' ],
@@ -775,7 +897,7 @@ function createLayerText( index, data ) {
 				attributes: {
 					type: 'text',
 					name: name + '[x]',
-					value: data.x || '',
+					value: data.x,
 					placeholder: '10',
 				},
 				label: __( 'X starting point', 'sharing-image' ),
@@ -786,7 +908,7 @@ function createLayerText( index, data ) {
 				attributes: {
 					type: 'text',
 					name: name + '[y]',
-					value: data.y || '',
+					value: data.y,
 					placeholder: '10',
 				},
 				label: __( 'Y starting point', 'sharing-image' ),
@@ -797,8 +919,8 @@ function createLayerText( index, data ) {
 				attributes: {
 					type: 'text',
 					name: name + '[width]',
-					value: data.width || '',
-					placeholder: '100',
+					value: data.width,
+					placeholder: '1000',
 				},
 				label: __( 'Width', 'sharing-image' ),
 			},
@@ -808,8 +930,7 @@ function createLayerText( index, data ) {
 				attributes: {
 					type: 'text',
 					name: name + '[height]',
-					value: data.height || '',
-					placeholder: '100',
+					value: data.height,
 				},
 				label: __( 'Height', 'sharing-image' ),
 			},
@@ -847,7 +968,7 @@ function createLayerText( index, data ) {
 					name: name + '[lineheight]',
 					min: 0,
 					max: 4,
-					step: 0.25,
+					step: 0.125,
 					value: data.lineheight || '1.5',
 				},
 				label: __( 'Line height', 'sharing-image' ),
@@ -910,14 +1031,51 @@ function createLayerFilter( index, data ) {
 		classes: [ 'sharing-image-editor-control' ],
 		fields: [
 			{
+				group: 'checkbox',
+				classes: [ 'sharing-image-editor-checkbox' ],
+				attributes: {
+					name: name + '[blur]',
+					value: 'blur',
+				},
+				label: __( 'Blur image by Gaussian effect', 'sharing-image' ),
+				checked: data.blur,
+			},
+		],
+		append: layer,
+	} );
+
+	Build.control( {
+		classes: [ 'sharing-image-editor-control' ],
+		fields: [
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-range' ],
+				attributes: {
+					type: 'range',
+					name: name + '[contrast]',
+					min: -50,
+					max: 50,
+					step: 5,
+					value: data.contrast || '0',
+				},
+				label: __( 'Contrast', 'sharing-image' ),
+			},
+		],
+		append: layer,
+	} );
+
+	Build.control( {
+		classes: [ 'sharing-image-editor-control' ],
+		fields: [
+			{
 				group: 'input',
 				classes: [ 'sharing-image-editor-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[brightness]',
-					min: -255,
-					max: 255,
-					step: 10,
+					min: -50,
+					max: 50,
+					step: 5,
 					value: data.brightness || '0',
 				},
 				label: __( 'Brightness', 'sharing-image' ),
@@ -934,151 +1092,13 @@ function createLayerFilter( index, data ) {
 				classes: [ 'sharing-image-editor-range' ],
 				attributes: {
 					type: 'range',
-					name: name + '[contrast]',
-					min: -100,
-					max: 100,
-					step: 10,
-					value: data.contrast || '0',
-				},
-				label: __( 'Contrast', 'sharing-image' ),
-			},
-		],
-		append: layer,
-	} );
-
-	return layer;
-}
-
-/**
- * Create line layer.
- *
- * @param {number} index Current layer index.
- * @param {Object} data Current template data.
- */
-function createLayerLine( index, data ) {
-	const description = [];
-
-	description.push( __( 'Draw a line from x,y starting point to x,y end point on current image.', 'sharing-image' ) );
-	description.push( __( 'Use rectangle layer to draw a line with a variable width.', 'sharing-image' ) );
-
-	const layer = Build.layer( {
-		classes: [ 'sharing-image-editor-layer', 'layer-text' ],
-		label: __( 'Line', 'sharing-image' ),
-		description: description.join( ' ' ),
-	} );
-
-	// Form fields name for this layer.
-	const name = params.name + `[layers][${ index }]`;
-
-	Build.element( 'input', {
-		attributes: {
-			type: 'hidden',
-			name: name + '[type]',
-			value: 'line',
-		},
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-single' ],
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-color' ],
-				attributes: {
-					type: 'color',
-					name: name + '[color]',
-					value: data.color || '#cccccc',
-				},
-				label: __( 'Line color', 'sharing-image' ),
-			},
-		],
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-grid' ],
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[x1]',
-					value: data.y1 || '',
-					placeholder: '10',
-				},
-				label: __( 'X starting point', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[y1]',
-					value: data.y1 || '',
-					placeholder: '10',
-				},
-				label: __( 'Y starting point', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[x2]',
-					value: data.x2 || '',
-					placeholder: '100',
-				},
-				label: __( 'X end point', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[y2]',
-					value: data.y2 || '',
-					placeholder: '10',
-				},
-				label: __( 'Y end point', 'sharing-image' ),
-			},
-		],
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
-		fields: [
-			{
-				group: 'checkbox',
-				classes: [ 'sharing-image-editor-checkbox' ],
-				attributes: {
-					name: name + '[dashed]',
-					value: 'dashed',
-				},
-				label: __( 'Draw a dashed line', 'sharing-image' ),
-				checked: data.dashed,
-			},
-		],
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
-				attributes: {
-					type: 'range',
-					name: name + '[opacity]',
+					name: name + '[blackout]',
 					min: 0,
-					max: 1,
-					step: 0.05,
-					value: data.opacity || '0',
+					max: 100,
+					step: 5,
+					value: data.blackout || '0',
 				},
-				label: __( 'Opacity', 'sharing-image' ),
+				label: __( 'Blackout', 'sharing-image' ),
 			},
 		],
 		append: layer,
@@ -1098,6 +1118,7 @@ function createLayerRectangle( index, data ) {
 
 	description.push( __( 'Draw a colored rectangle on current image.', 'sharing-image' ) );
 	description.push( __( 'You can get filled or outlined figure with custom color and opacity.', 'sharing-image' ) );
+	description.push( __( 'Use small height to draw the line.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-text' ],
@@ -1126,7 +1147,7 @@ function createLayerRectangle( index, data ) {
 				attributes: {
 					type: 'color',
 					name: name + '[color]',
-					value: data.color || '#cccccc',
+					value: data.color || '#ffffff',
 				},
 				label: __( 'Rectangle color', 'sharing-image' ),
 			},
@@ -1142,9 +1163,8 @@ function createLayerRectangle( index, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					type: 'text',
-					name: name + '[x]',
-					value: data.x || '',
-					placeholder: '10',
+					name: name + '[x]' || '10',
+					value: data.x,
 				},
 				label: __( 'X starting point', 'sharing-image' ),
 			},
@@ -1153,9 +1173,8 @@ function createLayerRectangle( index, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					type: 'text',
-					name: name + '[y]',
-					value: data.y || '',
-					placeholder: '10',
+					name: name + '[y]' || '10',
+					value: data.y,
 				},
 				label: __( 'Y starting point', 'sharing-image' ),
 			},
@@ -1165,8 +1184,7 @@ function createLayerRectangle( index, data ) {
 				attributes: {
 					type: 'text',
 					name: name + '[width]',
-					value: data.width || '',
-					placeholder: '100',
+					value: data.width,
 				},
 				label: __( 'Width', 'sharing-image' ),
 			},
@@ -1176,8 +1194,7 @@ function createLayerRectangle( index, data ) {
 				attributes: {
 					type: 'text',
 					name: name + '[height]',
-					value: data.height || '',
-					placeholder: '100',
+					value: data.height,
 				},
 				label: __( 'Height', 'sharing-image' ),
 			},
@@ -1185,22 +1202,7 @@ function createLayerRectangle( index, data ) {
 		append: layer,
 	} );
 
-	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
-		fields: [
-			{
-				group: 'checkbox',
-				classes: [ 'sharing-image-editor-checkbox' ],
-				attributes: {
-					name: name + '[outline]',
-					value: 'outline',
-				},
-				label: __( 'Outline rectangle', 'sharing-image' ),
-				checked: data.outline,
-			},
-		],
-		append: layer,
-	} );
+	createRectangleOutline( layer, name, data );
 
 	Build.control( {
 		classes: [ 'sharing-image-editor-control' ],
@@ -1212,146 +1214,8 @@ function createLayerRectangle( index, data ) {
 					type: 'range',
 					name: name + '[opacity]',
 					min: 0,
-					max: 1,
-					step: 0.05,
-					value: data.opacity || '0',
-				},
-				label: __( 'Opacity', 'sharing-image' ),
-			},
-		],
-		append: layer,
-	} );
-
-	return layer;
-}
-
-/**
- * Create ellipse layer.
- *
- * @param {number} index Current layer index.
- * @param {Object} data Current template data.
- */
-function createLayerEllipse( index, data ) {
-	const description = [];
-
-	description.push( __( 'Draw a colored ellipse at given x,y center coordinates and size.', 'sharing-image' ) );
-	description.push( __( 'You can get filled or outlined figure with custom color and opacity.', 'sharing-image' ) );
-
-	const layer = Build.layer( {
-		classes: [ 'sharing-image-editor-layer', 'layer-text' ],
-		label: __( 'Ellipse', 'sharing-image' ),
-		description: description.join( ' ' ),
-	} );
-
-	// Form fields name for this layer.
-	const name = params.name + `[layers][${ index }]`;
-
-	Build.element( 'input', {
-		attributes: {
-			type: 'hidden',
-			name: name + '[type]',
-			value: 'ellipse',
-		},
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-single' ],
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-color' ],
-				attributes: {
-					type: 'color',
-					name: name + '[color]',
-					value: data.color || '#cccccc',
-				},
-				label: __( 'Ellipse color', 'sharing-image' ),
-			},
-		],
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-grid' ],
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[x]',
-					value: data.x || '',
-					placeholder: '10',
-				},
-				label: __( 'X center point', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[y]',
-					value: data.y || '',
-					placeholder: '10',
-				},
-				label: __( 'Y center point', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[width]',
-					value: data.width || '',
-					placeholder: '100',
-				},
-				label: __( 'Width', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
-				attributes: {
-					type: 'text',
-					name: name + '[height]',
-					value: data.height || '',
-					placeholder: '100',
-				},
-				label: __( 'Height', 'sharing-image' ),
-			},
-		],
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
-		fields: [
-			{
-				group: 'checkbox',
-				classes: [ 'sharing-image-editor-checkbox' ],
-				attributes: {
-					name: name + '[outline]',
-					value: 'outline',
-				},
-				label: __( 'Outline ellipse', 'sharing-image' ),
-				checked: data.outline,
-			},
-		],
-		append: layer,
-	} );
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
-				attributes: {
-					type: 'range',
-					name: name + '[opacity]',
-					min: 0,
-					max: 1,
-					step: 0.05,
+					max: 100,
+					step: 5,
 					value: data.opacity || '0',
 				},
 				label: __( 'Opacity', 'sharing-image' ),
@@ -1383,12 +1247,6 @@ function createLayer( designer, type, index, data = {} ) {
 			break;
 		case 'filter':
 			layer = createLayerFilter( index, data );
-			break;
-		case 'line':
-			layer = createLayerLine( index, data );
-			break;
-		case 'ellipse':
-			layer = createLayerEllipse( index, data );
 			break;
 		case 'rectangle':
 			layer = createLayerRectangle( index, data );
@@ -1428,8 +1286,6 @@ function createDesigner( fieldset, data ) {
 					image: __( 'Image', 'sharing-image' ),
 					filter: __( 'Filter', 'sharing-image' ),
 					rectangle: __( 'Rectangle', 'sharing-image' ),
-					line: __( 'Line', 'sharing-image' ),
-					ellipse: __( 'Ellipse', 'sharing-image' ),
 				},
 			},
 		],
@@ -1475,13 +1331,12 @@ function createDesigner( fieldset, data ) {
 /**
  * Create common template settings on template editor screen.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {Object} data Current template data.
  */
-function createFieldset( form, data ) {
+function createFieldset( data ) {
 	const fieldset = Build.element( 'div', {
 		classes: [ 'sharing-image-editor-fieldset' ],
-		append: form,
+		append: editor,
 	} );
 
 	// Create template title control.
@@ -1494,7 +1349,7 @@ function createFieldset( form, data ) {
 				classes: [ 'sharing-image-editor-input' ],
 				attributes: {
 					name: params.name + '[title]',
-					value: data.title || '',
+					value: data.title,
 				},
 				label: __( 'Template title', 'sharing-image' ),
 			},
@@ -1558,17 +1413,17 @@ function createFieldset( form, data ) {
 	createCatalogButton( footer );
 
 	// Create template deletion button.
-	createDeleteButton( form, footer );
+	createDeleteButton( footer );
 
 	fieldset.addEventListener( 'change', ( e ) => {
-		if ( form.classList.contains( 'editor-suspend' ) ) {
+		if ( editor.classList.contains( 'editor-suspend' ) ) {
 			return;
 		}
 
 		const target = e.target;
 
 		if ( target.hasAttribute( 'name' ) ) {
-			generateTemplate( form );
+			generateTemplate();
 		}
 	} );
 }
@@ -1576,10 +1431,9 @@ function createFieldset( form, data ) {
 /**
  * Create button to submit editor form.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  */
-function createSubmitButton( form, manager ) {
+function createSubmitButton( manager ) {
 	Build.element( 'button', {
 		text: __( 'Save changes', 'sharing-image' ),
 		classes: [ 'button', 'button-primary' ],
@@ -1593,10 +1447,9 @@ function createSubmitButton( form, manager ) {
 /**
  * Create button to generate new template manually.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  */
-function createGenerateButton( form, manager ) {
+function createGenerateButton( manager ) {
 	const button = Build.element( 'button', {
 		text: __( 'Generate preview', 'sharing-image' ),
 		classes: [ 'button' ],
@@ -1607,18 +1460,17 @@ function createGenerateButton( form, manager ) {
 	} );
 
 	button.addEventListener( 'click', () => {
-		generateTemplate( form );
+		generateTemplate();
 	} );
 }
 
 /**
  * Create disable live-reloading checkbox.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {HTMLElement} manager Manager element.
  * @param {Object} data Template data.
  */
-function createSuspendCheckbox( form, manager, data ) {
+function createSuspendCheckbox( manager, data ) {
 	const checkbox = Build.checkbox(
 		{
 			classes: [ 'sharing-image-editor-suspend' ],
@@ -1633,14 +1485,14 @@ function createSuspendCheckbox( form, manager, data ) {
 	);
 
 	if ( data.suspend ) {
-		form.classList.add( 'editor-suspend' );
+		editor.classList.add( 'editor-suspend' );
 	}
 
 	checkbox.addEventListener( 'change', () => {
-		form.classList.remove( 'editor-suspend' );
+		editor.classList.remove( 'editor-suspend' );
 
 		if ( checkbox.checked ) {
-			form.classList.add( 'editor-suspend' );
+			editor.classList.add( 'editor-suspend' );
 		}
 	} );
 }
@@ -1648,13 +1500,12 @@ function createSuspendCheckbox( form, manager, data ) {
 /**
  * Create template settings preview.
  *
- * @param {HTMLElement} form Form HTML element.
  * @param {Object} data Current template data.
  */
-function createMonitor( form, data ) {
+function createMonitor( data ) {
 	const monitor = Build.element( 'div', {
 		classes: [ 'sharing-image-editor-monitor' ],
-		append: form,
+		append: editor,
 	} );
 
 	const viewport = Build.element( 'div', {
@@ -1675,13 +1526,13 @@ function createMonitor( form, data ) {
 	} );
 
 	// Create live-reload manager checkbox.
-	createSuspendCheckbox( form, manager, data );
+	createSuspendCheckbox( manager, data );
 
 	// Create submit form button.
-	createSubmitButton( form, manager );
+	createSubmitButton( manager );
 
 	// Create template generator button.
-	createGenerateButton( form, manager );
+	createGenerateButton( manager );
 }
 
 /**
@@ -1723,8 +1574,10 @@ function prepareEditor( form, index ) {
 	form.addEventListener( 'submit', ( e ) => {
 		e.preventDefault();
 
-		saveTemplate( form );
+		saveTemplate();
 	} );
+
+	return form;
 }
 
 /**
@@ -1741,14 +1594,14 @@ function createEditor( form, object, index, data = {} ) {
 	// Set params name for template form fields.
 	params.name = 'sharing_image_editor';
 
+	// Prepare form with hidden fields and events.
+	editor = prepareEditor( form, index );
+
 	// Create monitor section part.
-	createMonitor( form, data );
+	createMonitor( data );
 
 	// Create fieldset section part.
-	createFieldset( form, data );
-
-	// Prepare form with hidden fields and events.
-	prepareEditor( form, index );
+	createFieldset( data );
 }
 
 export default createEditor;

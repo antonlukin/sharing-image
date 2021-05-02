@@ -2,13 +2,14 @@
 
 namespace Sharing_Image;
 
-class Core {
+class Core{
 	function __construct() {
-		return $this->init_env();
+		return $this->init();
 	}
 
-	private function init_env() {
+	private function init() {
 		new Metabox();
-		new Settings();
+		$settings = new Settings();
+		$settings->init();
 	}
 }
