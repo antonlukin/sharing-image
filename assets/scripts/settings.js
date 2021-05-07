@@ -893,8 +893,7 @@ function generateTemplate() {
       editor_preview.classList.remove('preview-blank', 'preview-loader');
     }
   });
-
-  request.onload = function () {
+  request.addEventListener('load', function () {
     var response = request.response || {};
 
     if (request.status !== 200) {
@@ -911,12 +910,10 @@ function generateTemplate() {
 
 
     image.src = window.URL.createObjectURL(response);
-  };
-
-  request.onerror = function () {
+  });
+  request.addEventListener('error', function () {
     showTemplateError();
-  };
-
+  });
   request.send(bundle);
 }
 /**
@@ -932,27 +929,24 @@ function saveTemplate() {
 
   var bundle = new window.FormData(editor);
   bundle.set('action', 'sharing_image_save');
-
-  request.onload = function () {
+  request.addEventListener('load', function () {
     var response = request.response || {};
 
-    if (request.status !== 200) {
+    if (request.status !== 200 || !response.data) {
       return showTemplateError(response.data);
     }
 
     var input = editor_preview.querySelector('input');
 
-    if (null !== input && response.data) {
+    if (null !== input) {
       input.setAttribute('value', response.data);
     }
 
     editor.submit();
-  };
-
-  request.onerror = function () {
+  });
+  request.addEventListener('error', function () {
     showTemplateError();
-  };
-
+  });
   request.send(bundle);
 }
 /**
@@ -1152,12 +1146,12 @@ function createDynamicFields(layer, name, data) {
     fields: [{
       group: 'textarea',
       classes: ['sharing-image-editor-textarea'],
-      content: data.inscription,
+      content: data.content,
       attributes: {
-        name: name + '[inscription]',
+        name: name + '[content]',
         rows: 2
       },
-      label: editor_('Inscription', 'sharing-image')
+      label: editor_('Content', 'sharing-image')
     }],
     append: layer
   }); // Helper function to toggle contols visibility.
@@ -2275,10 +2269,38 @@ var picker_params = null; // Poster element.
 
 var poster = null;
 /**
+ * Show picker warning message.
+ *
+ * @param {string} message Warning message.
+ */
+
+function showPickerError(message) {
+  var picker = poster.parentNode; // Try to find warning element.
+
+  var warning = picker.querySelector('.sharing-image-picker-warning');
+  warning.classList.add('warning-visible');
+  warning.textContent = message || picker_('Unknown generation error', 'sharing-image');
+}
+/**
+ * Remove warning message block.
+ */
+
+
+function hidePickerError() {
+  var picker = poster.parentNode; // Try to find warning element.
+
+  var warning = picker.querySelector('.sharing-image-picker-warning');
+
+  if (null !== warning) {
+    warning.classList.remove('warning-visible');
+  }
+}
+/**
  * Handle poster generation action.
  *
  * @param {HTMLElement} picker Picker element.
  */
+
 
 function generatePoster(picker) {
   var request = new XMLHttpRequest();
@@ -2291,20 +2313,27 @@ function generatePoster(picker) {
   var fields = picker.querySelectorAll('[name]');
   fields.forEach(function (field) {
     bundle.append(field.name, field.value);
-  }); // Hide preview loader on request complete.
+  });
+  hidePickerError(); // Hide preview loader on request complete.
 
-  request.onreadystatechange = function () {
+  request.addEventListener('readystatechange', function () {
     if (request.readyState === 4) {
       poster.classList.remove('poster-loader');
     }
-  };
-
-  request.onload = function () {
-    poster.classList.add('poster-visible'); // data can be empty.
-    // add errors.
-    // add input.
-
+  });
+  request.addEventListener('load', function () {
     var response = request.response || {};
+
+    if (request.status !== 200 || !response.data) {
+      return showPickerError(response.data);
+    }
+
+    var input = poster.querySelector('input');
+
+    if (null !== input) {
+      input.setAttribute('value', response.data);
+    }
+
     var image = poster.querySelector('img');
 
     if (null === image) {
@@ -2313,12 +2342,13 @@ function generatePoster(picker) {
       });
     }
 
-    var input = poster.querySelector('input');
-    input.value = response.data; // Set new blob image source.
+    image.src = response.data; // Show the poster.
 
-    image.src = response.data;
-  };
-
+    poster.classList.add('poster-visible');
+  });
+  request.addEventListener('error', function () {
+    showPickerError();
+  });
   request.send(bundle);
 }
 /**
@@ -2575,7 +2605,11 @@ function createPicker(inside, object) {
 
   createPoster(picker); // Create fields designer.
 
-  picker_createDesigner(picker, data); // Create metabox manager block.
+  picker_createDesigner(picker, data);
+  builders.element('div', {
+    classes: ['sharing-image-picker-warning'],
+    append: picker
+  }); // Create metabox manager block.
 
   createManager(picker);
   builders.element('input', {

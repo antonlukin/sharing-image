@@ -57,9 +57,18 @@ class Generator {
 			$fieldset = $picker['fieldset'][ $id ];
 		}
 
-		$template = $this->set_picker_data( $templates[ $id ], $fieldset );
+		$template = $this->prepare_template( $templates[ $id ], $fieldset );
 
-		return SHARING_IMAGE_URL . $filename;
+		list( $path, $url ) = $this->get_upload_file();
+
+		// Generate image and save it.
+		$poster = $this->create_poster( $template, $path );
+
+		if ( is_wp_error( $poster ) ) {
+			return $poster;
+		}
+
+		return $url;
 	}
 
 	/**
@@ -71,10 +80,10 @@ class Generator {
 	 * @return WP_Error
 	 */
 	public function show( $template, $index ) {
-		$image = $this->get_editor_image( $template, $index );
+		$template = $this->prepare_template( $template, null, $index );
 
 		// Generate image and show it immediately.
-		$poster = $this->create_poster( $image, $template );
+		$poster = $this->create_poster( $template );
 
 		if ( is_wp_error( $poster ) ) {
 			return $poster;
@@ -92,43 +101,104 @@ class Generator {
 	 * @return WP_Error
 	 */
 	public function save( $template, $index ) {
-		$file = '/temp/' . time() . '.jpg';
+		$template = $this->prepare_template( $template, null, $index );
 
-		// Get background image file path.
-		$image = $this->get_editor_image( $template, $index );
+		list( $path, $url ) = $this->get_upload_file();
 
-		// Generate image and show it immediately.
-		$poster = $this->create_poster( $image, $template, $file );
+		// Generate image and save it.
+		$poster = $this->create_poster( $template, $path );
 
 		if ( is_wp_error( $poster ) ) {
 			return $poster;
 		}
 
-		return SHARING_IMAGE_URL . $file;
+		return $url;
+	}
+
+	/**
+	 * Prepare template before creating poster.
+	 * Used to fill fieldset texts and background image.
+	 *
+	 * @param array   $template List of template data.
+	 * @param array   $fieldset Optional. Fieldset data from picker.
+	 * @param integer $index    Optional. Template index from editor.
+	 */
+	private function prepare_template( $template, $fieldset = array(), $index = null ) {
+		$layers = array();
+
+		if ( isset( $template['layers'] ) ) {
+			$layers = $template['layers'];
+		}
+
+		foreach ( $layers as $i => &$layer ) {
+			if ( empty( $layer['type'] ) || 'text' !== $layer['type'] ) {
+				continue;
+			}
+
+			if ( empty( $layer['dynamic'] ) ) {
+				continue;
+			}
+
+			$layer['content'] = null;
+
+			if ( isset( $layer['sample'] ) ) {
+				$layer['content'] = $layer['sample'];
+			}
+
+			if ( isset( $fieldset['captions'][ $i ] ) ) {
+				$layer['content'] = $fieldset['captions'][ $i ];
+			}
+		}
+
+		$template['image'] = null;
+
+		if ( null !== $index ) {
+			$template['image'] = sprintf( SHARING_IMAGE_DIR . '/assets/images/%d.jpg', ( $index % 12 ) + 1 );
+		}
+
+		if ( 'permanent' === $template['background'] ) {
+			if ( isset( $template['attachment'] ) ) {
+				$template['image'] = get_attached_file( $template['attachment'] );
+			}
+		}
+
+		if ( isset( $fieldset['attachment'] ) ) {
+			$template['image'] = get_attached_file( $fieldset['attachment'] );
+		}
+
+		$template['layers'] = $layers;
+
+		/**
+		 * Filters image generator background.
+		 *
+		 * @param array   $template List of template data.
+		 * @param array   $fieldset Fieldset data from picker.
+		 * @param integer $index    Template index from editor.
+		 */
+		return apply_filters( 'sharing_image_prepare_template', $template, $fieldset, $index );
 	}
 
 	/**
 	 * Create poster using template data.
 	 *
-	 * @param string $image    Source image file path.
 	 * @param array  $template List of template options.
-	 * @param string $file     Optional. File path to save.
+	 * @param string $path     Optional. File path to save.
 	 */
-	private function create_poster( $image, $template, $file = null ) {
+	private function create_poster( $template, $path = null ) {
 		try {
 			$poster = new PosterEditor();
 
-			$poster->make( $image )->fit( $template['width'], $template['height'] );
+			$poster->make( $template['image'] )->fit( $template['width'], $template['height'] );
 
 			if ( isset( $template['layers'] ) ) {
 				$poster = $this->append_layers( $poster, $template['layers'] );
 			}
 
-			if ( null === $file ) {
+			if ( null === $path ) {
 				return $poster->show( 90, 'jpg' );
 			}
 
-			$poster->save( SHARING_IMAGE_DIR . $file, 90, 'jpg' );
+			$poster->save( $path, 90, 'jpg' );
 
 		} catch ( Exception $e ) {
 			return new WP_Error( 'generate', $e->getMessage() );
@@ -265,7 +335,7 @@ class Generator {
 	}
 
 	/**
-	 * Draw text layer
+	 * Draw text layer.
 	 *
 	 * @param PosterEditor $poster Instance of PosterEditor class.
 	 * @param array        $layer  Rectangle layer options.
@@ -278,37 +348,11 @@ class Generator {
 		// Try to set font file by name or attachment path.
 		$args['fontpath'] = $this->get_fontpath( $layer );
 
-		// Add text to poster.
-		$poster->text( $this->get_layer_text( $layer ), $args );
-
-		return $poster;
-	}
-
-	/**
-	 * Get poster background image from template data.
-	 *
-	 * @param array   $template Template data.
-	 * @param integer $index    Template index.
-	 *
-	 * @return string Filtered poster background file.
-	 */
-	private function get_editor_image( $template, $index ) {
-		$image = sprintf( SHARING_IMAGE_DIR . '/assets/images/%d.jpg', ( $index % 12 ) + 1 );
-
-		if ( 'permanent' === $template['background'] ) {
-			if ( ! empty( $template['attachment'] ) ) {
-				$image = get_attached_file( $template['attachment'] );
-			}
+		if ( ! empty( $layer['content'] ) ) {
+			$poster->text( $layer['content'], $args );
 		}
 
-		/**
-		 * Filters image generator background.
-		 *
-		 * @param integer $image    Path to image file.
-		 * @param string  $template Template data.
-		 * @param integer $index    Template index.
-		 */
-		return apply_filters( 'sharing_image_get_editor_image', $image, $template, $index );
+		return $poster;
 	}
 
 	/**
@@ -338,56 +382,66 @@ class Generator {
 	}
 
 	/**
-	 * Get text to draw on poster by layer data.
+	 * Generate upload file path and url.
 	 *
-	 * @param array  $layer Layer data.
-	 * @param string $text  Default text.
-	 *
-	 * @return string Filtered text.
+	 * @return array Server file path and url to image.
 	 */
-	private function get_layer_text( $layer, $text = '' ) {
-		if ( isset( $layer['inscription'] ) ) {
-			$text = $layer['inscription'];
-		}
+	private function get_upload_file() {
+		$file = array();
 
-		if ( isset( $layer['sample'] ) && ! empty( $layer['dynamic'] ) ) {
-			$text = $layer['sample'];
-		}
+		$uploads = wp_upload_dir();
+
+		// Create random file name.
+		$name = wp_unique_filename( $uploads['path'], uniqid() . '.jpg' );
+
+		// Set upload path and url with generated file name.
+		$file[] = trailingslashit( $uploads['path'] ) . $name;
+		$file[] = trailingslashit( $uploads['url'] ) . $name;
 
 		/**
-		 * Filters generator layer text.
+		 * Filters upload file path and url
 		 *
-		 * @param string $text  Text to draw on poster.
-		 * @param array  $layer Layer data.
+		 * @param array  $file Server file path and url to image.
+		 * @param string $name Unique file name.
 		 */
-		return apply_filters( 'sharing_image_get_layer_text', $text, $layer );
+		return apply_filters( 'sharing_image_get_upload_file', $file, $name );
 	}
 
 	/**
-	 * Get picker data for template id.
+	 * Update template data using picker fieldset data.
 	 *
-	 * @param array   $picker Picker data from metabox.
-	 * @param integer $id     Template id.
+	 * @param array $template Template data.
+	 * @param array $fieldset Fieldset data from request.
+	 *
+	 * @return array Template
 	 */
-	private function set_picker_data( $picker, $id ) {
-		$captions   = array();
-		$attachment = null;
-
-		if ( ! isset( $picker['fieldset'][ $id ] ) ) {
-			return array( $captions, $attachment );
-		}
-
-		$fieldset = $picker['fieldset'][ $id ];
-
-		if ( isset( $fieldset['captions'] ) ) {
-			$captions = $fieldset['captions'];
-		}
-
+	private function set_picker_fields( $template, $fieldset ) {
 		if ( isset( $fieldset['attachment'] ) ) {
-			$attachment = $fieldset['attachment'];
+			$template['attachment'] = $fieldset['attachment'];
+			$template['background'] = 'uploaded';
 		}
 
-		return array( $captions, $attachment );
+		if ( empty( $template['layers'] ) ) {
+			return $template;
+		}
+
+		foreach ( $template['layers'] as $i => &$layer ) {
+			if ( empty( $layer['type'] ) || empty( $layer['dynamic'] ) ) {
+				continue;
+			}
+
+			if ( 'text' !== $layer['type'] ) {
+				continue;
+			}
+
+			if ( ! isset( $fieldset['captions'][ $i ] ) ) {
+				continue;
+			}
+
+			$layer['content'] = $fieldset['captions'][ $i ];
+		}
+
+		return $template;
 	}
 
 	/**

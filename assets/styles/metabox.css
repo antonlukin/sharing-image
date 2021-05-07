@@ -106,6 +106,13 @@ body.block-editor-page select {
       border-top: solid 1px #ccc; }
       #sharing-image-metabox .sharing-image-picker .sharing-image-picker-manager .button {
         margin-right: 12px; }
+    #sharing-image-metabox .sharing-image-picker .sharing-image-picker-warning {
+      display: none;
+      position: relative;
+      margin: 12px 0 0;
+      color: #b32d2e; }
+      #sharing-image-metabox .sharing-image-picker .sharing-image-picker-warning.warning-visible {
+        display: block; }
     #sharing-image-metabox .sharing-image-picker .sharing-image-picker-delete {
       display: none;
       cursor: pointer;

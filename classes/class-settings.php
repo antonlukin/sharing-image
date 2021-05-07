@@ -596,8 +596,8 @@ class Settings {
 			$sanitized['title'] = sanitize_text_field( $layer['title'] );
 		}
 
-		if ( isset( $layer['inscription'] ) ) {
-			$sanitized['inscription'] = sanitize_textarea_field( $layer['inscription'] );
+		if ( isset( $layer['content'] ) ) {
+			$sanitized['content'] = sanitize_textarea_field( $layer['content'] );
 		}
 
 		if ( isset( $layer['sample'] ) ) {

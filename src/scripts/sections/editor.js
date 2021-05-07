@@ -79,7 +79,7 @@ function generateTemplate() {
 		}
 	} );
 
-	request.onload = () => {
+	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
 		if ( request.status !== 200 ) {
@@ -96,11 +96,11 @@ function generateTemplate() {
 
 		// Set new blob image source.
 		image.src = window.URL.createObjectURL( response );
-	};
+	} );
 
-	request.onerror = () => {
+	request.addEventListener( 'error', () => {
 		showTemplateError();
-	};
+	} );
 
 	request.send( bundle );
 }
@@ -119,25 +119,25 @@ function saveTemplate() {
 	const bundle = new window.FormData( editor );
 	bundle.set( 'action', 'sharing_image_save' );
 
-	request.onload = () => {
+	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
-		if ( request.status !== 200 ) {
+		if ( request.status !== 200 || ! response.data ) {
 			return showTemplateError( response.data );
 		}
 
 		const input = preview.querySelector( 'input' );
 
-		if ( null !== input && response.data ) {
+		if ( null !== input ) {
 			input.setAttribute( 'value', response.data );
 		}
 
 		editor.submit();
-	};
+	} );
 
-	request.onerror = () => {
+	request.addEventListener( 'error', () => {
 		showTemplateError();
-	};
+	} );
 
 	request.send( bundle );
 }
@@ -361,12 +361,12 @@ function createDynamicFields( layer, name, data ) {
 			{
 				group: 'textarea',
 				classes: [ 'sharing-image-editor-textarea' ],
-				content: data.inscription,
+				content: data.content,
 				attributes: {
-					name: name + '[inscription]',
+					name: name + '[content]',
 					rows: 2,
 				},
-				label: __( 'Inscription', 'sharing-image' ),
+				label: __( 'Content', 'sharing-image' ),
 			},
 		],
 		append: layer,

@@ -14,6 +14,35 @@ let params = null;
 let poster = null;
 
 /**
+ * Show picker warning message.
+ *
+ * @param {string} message Warning message.
+ */
+function showPickerError( message ) {
+	const picker = poster.parentNode;
+
+	// Try to find warning element.
+	const warning = picker.querySelector( '.sharing-image-picker-warning' );
+
+	warning.classList.add( 'warning-visible' );
+	warning.textContent = message || __( 'Unknown generation error', 'sharing-image' );
+}
+
+/**
+ * Remove warning message block.
+ */
+function hidePickerError() {
+	const picker = poster.parentNode;
+
+	// Try to find warning element.
+	const warning = picker.querySelector( '.sharing-image-picker-warning' );
+
+	if ( null !== warning ) {
+		warning.classList.remove( 'warning-visible' );
+	}
+}
+
+/**
  * Handle poster generation action.
  *
  * @param {HTMLElement} picker Picker element.
@@ -35,20 +64,27 @@ function generatePoster( picker ) {
 		bundle.append( field.name, field.value );
 	} );
 
+	hidePickerError();
+
 	// Hide preview loader on request complete.
-	request.onreadystatechange = () => {
+	request.addEventListener( 'readystatechange', () => {
 		if ( request.readyState === 4 ) {
 			poster.classList.remove( 'poster-loader' );
 		}
-	};
+	} );
 
-	request.onload = () => {
-		poster.classList.add( 'poster-visible' );
-		// data can be empty.
-		// add errors.
-		// add input.
-
+	request.addEventListener( 'load', () => {
 		const response = request.response || {};
+
+		if ( request.status !== 200 || ! response.data ) {
+			return showPickerError( response.data );
+		}
+
+		const input = poster.querySelector( 'input' );
+
+		if ( null !== input ) {
+			input.setAttribute( 'value', response.data );
+		}
 
 		let image = poster.querySelector( 'img' );
 
@@ -58,12 +94,15 @@ function generatePoster( picker ) {
 			} );
 		}
 
-		const input = poster.querySelector( 'input' );
-		input.value = response.data;
-
-		// Set new blob image source.
 		image.src = response.data;
-	};
+
+		// Show the poster.
+		poster.classList.add( 'poster-visible' );
+	} );
+
+	request.addEventListener( 'error', () => {
+		showPickerError();
+	} );
 
 	request.send( bundle );
 }
@@ -345,6 +384,11 @@ function createPicker( inside, object ) {
 
 	// Create fields designer.
 	createDesigner( picker, data );
+
+	Build.element( 'div', {
+		classes: [ 'sharing-image-picker-warning' ],
+		append: picker,
+	} );
 
 	// Create metabox manager block.
 	createManager( picker );
