@@ -23,7 +23,7 @@
     display: block;
     position: relative;
 
-    padding-top: calc(52.5% + 48px);
+    padding-top: calc(52.5% + 44px);
 
     text-decoration: none;
     color: #666;
@@ -49,6 +49,17 @@
       color: inherit;
 
       transform: translate(-50%, -50%);
+
+      span {
+        display: block;
+
+        margin-top: 8px;
+        text-align: center;
+
+        font-size: 11px;
+        font-weight: normal;
+        font-style: italic;
+      }
 
       &::before {
         content: '+';

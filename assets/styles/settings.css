@@ -19,13 +19,16 @@ body.settings_page_sharing-image .update-nag {
     body.settings_page_sharing-image .update-nag {
       margin: 10px; } }
 
-body.settings_page_sharing-image .settings-error {
-  margin: 0 0 10px;
+body.settings_page_sharing-image #setting-error-sharing-image {
+  display: block;
+  order: -1;
+  width: 1060px;
+  max-width: 100%;
+  margin: 20px 0 0;
   font-weight: 600;
-  border-right: none;
   border-top: 1px solid #dcdcde;
   border-bottom: 1px solid #dcdcde;
-  box-shadow: none; }
+  border-radius: 3px; }
 
 body.settings_page_sharing-image #sharing-image-settings {
   display: block;
@@ -37,9 +40,8 @@ body.settings_page_sharing-image #sharing-image-settings {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     grid-gap: 20px;
     position: relative;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
+    width: 1100px;
+    max-width: 100%;
     padding: 20px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-catalog-card {
       display: block;
@@ -52,7 +54,7 @@ body.settings_page_sharing-image #sharing-image-settings {
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-catalog-new {
       display: block;
       position: relative;
-      padding-top: calc(52.5% + 48px);
+      padding-top: calc(52.5% + 44px);
       text-decoration: none;
       color: #666;
       border: 2px dashed rgba(0, 0, 0, 0.125);
@@ -70,6 +72,13 @@ body.settings_page_sharing-image #sharing-image-settings {
         font-weight: 400;
         color: inherit;
         transform: translate(-50%, -50%); }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-catalog-new h2 span {
+          display: block;
+          margin-top: 8px;
+          text-align: center;
+          font-size: 11px;
+          font-weight: normal;
+          font-style: italic; }
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-catalog-new h2::before {
           content: '+';
           display: block;
@@ -128,15 +137,25 @@ body.settings_page_sharing-image #sharing-image-settings {
         grid-template-columns: 1fr; } }
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-config {
     display: block;
-    width: 100%;
-    max-width: 800px; }
+    width: 800px;
+    max-width: 100%;
+    padding: 20px; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-config h2 {
+      margin: 12px 0; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-config ~ #setting-error-sharing-image {
+      max-width: 760px; }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-content {
+    display: none;
+    flex-flow: column wrap;
+    align-items: center; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-content.content-visible {
+      display: flex; }
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor {
     display: flex;
     flex-flow: row nowrap;
     position: relative;
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
+    width: 1100px;
+    max-width: 100%;
     padding: 20px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-fieldset {
       display: block;
@@ -293,7 +312,7 @@ body.settings_page_sharing-image #sharing-image-settings {
         top: 4px;
         font-size: 10px;
         font-style: normal;
-        color: #4a76bb; }
+        color: #3582c4; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-button {
       display: block; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-input {
@@ -345,7 +364,7 @@ body.settings_page_sharing-image #sharing-image-settings {
       cursor: pointer;
       margin: 0;
       padding: 0;
-      color: #2271b1;
+      color: #3582c4;
       background: transparent;
       border: none;
       border-bottom: solid 1px;
@@ -500,8 +519,14 @@ body.settings_page_sharing-image #sharing-image-settings {
     @media screen and (max-width: 1279px) {
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor {
         flex-flow: row wrap; } }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-error {
+    max-width: 760px;
+    margin: 40px auto 20px;
+    color: #b32d2e;
+    text-align: center; }
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-header {
     display: block;
+    order: -2;
     width: 100%;
     background: #fff;
     border-top: 1px solid #dcdcde;
@@ -537,3 +562,79 @@ body.settings_page_sharing-image #sharing-image-settings {
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-tab {
           margin: 0 0.5rem;
           padding: 0.5rem 0.5rem 1rem; } }
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium {
+    display: block;
+    width: 800px;
+    max-width: 100%;
+    padding: 20px; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium h2 {
+      margin: 12px 0; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium ul {
+      margin-left: 40px;
+      list-style-type: disc; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium p {
+      margin: 12px 0 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium p:first-child {
+        margin-top: 0; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium > * {
+      margin: 24px 0; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-benefits {
+      display: block; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-gratitude {
+      display: none; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium.premium-enabled .sharing-image-premium-benefits {
+      display: none; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium.premium-enabled .sharing-image-premium-gratitude {
+      display: block; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-contacts {
+      display: block;
+      padding-top: 24px;
+      border-top: solid 1px #ccc; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-access {
+      display: block; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-access strong {
+        display: block; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-access.access-loader .spinner {
+        visibility: visible; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-verify {
+      display: flex;
+      align-items: center;
+      margin-top: 8px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-verify input {
+        flex: 1 1 auto;
+        max-width: 320px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-verify button {
+        margin-left: 8px;
+        margin-bottom: 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-verify .spinner {
+        margin: 0 0 0 8px; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-revoke {
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+      margin: 24px 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-revoke p {
+        width: 100%;
+        margin: 0 0 16px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-revoke button {
+        color: #b32d2e;
+        border-color: #b32d2e; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-revoke .spinner {
+        margin: 0 0 0 8px; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-permit {
+      display: flex;
+      align-items: center;
+      margin: 24px 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-permit strong {
+        display: none;
+        margin-left: 16px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-permit.permit-visible strong {
+        display: block; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-warning {
+      display: none;
+      position: relative;
+      color: #b32d2e; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium .sharing-image-premium-warning.warning-visible {
+        display: block; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-premium ~ #setting-error-sharing-image {
+      max-width: 760px; }

@@ -1,0 +1,35 @@
+@import "includes/variables";
+@import "includes/mixins";
+@import "includes/gutenberg";
+
+.sharing-image-widget {
+  display: flex;
+  position: relative;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  @import "widget/*";
+
+  &.widget-taxonomy {
+    max-width: 95%;
+    margin-bottom: 20px;
+
+    .sharing-image-picker {
+      padding: 10px;
+      background: #fff;
+
+      box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.125);
+      border-radius: 3px;
+    }
+
+    @media screen and (max-width: 782px) {
+      display: block;
+    }
+  }
+
+  &.widget-metabox {
+    max-width: 480px;
+  }
+}

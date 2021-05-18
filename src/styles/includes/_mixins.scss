@@ -7,11 +7,9 @@
   height: 100%;
 }
 
-@mixin settings-screen {
-  width: 100%;
-  max-width: $width-settings;
-
-  margin: 0 auto;
+@mixin settings-screen($width: $width-settings) {
+  width: $width;
+  max-width: 100%;
   padding: 20px;
 }
 

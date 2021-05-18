@@ -262,7 +262,7 @@
       font-size: 10px;
       font-style: normal;
 
-      color: #4a76bb;
+      color: $color-links
     }
   }
 
@@ -324,7 +324,7 @@
     margin: 0;
     padding: 0;
 
-    color: #b32d2e;
+    color: $color-alert;
     background: transparent;
 
     border: none;
@@ -349,7 +349,7 @@
     margin: 0;
     padding: 0;
 
-    color: #2271b1;
+    color: $color-links;
     background: transparent;
 
     border: none;
@@ -538,7 +538,7 @@
 
     background: #fff;
     border: 1px solid #c3c4c7;
-    border-left: 4px solid #b32d2e;
+    border-left: 4px solid $color-alert;
     border-radius: 3px;
 
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.125);

@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -125,12 +125,31 @@ function uploadMedia(header, callback) {
 }
 
 /* harmony default export */ var attachment = (uploadMedia);
+// CONCATENATED MODULE: ./src/scripts/helpers/defaults.js
+/**
+ * Append empty default properties to object if not exist.
+ *
+ * @param {Object} object Source object.
+ * @param {Array} defaults Required defaults properties.
+ */
+function intersectDefaults(object, defaults) {
+  defaults.forEach(function (item) {
+    if (undefined === object[item]) {
+      object[item] = {};
+    }
+  });
+  return object;
+}
+
+/* harmony default export */ var defaults = (intersectDefaults);
 // CONCATENATED MODULE: ./src/scripts/helpers/index.js
+
 
 
 var Helper = {
   param: param,
-  attachment: attachment
+  attachment: attachment,
+  defaults: defaults
 };
 /* harmony default export */ var helpers = __webpack_exports__["a"] = (Helper);
 
@@ -607,7 +626,7 @@ function buildLayer(args) {
 }
 
 /* harmony default export */ var builders_layer = (buildLayer);
-// EXTERNAL MODULE: ./src/scripts/helpers/index.js + 2 modules
+// EXTERNAL MODULE: ./src/scripts/helpers/index.js + 3 modules
 var helpers = __webpack_require__(0);
 
 // CONCATENATED MODULE: ./src/scripts/builders/media.js
@@ -736,19 +755,21 @@ var Build = {
 /* harmony default export */ var builders = (Build);
 // CONCATENATED MODULE: ./src/scripts/sections/catalog.js
 
-var __ = wp.i18n.__;
+var __ = wp.i18n.__; // Store global scriot object for settings page.
+
+var params = null;
 /**
  * Create template card in catalog.
  *
- * @param {HTMLElement} form Form HTML element.
+ * @param {HTMLElement} catalog Catalog HTML element.
  * @param {number} index Current card index.
  * @param {Object} option List of template options.
  */
 
-function createCard(form, index, option) {
+function createCard(catalog, index, option) {
   var card = builders.element('div', {
     classes: ['sharing-image-catalog-card'],
-    append: form
+    append: catalog
   });
   var preview = builders.element('figure', {
     classes: ['sharing-image-catalog-preview'],
@@ -779,7 +800,7 @@ function createCard(form, index, option) {
     classes: ['button'],
     text: __('Edit template', 'sharing-image'),
     attributes: {
-      href: link
+      href: link.href
     },
     append: footer
   });
@@ -787,44 +808,70 @@ function createCard(form, index, option) {
 /**
  * Create new template button in catalog.
  *
- * @param {HTMLElement} form Form HTML element.
+ * @param {HTMLElement} catalog Catalog HTML element.
  * @param {number} index New card index.
  */
 
 
-function createNewButton(form, index) {
+function createNewButton(catalog, index) {
   var link = new URL(document.location.href);
   link.searchParams.set('template', index);
   var button = builders.element('a', {
     classes: ['sharing-image-catalog-new'],
     attributes: {
-      href: link
+      href: link.href
     },
-    append: form
+    append: catalog
   });
-  builders.element('h2', {
-    text: __('Add new template', 'sharing-image'),
+  var title = builders.element('h2', {
     append: button
   });
+  builders.element('strong', {
+    text: __('Add new template', 'sharing-image'),
+    append: title
+  }); // Restrict new template creation for not Premium users.
+
+  if (params.templates.length === 0) {
+    return;
+  }
+
+  var license = params.config.license || {};
+
+  if (params.config.premium || license.develop) {
+    return;
+  }
+
+  builders.element('span', {
+    text: __('(Availible for Premium only)', 'sharing-image'),
+    append: title
+  });
+
+  if (params.links.premium) {
+    button.setAttribute('href', params.links.premium);
+  }
 }
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} form Settings form element.
+ * @param {HTMLElement} content Settings content element.
  * @param {Object} settings Global settings field.
  */
 
 
-function createCatalog(form, settings) {
-  form.classList.add('sharing-image-catalog');
+function createCatalog(content, settings) {
+  params = settings;
+  var catalog = builders.element('div', {
+    classes: ['sharing-image-catalog'],
+    append: content
+  });
   var index = 1;
   settings.templates.forEach(function (template) {
-    createCard(form, index++, template);
+    createCard(catalog, index++, template);
   });
-  createNewButton(form, index);
+  createNewButton(catalog, index);
 }
 
-/* harmony default export */ var catalog = (createCatalog);
+/* harmony default export */ var sections_catalog = (createCatalog);
 // CONCATENATED MODULE: ./src/scripts/sections/editor.js
 /**
  * Editor settings.
@@ -834,7 +881,7 @@ function createCatalog(form, settings) {
 
 var editor_ = wp.i18n.__; // Store global scriot object for settings page.
 
-var params = null; // Preview element.
+var editor_params = null; // Preview element.
 
 var editor_preview = null; // Root editor element.
 
@@ -849,6 +896,11 @@ function showTemplateError(message) {
   var viewport = editor_preview.parentNode; // Try to find warning element.
 
   var warning = viewport.querySelector('.sharing-image-editor-warning');
+
+  if (null === warning) {
+    return;
+  }
+
   warning.classList.add('warning-visible');
   warning.textContent = message || editor_('Unknown generation error', 'sharing-image');
 }
@@ -862,9 +914,11 @@ function hideTemplateError() {
 
   var warning = viewport.querySelector('.sharing-image-editor-warning');
 
-  if (null !== warning) {
-    warning.classList.remove('warning-visible');
+  if (null === warning) {
+    return;
   }
+
+  warning.classList.remove('warning-visible');
 }
 /**
  * Geneate template using editor data.
@@ -899,7 +953,7 @@ function generateTemplate() {
   request.addEventListener('load', function () {
     var response = request.response || {};
 
-    if (request.status !== 200) {
+    if (200 !== request.status) {
       return showTemplateError(response.data);
     }
 
@@ -941,7 +995,7 @@ function saveTemplate() {
   request.addEventListener('load', function () {
     var response = request.response || {};
 
-    if (request.status !== 200 || !response.data) {
+    if (!response.success) {
       return showTemplateError(response.data);
     }
 
@@ -1007,7 +1061,7 @@ function createPermanentAttachment(fieldset, data) {
       group: 'radio',
       classes: ['sharing-image-editor-radio'],
       attributes: {
-        name: params.name + '[background]',
+        name: editor_params.name + '[background]',
         value: 'dynamic'
       },
       label: editor_('Select for each post separately', 'sharing-image'),
@@ -1016,7 +1070,7 @@ function createPermanentAttachment(fieldset, data) {
       group: 'radio',
       classes: ['sharing-image-editor-radio'],
       attributes: {
-        name: params.name + '[background]',
+        name: editor_params.name + '[background]',
         value: 'thumbnail'
       },
       label: editor_('Use post thumbnail image', 'sharing-image'),
@@ -1025,7 +1079,7 @@ function createPermanentAttachment(fieldset, data) {
       group: 'radio',
       classes: ['sharing-image-editor-radio'],
       attributes: {
-        name: params.name + '[background]',
+        name: editor_params.name + '[background]',
         value: 'permanent'
       },
       label: editor_('Upload permanent background', 'sharing-image'),
@@ -1033,12 +1087,11 @@ function createPermanentAttachment(fieldset, data) {
     }],
     append: fieldset
   });
-  params.links = params.links || {};
   var media = builders.media({
-    name: params.name + '[attachment]',
+    name: editor_params.name + '[attachment]',
     classes: ['sharing-image-editor-control', 'control-details'],
     value: data.attachment,
-    link: params.links.uploads,
+    link: editor_params.links.uploads,
     labels: {
       button: editor_('Upload image', 'sharing-image'),
       heading: editor_('Select layer image', 'sharing-image'),
@@ -1276,10 +1329,9 @@ function createFontField(layer, name, data) {
     classes: ['sharing-image-editor-control', 'control-upload', 'control-hidden'],
     append: layer
   });
-  params.fonts = params.fonts || {};
   var select = builders.select({
     classes: ['sharing-image-editor-select'],
-    options: params.fonts,
+    options: editor_params.fonts,
     attributes: {
       name: name + '[fontname]'
     },
@@ -1290,7 +1342,7 @@ function createFontField(layer, name, data) {
     name: name + '[fontfile]',
     classes: ['sharing-image-editor-media'],
     value: data.fontfile,
-    link: params.links.uploads,
+    link: editor_params.links.uploads,
     labels: {
       button: editor_('Upload custom font', 'sharing-image'),
       heading: editor_('Upload custom font', 'sharing-image'),
@@ -1400,7 +1452,6 @@ function createCatalogButton(footer) {
 
 
 function createDeleteButton(footer) {
-  params.links = params.links || {};
   var href = new URL(document.location.href); // Get template index from current link.
 
   var index = href.searchParams.get('template'); // Set template index to delete link.
@@ -1408,7 +1459,7 @@ function createDeleteButton(footer) {
   var link = new URL(editor.getAttribute('action'));
   link.searchParams.set('action', 'sharing_image_delete');
   link.searchParams.set('template', index);
-  link.searchParams.set('nonce', params.nonce);
+  link.searchParams.set('nonce', editor_params.nonce);
   builders.element('a', {
     classes: ['sharing-image-editor-delete'],
     text: editor_('Delete template', 'sharing-image'),
@@ -1450,7 +1501,7 @@ function createPreview(viewport, data) {
   builders.element('input', {
     attributes: {
       type: 'hidden',
-      name: params.name + '[preview]',
+      name: editor_params.name + '[preview]',
       value: data.preview
     },
     append: editor_preview
@@ -1541,7 +1592,7 @@ function createLayerImage(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = params.name + "[layers][".concat(index, "]");
+  var name = editor_params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1550,12 +1601,11 @@ function createLayerImage(index, data) {
     },
     append: layer
   });
-  params.links = params.links || {};
   builders.media({
     name: name + '[attachment]',
     classes: ['sharing-image-editor-control', 'control-details'],
     value: data.attachment,
-    link: params.links.uploads,
+    link: editor_params.links.uploads,
     labels: {
       button: editor_('Upload image', 'sharing-image'),
       heading: editor_('Select layer image', 'sharing-image'),
@@ -1623,7 +1673,7 @@ function createLayerText(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = params.name + "[layers][".concat(index, "]");
+  var name = editor_params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1729,7 +1779,7 @@ function createLayerFilter(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = params.name + "[layers][".concat(index, "]");
+  var name = editor_params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1838,7 +1888,7 @@ function createLayerRectangle(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = params.name + "[layers][".concat(index, "]");
+  var name = editor_params.name + "[layers][".concat(index, "]");
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -2038,7 +2088,7 @@ function createFieldset(data) {
       group: 'input',
       classes: ['sharing-image-editor-input'],
       attributes: {
-        name: params.name + '[title]',
+        name: editor_params.name + '[title]',
         value: data.title
       },
       label: editor_('Template title', 'sharing-image')
@@ -2054,7 +2104,7 @@ function createFieldset(data) {
       group: 'input',
       classes: ['sharing-image-editor-input'],
       attributes: {
-        name: params.name + '[width]',
+        name: editor_params.name + '[width]',
         value: data.width || '1200',
         placeholder: '1200'
       },
@@ -2063,7 +2113,7 @@ function createFieldset(data) {
       group: 'input',
       classes: ['sharing-image-editor-input'],
       attributes: {
-        name: params.name + '[height]',
+        name: editor_params.name + '[height]',
         value: data.height || '630',
         placeholder: '630'
       },
@@ -2152,7 +2202,7 @@ function createSuspendCheckbox(manager, data) {
   var checkbox = builders.checkbox({
     classes: ['sharing-image-editor-suspend'],
     attributes: {
-      name: params.name + '[suspend]',
+      name: editor_params.name + '[suspend]',
       value: 'suspend'
     },
     label: editor_('Disable live-reload', 'sharing-image'),
@@ -2206,18 +2256,26 @@ function createMonitor(data) {
 /**
  * Create form hidden settings fields.
  *
- * @param {HTMLElement} form Settings form element.
+ * @param {HTMLElement} content Settings content element.
  * @param {number} index Current option index.
  */
 
 
-function prepareEditor(form, index) {
-  form.classList.add('sharing-image-editor');
+function prepareEditor(content, index) {
+  editor_params.name = 'sharing_image_editor';
+  var form = builders.element('form', {
+    classes: ['sharing-image-editor'],
+    attributes: {
+      action: editor_params.links.action,
+      method: 'POST'
+    },
+    append: content
+  });
   builders.element('input', {
     attributes: {
       type: 'hidden',
       name: 'action',
-      value: params.name
+      value: editor_params.name
     },
     append: form
   });
@@ -2233,7 +2291,7 @@ function prepareEditor(form, index) {
     attributes: {
       type: 'hidden',
       name: 'sharing_image_nonce',
-      value: params.nonce
+      value: editor_params.nonce
     },
     append: form
   });
@@ -2246,20 +2304,18 @@ function prepareEditor(form, index) {
 /**
  * Create template editor page.
  *
- * @param {HTMLElement} form Settings form element.
- * @param {Object} object Global object field.
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings object.
  * @param {number} index Current option index.
  * @param {Object} data Template data.
  */
 
 
-function createEditor(form, object, index) {
+function createEditor(content, settings, index) {
   var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  params = object; // Set params name for template form fields.
+  editor_params = settings; // Prepare form with hidden fields and events.
 
-  params.name = 'sharing_image_editor'; // Prepare form with hidden fields and events.
-
-  editor = prepareEditor(form, index); // Create monitor section part.
+  editor = prepareEditor(content, index); // Create monitor section part.
 
   createMonitor(data); // Create fieldset section part.
 
@@ -2276,7 +2332,7 @@ function createEditor(form, object, index) {
 
 var picker_ = wp.i18n.__; // Store global script object for metabox.
 
-var picker_params = null; // Poster element.
+var picker_params = null; // Poster HTML element.
 
 var poster = null;
 /**
@@ -2289,6 +2345,11 @@ function showPickerError(message) {
   var picker = poster.parentNode; // Try to find warning element.
 
   var warning = picker.querySelector('.sharing-image-picker-warning');
+
+  if (null === warning) {
+    return;
+  }
+
   warning.classList.add('warning-visible');
   warning.textContent = message || picker_('Unknown generation error', 'sharing-image');
 }
@@ -2302,9 +2363,11 @@ function hidePickerError() {
 
   var warning = picker.querySelector('.sharing-image-picker-warning');
 
-  if (null !== warning) {
-    warning.classList.remove('warning-visible');
+  if (null === warning) {
+    return;
   }
+
+  warning.classList.remove('warning-visible');
 }
 /**
  * Handle poster generation action.
@@ -2335,7 +2398,7 @@ function generatePoster(picker) {
   request.addEventListener('load', function () {
     var response = request.response || {};
 
-    if (request.status !== 200 || !response.data) {
+    if (!response.success) {
       return showPickerError(response.data);
     }
 
@@ -2399,8 +2462,6 @@ function createTemplate(picker, designer, data) {
 }
 
 function createDesignerAttachment(fieldset, template, values, name) {
-  picker_params.links = picker_params.links || {};
-
   if ('dynamic' === template.background) {
     builders.media({
       name: name + '[attachment]',
@@ -2566,19 +2627,20 @@ function createManager(picker) {
  * Create poster block.
  *
  * @param {HTMLElement} picker Picker element.
+ * @param {Object} data Custom data object.
  */
 
 
-function createPoster(picker) {
+function createPoster(picker, data) {
   poster = builders.element('div', {
     classes: ['sharing-image-picker-poster'],
     append: picker
   });
 
-  if (picker_params.poster) {
+  if (data.poster) {
     builders.element('img', {
       attributes: {
-        src: picker_params.poster,
+        src: data.poster,
         alt: ''
       },
       append: poster
@@ -2590,7 +2652,7 @@ function createPoster(picker) {
     attributes: {
       type: 'hidden',
       name: picker_params.name + '[poster]',
-      value: picker_params.poster || ''
+      value: data.poster || ''
     },
     append: poster
   });
@@ -2599,22 +2661,34 @@ function createPoster(picker) {
 /**
  * Create metabox generator picker.
  *
- * @param {HTMLElement} inside Metabox inside element.
- * @param {Object} object Global object field.
+ * @param {HTMLElement} widget Widget element.
+ * @param {Object} settings Global settings object.
  */
 
 
-function createPicker(inside, object) {
-  picker_params = object; // Set params name for template form fields.
+function createPicker(widget, settings) {
+  picker_params = settings; // Set params name for template form fields.
 
   picker_params.name = 'sharing_image_picker';
+
+  if ('taxonomy' === picker_params.context) {
+    var title = builders.element('div', {
+      classes: ['sharing-image-title'],
+      append: widget
+    });
+    builders.element('strong', {
+      text: picker_('Sharing Image', 'sharing-image'),
+      append: title
+    });
+  }
+
   var picker = builders.element('div', {
     classes: ['sharing-image-picker'],
-    append: inside
+    append: widget
   });
-  var data = picker_params.custom || {}; // Create poster block.
+  var data = picker_params.meta || {}; // Create poster block.
 
-  createPoster(picker); // Create fields designer.
+  createPoster(picker, data); // Create fields designer.
 
   picker_createDesigner(picker, data);
   builders.element('div', {
@@ -2634,14 +2708,383 @@ function createPicker(inside, object) {
 }
 
 /* harmony default export */ var sections_picker = (createPicker);
+// CONCATENATED MODULE: ./src/scripts/sections/premium.js
+/**
+ * Premium settings tab.
+ */
+
+/* global ajaxurl:true */
+
+var premium_ = wp.i18n.__; // Store global scriot object for settings page.
+
+var premium_params = null; // Premium HTML emelent.
+
+var premium = null;
+/**
+ * Parse error code from settings or AJAX response.
+ *
+ * @param {string} code Error code from settings or AJAX response.
+ * @param {string} title Prepended error title.
+ */
+
+function parseErrorCode(code, title) {
+  var message = [];
+
+  if (undefined === title) {
+    title = premium_('Verification failed.', 'sharing-image');
+  }
+
+  message.push(title);
+
+  switch (code) {
+    case 'LIMIT_EXCEEDED':
+      message.push(premium_('The number of valid licenses for this key has been exceeded.', 'sharing-image'));
+      break;
+
+    case 'KEY_NOT_FOUND':
+      message.push(premium_('Premium key is invalid or expired.', 'sharing-image'));
+      break;
+
+    case 'SERVER_ERROR':
+      message.push(premium_('Unable to get a response from the verification server.', 'sharing-image'));
+      break;
+
+    default:
+      message.push(premium_('Unknown error.', 'sharing-image'));
+  }
+
+  return message.join(' ');
+}
+/**
+ * Show premium warning message.
+ *
+ * @param {string} message Warning message.
+ */
+
+
+function showPremiumError(message) {
+  // Try to find warning element.
+  var warning = premium.querySelector('.sharing-image-premium-warning');
+
+  if (null === warning) {
+    return;
+  }
+
+  warning.classList.add('warning-visible');
+  warning.textContent = message || premium_('Unknown request error', 'sharing-image');
+}
+/**
+ * Remove warning message block.
+ */
+
+
+function hidePremiumError() {
+  // Try to find warning element.
+  var warning = premium.querySelector('.sharing-image-premium-warning');
+
+  if (null === warning) {
+    return;
+  }
+
+  warning.classList.remove('warning-visible');
+}
+/**
+ * Revoke Premium key.
+ *
+ * @param {HTMLElement} access Access form element.
+ */
+
+
+function revokePremium(access) {
+  access.classList.add('access-loader');
+  var request = new XMLHttpRequest();
+  request.open('POST', ajaxurl);
+  request.responseType = 'json'; // Create data bundle using form data.
+
+  var bundle = new window.FormData(access);
+  bundle.set('action', 'sharing_image_revoke');
+  hidePremiumError(); // Hide form loader class.
+
+  request.addEventListener('readystatechange', function () {
+    access.classList.remove('access-loader');
+  });
+  request.addEventListener('load', function () {
+    var response = request.response || {};
+
+    if (response.success) {
+      premium_params.config.premium = false; // Refresh premium fields.
+
+      return preparePremiumFields();
+    }
+
+    showPremiumError(response.data);
+  });
+  request.addEventListener('error', function () {
+    showPremiumError();
+  });
+  request.send(bundle);
+}
+/**
+ * Verify Premium key.
+ *
+ * @param {HTMLElement} access Access form element.
+ */
+
+
+function verifyPremium(access) {
+  access.classList.add('access-loader');
+  var request = new XMLHttpRequest();
+  request.open('POST', ajaxurl);
+  request.responseType = 'json'; // Create data bundle using form data.
+
+  var bundle = new window.FormData(access);
+  bundle.set('action', 'sharing_image_verify');
+  hidePremiumError(); // Hide form loader class.
+
+  request.addEventListener('readystatechange', function () {
+    access.classList.remove('access-loader');
+  });
+  request.addEventListener('load', function () {
+    var response = request.response || {};
+
+    if (response.success) {
+      premium_params.config.premium = true; // Refresh premium fields.
+
+      return preparePremiumFields();
+    }
+
+    var message = response.data;
+
+    if (response.code) {
+      message = parseErrorCode(response.code, message);
+    }
+
+    showPremiumError(message);
+  });
+  request.addEventListener('error', function () {
+    showPremiumError();
+  });
+  request.send(bundle);
+}
+/**
+ * Show verify form if stil not premium.
+ *
+ * @param {HTMLElement} access Access HTML element.
+ * @param {Object} license License data.
+ */
+
+
+function showVerifyForm(access, license) {
+  if (license.error) {
+    showPremiumError(parseErrorCode(license.error));
+  }
+
+  builders.element('strong', {
+    text: premium_('Do you already have a key? Enter it here', 'sharing-image'),
+    append: access
+  });
+  var verify = builders.element('div', {
+    classes: ['sharing-image-premium-verify'],
+    append: access
+  });
+  builders.element('input', {
+    label: premium_('Your Premium key', 'sharing-image'),
+    attributes: {
+      type: 'text',
+      name: 'sharing_image_key',
+      value: license.key
+    },
+    append: verify
+  });
+  builders.element('button', {
+    classes: ['button'],
+    text: premium_('Submit', 'sharing-image'),
+    attributes: {
+      type: 'submit'
+    },
+    append: verify
+  });
+  builders.element('span', {
+    classes: ['spinner'],
+    append: verify
+  });
+  access.addEventListener('submit', function (e) {
+    e.preventDefault();
+    verifyPremium(access);
+  });
+}
+/**
+ * Show alert for develop license mode.
+ */
+
+
+function showDevelopAlert() {
+  showPremiumError(premium_('Using plugin with a development license is prohibited in production.', 'sharing-image'));
+}
+/**
+ * Show revoke Premium button.
+ *
+ * @param {HTMLElement} access Access HTML element.
+ */
+
+
+function showRevokeButton(access) {
+  var revoke = builders.element('div', {
+    classes: ['sharing-image-premium-revoke'],
+    append: access
+  });
+  var description = [];
+  description.push(premium_('Disabling premium mode will not remove the license for this domain.', 'sharing-image'));
+  description.push(premium_('Your current key will also be saved in the plugin settings.', 'sharing-image'));
+  description.push(premium_('Use key management tool to delete the license for this domain.', 'sharing-image'));
+  builders.element('p', {
+    text: description.join(' '),
+    append: revoke
+  });
+  builders.element('button', {
+    classes: ['button'],
+    text: premium_('Disable Premium'),
+    attributes: {
+      type: 'submit'
+    },
+    append: revoke
+  });
+  builders.element('span', {
+    classes: ['spinner'],
+    append: revoke
+  });
+  access.addEventListener('submit', function (e) {
+    e.preventDefault();
+    revokePremium(access);
+  });
+}
+/**
+ * Show permit information.
+ *
+ * @param {HTMLElement} access Access HTML element.
+ * @param {string} key License key from settings.
+ */
+
+
+function showLicenseInfo(access, key) {
+  var permit = builders.element('div', {
+    classes: ['sharing-image-premium-permit'],
+    append: access
+  });
+  var button = builders.element('button', {
+    classes: ['sharing-image-premium-show', 'button'],
+    text: premium_('Show License key'),
+    attributes: {
+      type: 'button'
+    },
+    append: permit
+  });
+  button.addEventListener('click', function () {
+    permit.classList.toggle('permit-visible');
+  });
+  builders.element('strong', {
+    text: key,
+    append: permit
+  });
+  return permit;
+}
+/**
+ * Show fields if user has the license.
+ *
+ * @param {HTMLElement} access Access HTML element.
+ * @param {Object} license License data.
+ */
+
+
+function showPremiumData(access, license) {
+  premium.classList.add('premium-enabled');
+
+  if (license.develop) {
+    return showDevelopAlert();
+  }
+
+  if (license.key) {
+    showLicenseInfo(access, license.key);
+  }
+
+  showRevokeButton(access);
+}
+/**
+ * Set premium fields according settings.
+ */
+
+
+function preparePremiumFields() {
+  var access = premium.querySelector('.sharing-image-premium-access');
+
+  if (null === access) {
+    access = builders.element('form', {
+      classes: ['sharing-image-premium-access'],
+      attributes: {
+        action: '',
+        method: 'POST'
+      },
+      append: premium
+    });
+  } // Clear all access chidlren elements.
+
+
+  while (access.firstChild) {
+    access.removeChild(access.lastChild);
+  }
+
+  premium.classList.remove('premium-enabled');
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_nonce',
+      value: premium_params.nonce
+    },
+    append: access
+  });
+  builders.element('div', {
+    classes: ['sharing-image-premium-warning'],
+    append: premium
+  });
+  var license = premium_params.config.license || {}; // Show fields if user has the license.
+
+  if (premium_params.config.premium || license.develop) {
+    return showPremiumData(access, license);
+  }
+
+  return showVerifyForm(access, license);
+}
+/**
+ * Create templates catalog from options.
+ *
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings field.
+ */
+
+
+function createPremium(content, settings) {
+  premium_params = settings; // Find premium element
+
+  premium = content.querySelector('.sharing-image-premium');
+
+  if (null === premium) {
+    return;
+  }
+
+  preparePremiumFields();
+}
+
+/* harmony default export */ var sections_premium = (createPremium);
 // CONCATENATED MODULE: ./src/scripts/sections/index.js
 
 
 
+
 var Section = {
-  catalog: catalog,
+  catalog: sections_catalog,
   editor: sections_editor,
-  picker: sections_picker
+  picker: sections_picker,
+  premium: sections_premium
 };
 /* harmony default export */ var sections = __webpack_exports__["a"] = (Section);
 
@@ -2673,14 +3116,16 @@ module.exports = _typeof;
 module.exports["default"] = module.exports, module.exports.__esModule = true;
 
 /***/ }),
-/* 3 */
+/* 3 */,
+/* 4 */,
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(4);
+module.exports = __webpack_require__(6);
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2697,19 +3142,20 @@ __webpack_require__.r(__webpack_exports__);
 (function () {
   if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()('undefined') === wp) {
     return;
-  } // Find metabox element.
-
-
-  var inside = document.querySelector('#sharing-image-metabox > .inside');
-
-  if (null === inside) {
-    return;
   }
 
-  var object = window.sharingImageMetabox || {}; // Set default templates empty list.
+  var object = window.sharingImageWidget || {}; // Set default templates empty list.
 
-  object.templates = object.templates || [];
-  _sections__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].picker(inside, object);
+  object.templates = object.templates || []; // Find metabox element.
+
+  var widgets = document.querySelectorAll('.sharing-image-widget');
+  widgets.forEach(function (widget) {
+    if (object.context) {
+      widget.classList.add("widget-".concat(object.context));
+    }
+
+    _sections__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].picker(widget, object);
+  });
 })();
 
 /***/ })

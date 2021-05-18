@@ -2,15 +2,18 @@
   display: block;
   position: relative;
 
-  margin-top: 12px;
+  flex: 1 1 auto;
+  margin-top: 4px;
 
   .sharing-image-picker-template {
     display: block;
     width: 100%;
+    margin-bottom: 12px;
 
     select {
       display: block;
       width: 100%;
+      max-width: 100%;
     }
   }
 
@@ -28,7 +31,7 @@
     flex-flow: row nowrap;
     align-items: center;
 
-    margin-top: 12px;
+    margin-bottom: 12px;
 
     .button {
       margin-right: 14px;
@@ -38,7 +41,7 @@
   .sharing-image-picker-caption {
     display: block;
     width: 100%;
-    margin-top: 12px;
+    margin-bottom: 12px;
 
     & > * {
       display: block;
@@ -79,7 +82,6 @@
     align-items: center;
 
     width: 100%;
-    margin-top: 12px;
     padding-top: 12px;
 
     border-top: solid 1px #ccc;
@@ -93,7 +95,7 @@
     display: none;
     position: relative;
 
-    margin: 12px 0 0;
+    margin: 0 0 12px;
     color: #b32d2e;
 
     &.warning-visible {

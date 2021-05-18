@@ -1,6 +1,13 @@
 .sharing-image-config {
   display: block;
 
-  width: 100%;
-  max-width: $width-narrow;
+  @include settings-screen($width-narrow);
+
+  h2 {
+    margin: 12px 0;
+  }
+
+  & ~ #setting-error-sharing-image {
+    max-width: $width-narrow - 40px;
+  }
 }

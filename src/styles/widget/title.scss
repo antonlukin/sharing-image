@@ -1,0 +1,16 @@
+.sharing-image-title {
+  display: block;
+  position: relative;
+
+  padding: 20px 10px 20px 0;
+  flex: 0 0 220px;
+
+  strong {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  @media screen and (max-width: 782px) {
+    padding: 10px 0 0 0;
+  }
+}

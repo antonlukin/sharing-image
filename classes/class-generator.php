@@ -387,16 +387,15 @@ class Generator {
 	 * @return array Server file path and url to image.
 	 */
 	private function get_upload_file() {
-		$file = array();
-
 		$uploads = wp_upload_dir();
 
 		// Create random file name.
 		$name = wp_unique_filename( $uploads['path'], uniqid() . '.jpg' );
 
-		// Set upload path and url with generated file name.
-		$file[] = trailingslashit( $uploads['path'] ) . $name;
-		$file[] = trailingslashit( $uploads['url'] ) . $name;
+		$file = array(
+			trailingslashit( $uploads['path'] ) . $name,
+			trailingslashit( $uploads['url'] ) . $name,
+		);
 
 		/**
 		 * Filters upload file path and url

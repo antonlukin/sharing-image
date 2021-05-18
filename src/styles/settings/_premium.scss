@@ -1,0 +1,135 @@
+.sharing-image-premium {
+  display: block;
+
+  @include settings-screen($width-narrow);
+
+  h2 {
+    margin: 12px 0;
+  }
+
+  ul {
+    margin-left: 40px;
+    list-style-type: disc;
+  }
+
+  p {
+    margin: 12px 0 0;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  & > * {
+    margin: 24px 0;
+  }
+
+  .sharing-image-premium-benefits {
+    display: block;
+  }
+
+  .sharing-image-premium-gratitude {
+    display: none;
+  }
+
+  &.premium-enabled .sharing-image-premium-benefits {
+    display: none;
+  }
+
+  &.premium-enabled .sharing-image-premium-gratitude {
+    display: block;
+  }
+
+  .sharing-image-premium-contacts {
+    display: block;
+    padding-top: 24px;
+
+    border-top: solid 1px #ccc;
+  }
+
+  .sharing-image-premium-access {
+    display: block;
+
+    strong {
+      display: block;
+    }
+
+    &.access-loader .spinner {
+      visibility: visible;
+    }
+  }
+
+  .sharing-image-premium-verify {
+    display: flex;
+    align-items: center;
+
+    margin-top: 8px;
+
+    input {
+      flex: 1 1 auto;
+      max-width: 320px;
+    }
+
+    button {
+      margin-left: 8px;
+      margin-bottom: 0;
+    }
+
+    .spinner {
+      margin: 0 0 0 8px;
+    }
+  }
+
+  .sharing-image-premium-revoke {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+
+    margin: 24px 0;
+
+    p {
+      width: 100%;
+      margin: 0 0 16px;
+    }
+
+    button {
+      color: $color-alert;
+      border-color: $color-alert;
+    }
+
+    .spinner {
+      margin: 0 0 0 8px;
+    }
+  }
+
+  .sharing-image-premium-permit {
+    display: flex;
+    align-items: center;
+
+    margin: 24px 0;
+
+    strong {
+      display: none;
+      margin-left: 16px;
+    }
+
+    &.permit-visible strong {
+      display: block;
+    }
+  }
+
+  .sharing-image-premium-warning {
+    display: none;
+    position: relative;
+
+    color: $color-alert;
+
+    &.warning-visible {
+      display: block;
+    }
+  }
+
+  & ~ #setting-error-sharing-image {
+    max-width: $width-narrow - 40px;
+  }
+}

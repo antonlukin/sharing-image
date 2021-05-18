@@ -27,6 +27,10 @@ function showTemplateError( message ) {
 	// Try to find warning element.
 	const warning = viewport.querySelector( '.sharing-image-editor-warning' );
 
+	if ( null === warning ) {
+		return;
+	}
+
 	warning.classList.add( 'warning-visible' );
 	warning.textContent = message || __( 'Unknown generation error', 'sharing-image' );
 }
@@ -40,9 +44,11 @@ function hideTemplateError() {
 	// Try to find warning element.
 	const warning = viewport.querySelector( '.sharing-image-editor-warning' );
 
-	if ( null !== warning ) {
-		warning.classList.remove( 'warning-visible' );
+	if ( null === warning ) {
+		return;
 	}
+
+	warning.classList.remove( 'warning-visible' );
 }
 
 /**
@@ -82,7 +88,7 @@ function generateTemplate() {
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
-		if ( request.status !== 200 ) {
+		if ( 200 !== request.status ) {
 			return showTemplateError( response.data );
 		}
 
@@ -119,10 +125,17 @@ function saveTemplate() {
 	const bundle = new window.FormData( editor );
 	bundle.set( 'action', 'sharing_image_save' );
 
+	// Hide preview loader on request complete.
+	request.addEventListener( 'readystatechange', () => {
+		if ( request.readyState === 4 ) {
+			preview.classList.remove( 'preview-loader' );
+		}
+	} );
+
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
-		if ( request.status !== 200 || ! response.data ) {
+		if ( ! response.success ) {
 			return showTemplateError( response.data );
 		}
 
@@ -133,6 +146,9 @@ function saveTemplate() {
 		}
 
 		editor.submit();
+
+		// Show loader.
+		preview.classList.add( 'preview-loader' );
 	} );
 
 	request.addEventListener( 'error', () => {
@@ -215,8 +231,6 @@ function createPermanentAttachment( fieldset, data ) {
 		],
 		append: fieldset,
 	} );
-
-	params.links = params.links || {};
 
 	const media = Build.media( {
 		name: params.name + '[attachment]',
@@ -494,8 +508,6 @@ function createFontField( layer, name, data ) {
 		append: layer,
 	} );
 
-	params.fonts = params.fonts || {};
-
 	const select = Build.select(
 		{
 			classes: [ 'sharing-image-editor-select' ],
@@ -631,8 +643,6 @@ function createCatalogButton( footer ) {
  * @param {HTMLElement} footer Footer HTML element.
  */
 function createDeleteButton( footer ) {
-	params.links = params.links || {};
-
 	const href = new URL( document.location.href );
 
 	// Get template index from current link.
@@ -793,8 +803,6 @@ function createLayerImage( index, data ) {
 		},
 		append: layer,
 	} );
-
-	params.links = params.links || {};
 
 	Build.media( {
 		name: name + '[attachment]',
@@ -1538,11 +1546,20 @@ function createMonitor( data ) {
 /**
  * Create form hidden settings fields.
  *
- * @param {HTMLElement} form Settings form element.
+ * @param {HTMLElement} content Settings content element.
  * @param {number} index Current option index.
  */
-function prepareEditor( form, index ) {
-	form.classList.add( 'sharing-image-editor' );
+function prepareEditor( content, index ) {
+	params.name = 'sharing_image_editor';
+
+	const form = Build.element( 'form', {
+		classes: [ 'sharing-image-editor' ],
+		attributes: {
+			action: params.links.action,
+			method: 'POST',
+		},
+		append: content,
+	} );
 
 	Build.element( 'input', {
 		attributes: {
@@ -1583,19 +1600,16 @@ function prepareEditor( form, index ) {
 /**
  * Create template editor page.
  *
- * @param {HTMLElement} form Settings form element.
- * @param {Object} object Global object field.
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings object.
  * @param {number} index Current option index.
  * @param {Object} data Template data.
  */
-function createEditor( form, object, index, data = {} ) {
-	params = object;
-
-	// Set params name for template form fields.
-	params.name = 'sharing_image_editor';
+function createEditor( content, settings, index, data = {} ) {
+	params = settings;
 
 	// Prepare form with hidden fields and events.
-	editor = prepareEditor( form, index );
+	editor = prepareEditor( content, index );
 
 	// Create monitor section part.
 	createMonitor( data );

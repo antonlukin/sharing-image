@@ -3,8 +3,13 @@ import Section from './sections';
 
 /**
  * Init premium settings tab.
+ *
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings object.
  */
-function initPremiumTab() {}
+function initPremiumTab( content, settings ) {
+	Section.premium( content, settings );
+}
 
 /**
  * Init config settings tab.
@@ -14,34 +19,33 @@ function initConfigTab() {}
 /**
  * Init config settings tab.
  *
- * @param {HTMLElement} form Settings form element.
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings object.
  */
-function initTemplatesTab( form ) {
-	const object = window.sharingImageSettings || {};
-
+function initTemplatesTab( content, settings ) {
 	// Get index from URL search parameter.
 	let index = null;
 
 	// Set default templates empty list.
-	object.templates = object.templates || [];
+	settings.templates = settings.templates || [];
 
 	if ( Helper.param( 'template' ) ) {
 		index = parseInt( Helper.param( 'template' ) ) - 1;
 	}
 
-	const data = object.templates[ index ];
+	const data = settings.templates[ index ];
 
 	// Create editor for existing template.
 	if ( undefined !== data ) {
-		return Section.editor( form, object, index, data );
+		return Section.editor( content, settings, index, data );
 	}
 
 	// Create editor for new template.
-	if ( object.templates.length === index ) {
-		return Section.editor( form, object, index );
+	if ( settings.templates.length === index ) {
+		return Section.editor( content, settings, index );
 	}
 
-	return Section.catalog( form, object );
+	Section.catalog( content, settings );
 }
 
 /**
@@ -52,23 +56,32 @@ function initTemplatesTab( form ) {
 		return;
 	}
 
-	// Find settings form element.
-	const form = document.querySelector( '#sharing-image-settings > form' );
+	let object = window.sharingImageSettings || {};
 
-	if ( null === form ) {
+	// Add default required values to object.
+	object = Helper.defaults( object, [ 'links', 'fonts', 'config', 'templates', 'license' ] );
+
+	// Find settings content element.
+	const content = document.querySelector( '#sharing-image-settings .sharing-image-content' );
+
+	if ( null === content ) {
 		return;
 	}
 
-	const tab = Helper.param( 'tab' );
+	content.classList.add( 'content-visible' );
 
-	switch ( tab ) {
+	switch ( Helper.param( 'tab' ) ) {
 		case 'config':
-			return initConfigTab();
+			initConfigTab( content, object );
+
+			break;
 
 		case 'premium':
-			return initPremiumTab();
+			initPremiumTab( content, object );
+
+			break;
 
 		default:
-			return initTemplatesTab( form );
+			initTemplatesTab( content, object );
 	}
 } )();

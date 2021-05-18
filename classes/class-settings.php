@@ -40,6 +40,13 @@ class Settings {
 	const OPTION_CONFIG = 'sharing_image_config';
 
 	/**
+	 * Remote licenses API url.
+	 *
+	 * @var string
+	 */
+	const SERVER_LICENSES = 'https://notset.org/sharing-image/licenses/';
+
+	/**
 	 * List of settings tabs.
 	 *
 	 * @var array
@@ -73,6 +80,9 @@ class Settings {
 
 		// Add new .ttf font mime type.
 		add_filter( 'upload_mimes', array( $this, 'add_ttf_mime_type' ) );
+
+		// Update admin title for different tabs.
+		add_action( 'admin_title', array( $this, 'update_settings_title' ) );
 	}
 
 	/**
@@ -126,8 +136,10 @@ class Settings {
 	 */
 	public function handle_ajax_requests() {
 		$actions = array(
-			'show' => 'show_template_preview',
-			'save' => 'save_template_preview',
+			'show'   => 'show_template_preview',
+			'save'   => 'save_template_preview',
+			'verify' => 'verify_premium_key',
+			'revoke' => 'revoke_premium_access',
 		);
 
 		foreach ( $actions as $key => $method ) {
@@ -181,6 +193,11 @@ class Settings {
 			return $this->redirect_with_message( $link, 2 );
 		}
 
+		// Skip 2nd+ templates if the Premium is not active.
+		if ( $index > 0 && ! $this->is_premium_features() ) {
+			return $this->redirect_with_message( $link, 2 );
+		}
+
 		$link = add_query_arg( array( 'template' => $index + 1 ), $link );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
@@ -222,9 +239,9 @@ class Settings {
 	 * Show generated template from AJAX request.
 	 */
 	public function show_template_preview() {
-		$verify = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
+		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
-		if ( false === $verify ) {
+		if ( false === $check ) {
 			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
 		}
 
@@ -253,9 +270,9 @@ class Settings {
 	 * Show generated template from AJAX request.
 	 */
 	public function save_template_preview() {
-		$verify = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
+		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
-		if ( false === $verify ) {
+		if ( false === $check ) {
 			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
 		}
 
@@ -280,6 +297,71 @@ class Settings {
 		}
 
 		wp_send_json_success( $poster );
+	}
+
+	/**
+	 * Verify Premium key from AJAX request.
+	 */
+	public function verify_premium_key() {
+		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
+
+		if ( false === $check ) {
+			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+		}
+
+		if ( ! isset( $_POST['sharing_image_key'] ) ) {
+			wp_send_json_error( __( 'Premium key undefined.', 'sharing-image' ), 400 );
+		}
+
+		$key = sanitize_text_field( wp_unslash( $_POST['sharing_image_key'] ) );
+
+		$args = array(
+			'method' => 'POST',
+			'body'   => array(
+				'key'  => $key,
+				'host' => wp_parse_url( site_url(), PHP_URL_HOST ),
+			),
+		);
+
+		$response = wp_remote_request( self::SERVER_LICENSES, $args );
+
+		if ( is_wp_error( $response ) ) {
+			wp_send_json_error( __( 'Unable to get a response from the verification server.', 'sharing-image' ), 400 );
+		}
+
+		$answer = json_decode( $response['body'], true );
+
+		if ( ! isset( $answer['success'] ) ) {
+			wp_send_json_error( __( 'Unable to get a response from the verification server.', 'sharing-image' ), 400 );
+		}
+
+		if ( false === $answer['success'] ) {
+			$error = array(
+				'success' => false,
+				'data'    => __( 'Verification failed.', 'sharing-image' ),
+			);
+
+			if ( isset( $answer['error'] ) ) {
+				$error['code'] = $answer['error'];
+			}
+
+			wp_send_json( $error, 403 );
+		}
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Revoke Premium access from AJAX request.
+	 */
+	public function revoke_premium_access() {
+		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
+
+		if ( false === $check ) {
+			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+		}
+
+		wp_send_json_success();
 	}
 
 	/**
@@ -341,7 +423,7 @@ class Settings {
 
 		wp_enqueue_style(
 			'sharing-image-settings',
-			SHARING_IMAGE_URL . '/assets/styles/settings.css',
+			SHARING_IMAGE_URL . 'assets/styles/settings.css',
 			array(),
 			SHARING_IMAGE_VERSION,
 			'all'
@@ -358,7 +440,7 @@ class Settings {
 
 		wp_enqueue_script(
 			'sharing-image-settings',
-			SHARING_IMAGE_URL . '/assets/scripts/settings.js',
+			SHARING_IMAGE_URL . 'assets/scripts/settings.js',
 			array( 'wp-i18n', 'wp-polyfill-url' ),
 			SHARING_IMAGE_VERSION,
 			true
@@ -374,11 +456,16 @@ class Settings {
 
 			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
+				'action'  => esc_url( admin_url( 'admin-post.php' ) ),
 			),
 			'fonts'     => $this->get_fonts(),
 			'config'    => $this->get_config(),
 			'templates' => $this->get_templates(),
 		);
+
+		if ( isset( $this->tabs['premium']['link'] ) ) {
+			$object['links']['premium'] = esc_url( $this->tabs['premium']['link'], null, '' );
+		}
 
 		wp_localize_script( 'sharing-image-settings', 'sharingImageSettings', $object );
 	}
@@ -414,6 +501,26 @@ class Settings {
 	public function get_config() {
 		$config = get_option( self::OPTION_CONFIG, array() );
 
+		$config = array(
+			'premium' => false,
+			'license' => array(
+				'key'     => 'avbc-dfig-34op',
+				'error'   => 'LIMIT_EXCEEDED',
+				'develop' => false,
+			),
+		);
+
+		/**
+		 * Check if the plugin in development mode.
+		 *
+		 * @param bool Current development state. Disabled by default.
+		 */
+		$develop = apply_filters( 'sharing_image_develop', false );
+
+		if ( $develop ) {
+			$config['license']['develop'] = true;
+		}
+
 		/**
 		 * Filters settigns config.
 		 *
@@ -429,6 +536,10 @@ class Settings {
 	 */
 	public function get_templates() {
 		$templates = get_option( self::OPTION_TEMPLATES, array() );
+
+		if ( ! $this->is_premium_features() ) {
+			$templates = array_slice( $templates, 0, 1 );
+		}
 
 		/**
 		 * Filters list of templates.
@@ -488,6 +599,48 @@ class Settings {
 	}
 
 	/**
+	 * Update settings page title.
+	 *
+	 * @param string $title Plugin settings page title.
+	 *
+	 * @return string Updated page title.
+	 */
+	public function update_settings_title( $title ) {
+		if ( ! $this->is_settings_screen() ) {
+			return $title;
+		}
+
+		$tab = $this->get_current_tab();
+
+		if ( null === $tab ) {
+			return $title;
+		}
+
+		if ( empty( $this->tabs[ $tab ]['label'] ) ) {
+			return $title;
+		}
+
+		$label = esc_html( $this->tabs[ $tab ]['label'] );
+
+		return sprintf( '%1$s &ndash; %2$s', $label, $title );
+	}
+
+	/**
+	 * Check if Premium features availible.
+	 *
+	 * @return bool
+	 */
+	public function is_premium_features() {
+		$config = $this->get_config();
+
+		if ( ! empty( $config['premium'] ) || ! empty( $config['license']['develop'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Sanitize editor template settings.
 	 *
 	 * @param array $editor Template editor settings.
@@ -516,9 +669,9 @@ class Settings {
 		if ( isset( $editor['background'] ) ) {
 			$background = array( 'dynamic', 'thumbnail', 'permanent' );
 
-			// We can't use permanent background for templates with empty attachment.
+			// Set default background for permanent option without attachment.
 			if ( empty( $sanitized['attachment'] ) ) {
-				unset( $background['permanent'] );
+				$background = array_diff( $background, array( 'permanent' ) );
 			}
 
 			if ( in_array( $editor['background'], $background, true ) ) {
@@ -804,7 +957,46 @@ class Settings {
 	}
 
 	/**
-	 * Get list of settings page tabs
+	 * Show settings tab template.
+	 */
+	private function show_settings_section() {
+		$tab = $this->get_current_tab();
+
+		if ( ! empty( $tab ) ) {
+			include_once SHARING_IMAGE_DIR . "/templates/{$tab}.php";
+		}
+	}
+
+	/**
+	 * Show settings messages and errors after post actions.
+	 */
+	private function show_settings_message() {
+		// phpcs:ignore WordPress.Security.NonceVerification
+		$message = isset( $_GET['message'] ) ? absint( $_GET['message'] ) : 0;
+
+		switch ( $message ) {
+			case 1:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Settings successfully updated.', 'sharing-image' ), 'updated' );
+				break;
+
+			case 2:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to save template settings.', 'sharing-image' ) );
+				break;
+
+			case 3:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Template successfully deleted.', 'sharing-image' ), 'updated' );
+				break;
+
+			case 4:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to delete template.', 'sharing-image' ) );
+				break;
+		}
+
+		settings_errors( 'sharing-image' );
+	}
+
+	/**
+	 * Set list of settings page tabs.
 	 */
 	private function init_tabs() {
 		$tabs = array(
@@ -832,46 +1024,6 @@ class Settings {
 	}
 
 	/**
-	 * Show settings tab template.
-	 */
-	private function show_settings_section() {
-		$tab = $this->get_current_tab();
-
-		/*
-		if ( ! empty( $tab ) ) {
-			include_once SHARING_IMAGE_DIR . '/templates/premium.php';
-		}*/
-	}
-
-	/**
-	 * Show settings messages and errors after post actions.
-	 */
-	private function show_settings_message() {
-		// phpcs:ignore WordPress.Security.NonceVerification
-		$message = isset( $_GET['message'] ) ? absint( $_GET['message'] ) : 0;
-
-		switch ( $message ) {
-			case 1:
-				add_settings_error( 'sharing-image', 'settings', __( 'Settings successfully updated.', 'sharing-image' ), 'updated' );
-				break;
-
-			case 2:
-				add_settings_error( 'sharing-image', 'settings', __( 'Failed to save template settings.', 'sharing-image' ) );
-				break;
-
-			case 3:
-				add_settings_error( 'sharing-image', 'settings', __( 'Template successfully deleted.', 'sharing-image' ), 'updated' );
-				break;
-
-			case 4:
-				add_settings_error( 'sharing-image', 'settings', __( 'Failed to delete template.', 'sharing-image' ) );
-				break;
-		}
-
-		settings_errors( 'sharing-image' );
-	}
-
-	/**
 	 * Print menu on settings page.
 	 */
 	private function show_settings_menu() {
@@ -883,6 +1035,10 @@ class Settings {
 			);
 
 			if ( $current === $tab ) {
+				$classes[] = 'active';
+			}
+
+			if ( null === $current && ! empty( $args['default'] ) ) {
 				$classes[] = 'active';
 			}
 
@@ -910,12 +1066,6 @@ class Settings {
 			}
 		}
 		// phpcs:enable WordPress.Security.NonceVerification
-
-		foreach ( $this->tabs as $tab => $args ) {
-			if ( isset( $args['default'] ) && $args['default'] ) {
-				return $tab;
-			}
-		}
 
 		return null;
 	}

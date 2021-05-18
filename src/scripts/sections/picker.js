@@ -10,7 +10,7 @@ const { __ } = wp.i18n;
 // Store global script object for metabox.
 let params = null;
 
-// Poster element.
+// Poster HTML element.
 let poster = null;
 
 /**
@@ -23,6 +23,10 @@ function showPickerError( message ) {
 
 	// Try to find warning element.
 	const warning = picker.querySelector( '.sharing-image-picker-warning' );
+
+	if ( null === warning ) {
+		return;
+	}
 
 	warning.classList.add( 'warning-visible' );
 	warning.textContent = message || __( 'Unknown generation error', 'sharing-image' );
@@ -37,9 +41,11 @@ function hidePickerError() {
 	// Try to find warning element.
 	const warning = picker.querySelector( '.sharing-image-picker-warning' );
 
-	if ( null !== warning ) {
-		warning.classList.remove( 'warning-visible' );
+	if ( null === warning ) {
+		return;
 	}
+
+	warning.classList.remove( 'warning-visible' );
 }
 
 /**
@@ -76,7 +82,7 @@ function generatePoster( picker ) {
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
-		if ( request.status !== 200 || ! response.data ) {
+		if ( ! response.success ) {
 			return showPickerError( response.data );
 		}
 
@@ -149,8 +155,6 @@ function createTemplate( picker, designer, data ) {
 }
 
 function createDesignerAttachment( fieldset, template, values, name ) {
-	params.links = params.links || {};
-
 	if ( 'dynamic' === template.background ) {
 		Build.media( {
 			name: name + '[attachment]',
@@ -329,17 +333,18 @@ function createManager( picker ) {
  * Create poster block.
  *
  * @param {HTMLElement} picker Picker element.
+ * @param {Object} data Custom data object.
  */
-function createPoster( picker ) {
+function createPoster( picker, data ) {
 	poster = Build.element( 'div', {
 		classes: [ 'sharing-image-picker-poster' ],
 		append: picker,
 	} );
 
-	if ( params.poster ) {
+	if ( data.poster ) {
 		Build.element( 'img', {
 			attributes: {
-				src: params.poster,
+				src: data.poster,
 				alt: '',
 			},
 			append: poster,
@@ -352,7 +357,7 @@ function createPoster( picker ) {
 		attributes: {
 			type: 'hidden',
 			name: params.name + '[poster]',
-			value: params.poster || '',
+			value: data.poster || '',
 		},
 		append: poster,
 	} );
@@ -363,24 +368,36 @@ function createPoster( picker ) {
 /**
  * Create metabox generator picker.
  *
- * @param {HTMLElement} inside Metabox inside element.
- * @param {Object} object Global object field.
+ * @param {HTMLElement} widget Widget element.
+ * @param {Object} settings Global settings object.
  */
-function createPicker( inside, object ) {
-	params = object;
+function createPicker( widget, settings ) {
+	params = settings;
 
 	// Set params name for template form fields.
 	params.name = 'sharing_image_picker';
 
+	if ( 'taxonomy' === params.context ) {
+		const title = Build.element( 'div', {
+			classes: [ 'sharing-image-title' ],
+			append: widget,
+		} );
+
+		Build.element( 'strong', {
+			text: __( 'Sharing Image', 'sharing-image' ),
+			append: title,
+		} );
+	}
+
 	const picker = Build.element( 'div', {
 		classes: [ 'sharing-image-picker' ],
-		append: inside,
+		append: widget,
 	} );
 
-	const data = params.custom || {};
+	const data = params.meta || {};
 
 	// Create poster block.
-	createPoster( picker );
+	createPoster( picker, data );
 
 	// Create fields designer.
 	createDesigner( picker, data );

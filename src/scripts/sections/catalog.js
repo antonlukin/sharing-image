@@ -2,17 +2,20 @@ import Build from '../builders';
 
 const { __ } = wp.i18n;
 
+// Store global scriot object for settings page.
+let params = null;
+
 /**
  * Create template card in catalog.
  *
- * @param {HTMLElement} form Form HTML element.
+ * @param {HTMLElement} catalog Catalog HTML element.
  * @param {number} index Current card index.
  * @param {Object} option List of template options.
  */
-function createCard( form, index, option ) {
+function createCard( catalog, index, option ) {
 	const card = Build.element( 'div', {
 		classes: [ 'sharing-image-catalog-card' ],
-		append: form,
+		append: catalog,
 	} );
 
 	const preview = Build.element( 'figure', {
@@ -47,7 +50,7 @@ function createCard( form, index, option ) {
 		classes: [ 'button' ],
 		text: __( 'Edit template', 'sharing-image' ),
 		attributes: {
-			href: link,
+			href: link.href,
 		},
 		append: footer,
 	} );
@@ -56,43 +59,72 @@ function createCard( form, index, option ) {
 /**
  * Create new template button in catalog.
  *
- * @param {HTMLElement} form Form HTML element.
+ * @param {HTMLElement} catalog Catalog HTML element.
  * @param {number} index New card index.
  */
-function createNewButton( form, index ) {
+function createNewButton( catalog, index ) {
 	const link = new URL( document.location.href );
 	link.searchParams.set( 'template', index );
 
 	const button = Build.element( 'a', {
 		classes: [ 'sharing-image-catalog-new' ],
 		attributes: {
-			href: link,
+			href: link.href,
 		},
-		append: form,
+		append: catalog,
 	} );
 
-	Build.element( 'h2', {
-		text: __( 'Add new template', 'sharing-image' ),
+	const title = Build.element( 'h2', {
 		append: button,
 	} );
+
+	Build.element( 'strong', {
+		text: __( 'Add new template', 'sharing-image' ),
+		append: title,
+	} );
+
+	// Restrict new template creation for not Premium users.
+	if ( params.templates.length === 0 ) {
+		return;
+	}
+
+	const license = params.config.license || {};
+
+	if ( params.config.premium || license.develop ) {
+		return;
+	}
+
+	Build.element( 'span', {
+		text: __( '(Availible for Premium only)', 'sharing-image' ),
+		append: title,
+	} );
+
+	if ( params.links.premium ) {
+		button.setAttribute( 'href', params.links.premium );
+	}
 }
 
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} form Settings form element.
+ * @param {HTMLElement} content Settings content element.
  * @param {Object} settings Global settings field.
  */
-function createCatalog( form, settings ) {
-	form.classList.add( 'sharing-image-catalog' );
+function createCatalog( content, settings ) {
+	params = settings;
+
+	const catalog = Build.element( 'div', {
+		classes: [ 'sharing-image-catalog' ],
+		append: content,
+	} );
 
 	let index = 1;
 
 	settings.templates.forEach( ( template ) => {
-		createCard( form, index++, template );
+		createCard( catalog, index++, template );
 	} );
 
-	createNewButton( form, index );
+	createNewButton( catalog, index );
 }
 
 export default createCatalog;

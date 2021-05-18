@@ -16,15 +16,19 @@ body.settings_page_sharing-image {
     }
   }
 
-  .settings-error {
-    margin: 0 0 10px;
+  #setting-error-sharing-image {
+    display: block;
+    order: -1;
+
+    width: $width-settings - 40px;
+    max-width: 100%;
+
+    margin: 20px 0 0;
     font-weight: 600;
 
-    border-right: none;
     border-top: 1px solid #dcdcde;
     border-bottom: 1px solid #dcdcde;
-
-    box-shadow: none;
+    border-radius: 3px;
   }
 
   #sharing-image-settings {

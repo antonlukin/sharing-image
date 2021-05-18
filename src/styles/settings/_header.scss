@@ -1,5 +1,6 @@
 .sharing-image-header {
   display: block;
+  order: -2;
   width: 100%;
 
   background: #fff;
@@ -39,7 +40,7 @@
     transition: box-shadow .5s ease-in-out;
 
     &:focus-visible {
-      outline: 1px solid #787c82;
+      outline: 1px solid $color-focus;
     }
 
     &:focus {

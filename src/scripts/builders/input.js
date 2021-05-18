@@ -52,6 +52,10 @@ function buildInput( args, parent ) {
 		input.addEventListener( 'change', () => {
 			counter.textContent = input.value;
 		} );
+
+		input.addEventListener( 'input', () => {
+			counter.textContent = input.value;
+		} );
 	}
 
 	return input;
