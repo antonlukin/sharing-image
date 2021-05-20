@@ -7,6 +7,10 @@
     margin: 12px 0;
   }
 
+  & > * {
+    margin: 24px 0;
+  }
+
   & ~ #setting-error-sharing-image {
     max-width: $width-narrow - 40px;
   }

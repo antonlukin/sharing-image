@@ -118,7 +118,7 @@ function generatePoster( picker ) {
  *
  * @param {HTMLElement} picker Picker element.
  * @param {HTMLElement} designer Designer element.
- * @param {Object} data Custom data object.
+ * @param {Object} data Picker data object.
  */
 function createTemplate( picker, designer, data ) {
 	const fields = {};
@@ -199,7 +199,7 @@ function createDesignerCaptions( fieldset, template, values, name ) {
  * Create fields designer.
  *
  * @param {HTMLElement} picker Picker element.
- * @param {Object} data Custom data object.
+ * @param {Object} data Picker data object.
  */
 function createDesigner( picker, data ) {
 	const designer = Build.element( 'div', {
@@ -333,7 +333,7 @@ function createManager( picker ) {
  * Create poster block.
  *
  * @param {HTMLElement} picker Picker element.
- * @param {Object} data Custom data object.
+ * @param {Object} data Picker data object.
  */
 function createPoster( picker, data ) {
 	poster = Build.element( 'div', {

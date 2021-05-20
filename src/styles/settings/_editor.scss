@@ -8,303 +8,12 @@
   .sharing-image-editor-fieldset {
     display: block;
     flex: 1 1 auto;
-    margin-right: 50px;
+    margin-right: 48px;
+    margin-bottom: 24px;
 
     @media screen and (max-width: 1279px) {
       flex: 0 1 640px;
       margin-right: 0;
-    }
-  }
-
-  .sharing-image-editor-control {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: flex-start;
-    position: relative;
-
-    width: 100%;
-    margin-bottom: 25px;
-
-    p {
-      margin: 0 0 5px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-
-    strong {
-      display: block;
-      cursor: default;
-
-      width: 100%;
-      margin-bottom: 5px;
-
-      font-weight: 600;
-    }
-
-    small {
-      display: block;
-      cursor: default;
-
-      width: 100%;
-      margin-top: 5px;
-    }
-
-    &.control-row {
-      flex-flow: row nowrap;
-      align-items: center;
-
-      &>* {
-        margin-right: 14px;
-      }
-
-      &>*:last-child {
-        margin-right: 0;
-      }
-    }
-
-    &.control-grid {
-      flex-flow: row nowrap;
-
-      &>* {
-        margin-right: 14px;
-      }
-
-      &>*:nth-child(2) {
-        margin-right: 54px;
-      }
-
-      &>*:last-child {
-        margin-right: 0;
-      }
-
-      @media screen and (max-width: 782px) {
-        flex-flow: row wrap;
-
-        &>* {
-          width: calc(50% - 7px);
-        }
-
-        &>*:first-child {
-          margin-bottom: 14px;
-        }
-
-        &>*:nth-child(2) {
-          margin-right: 0;
-          margin-bottom: 14px;
-        }
-      }
-    }
-
-    &.control-single {
-      flex-flow: row nowrap;
-
-      &>* {
-        width: calc(50% - 27px);
-      }
-    }
-
-    &.control-double {
-      flex-flow: row nowrap;
-
-      &>*:first-child {
-        margin-right: 54px;
-      }
-
-      @media screen and (max-width: 782px) {
-        flex-flow: row wrap;
-
-        &>* {
-          width: 100%;
-        }
-
-        &>*:first-child {
-          margin-right: 0;
-          margin-bottom: 14px;
-        }
-      }
-    }
-
-    &.control-upload {
-      flex-flow: row wrap;
-      align-items: flex-end;
-
-      &>*:first-child {
-        flex: 1 1 auto;
-        margin-right: 14px;
-      }
-    }
-
-    &.control-hidden {
-      display: none;
-    }
-
-    &.control-details {
-      flex-flow: row nowrap;
-      align-items: center;
-
-      .button {
-        margin-right: 14px;
-      }
-
-      .button:disabled~* {
-        display: none;
-      }
-    }
-
-    &.control-compact {
-      max-width: 300px;
-    }
-
-    &.control-footer {
-      margin-bottom: 0;
-    }
-
-    &.control-pinned {
-      margin-bottom: 15px;
-    }
-
-    &.control-overlined {
-      flex-flow: row nowrap;
-      align-items: center;
-
-      padding-top: 20px;
-      border-top: solid 1px #dcdcde;
-
-      &>* {
-        margin-right: 28px;
-      }
-
-      &>*:last-child {
-        margin-right: 0;
-      }
-    }
-  }
-
-  .sharing-image-editor-media {
-    display: flex;
-    align-items: center;
-
-    margin-top: 8px;
-
-    a {
-      margin-left: 14px;
-    }
-
-    button {
-      margin-bottom: 0;
-    }
-  }
-
-  .sharing-image-editor-radio {
-    display: block;
-    position: relative;
-
-    margin-top: 5px;
-
-    span {
-      user-select: none;
-    }
-
-    input[type="radio"] {
-      margin-right: 8px;
-    }
-
-    @media screen and (max-width: 782px) {
-      margin-top: 10px;
-    }
-  }
-
-  .sharing-image-editor-color {
-    display: block;
-    position: relative;
-
-    input[type="color"] {
-      cursor: pointer;
-    }
-  }
-
-  .sharing-image-editor-checkbox {
-    display: block;
-    position: relative;
-
-    margin-top: 5px;
-
-    span {
-      user-select: none;
-    }
-
-    input[type="checkbox"] {
-      margin-right: 8px;
-    }
-  }
-
-  .sharing-image-editor-range {
-    display: block;
-    position: relative;
-    width: 100%;
-
-    input[type="range"] {
-      display: block;
-      width: 100%;
-      margin: 8px 0;
-    }
-
-    em {
-      display: block;
-      cursor: default;
-
-      position: absolute;
-      right: 0;
-      top: 4px;
-
-      font-size: 10px;
-      font-style: normal;
-
-      color: $color-links
-    }
-  }
-
-  .sharing-image-editor-button {
-    display: block;
-  }
-
-  .sharing-image-editor-input {
-    display: block;
-    position: relative;
-
-    width: 100%;
-
-    input[type="text"] {
-      display: block;
-      width: calc(100% - 2px);
-    }
-  }
-
-  .sharing-image-editor-textarea {
-    display: block;
-    position: relative;
-
-    width: 100%;
-
-    textarea {
-      display: block;
-      width: calc(100% - 2px);
-      min-height: 30px;
-    }
-  }
-
-  .sharing-image-editor-select {
-    display: block;
-    position: relative;
-
-    flex: 1 1 100%;
-
-    select {
-      display: block;
-      width: calc(100% - 2px);
-      max-width: none;
     }
   }
 
@@ -342,30 +51,6 @@
     }
   }
 
-  .sharing-image-editor-more {
-    display: block;
-    cursor: pointer;
-
-    margin: 0;
-    padding: 0;
-
-    color: $color-links;
-    background: transparent;
-
-    border: none;
-    border-bottom: solid 1px;
-
-    transition: border 0.25s;
-
-    &:focus {
-      @include link-focus;
-    }
-
-    &:hover {
-      border-bottom-color: transparent;
-    }
-  }
-
   .sharing-image-editor-order {
     display: block;
     cursor: pointer;
@@ -373,7 +58,7 @@
     position: absolute;
     top: 4px;
     right: 4px;
-    padding: 5px 5px 2px;
+    padding: 4px 4px 2px;
 
     font-size: 16px;
     color: #aaa;
@@ -401,8 +86,8 @@
     display: block;
     position: relative;
 
-    margin: 0 0 15px;
-    padding: 12px 10px 15px;
+    margin: 0 0 16px;
+    padding: 12px 10px 16px;
 
     background-color: #fff;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
@@ -410,7 +95,7 @@
     border: 1px solid #ccd0d4;
     border-radius: 4px;
 
-    h3 {
+    h2 {
       display: block;
       margin: 0 0 10px;
       padding-right: 20px;
@@ -421,7 +106,7 @@
 
     h5 {
       display: block;
-      margin: 0 10px 25px 0;
+      margin: 0 10px 24px 0;
 
       font-size: 13px;
       font-weight: 400;
@@ -456,7 +141,7 @@
     display: block;
 
     position: sticky;
-    top: 50px;
+    top: 52px;
 
     width: 100%;
   }
@@ -533,7 +218,7 @@
     display: none;
     position: relative;
 
-    margin: 12px 0 -5px;
+    margin: 12px 0 -6px;
     padding: 8px 12px;
 
     background: #fff;
@@ -554,7 +239,7 @@
     flex-flow: row wrap;
 
     width: 100%;
-    margin-top: 15px;
+    margin-top: 16px;
 
     button {
       margin-right: 14px;
@@ -580,7 +265,7 @@
       order: 0;
 
       width: 100%;
-      margin-bottom: 25px;
+      margin-bottom: 24px;
     }
   }
 

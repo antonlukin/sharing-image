@@ -13,8 +13,13 @@ function initPremiumTab( content, settings ) {
 
 /**
  * Init config settings tab.
+ *
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings object.
  */
-function initConfigTab() {}
+function initConfigTab( content, settings ) {
+	Section.config( content, settings );
+}
 
 /**
  * Init config settings tab.

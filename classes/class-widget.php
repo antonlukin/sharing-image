@@ -423,7 +423,7 @@ class Widget {
 		/**
 		 * Filter widget script object.
 		 *
-		 * @param array $object  Array of widget script object.
+		 * @param array $object Array of widget script object.
 		 */
 		return apply_filters( 'sharing_image_widget_object', $object );
 	}

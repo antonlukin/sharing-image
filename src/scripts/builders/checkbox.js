@@ -16,6 +16,7 @@ function buildCheckbox( args, parent ) {
 		attributes: {
 			type: 'checkbox',
 		},
+		dataset: args.dataset || {},
 		append: field,
 	} );
 

@@ -14,7 +14,7 @@ function buildInput( args, parent ) {
 	} );
 
 	if ( args.hasOwnProperty( 'label' ) ) {
-		const label = buildElement( 'strong', {
+		const label = buildElement( 'h4', {
 			text: args.label,
 		} );
 
@@ -27,10 +27,11 @@ function buildInput( args, parent ) {
 		attributes: {
 			type: 'text',
 		},
+		dataset: args.dataset || {},
 		append: field,
 	} );
 
-	// Set attributes
+	// Set attributes.
 	if ( args.hasOwnProperty( 'attributes' ) ) {
 		for ( const key in args.attributes ) {
 			const value = args.attributes[ key ];

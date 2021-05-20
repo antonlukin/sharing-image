@@ -19,8 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<div class="sharing-image-premium-benefits">
 		<p>
-			<?php esc_html_e( 'The premium version of the plugin adds new features and helps the product develop.', 'sharing-image' ); ?>
-			<?php esc_html_e( 'We look forward to your support.', 'sharing-image' ); ?>
+			<?php esc_html_e( 'The Premium version of the plugin adds new features and helps the product develop.', 'sharing-image' ); ?>
+		</p>
+
+		<p>
+			<strong><?php esc_html_e( 'For this it is worth getting a Premium:', 'sharing-image' ); ?></strong>
 		</p>
 
 		<ul>
@@ -39,19 +42,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</ul>
 
 		<p>
-			<?php esc_html_e( 'To get the premium version, you need to buy a key on the official website of the plugin.', 'sharing-image' ); ?>
+			<?php esc_html_e( 'To get the Premium version, you need to buy a key on the official website of the plugin.', 'sharing-image' ); ?>
 			<?php esc_html_e( 'If you already have the key, activate it in the box below.', 'sharing-image' ); ?>
 			<?php esc_html_e( 'Each key can be used up to 5 times on different sites.', 'sharing-image' ); ?>
 		</p>
 
 		<p>
-			<a class="button button-primary" href="https://notset.org/sharing-image/premium/" target="_blank" rel="noopener"><?php esc_html_e( 'Get premium', 'sharing-image' ); ?></a>
+			<a class="button button-primary" href="https://notset.org/sharing-image/premium/" target="_blank" rel="noopener"><?php esc_html_e( 'Get Premium', 'sharing-image' ); ?></a>
 		</p>
 	</div>
 
 	<div class="sharing-image-premium-gratitude">
 		<p>
-			<?php esc_html_e( 'You have successfully purchased premium access to this plugin.', 'sharing-image' ); ?>
+			<?php esc_html_e( 'You have successfully purchased Premium access to this plugin.', 'sharing-image' ); ?>
 			<?php esc_html_e( 'Now you can take advantage of all the features of the plugin and priority support.', 'sharing-image' ); ?>
 		</p>
 

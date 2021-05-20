@@ -16,6 +16,7 @@ function buildRadio( args, parent ) {
 		attributes: {
 			type: 'radio',
 		},
+		dataset: args.dataset || {},
 		append: field,
 	} );
 

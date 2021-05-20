@@ -40,6 +40,14 @@ class Settings {
 	const OPTION_CONFIG = 'sharing_image_config';
 
 	/**
+	 * Plugin admin menu slug.
+	 *
+	 * @var string
+	 */
+	const SETTINGS_SLUG = 'sharing-image';
+
+
+	/**
 	 * Remote licenses API url.
 	 *
 	 * @var string
@@ -104,7 +112,7 @@ class Settings {
 			esc_html__( 'Sharing Image settings', 'sharing-image' ),
 			esc_html__( 'Sharing Image', 'sharing-image' ),
 			'manage_options',
-			SHARING_IMAGE_SLUG,
+			self::SETTINGS_SLUG,
 			array( $this, 'display_settings' )
 		);
 
@@ -120,6 +128,7 @@ class Settings {
 		$actions = array(
 			'editor' => 'save_settings_template',
 			'delete' => 'delete_settings_template',
+			'config' => 'save_settings_config',
 		);
 
 		foreach ( $actions as $key => $method ) {
@@ -156,6 +165,7 @@ class Settings {
 	 *
 	 * @param array  $actions     An array of plugin action links.
 	 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
+	 * @return array
 	 */
 	public function add_settings_link( $actions, $plugin_file ) {
 		$actions = (array) $actions;
@@ -163,7 +173,7 @@ class Settings {
 		if ( plugin_basename( SHARING_IMAGE_FILE ) === $plugin_file ) {
 			$actions[] = sprintf(
 				'<a href="%s">%s</a>',
-				admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG ),
+				admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG ),
 				__( 'Settings', 'sharing-image' )
 			);
 		}
@@ -181,32 +191,32 @@ class Settings {
 			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
 		}
 
-		$link = admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG );
+		$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
 
 		if ( ! isset( $_POST['sharing_image_index'] ) ) {
-			return $this->redirect_with_message( $link, 2 );
+			$this->redirect_with_message( $return, 2 );
 		}
 
 		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
 
 		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
-			return $this->redirect_with_message( $link, 2 );
+			$this->redirect_with_message( $return, 2 );
 		}
 
 		// Skip 2nd+ templates if the Premium is not active.
 		if ( $index > 0 && ! $this->is_premium_features() ) {
-			return $this->redirect_with_message( $link, 2 );
+			$this->redirect_with_message( $return, 2 );
 		}
 
-		$link = add_query_arg( array( 'template' => $index + 1 ), $link );
+		$return = add_query_arg( array( 'template' => $index + 1 ), $return );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
 		// Update settings template.
-		$this->update_template( $editor, $index );
+		$this->replace_template( $editor, $index );
 
-		return $this->redirect_with_message( $link, 1 );
+		$this->redirect_with_message( $return, 1 );
 	}
 
 	/**
@@ -219,20 +229,43 @@ class Settings {
 			return;
 		}
 
-		$link = admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG );
+		$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
 
 		if ( ! isset( $_REQUEST['template'] ) ) {
-			return $this->redirect_with_message( $link, 4 );
+			$this->redirect_with_message( $return, 4 );
 		}
 
 		// Get index from template ID.
 		$index = absint( $_REQUEST['template'] ) - 1;
 
 		if ( ! $this->delete_template( $index ) ) {
-			return $this->redirect_with_message( $link, 4 );
+			$this->redirect_with_message( $return, 4 );
 		}
 
-		return $this->redirect_with_message( $link, 3 );
+		$this->redirect_with_message( $return, 3 );
+	}
+
+
+	/**
+	 * Save config fields.
+	 */
+	public function save_settings_config() {
+		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+		}
+
+		$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
+
+		/*
+		if ( isset( $this->tabs['config']['link'] ) ) {
+			$return = $this->tabs['config']['link'];
+		}
+		*/
+
+		print_r( $_POST );
+		exit;
 	}
 
 	/**
@@ -451,22 +484,9 @@ class Settings {
 		// Translations availible only for WP 5.0+.
 		wp_set_script_translations( 'sharing-image-settings', 'sharing-image' );
 
-		$object = array(
-			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
+		$object = $this->create_script_object();
 
-			'links'     => array(
-				'uploads' => esc_url( admin_url( 'upload.php' ) ),
-				'action'  => esc_url( admin_url( 'admin-post.php' ) ),
-			),
-			'fonts'     => $this->get_fonts(),
-			'config'    => $this->get_config(),
-			'templates' => $this->get_templates(),
-		);
-
-		if ( isset( $this->tabs['premium']['link'] ) ) {
-			$object['links']['premium'] = esc_url( $this->tabs['premium']['link'], null, '' );
-		}
-
+		// Add settings script object.
 		wp_localize_script( 'sharing-image-settings', 'sharingImageSettings', $object );
 	}
 
@@ -553,6 +573,7 @@ class Settings {
 	 * Update templates in options.
 	 *
 	 * @param array $templates List of new templates.
+	 * @return bool
 	 */
 	public function update_templates( $templates ) {
 		/**
@@ -567,12 +588,14 @@ class Settings {
 
 	/**
 	 * Update single template by index.
+	 * Method get_templates() is not used to save old templates during Premium switching.
 	 *
 	 * @param array $editor New template data.
 	 * @param int   $index  Template index to update.
+	 * @return bool
 	 */
-	public function update_template( $editor, $index ) {
-		$templates = $this->get_templates();
+	public function replace_template( $editor, $index ) {
+		$templates = get_option( self::OPTION_TEMPLATES, array() );
 
 		$templates[ $index ] = $editor;
 
@@ -584,11 +607,13 @@ class Settings {
 
 	/**
 	 * Delete template by index.
+	 * Method get_templates() is not used to save old templates during Premium switching.
 	 *
 	 * @param int $index Template index to delete.
+	 * @return bool
 	 */
 	public function delete_template( $index ) {
-		$templates = $this->get_templates();
+		$templates = get_option( self::OPTION_TEMPLATES, array() );
 
 		unset( $templates[ $index ] );
 
@@ -602,8 +627,7 @@ class Settings {
 	 * Update settings page title.
 	 *
 	 * @param string $title Plugin settings page title.
-	 *
-	 * @return string Updated page title.
+	 * @return string
 	 */
 	public function update_settings_title( $title ) {
 		if ( ! $this->is_settings_screen() ) {
@@ -622,7 +646,7 @@ class Settings {
 
 		$label = esc_html( $this->tabs[ $tab ]['label'] );
 
-		return sprintf( '%1$s &ndash; %2$s', $label, $title );
+		return sprintf( '%s &ndash; %s', $label, $title );
 	}
 
 	/**
@@ -641,9 +665,39 @@ class Settings {
 	}
 
 	/**
+	 * Create script object to inject with settings.
+	 *
+	 * @return array
+	 */
+	private function create_script_object() {
+		$uploads = wp_get_upload_dir();
+
+		$object = array(
+			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
+			'links'     => array(
+				'uploads'  => esc_url( admin_url( 'upload.php' ) ),
+				'action'   => esc_url( admin_url( 'admin-post.php' ) ),
+				'filepath' => path_join( $uploads['basedir'], 'sharing-image' ),
+				'premium'  => esc_url_raw( $this->get_tab_link( 'premium' ) ),
+			),
+			'fonts'     => $this->get_fonts(),
+			'config'    => $this->get_config(),
+			'templates' => $this->get_templates(),
+		);
+
+		/**
+		 * Filter settings script object.
+		 *
+		 * @param array $object Array of settings script object.
+		 */
+		return apply_filters( 'sharing_image_settings_object', $object );
+	}
+
+	/**
 	 * Sanitize editor template settings.
 	 *
 	 * @param array $editor Template editor settings.
+	 * @return array
 	 */
 	private function sanitize_editor( $editor ) {
 		$sanitized = array();
@@ -734,6 +788,7 @@ class Settings {
 	 * Sanitize template editor text layer.
 	 *
 	 * @param array $layer Layer settings.
+	 * @return array
 	 */
 	private function sanitize_text_layer( $layer ) {
 		$sanitized = array();
@@ -826,6 +881,7 @@ class Settings {
 	 * Sanitize template editor image layer.
 	 *
 	 * @param array $layer Layer settings.
+	 * @return array
 	 */
 	private function sanitize_image_layer( $layer ) {
 		$sanitized = array();
@@ -854,6 +910,7 @@ class Settings {
 	 * Sanitize template editor filter layer.
 	 *
 	 * @param array $layer Layer settings.
+	 * @return array
 	 */
 	private function sanitize_filter_layer( $layer ) {
 		$sanitized = array();
@@ -906,6 +963,7 @@ class Settings {
 	 * Sanitize template editor rectagle layer.
 	 *
 	 * @param array $layer Layer settings.
+	 * @return array
 	 */
 	private function sanitize_rectangle_layer( $layer ) {
 		$sanitized = array();
@@ -1002,16 +1060,16 @@ class Settings {
 		$tabs = array(
 			'templates' => array(
 				'label'   => __( 'Templates', 'sharing-image' ),
-				'link'    => admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG ),
+				'link'    => admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG ),
 				'default' => true,
 			),
 			'config'    => array(
 				'label' => __( 'Configuration', 'sharing-image' ),
-				'link'  => admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG . '&tab=config' ),
+				'link'  => admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG . '&tab=config' ),
 			),
 			'premium'   => array(
 				'label' => __( 'Premium', 'sharing-image' ),
-				'link'  => admin_url( 'options-general.php?page=' . SHARING_IMAGE_SLUG . '&tab=premium' ),
+				'link'  => admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG . '&tab=premium' ),
 			),
 		);
 
@@ -1052,9 +1110,23 @@ class Settings {
 	}
 
 	/**
+	 * Get tab link by slug.
+	 *
+	 * @param string $tab Tab name.
+	 * @return string|null
+	 */
+	private function get_tab_link( $tab ) {
+		if ( empty( $this->tabs[ $tab ]['link'] ) ) {
+			return null;
+		}
+
+		return $this->tabs[ $tab ]['link'];
+	}
+
+	/**
 	 * Get current tab.
 	 *
-	 * @return string $tab Current tab name.
+	 * @return string|null
 	 */
 	private function get_current_tab() {
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -1073,13 +1145,13 @@ class Settings {
 	/**
 	 * Add message id to the back link and redirect
 	 *
-	 * @param string $link    Back link.
+	 * @param string $return  Redirect link.
 	 * @param int    $message Settings error message id.
 	 */
-	private function redirect_with_message( $link, $message ) {
-		$link = add_query_arg( array( 'message' => $message ), $link );
+	private function redirect_with_message( $return, $message ) {
+		$return = add_query_arg( array( 'message' => $message ), $return );
 
-		wp_safe_redirect( $link );
+		wp_safe_redirect( $return );
 		exit;
 	}
 

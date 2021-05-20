@@ -27,11 +27,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'SHARING_IMAGE_VERSION', '0.1.0' );
 
 /**
- * Plugin admin menu slug.
- */
-define( 'SHARING_IMAGE_SLUG', 'sharing-image' );
-
-/**
  * Main plugin file.
  */
 define( 'SHARING_IMAGE_FILE', __FILE__ );

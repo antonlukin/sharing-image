@@ -1,3 +1,307 @@
+input[type="range"] {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background: transparent; }
+  input[type="range"]:focus {
+    outline: none; }
+  input[type="range"]::-webkit-slider-runnable-track {
+    cursor: pointer;
+    width: 100%;
+    height: 7px;
+    background: #dddddd;
+    border-radius: 4px;
+    border: solid 1px #b7b7b7; }
+  input[type="range"]::-webkit-slider-thumb {
+    cursor: pointer;
+    -webkit-appearance: none;
+            appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -5.5px;
+    background: #3582c4;
+    border: 0;
+    border-radius: 50%; }
+  input[type="range"]:focus::-webkit-slider-thumb {
+    background: #2a679c; }
+  input[type="range"]:hover::-webkit-slider-runnable-track {
+    background: #d0d0d0; }
+  input[type="range"]::-moz-range-track {
+    cursor: pointer;
+    width: 100%;
+    height: 7px;
+    background: #dddddd;
+    border-radius: 4px;
+    border: solid 1px #c4c4c4; }
+  input[type="range"]::-moz-range-progress {
+    cursor: pointer;
+    width: 100%;
+    height: 7px;
+    background: #3582c4;
+    border-radius: 4px;
+    border: solid 1px #3582c4; }
+  input[type="range"]::-moz-range-thumb {
+    cursor: pointer;
+    -moz-appearance: none;
+         appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -5.5px;
+    background: #3582c4;
+    border: 0;
+    border-radius: 50%; }
+  input[type="range"]:focus::-moz-range-thumb {
+    background: #2a679c; }
+  input[type="range"]::-ms-track {
+    cursor: pointer;
+    width: 100%;
+    height: 7px;
+    background: #dddddd;
+    border-radius: 4px;
+    border: solid 1px #c4c4c4; }
+  input[type="range"]::-ms-fill-lower {
+    background: #dddddd;
+    border-radius: 4px;
+    border: solid 1px #c4c4c4; }
+  input[type="range"]::-ms-fill-upper {
+    background: #3582c4;
+    border-radius: 4px;
+    border: solid 1px #3582c4; }
+  input[type="range"]::-ms-thumb {
+    cursor: pointer;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -5.5px;
+    background: #3582c4;
+    border: 0;
+    border-radius: 50%; }
+  input[type="range"]:focus::-ms-thumb {
+    background: #2a679c; }
+
+.sharing-image-control {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  position: relative;
+  width: 100%;
+  margin-bottom: 24px; }
+  .sharing-image-control p {
+    margin: 0 0 5px; }
+    .sharing-image-control p:last-child {
+      margin-bottom: 0; }
+  .sharing-image-control h3, .sharing-image-control h4 {
+    display: block;
+    cursor: default;
+    width: 100%;
+    margin: 0 0 5px;
+    font-size: 13px;
+    font-weight: 600; }
+  .sharing-image-control small {
+    display: block;
+    cursor: default;
+    width: 100%;
+    margin-top: 6px;
+    font-size: 10.5px;
+    line-height: 1.5; }
+  .sharing-image-control.control-row {
+    flex-flow: row nowrap;
+    align-items: center; }
+    .sharing-image-control.control-row > * {
+      margin-right: 14px; }
+    .sharing-image-control.control-row > *:last-child {
+      margin-right: 0; }
+  .sharing-image-control.control-extend > * {
+    width: 100%; }
+  .sharing-image-control.control-table {
+    flex-flow: row nowrap; }
+    .sharing-image-control.control-table > * {
+      margin-right: 14px; }
+    .sharing-image-control.control-table > *:nth-child(2) {
+      margin-right: 54px; }
+    .sharing-image-control.control-table > *:last-child {
+      margin-right: 0; }
+    @media screen and (max-width: 782px) {
+      .sharing-image-control.control-table {
+        flex-flow: row wrap; }
+        .sharing-image-control.control-table > * {
+          width: calc(50% - 7px); }
+        .sharing-image-control.control-table > *:first-child {
+          margin-bottom: 14px; }
+        .sharing-image-control.control-table > *:nth-child(2) {
+          margin-right: 0;
+          margin-bottom: 14px; } }
+  .sharing-image-control.control-config {
+    display: grid;
+    grid-template-columns: 240px auto;
+    position: relative;
+    width: 100%;
+    max-width: 620px;
+    margin: 40px 0; }
+    .sharing-image-control.control-config h3 {
+      grid-column: 1;
+      margin: 6px 0;
+      font-size: 14px; }
+    .sharing-image-control.control-config h4 {
+      margin: 0; }
+    .sharing-image-control.control-config h3 ~ * {
+      grid-column: 2;
+      width: 100%; }
+  .sharing-image-control.control-single {
+    flex-flow: row nowrap; }
+    .sharing-image-control.control-single > * {
+      width: calc(50% - 27px); }
+  .sharing-image-control.control-double {
+    flex-flow: row nowrap; }
+    .sharing-image-control.control-double > *:first-child {
+      margin-right: 54px; }
+    @media screen and (max-width: 782px) {
+      .sharing-image-control.control-double {
+        flex-flow: row wrap; }
+        .sharing-image-control.control-double > * {
+          width: 100%; }
+        .sharing-image-control.control-double > *:first-child {
+          margin-right: 0;
+          margin-bottom: 14px; } }
+  .sharing-image-control.control-upload {
+    flex-flow: row wrap;
+    align-items: flex-end; }
+    .sharing-image-control.control-upload > *:first-child {
+      flex: 1 1 auto;
+      margin-right: 14px; }
+    .sharing-image-control.control-upload > *:nth-child(2) {
+      margin-top: 8px; }
+  .sharing-image-control.control-hidden {
+    display: none; }
+  .sharing-image-control.control-details {
+    flex-flow: row nowrap;
+    align-items: center; }
+    .sharing-image-control.control-details .button {
+      margin-right: 14px; }
+    .sharing-image-control.control-details .button:disabled ~ * {
+      display: none; }
+  .sharing-image-control.control-filepath label {
+    margin: 0 0 5px; }
+  .sharing-image-control.control-filepath > *:last-child {
+    margin-top: 10px; }
+  .sharing-image-control.control-compact {
+    max-width: 300px; }
+  .sharing-image-control.control-footer {
+    margin-bottom: 0; }
+  .sharing-image-control.control-rest small {
+    margin-top: 10px; }
+  .sharing-image-control.control-pinned {
+    margin-bottom: 15px; }
+  .sharing-image-control.control-format h3 + * {
+    margin-bottom: 20px; }
+  .sharing-image-control.control-footer {
+    flex-flow: row nowrap;
+    align-items: center;
+    padding-top: 20px;
+    border-top: solid 1px #dcdcde; }
+    .sharing-image-control.control-footer > * {
+      margin-right: 28px; }
+    .sharing-image-control.control-footer > *:last-child {
+      margin-right: 0; }
+  .sharing-image-control .sharing-image-control-fieldset {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start; }
+  .sharing-image-control .sharing-image-control-media {
+    display: flex;
+    align-items: center; }
+    .sharing-image-control .sharing-image-control-media a {
+      margin-left: 14px; }
+    .sharing-image-control .sharing-image-control-media button {
+      margin-bottom: 0; }
+  .sharing-image-control .sharing-image-control-radio {
+    display: block;
+    position: relative;
+    margin-top: 5px; }
+    .sharing-image-control .sharing-image-control-radio span {
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none; }
+    .sharing-image-control .sharing-image-control-radio input {
+      margin-right: 8px; }
+    @media screen and (max-width: 782px) {
+      .sharing-image-control .sharing-image-control-radio {
+        margin-top: 10px; } }
+  .sharing-image-control .sharing-image-control-color {
+    display: block;
+    position: relative; }
+    .sharing-image-control .sharing-image-control-color input[type="color"] {
+      cursor: pointer; }
+  .sharing-image-control .sharing-image-control-checkbox {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-top: 5px; }
+    .sharing-image-control .sharing-image-control-checkbox span {
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none; }
+    .sharing-image-control .sharing-image-control-checkbox input[type="checkbox"] {
+      margin: 0 8px 0 0; }
+  .sharing-image-control .sharing-image-control-range {
+    display: block;
+    position: relative;
+    width: 100%; }
+    .sharing-image-control .sharing-image-control-range input {
+      display: block;
+      width: 100%;
+      margin: 8px 0; }
+    .sharing-image-control .sharing-image-control-range em {
+      display: block;
+      cursor: default;
+      position: absolute;
+      right: 2px;
+      top: 0;
+      font-size: 10px;
+      font-style: normal;
+      color: #3582c4; }
+  .sharing-image-control .sharing-image-control-button {
+    display: block;
+    margin-bottom: 0; }
+  .sharing-image-control .sharing-image-control-input {
+    display: block;
+    position: relative; }
+    .sharing-image-control .sharing-image-control-input input {
+      display: block;
+      width: calc(100% - 2px); }
+  .sharing-image-control .sharing-image-control-textarea {
+    display: block;
+    position: relative; }
+    .sharing-image-control .sharing-image-control-textarea textarea {
+      display: block;
+      width: calc(100% - 2px);
+      min-height: 30px; }
+  .sharing-image-control .sharing-image-control-select {
+    display: block;
+    position: relative;
+    flex: 1 1 100%; }
+    .sharing-image-control .sharing-image-control-select select {
+      display: block;
+      width: calc(100% - 2px);
+      max-width: none; }
+  .sharing-image-control .sharing-image-control-more {
+    display: block;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    color: #3582c4;
+    background: transparent;
+    border: none;
+    border-bottom: solid 1px;
+    transition: border 0.25s; }
+    .sharing-image-control .sharing-image-control-more:focus {
+      box-shadow: 0 0 0 1px #5b9dd9, 0 0 2px 1px rgba(30, 140, 190, 0.8);
+      outline: 1px solid transparent; }
+    .sharing-image-control .sharing-image-control-more:hover {
+      border-bottom-color: transparent; }
+
 @-webkit-keyframes rotate {
   0% {
     transform: rotate(0deg); }
@@ -142,6 +446,8 @@ body.settings_page_sharing-image #sharing-image-settings {
     padding: 20px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-config h2 {
       margin: 12px 0; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-config > * {
+      margin: 24px 0; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-config ~ #setting-error-sharing-image {
       max-width: 760px; }
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-content {
@@ -160,184 +466,12 @@ body.settings_page_sharing-image #sharing-image-settings {
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-fieldset {
       display: block;
       flex: 1 1 auto;
-      margin-right: 50px; }
+      margin-right: 48px;
+      margin-bottom: 24px; }
       @media screen and (max-width: 1279px) {
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-fieldset {
           flex: 0 1 640px;
           margin-right: 0; } }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control {
-      display: flex;
-      flex-flow: column nowrap;
-      align-items: flex-start;
-      position: relative;
-      width: 100%;
-      margin-bottom: 25px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control p {
-        margin: 0 0 5px; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control p:last-child {
-          margin-bottom: 0; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control strong {
-        display: block;
-        cursor: default;
-        width: 100%;
-        margin-bottom: 5px;
-        font-weight: 600; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control small {
-        display: block;
-        cursor: default;
-        width: 100%;
-        margin-top: 5px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-row {
-        flex-flow: row nowrap;
-        align-items: center; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-row > * {
-          margin-right: 14px; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-row > *:last-child {
-          margin-right: 0; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid {
-        flex-flow: row nowrap; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > * {
-          margin-right: 14px; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > *:nth-child(2) {
-          margin-right: 54px; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > *:last-child {
-          margin-right: 0; }
-        @media screen and (max-width: 782px) {
-          body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid {
-            flex-flow: row wrap; }
-            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > * {
-              width: calc(50% - 7px); }
-            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > *:first-child {
-              margin-bottom: 14px; }
-            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-grid > *:nth-child(2) {
-              margin-right: 0;
-              margin-bottom: 14px; } }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-single {
-        flex-flow: row nowrap; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-single > * {
-          width: calc(50% - 27px); }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double {
-        flex-flow: row nowrap; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double > *:first-child {
-          margin-right: 54px; }
-        @media screen and (max-width: 782px) {
-          body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double {
-            flex-flow: row wrap; }
-            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double > * {
-              width: 100%; }
-            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-double > *:first-child {
-              margin-right: 0;
-              margin-bottom: 14px; } }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-upload {
-        flex-flow: row wrap;
-        align-items: flex-end; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-upload > *:first-child {
-          flex: 1 1 auto;
-          margin-right: 14px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-hidden {
-        display: none; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-details {
-        flex-flow: row nowrap;
-        align-items: center; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-details .button {
-          margin-right: 14px; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-details .button:disabled ~ * {
-          display: none; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-compact {
-        max-width: 300px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-footer {
-        margin-bottom: 0; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-pinned {
-        margin-bottom: 15px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-overlined {
-        flex-flow: row nowrap;
-        align-items: center;
-        padding-top: 20px;
-        border-top: solid 1px #dcdcde; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-overlined > * {
-          margin-right: 28px; }
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-overlined > *:last-child {
-          margin-right: 0; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-media {
-      display: flex;
-      align-items: center;
-      margin-top: 8px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-media a {
-        margin-left: 14px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-media button {
-        margin-bottom: 0; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio {
-      display: block;
-      position: relative;
-      margin-top: 5px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio span {
-        -webkit-user-select: none;
-           -moz-user-select: none;
-            -ms-user-select: none;
-                user-select: none; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio input[type="radio"] {
-        margin-right: 8px; }
-      @media screen and (max-width: 782px) {
-        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-radio {
-          margin-top: 10px; } }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-color {
-      display: block;
-      position: relative; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-color input[type="color"] {
-        cursor: pointer; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-checkbox {
-      display: block;
-      position: relative;
-      margin-top: 5px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-checkbox span {
-        -webkit-user-select: none;
-           -moz-user-select: none;
-            -ms-user-select: none;
-                user-select: none; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-checkbox input[type="checkbox"] {
-        margin-right: 8px; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-range {
-      display: block;
-      position: relative;
-      width: 100%; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-range input[type="range"] {
-        display: block;
-        width: 100%;
-        margin: 8px 0; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-range em {
-        display: block;
-        cursor: default;
-        position: absolute;
-        right: 0;
-        top: 4px;
-        font-size: 10px;
-        font-style: normal;
-        color: #3582c4; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-button {
-      display: block; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-input {
-      display: block;
-      position: relative;
-      width: 100%; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-input input[type="text"] {
-        display: block;
-        width: calc(100% - 2px); }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-textarea {
-      display: block;
-      position: relative;
-      width: 100%; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-textarea textarea {
-        display: block;
-        width: calc(100% - 2px);
-        min-height: 30px; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-select {
-      display: block;
-      position: relative;
-      flex: 1 1 100%; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-select select {
-        display: block;
-        width: calc(100% - 2px);
-        max-width: none; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-designer {
       display: block;
       width: 100%; }
@@ -359,28 +493,13 @@ body.settings_page_sharing-image #sharing-image-settings {
         outline: 1px solid transparent; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-delete:hover {
         border-bottom-color: transparent; }
-    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-more {
-      display: block;
-      cursor: pointer;
-      margin: 0;
-      padding: 0;
-      color: #3582c4;
-      background: transparent;
-      border: none;
-      border-bottom: solid 1px;
-      transition: border 0.25s; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-more:focus {
-        box-shadow: 0 0 0 1px #5b9dd9, 0 0 2px 1px rgba(30, 140, 190, 0.8);
-        outline: 1px solid transparent; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-more:hover {
-        border-bottom-color: transparent; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-order {
       display: block;
       cursor: pointer;
       position: absolute;
       top: 4px;
       right: 4px;
-      padding: 5px 5px 2px;
+      padding: 4px 4px 2px;
       font-size: 16px;
       color: #aaa;
       background: transparent;
@@ -398,13 +517,13 @@ body.settings_page_sharing-image #sharing-image-settings {
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer {
       display: block;
       position: relative;
-      margin: 0 0 15px;
-      padding: 12px 10px 15px;
+      margin: 0 0 16px;
+      padding: 12px 10px 16px;
       background-color: #fff;
       box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
       border: 1px solid #ccd0d4;
       border-radius: 4px; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer h3 {
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer h2 {
         display: block;
         margin: 0 0 10px;
         padding-right: 20px;
@@ -412,7 +531,7 @@ body.settings_page_sharing-image #sharing-image-settings {
         font-weight: 600; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer h5 {
         display: block;
-        margin: 0 10px 25px 0;
+        margin: 0 10px 24px 0;
         font-size: 13px;
         font-weight: 400; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer.layer-up {
@@ -435,7 +554,7 @@ body.settings_page_sharing-image #sharing-image-settings {
       display: block;
       position: -webkit-sticky;
       position: sticky;
-      top: 50px;
+      top: 52px;
       width: 100%; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-loader {
       display: none;
@@ -485,7 +604,7 @@ body.settings_page_sharing-image #sharing-image-settings {
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-warning {
       display: none;
       position: relative;
-      margin: 12px 0 -5px;
+      margin: 12px 0 -6px;
       padding: 8px 12px;
       background: #fff;
       border: 1px solid #c3c4c7;
@@ -499,7 +618,7 @@ body.settings_page_sharing-image #sharing-image-settings {
       align-items: center;
       flex-flow: row wrap;
       width: 100%;
-      margin-top: 15px; }
+      margin-top: 16px; }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-manager button {
         margin-right: 14px; }
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-manager button:last-child {
@@ -515,7 +634,7 @@ body.settings_page_sharing-image #sharing-image-settings {
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-suspend {
           order: 0;
           width: 100%;
-          margin-bottom: 25px; } }
+          margin-bottom: 24px; } }
     @media screen and (max-width: 1279px) {
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor {
         flex-flow: row wrap; } }

@@ -195,12 +195,12 @@ function createPermanentAttachment( fieldset, data ) {
 
 	// Create background settings control.
 	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-half-bottom' ],
+		classes: [ 'sharing-image-control', 'control-pinned' ],
 		label: __( 'Template background settings', 'sharing-image' ),
 		fields: [
 			{
 				group: 'radio',
-				classes: [ 'sharing-image-editor-radio' ],
+				classes: [ 'sharing-image-control-radio' ],
 				attributes: {
 					name: params.name + '[background]',
 					value: 'dynamic',
@@ -210,7 +210,7 @@ function createPermanentAttachment( fieldset, data ) {
 			},
 			{
 				group: 'radio',
-				classes: [ 'sharing-image-editor-radio' ],
+				classes: [ 'sharing-image-control-radio' ],
 				attributes: {
 					name: params.name + '[background]',
 					value: 'thumbnail',
@@ -220,7 +220,7 @@ function createPermanentAttachment( fieldset, data ) {
 			},
 			{
 				group: 'radio',
-				classes: [ 'sharing-image-editor-radio' ],
+				classes: [ 'sharing-image-control-radio' ],
 				attributes: {
 					name: params.name + '[background]',
 					value: 'permanent',
@@ -234,7 +234,7 @@ function createPermanentAttachment( fieldset, data ) {
 
 	const media = Build.media( {
 		name: params.name + '[attachment]',
-		classes: [ 'sharing-image-editor-control', 'control-details' ],
+		classes: [ 'sharing-image-control', 'control-details' ],
 		value: data.attachment,
 		link: params.links.uploads,
 		labels: {
@@ -248,19 +248,19 @@ function createPermanentAttachment( fieldset, data ) {
 	const upload = media.querySelector( 'button' );
 	upload.setAttribute( 'disabled', 'disabled' );
 
-	// Get checked background radio input.
-	const fields = control.querySelectorAll( 'input' );
+	// Find all radio fields.
+	const fields = control.querySelectorAll( 'input[type="radio"]' );
 
-	fields.forEach( ( input ) => {
-		// Show button for checked permanent radio.
-		if ( input.checked && 'permanent' === input.value ) {
+	fields.forEach( ( radio ) => {
+		// Show upload button for checked permanent radio.
+		if ( radio.checked && 'permanent' === radio.value ) {
 			upload.removeAttribute( 'disabled', 'disabled' );
 		}
 
-		input.addEventListener( 'change', () => {
+		radio.addEventListener( 'change', () => {
 			upload.setAttribute( 'disabled', 'disabled' );
 
-			if ( 'permanent' === input.value ) {
+			if ( 'permanent' === radio.value ) {
 				upload.removeAttribute( 'disabled' );
 			}
 		} );
@@ -276,13 +276,13 @@ function createPermanentAttachment( fieldset, data ) {
  */
 function createDynamicFields( layer, name, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		append: layer,
 	} );
 
 	const checkbox = Build.checkbox(
 		{
-			classes: [ 'sharing-image-editor-checkbox' ],
+			classes: [ 'sharing-image-control-checkbox' ],
 			attributes: {
 				name: name + '[dynamic]',
 				value: 'dynamic',
@@ -296,12 +296,12 @@ function createDynamicFields( layer, name, data ) {
 	const fields = [];
 
 	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
+		classes: [ 'sharing-image-control', 'control-hidden', 'control-extend' ],
 		help: __( 'Displayed only in the metabox.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: name + '[title]',
 					value: data.title,
@@ -313,12 +313,12 @@ function createDynamicFields( layer, name, data ) {
 	} );
 
 	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
+		classes: [ 'sharing-image-control', 'control-hidden', 'control-extend' ],
 		help: __( 'This field is used for example only, to see how the editor will look.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'textarea',
-				classes: [ 'sharing-image-editor-textarea' ],
+				classes: [ 'sharing-image-control-textarea' ],
 				content: data.sample || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 				attributes: {
 					name: name + '[sample]',
@@ -331,12 +331,12 @@ function createDynamicFields( layer, name, data ) {
 	} );
 
 	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
+		classes: [ 'sharing-image-control', 'control-hidden' ],
 		label: __( 'Preset text field', 'sharing-image' ),
 		fields: [
 			{
 				group: 'radio',
-				classes: [ 'sharing-image-editor-radio' ],
+				classes: [ 'sharing-image-control-radio' ],
 				attributes: {
 					name: name + '[preset]',
 					value: 'none',
@@ -346,7 +346,7 @@ function createDynamicFields( layer, name, data ) {
 			},
 			{
 				group: 'radio',
-				classes: [ 'sharing-image-editor-radio' ],
+				classes: [ 'sharing-image-control-radio' ],
 				attributes: {
 					name: name + '[preset]',
 					value: 'title',
@@ -356,7 +356,7 @@ function createDynamicFields( layer, name, data ) {
 			},
 			{
 				group: 'radio',
-				classes: [ 'sharing-image-editor-radio' ],
+				classes: [ 'sharing-image-control-radio' ],
 				attributes: {
 					name: name + '[preset]',
 					value: 'excerpt',
@@ -369,12 +369,12 @@ function createDynamicFields( layer, name, data ) {
 	} );
 
 	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control', 'control-extend' ],
 		help: __( 'You can use non-breaking spaces to manage your string position.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'textarea',
-				classes: [ 'sharing-image-editor-textarea' ],
+				classes: [ 'sharing-image-control-textarea' ],
 				content: data.content,
 				attributes: {
 					name: name + '[content]',
@@ -415,11 +415,11 @@ function createMoreFields( layer, name, data ) {
 	fields[ fields.length ] = createFontField( layer, name, data );
 
 	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-single', 'control-hidden' ],
+		classes: [ 'sharing-image-control', 'control-single', 'control-hidden' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-color' ],
+				classes: [ 'sharing-image-control-color' ],
 				attributes: {
 					type: 'color',
 					name: name + '[color]',
@@ -432,11 +432,11 @@ function createMoreFields( layer, name, data ) {
 	} );
 
 	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-double', 'control-hidden' ],
+		classes: [ 'sharing-image-control', 'control-double', 'control-hidden' ],
 		fields: [
 			{
 				group: 'select',
-				classes: [ 'sharing-image-editor-select' ],
+				classes: [ 'sharing-image-control-select' ],
 				options: {
 					left: __( 'Left', 'sharing-image' ),
 					center: __( 'Center', 'sharing-image' ),
@@ -450,7 +450,7 @@ function createMoreFields( layer, name, data ) {
 			},
 			{
 				group: 'select',
-				classes: [ 'sharing-image-editor-select' ],
+				classes: [ 'sharing-image-control-select' ],
 				options: {
 					top: __( 'Top', 'sharing-image' ),
 					center: __( 'Center', 'sharing-image' ),
@@ -467,12 +467,12 @@ function createMoreFields( layer, name, data ) {
 	} );
 
 	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		append: layer,
 	} );
 
 	const button = Build.element( 'button', {
-		classes: [ 'sharing-image-editor-more' ],
+		classes: [ 'sharing-image-control-more' ],
 		text: __( 'More options', 'sharing-image' ),
 		attributes: {
 			type: 'button',
@@ -504,13 +504,13 @@ function createMoreFields( layer, name, data ) {
  */
 function createFontField( layer, name, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-upload', 'control-hidden' ],
+		classes: [ 'sharing-image-control', 'control-upload', 'control-hidden' ],
 		append: layer,
 	} );
 
 	const select = Build.select(
 		{
-			classes: [ 'sharing-image-editor-select' ],
+			classes: [ 'sharing-image-control-select' ],
 			options: params.fonts,
 			attributes: {
 				name: name + '[fontname]',
@@ -523,7 +523,7 @@ function createFontField( layer, name, data ) {
 
 	const media = Build.media( {
 		name: name + '[fontfile]',
-		classes: [ 'sharing-image-editor-media' ],
+		classes: [ 'sharing-image-control-media' ],
 		value: data.fontfile,
 		link: params.links.uploads,
 		labels: {
@@ -568,13 +568,13 @@ function createFontField( layer, name, data ) {
  */
 function createRectangleOutline( layer, name, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		append: layer,
 	} );
 
 	const checkbox = Build.checkbox(
 		{
-			classes: [ 'sharing-image-editor-checkbox' ],
+			classes: [ 'sharing-image-control-checkbox' ],
 			attributes: {
 				name: name + '[outline]',
 				value: 'outline',
@@ -586,11 +586,11 @@ function createRectangleOutline( layer, name, data ) {
 	);
 
 	const range = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
+		classes: [ 'sharing-image-control', 'control-hidden' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
+				classes: [ 'sharing-image-control-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[thickness]',
@@ -746,7 +746,7 @@ function createOrderLayersButton( designer, layer ) {
  */
 function createDeleteLayerButton( designer, layer ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-footer' ],
+		classes: [ 'sharing-image-control', 'control-footer' ],
 		append: layer,
 	} );
 
@@ -806,7 +806,7 @@ function createLayerImage( index, data ) {
 
 	Build.media( {
 		name: name + '[attachment]',
-		classes: [ 'sharing-image-editor-control', 'control-details' ],
+		classes: [ 'sharing-image-control', 'control-details' ],
 		value: data.attachment,
 		link: params.links.uploads,
 		labels: {
@@ -818,11 +818,11 @@ function createLayerImage( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-grid' ],
+		classes: [ 'sharing-image-control', 'control-table' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: name + '[x]',
 					value: data.x,
@@ -832,7 +832,7 @@ function createLayerImage( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: name + '[y]',
 					value: data.y,
@@ -842,7 +842,7 @@ function createLayerImage( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: name + '[width]',
 					value: data.width,
@@ -851,7 +851,7 @@ function createLayerImage( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: name + '[height]',
 					value: data.height,
@@ -897,11 +897,11 @@ function createLayerText( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-grid' ],
+		classes: [ 'sharing-image-control', 'control-table' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[x]',
@@ -912,7 +912,7 @@ function createLayerText( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[y]',
@@ -923,7 +923,7 @@ function createLayerText( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[width]',
@@ -934,7 +934,7 @@ function createLayerText( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[height]',
@@ -953,11 +953,11 @@ function createLayerText( index, data ) {
 	createMoreFields( layer, name, data );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-double' ],
+		classes: [ 'sharing-image-control', 'control-double' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
+				classes: [ 'sharing-image-control-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[fontsize]',
@@ -970,7 +970,7 @@ function createLayerText( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
+				classes: [ 'sharing-image-control-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[lineheight]',
@@ -1019,11 +1019,11 @@ function createLayerFilter( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		fields: [
 			{
 				group: 'checkbox',
-				classes: [ 'sharing-image-editor-checkbox' ],
+				classes: [ 'sharing-image-control-checkbox' ],
 				attributes: {
 					name: name + '[grayscale]',
 					value: 'grayscale',
@@ -1036,11 +1036,11 @@ function createLayerFilter( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		fields: [
 			{
 				group: 'checkbox',
-				classes: [ 'sharing-image-editor-checkbox' ],
+				classes: [ 'sharing-image-control-checkbox' ],
 				attributes: {
 					name: name + '[blur]',
 					value: 'blur',
@@ -1053,11 +1053,11 @@ function createLayerFilter( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
+				classes: [ 'sharing-image-control-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[contrast]',
@@ -1073,11 +1073,11 @@ function createLayerFilter( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
+				classes: [ 'sharing-image-control-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[brightness]',
@@ -1093,11 +1093,11 @@ function createLayerFilter( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
+				classes: [ 'sharing-image-control-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[blackout]',
@@ -1147,11 +1147,11 @@ function createLayerRectangle( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-single' ],
+		classes: [ 'sharing-image-control', 'control-single' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-color' ],
+				classes: [ 'sharing-image-control-color' ],
 				attributes: {
 					type: 'color',
 					name: name + '[color]',
@@ -1164,11 +1164,11 @@ function createLayerRectangle( index, data ) {
 	} );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-grid' ],
+		classes: [ 'sharing-image-control', 'control-table' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[x]' || '10',
@@ -1178,7 +1178,7 @@ function createLayerRectangle( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[y]' || '10',
@@ -1188,7 +1188,7 @@ function createLayerRectangle( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[width]',
@@ -1198,7 +1198,7 @@ function createLayerRectangle( index, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					type: 'text',
 					name: name + '[height]',
@@ -1213,11 +1213,11 @@ function createLayerRectangle( index, data ) {
 	createRectangleOutline( layer, name, data );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-control' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-range' ],
+				classes: [ 'sharing-image-control-range' ],
 				attributes: {
 					type: 'range',
 					name: name + '[opacity]',
@@ -1284,11 +1284,11 @@ function createLayer( designer, type, index, data = {} ) {
  */
 function createDesigner( fieldset, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-row', 'control-compact', 'control-pinned' ],
+		classes: [ 'sharing-image-control', 'control-row', 'control-compact', 'control-pinned' ],
 		fields: [
 			{
 				group: 'select',
-				classes: [ 'sharing-image-editor-select' ],
+				classes: [ 'sharing-image-control-select' ],
 				options: {
 					text: __( 'Text', 'sharing-image' ),
 					image: __( 'Image', 'sharing-image' ),
@@ -1301,7 +1301,7 @@ function createDesigner( fieldset, data ) {
 	} );
 
 	const button = Build.element( 'button', {
-		classes: [ 'button' ],
+		classes: [ 'sharing-image-control-button', 'button' ],
 		text: __( 'Add new', 'sharing-image' ),
 		attributes: {
 			type: 'button',
@@ -1349,15 +1349,18 @@ function createFieldset( data ) {
 
 	// Create template title control.
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-compact' ],
+		classes: [ 'sharing-image-control', 'control-compact', 'control-extend' ],
 		help: __( 'Used only in the admin panel', 'sharing-image' ),
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: params.name + '[title]',
 					value: data.title,
+				},
+				dataset: {
+					persistent: true,
 				},
 				label: __( 'Template title', 'sharing-image' ),
 			},
@@ -1370,11 +1373,11 @@ function createFieldset( data ) {
 
 	// Create width/height settings control.
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-grid', 'control-compact' ],
+		classes: [ 'sharing-image-control', 'control-table', 'control-compact' ],
 		fields: [
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: params.name + '[width]',
 					value: data.width || '1200',
@@ -1384,7 +1387,7 @@ function createFieldset( data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-editor-input' ],
+				classes: [ 'sharing-image-control-input' ],
 				attributes: {
 					name: params.name + '[height]',
 					value: data.height || '630',
@@ -1403,7 +1406,7 @@ function createFieldset( data ) {
 	description.push( __( 'You can change the order using the arrows in the corner of each box.', 'sharing-image' ) );
 
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-pinned' ],
+		classes: [ 'sharing-image-control', 'control-pinned' ],
 		label: __( 'Add layers', 'sharing-image' ),
 		description: description.join( ' ' ),
 		append: fieldset,
@@ -1413,7 +1416,7 @@ function createFieldset( data ) {
 	createDesigner( fieldset, data );
 
 	const footer = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-overlined' ],
+		classes: [ 'sharing-image-control', 'control-footer' ],
 		append: fieldset,
 	} );
 
@@ -1430,9 +1433,16 @@ function createFieldset( data ) {
 
 		const target = e.target;
 
-		if ( target.hasAttribute( 'name' ) ) {
-			generateTemplate();
+		// Skip fields that don't affect the poster.
+		if ( target.hasAttribute( 'data-persistent' ) ) {
+			return;
 		}
+
+		if ( ! target.hasAttribute( 'name' ) ) {
+			return;
+		}
+
+		generateTemplate();
 	} );
 }
 

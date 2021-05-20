@@ -236,7 +236,7 @@ function buildInput(args, parent) {
   });
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('strong', {
+    var label = builders_element('h4', {
       text: args.label
     });
 
@@ -249,8 +249,9 @@ function buildInput(args, parent) {
     attributes: {
       type: 'text'
     },
+    dataset: args.dataset || {},
     append: field
-  }); // Set attributes
+  }); // Set attributes.
 
   if (args.hasOwnProperty('attributes')) {
     for (var key in args.attributes) {
@@ -299,6 +300,7 @@ function buildCheckbox(args, parent) {
     attributes: {
       type: 'checkbox'
     },
+    dataset: args.dataset || {},
     append: field
   }); // Set attributes
 
@@ -354,6 +356,7 @@ function buildRadio(args, parent) {
     attributes: {
       type: 'radio'
     },
+    dataset: args.dataset || {},
     append: field
   }); // Set attributes
 
@@ -407,7 +410,7 @@ function buildSelect(args, parent) {
   });
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('strong', {
+    var label = builders_element('h4', {
       text: args.label
     });
 
@@ -417,6 +420,7 @@ function buildSelect(args, parent) {
   }
 
   var select = builders_element('select', {
+    dataset: args.dataset || {},
     append: field
   }); // Set attributes
 
@@ -472,7 +476,7 @@ function buildTextarea(args, parent) {
   });
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('strong', {
+    var label = builders_element('h4', {
       text: args.label
     });
 
@@ -482,6 +486,7 @@ function buildTextarea(args, parent) {
   }
 
   var textarea = builders_element('textarea', {
+    dataset: args.dataset || {},
     append: field
   }); // Set attributes
 
@@ -537,7 +542,7 @@ function buildControl(args) {
   }
 
   if (args.hasOwnProperty('label')) {
-    builders_element('strong', {
+    builders_element('h3', {
       text: args.label,
       append: control
     });
@@ -609,7 +614,7 @@ function buildLayer(args) {
   }
 
   if (args.hasOwnProperty('label')) {
-    builders_element('h3', {
+    builders_element('h2', {
       text: args.label,
       append: layer
     });
@@ -1055,11 +1060,11 @@ function createPermanentAttachment(fieldset, data) {
   data.background = data.background || null; // Create background settings control.
 
   var control = builders.control({
-    classes: ['sharing-image-editor-control', 'control-half-bottom'],
+    classes: ['sharing-image-control', 'control-pinned'],
     label: editor_('Template background settings', 'sharing-image'),
     fields: [{
       group: 'radio',
-      classes: ['sharing-image-editor-radio'],
+      classes: ['sharing-image-control-radio'],
       attributes: {
         name: editor_params.name + '[background]',
         value: 'dynamic'
@@ -1068,7 +1073,7 @@ function createPermanentAttachment(fieldset, data) {
       checked: data.background
     }, {
       group: 'radio',
-      classes: ['sharing-image-editor-radio'],
+      classes: ['sharing-image-control-radio'],
       attributes: {
         name: editor_params.name + '[background]',
         value: 'thumbnail'
@@ -1077,7 +1082,7 @@ function createPermanentAttachment(fieldset, data) {
       checked: data.background
     }, {
       group: 'radio',
-      classes: ['sharing-image-editor-radio'],
+      classes: ['sharing-image-control-radio'],
       attributes: {
         name: editor_params.name + '[background]',
         value: 'permanent'
@@ -1089,7 +1094,7 @@ function createPermanentAttachment(fieldset, data) {
   });
   var media = builders.media({
     name: editor_params.name + '[attachment]',
-    classes: ['sharing-image-editor-control', 'control-details'],
+    classes: ['sharing-image-control', 'control-details'],
     value: data.attachment,
     link: editor_params.links.uploads,
     labels: {
@@ -1100,19 +1105,19 @@ function createPermanentAttachment(fieldset, data) {
     append: fieldset
   });
   var upload = media.querySelector('button');
-  upload.setAttribute('disabled', 'disabled'); // Get checked background radio input.
+  upload.setAttribute('disabled', 'disabled'); // Find all radio fields.
 
-  var fields = control.querySelectorAll('input');
-  fields.forEach(function (input) {
-    // Show button for checked permanent radio.
-    if (input.checked && 'permanent' === input.value) {
+  var fields = control.querySelectorAll('input[type="radio"]');
+  fields.forEach(function (radio) {
+    // Show upload button for checked permanent radio.
+    if (radio.checked && 'permanent' === radio.value) {
       upload.removeAttribute('disabled', 'disabled');
     }
 
-    input.addEventListener('change', function () {
+    radio.addEventListener('change', function () {
       upload.setAttribute('disabled', 'disabled');
 
-      if ('permanent' === input.value) {
+      if ('permanent' === radio.value) {
         upload.removeAttribute('disabled');
       }
     });
@@ -1129,11 +1134,11 @@ function createPermanentAttachment(fieldset, data) {
 
 function createDynamicFields(layer, name, data) {
   var control = builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     append: layer
   });
   var checkbox = builders.checkbox({
-    classes: ['sharing-image-editor-checkbox'],
+    classes: ['sharing-image-control-checkbox'],
     attributes: {
       name: name + '[dynamic]',
       value: 'dynamic'
@@ -1143,11 +1148,11 @@ function createDynamicFields(layer, name, data) {
   }, control);
   var fields = [];
   fields[fields.length] = builders.control({
-    classes: ['sharing-image-editor-control', 'control-hidden'],
+    classes: ['sharing-image-control', 'control-hidden', 'control-extend'],
     help: editor_('Displayed only in the metabox.', 'sharing-image'),
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: name + '[title]',
         value: data.title
@@ -1157,11 +1162,11 @@ function createDynamicFields(layer, name, data) {
     append: layer
   });
   fields[fields.length] = builders.control({
-    classes: ['sharing-image-editor-control', 'control-hidden'],
+    classes: ['sharing-image-control', 'control-hidden', 'control-extend'],
     help: editor_('This field is used for example only, to see how the editor will look.', 'sharing-image'),
     fields: [{
       group: 'textarea',
-      classes: ['sharing-image-editor-textarea'],
+      classes: ['sharing-image-control-textarea'],
       content: data.sample || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
       attributes: {
         name: name + '[sample]',
@@ -1172,11 +1177,11 @@ function createDynamicFields(layer, name, data) {
     append: layer
   });
   fields[fields.length] = builders.control({
-    classes: ['sharing-image-editor-control', 'control-hidden'],
+    classes: ['sharing-image-control', 'control-hidden'],
     label: editor_('Preset text field', 'sharing-image'),
     fields: [{
       group: 'radio',
-      classes: ['sharing-image-editor-radio'],
+      classes: ['sharing-image-control-radio'],
       attributes: {
         name: name + '[preset]',
         value: 'none'
@@ -1185,7 +1190,7 @@ function createDynamicFields(layer, name, data) {
       checked: data.preset || 'none'
     }, {
       group: 'radio',
-      classes: ['sharing-image-editor-radio'],
+      classes: ['sharing-image-control-radio'],
       attributes: {
         name: name + '[preset]',
         value: 'title'
@@ -1194,7 +1199,7 @@ function createDynamicFields(layer, name, data) {
       checked: data.preset || 'none'
     }, {
       group: 'radio',
-      classes: ['sharing-image-editor-radio'],
+      classes: ['sharing-image-control-radio'],
       attributes: {
         name: name + '[preset]',
         value: 'excerpt'
@@ -1205,11 +1210,11 @@ function createDynamicFields(layer, name, data) {
     append: layer
   });
   fields[fields.length] = builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control', 'control-extend'],
     help: editor_('You can use non-breaking spaces to manage your string position.', 'sharing-image'),
     fields: [{
       group: 'textarea',
-      classes: ['sharing-image-editor-textarea'],
+      classes: ['sharing-image-control-textarea'],
       content: data.content,
       attributes: {
         name: name + '[content]',
@@ -1247,10 +1252,10 @@ function createMoreFields(layer, name, data) {
   var fields = [];
   fields[fields.length] = createFontField(layer, name, data);
   fields[fields.length] = builders.control({
-    classes: ['sharing-image-editor-control', 'control-single', 'control-hidden'],
+    classes: ['sharing-image-control', 'control-single', 'control-hidden'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-color'],
+      classes: ['sharing-image-control-color'],
       attributes: {
         type: 'color',
         name: name + '[color]',
@@ -1261,10 +1266,10 @@ function createMoreFields(layer, name, data) {
     append: layer
   });
   fields[fields.length] = builders.control({
-    classes: ['sharing-image-editor-control', 'control-double', 'control-hidden'],
+    classes: ['sharing-image-control', 'control-double', 'control-hidden'],
     fields: [{
       group: 'select',
-      classes: ['sharing-image-editor-select'],
+      classes: ['sharing-image-control-select'],
       options: {
         left: editor_('Left', 'sharing-image'),
         center: editor_('Center', 'sharing-image'),
@@ -1277,7 +1282,7 @@ function createMoreFields(layer, name, data) {
       selected: data.horizontal
     }, {
       group: 'select',
-      classes: ['sharing-image-editor-select'],
+      classes: ['sharing-image-control-select'],
       options: {
         top: editor_('Top', 'sharing-image'),
         center: editor_('Center', 'sharing-image'),
@@ -1292,11 +1297,11 @@ function createMoreFields(layer, name, data) {
     append: layer
   });
   var control = builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     append: layer
   });
   var button = builders.element('button', {
-    classes: ['sharing-image-editor-more'],
+    classes: ['sharing-image-control-more'],
     text: editor_('More options', 'sharing-image'),
     attributes: {
       type: 'button'
@@ -1326,11 +1331,11 @@ function createMoreFields(layer, name, data) {
 
 function createFontField(layer, name, data) {
   var control = builders.control({
-    classes: ['sharing-image-editor-control', 'control-upload', 'control-hidden'],
+    classes: ['sharing-image-control', 'control-upload', 'control-hidden'],
     append: layer
   });
   var select = builders.select({
-    classes: ['sharing-image-editor-select'],
+    classes: ['sharing-image-control-select'],
     options: editor_params.fonts,
     attributes: {
       name: name + '[fontname]'
@@ -1340,7 +1345,7 @@ function createFontField(layer, name, data) {
   }, control);
   var media = builders.media({
     name: name + '[fontfile]',
-    classes: ['sharing-image-editor-media'],
+    classes: ['sharing-image-control-media'],
     value: data.fontfile,
     link: editor_params.links.uploads,
     labels: {
@@ -1383,11 +1388,11 @@ function createFontField(layer, name, data) {
 
 function createRectangleOutline(layer, name, data) {
   var control = builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     append: layer
   });
   var checkbox = builders.checkbox({
-    classes: ['sharing-image-editor-checkbox'],
+    classes: ['sharing-image-control-checkbox'],
     attributes: {
       name: name + '[outline]',
       value: 'outline'
@@ -1396,10 +1401,10 @@ function createRectangleOutline(layer, name, data) {
     checked: data.outline
   }, control);
   var range = builders.control({
-    classes: ['sharing-image-editor-control', 'control-hidden'],
+    classes: ['sharing-image-control', 'control-hidden'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-range'],
+      classes: ['sharing-image-control-range'],
       attributes: {
         type: 'range',
         name: name + '[thickness]',
@@ -1550,7 +1555,7 @@ function createOrderLayersButton(designer, layer) {
 
 function createDeleteLayerButton(designer, layer) {
   var control = builders.control({
-    classes: ['sharing-image-editor-control', 'control-footer'],
+    classes: ['sharing-image-control', 'control-footer'],
     append: layer
   });
   var button = builders.element('button', {
@@ -1603,7 +1608,7 @@ function createLayerImage(index, data) {
   });
   builders.media({
     name: name + '[attachment]',
-    classes: ['sharing-image-editor-control', 'control-details'],
+    classes: ['sharing-image-control', 'control-details'],
     value: data.attachment,
     link: editor_params.links.uploads,
     labels: {
@@ -1614,10 +1619,10 @@ function createLayerImage(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-grid'],
+    classes: ['sharing-image-control', 'control-table'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: name + '[x]',
         value: data.x,
@@ -1626,7 +1631,7 @@ function createLayerImage(index, data) {
       label: editor_('X starting point', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: name + '[y]',
         value: data.y,
@@ -1635,7 +1640,7 @@ function createLayerImage(index, data) {
       label: editor_('Y starting point', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: name + '[width]',
         value: data.width
@@ -1643,7 +1648,7 @@ function createLayerImage(index, data) {
       label: editor_('Width', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: name + '[height]',
         value: data.height
@@ -1683,10 +1688,10 @@ function createLayerText(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-grid'],
+    classes: ['sharing-image-control', 'control-table'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[x]',
@@ -1696,7 +1701,7 @@ function createLayerText(index, data) {
       label: editor_('X starting point', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[y]',
@@ -1706,7 +1711,7 @@ function createLayerText(index, data) {
       label: editor_('Y starting point', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[width]',
@@ -1716,7 +1721,7 @@ function createLayerText(index, data) {
       label: editor_('Width', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[height]',
@@ -1731,10 +1736,10 @@ function createLayerText(index, data) {
 
   createMoreFields(layer, name, data);
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-double'],
+    classes: ['sharing-image-control', 'control-double'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-range'],
+      classes: ['sharing-image-control-range'],
       attributes: {
         type: 'range',
         name: name + '[fontsize]',
@@ -1746,7 +1751,7 @@ function createLayerText(index, data) {
       label: editor_('Font size', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-range'],
+      classes: ['sharing-image-control-range'],
       attributes: {
         type: 'range',
         name: name + '[lineheight]',
@@ -1789,10 +1794,10 @@ function createLayerFilter(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     fields: [{
       group: 'checkbox',
-      classes: ['sharing-image-editor-checkbox'],
+      classes: ['sharing-image-control-checkbox'],
       attributes: {
         name: name + '[grayscale]',
         value: 'grayscale'
@@ -1803,10 +1808,10 @@ function createLayerFilter(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     fields: [{
       group: 'checkbox',
-      classes: ['sharing-image-editor-checkbox'],
+      classes: ['sharing-image-control-checkbox'],
       attributes: {
         name: name + '[blur]',
         value: 'blur'
@@ -1817,10 +1822,10 @@ function createLayerFilter(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-range'],
+      classes: ['sharing-image-control-range'],
       attributes: {
         type: 'range',
         name: name + '[contrast]',
@@ -1834,10 +1839,10 @@ function createLayerFilter(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-range'],
+      classes: ['sharing-image-control-range'],
       attributes: {
         type: 'range',
         name: name + '[brightness]',
@@ -1851,10 +1856,10 @@ function createLayerFilter(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-range'],
+      classes: ['sharing-image-control-range'],
       attributes: {
         type: 'range',
         name: name + '[blackout]',
@@ -1898,10 +1903,10 @@ function createLayerRectangle(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-single'],
+    classes: ['sharing-image-control', 'control-single'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-color'],
+      classes: ['sharing-image-control-color'],
       attributes: {
         type: 'color',
         name: name + '[color]',
@@ -1912,10 +1917,10 @@ function createLayerRectangle(index, data) {
     append: layer
   });
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-grid'],
+    classes: ['sharing-image-control', 'control-table'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[x]' || false,
@@ -1924,7 +1929,7 @@ function createLayerRectangle(index, data) {
       label: editor_('X starting point', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[y]' || false,
@@ -1933,7 +1938,7 @@ function createLayerRectangle(index, data) {
       label: editor_('Y starting point', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[width]',
@@ -1942,7 +1947,7 @@ function createLayerRectangle(index, data) {
       label: editor_('Width', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         type: 'text',
         name: name + '[height]',
@@ -1954,10 +1959,10 @@ function createLayerRectangle(index, data) {
   });
   createRectangleOutline(layer, name, data);
   builders.control({
-    classes: ['sharing-image-editor-control'],
+    classes: ['sharing-image-control'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-range'],
+      classes: ['sharing-image-control-range'],
       attributes: {
         type: 'range',
         name: name + '[opacity]',
@@ -2025,10 +2030,10 @@ function createLayer(designer, type, index) {
 
 function createDesigner(fieldset, data) {
   var control = builders.control({
-    classes: ['sharing-image-editor-control', 'control-row', 'control-compact', 'control-pinned'],
+    classes: ['sharing-image-control', 'control-row', 'control-compact', 'control-pinned'],
     fields: [{
       group: 'select',
-      classes: ['sharing-image-editor-select'],
+      classes: ['sharing-image-control-select'],
       options: {
         text: editor_('Text', 'sharing-image'),
         image: editor_('Image', 'sharing-image'),
@@ -2039,7 +2044,7 @@ function createDesigner(fieldset, data) {
     append: fieldset
   });
   var button = builders.element('button', {
-    classes: ['button'],
+    classes: ['sharing-image-control-button', 'button'],
     text: editor_('Add new', 'sharing-image'),
     attributes: {
       type: 'button'
@@ -2082,14 +2087,17 @@ function createFieldset(data) {
   }); // Create template title control.
 
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-compact'],
+    classes: ['sharing-image-control', 'control-compact', 'control-extend'],
     help: editor_('Used only in the admin panel', 'sharing-image'),
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: editor_params.name + '[title]',
         value: data.title
+      },
+      dataset: {
+        persistent: true
       },
       label: editor_('Template title', 'sharing-image')
     }],
@@ -2099,10 +2107,10 @@ function createFieldset(data) {
   createPermanentAttachment(fieldset, data); // Create width/height settings control.
 
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-grid', 'control-compact'],
+    classes: ['sharing-image-control', 'control-table', 'control-compact'],
     fields: [{
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: editor_params.name + '[width]',
         value: data.width || '1200',
@@ -2111,7 +2119,7 @@ function createFieldset(data) {
       label: editor_('Editor width', 'sharing-image')
     }, {
       group: 'input',
-      classes: ['sharing-image-editor-input'],
+      classes: ['sharing-image-control-input'],
       attributes: {
         name: editor_params.name + '[height]',
         value: data.height || '630',
@@ -2126,7 +2134,7 @@ function createFieldset(data) {
   description.push(editor_('Note that the stacking order of the layers is important.', 'sharing-image'));
   description.push(editor_('You can change the order using the arrows in the corner of each box.', 'sharing-image'));
   builders.control({
-    classes: ['sharing-image-editor-control', 'control-pinned'],
+    classes: ['sharing-image-control', 'control-pinned'],
     label: editor_('Add layers', 'sharing-image'),
     description: description.join(' '),
     append: fieldset
@@ -2134,7 +2142,7 @@ function createFieldset(data) {
 
   createDesigner(fieldset, data);
   var footer = builders.control({
-    classes: ['sharing-image-editor-control', 'control-overlined'],
+    classes: ['sharing-image-control', 'control-footer'],
     append: fieldset
   }); // Create back to catalog button.
 
@@ -2146,11 +2154,17 @@ function createFieldset(data) {
       return;
     }
 
-    var target = e.target;
+    var target = e.target; // Skip fields that don't affect the poster.
 
-    if (target.hasAttribute('name')) {
-      generateTemplate();
+    if (target.hasAttribute('data-persistent')) {
+      return;
     }
+
+    if (!target.hasAttribute('name')) {
+      return;
+    }
+
+    generateTemplate();
   });
 }
 /**
@@ -2323,391 +2337,238 @@ function createEditor(content, settings, index) {
 }
 
 /* harmony default export */ var sections_editor = (createEditor);
-// CONCATENATED MODULE: ./src/scripts/sections/picker.js
+// CONCATENATED MODULE: ./src/scripts/sections/config.js
 /**
- * Metabox handler.
+ * Config settings tab.
  */
 
-/* global ajaxurl:true */
+var config_ = wp.i18n.__; // Store global scriot object for settings page.
 
-var picker_ = wp.i18n.__; // Store global script object for metabox.
-
-var picker_params = null; // Poster HTML element.
-
-var poster = null;
+var config_params = null;
 /**
- * Show picker warning message.
+ * Create default poster option.
  *
- * @param {string} message Warning message.
+ * @param {HTMLElement} options Options form element.
+ * @param {Object} data Config data object.
  */
 
-function showPickerError(message) {
-  var picker = poster.parentNode; // Try to find warning element.
-
-  var warning = picker.querySelector('.sharing-image-picker-warning');
-
-  if (null === warning) {
-    return;
-  }
-
-  warning.classList.add('warning-visible');
-  warning.textContent = message || picker_('Unknown generation error', 'sharing-image');
-}
-/**
- * Remove warning message block.
- */
-
-
-function hidePickerError() {
-  var picker = poster.parentNode; // Try to find warning element.
-
-  var warning = picker.querySelector('.sharing-image-picker-warning');
-
-  if (null === warning) {
-    return;
-  }
-
-  warning.classList.remove('warning-visible');
-}
-/**
- * Handle poster generation action.
- *
- * @param {HTMLElement} picker Picker element.
- */
-
-
-function generatePoster(picker) {
-  var request = new XMLHttpRequest();
-  request.open('POST', ajaxurl);
-  request.responseType = 'json';
-  poster.classList.add('poster-loader'); // Create data form data bundle.
-
-  var bundle = new window.FormData();
-  bundle.set('action', 'sharing_image_generate');
-  var fields = picker.querySelectorAll('[name]');
-  fields.forEach(function (field) {
-    bundle.append(field.name, field.value);
+function createRestOptions(options, data) {
+  var control = builders.control({
+    classes: ['sharing-image-control', 'control-config', 'control-rest'],
+    label: config_('Default poster', 'sharing-image'),
+    append: options
   });
-  hidePickerError(); // Hide preview loader on request complete.
-
-  request.addEventListener('readystatechange', function () {
-    if (request.readyState === 4) {
-      poster.classList.remove('poster-loader');
-    }
-  });
-  request.addEventListener('load', function () {
-    var response = request.response || {};
-
-    if (!response.success) {
-      return showPickerError(response.data);
-    }
-
-    var input = poster.querySelector('input');
-
-    if (null !== input) {
-      input.setAttribute('value', response.data);
-    }
-
-    var image = poster.querySelector('img');
-
-    if (null === image) {
-      image = builders.element('img', {
-        append: poster
-      });
-    }
-
-    image.src = response.data; // Show the poster.
-
-    poster.classList.add('poster-visible');
-  });
-  request.addEventListener('error', function () {
-    showPickerError();
-  });
-  request.send(bundle);
-}
-/**
- * Create designer template selector.
- *
- * @param {HTMLElement} picker Picker element.
- * @param {HTMLElement} designer Designer element.
- * @param {Object} data Custom data object.
- */
-
-
-function createTemplate(picker, designer, data) {
-  var fields = {};
-  picker_params.templates.forEach(function (template, i) {
-    fields[i] = template.title || picker_('Untitled', 'sharing-image');
-  });
-  var template = builders.select({
-    classes: ['sharing-image-picker-template'],
-    options: fields,
-    attributes: {
-      name: picker_params.name + '[template]'
+  builders.media({
+    name: config_params.name + '[default]',
+    classes: ['sharing-image-control-media'],
+    label: config_('Default poster', 'sharing-image'),
+    value: data.rest,
+    link: config_params.links.uploads,
+    labels: {
+      button: config_('Upload image', 'sharing-image'),
+      heading: config_('Select default poster', 'sharing-image'),
+      details: config_('Attachment details', 'sharing-image')
     },
-    selected: String(data.template)
-  }, picker);
-  template.addEventListener('change', function () {
-    var fieldset = designer.childNodes;
+    append: control
+  });
+  var description = [];
+  description.push(config_('The default poster is used on pages where there is no generated.', 'sharing-image'));
+  description.push(config_('Best image size: 1200×630 pixels.', 'sharing-image'));
+  builders.element('small', {
+    text: description.join(' '),
+    append: control
+  });
+}
+/**
+ * Create uploads directory option.
+ *
+ * @param {HTMLElement} options Options form element.
+ * @param {Object} data Config data object.
+ */
 
-    for (var i = 0; i < fieldset.length; i++) {
-      fieldset[i].classList.remove('fieldset-visible');
 
-      if (i === parseInt(template.value)) {
-        fieldset[i].classList.add('fieldset-visible');
+function createUploadsOptions(options, data) {
+  var control = builders.control({
+    classes: ['sharing-image-control', 'control-config', 'control-filepath'],
+    label: config_('Upload directory', 'sharing-image'),
+    append: options
+  });
+  var fieldset = builders.element('div', {
+    classes: ['sharing-image-control-fieldset'],
+    append: control
+  });
+  builders.radio({
+    classes: ['sharing-image-control-radio'],
+    attributes: {
+      name: config_params.name + '[uploads]',
+      value: 'default'
+    },
+    label: config_('Use default uploads directory', 'sharing-image'),
+    checked: data.uploads || 'default'
+  }, fieldset);
+  builders.radio({
+    classes: ['sharing-image-control-radio'],
+    attributes: {
+      name: config_params.name + '[uploads]',
+      value: 'custom'
+    },
+    label: config_('Choose custom storage for posters', 'sharing-image'),
+    checked: data.uploads || 'default'
+  }, fieldset);
+  var input = builders.input({
+    classes: ['sharing-image-control-input'],
+    attributes: {
+      name: config_params.name + '[filepath]',
+      value: data.filepath || config_params.links.filepath,
+      disabled: 'disabled'
+    }
+  }, control); // Find all radio fields.
+
+  var fields = control.querySelectorAll('input[type="radio"]');
+  fields.forEach(function (radio) {
+    // Show filepath input for checked custom radio.
+    if (radio.checked && 'custom' === radio.value) {
+      input.removeAttribute('disabled', 'disabled');
+    }
+
+    radio.addEventListener('change', function () {
+      input.setAttribute('disabled', 'disabled');
+
+      if ('custom' === radio.value) {
+        input.removeAttribute('disabled');
       }
-    }
-  });
-  return template;
-}
-
-function createDesignerAttachment(fieldset, template, values, name) {
-  if ('dynamic' === template.background) {
-    builders.media({
-      name: name + '[attachment]',
-      classes: ['sharing-image-picker-details'],
-      value: values.attachment || '',
-      link: picker_params.links.uploads,
-      labels: {
-        button: picker_('Upload background', 'sharing-image'),
-        heading: picker_('Select background image', 'sharing-image'),
-        details: picker_('Attachment', 'sharing-image')
-      },
-      append: fieldset
     });
-  }
-}
-
-function createDesignerCaptions(fieldset, template, values, name) {
-  // Set default layers list.
-  template.layers = template.layers || [];
-  template.layers.forEach(function (layer, n) {
-    if ('text' === layer.type && layer.dynamic) {
-      var textarea = builders.textarea({
-        classes: ['sharing-image-picker-caption'],
-        label: layer.title || null,
-        attributes: {
-          name: name + "[captions][".concat(n, "]")
-        }
-      }, fieldset);
-
-      if (values.captions && values.captions[n]) {
-        textarea.textContent = values.captions[n];
-      }
-    }
   });
 }
 /**
- * Create fields designer.
+ * Create format and quality poster options.
  *
- * @param {HTMLElement} picker Picker element.
- * @param {Object} data Custom data object.
+ * @param {HTMLElement} options Options form element.
+ * @param {Object} data Config data object.
  */
 
 
-function picker_createDesigner(picker, data) {
-  var designer = builders.element('div', {
-    classes: ['sharing-image-picker-designer']
-  }); // Create designer fields
-
-  picker_params.templates.forEach(function (template, i) {
-    // Set default layers list.
-    template.layers = template.layers || [];
-    var fieldset = builders.element('div', {
-      classes: ['sharing-image-picker-fieldset'],
-      append: designer
-    });
-    var selected = data.template || 0;
-
-    if (i === parseInt(selected)) {
-      fieldset.classList.add('fieldset-visible');
-    }
-
-    var values = {};
-
-    if (data.fieldset && data.fieldset[i]) {
-      values = data.fieldset[i];
-    }
-
-    var name = picker_params.name + "[fieldset][".concat(i, "]");
-    builders.element('input', {
+function createImageOptions(options, data) {
+  var control = builders.control({
+    classes: ['sharing-image-control', 'control-config', 'control-format'],
+    label: config_('Poster image format', 'sharing-image'),
+    help: config_('The higher the value, the less compression. Availible for JPEG only.', 'sharing-image'),
+    fields: [{
+      group: 'select',
+      classes: ['sharing-image-control-select'],
+      options: {
+        jpg: config_('JPEG', 'sharing-image'),
+        png: config_('PNG', 'sharing-image')
+      },
       attributes: {
-        type: 'hidden',
-        name: name
+        name: config_params.name + '[format]'
       },
-      append: fieldset
-    }); // Create attachment field.
-
-    createDesignerAttachment(fieldset, template, values, name); // Create all caption fields.
-
-    createDesignerCaptions(fieldset, template, values, name);
-  }); // Create template selector.
-
-  if (picker_params.templates.length > 1) {
-    createTemplate(picker, designer, data);
-  }
-
-  picker.appendChild(designer);
-}
-/**
- * Create button to generate new metabox poster.
- *
- * @param {HTMLElement} picker Picker element.
- * @param {HTMLElement} manager Manager element.
- */
-
-
-function picker_createGenerateButton(picker, manager) {
-  var button = builders.element('button', {
-    classes: ['sharing-image-picker-generate', 'button'],
-    text: picker_('Generate', 'sharing-image'),
-    attributes: {
-      type: 'button'
-    },
-    append: manager
-  });
-  button.addEventListener('click', function () {
-    generatePoster(picker);
-  });
-}
-/**
- * Create button to delete current metabox poster.
- *
- * @param {HTMLElement} manager Manager element.
- */
-
-
-function picker_createDeleteButton(manager) {
-  var button = builders.element('button', {
-    classes: ['sharing-image-picker-delete', 'button', 'button-delete'],
-    text: picker_('Remove', 'sharing-image'),
-    attributes: {
-      type: 'button'
-    },
-    append: manager
-  });
-  button.addEventListener('click', function () {
-    var image = poster.querySelector('img');
-
-    if (null !== image) {
-      poster.removeChild(image);
-    }
-
-    var input = poster.querySelector('input');
-
-    if (null !== input) {
-      input.value = '';
-    }
-
-    poster.classList.remove('poster-visible');
-  });
-}
-/**
- * Create picker manager.
- *
- * @param {HTMLElement} picker Picker element.
- */
-
-
-function createManager(picker) {
-  var manager = builders.element('div', {
-    classes: ['sharing-image-picker-manager'],
-    append: picker
-  }); // Create poster generation button.
-
-  picker_createGenerateButton(picker, manager); // Create poster removing button.
-
-  picker_createDeleteButton(manager);
-  builders.element('span', {
-    classes: ['sharing-image-picker-spinner', 'spinner'],
-    append: manager
-  });
-}
-/**
- * Create poster block.
- *
- * @param {HTMLElement} picker Picker element.
- * @param {Object} data Custom data object.
- */
-
-
-function createPoster(picker, data) {
-  poster = builders.element('div', {
-    classes: ['sharing-image-picker-poster'],
-    append: picker
-  });
-
-  if (data.poster) {
-    builders.element('img', {
+      selected: data.format || 'jpg'
+    }, {
+      group: 'input',
+      classes: ['sharing-image-control-range'],
       attributes: {
-        src: data.poster,
-        alt: ''
+        type: 'range',
+        name: config_params.name + '[quality]',
+        min: 0,
+        max: 100,
+        step: 5,
+        value: data.quality || '95',
+        disabled: 'disabled'
       },
-      append: poster
-    });
-    poster.classList.add('poster-visible');
+      label: config_('Image quality', 'sharing-image')
+    }],
+    append: options
+  }); // Find control format select.
+
+  var format = control.querySelector('select'); // Find control quiality input.
+
+  var quality = control.querySelector('input');
+
+  if ('jpg' === format.value) {
+    quality.removeAttribute('disabled');
   }
 
+  format.addEventListener('change', function () {
+    quality.setAttribute('disabled', 'disabled');
+
+    if ('jpg' === format.value) {
+      quality.removeAttribute('disabled');
+    }
+  });
+}
+/**
+ * Create required form meta fields.
+ *
+ * @param {HTMLElement} options Options form element.
+ */
+
+
+function createMetaFields(options) {
   builders.element('input', {
     attributes: {
       type: 'hidden',
-      name: picker_params.name + '[poster]',
-      value: data.poster || ''
+      name: 'action',
+      value: config_params.name
     },
-    append: poster
+    append: options
   });
-  return poster;
-}
-/**
- * Create metabox generator picker.
- *
- * @param {HTMLElement} widget Widget element.
- * @param {Object} settings Global settings object.
- */
-
-
-function createPicker(widget, settings) {
-  picker_params = settings; // Set params name for template form fields.
-
-  picker_params.name = 'sharing_image_picker';
-
-  if ('taxonomy' === picker_params.context) {
-    var title = builders.element('div', {
-      classes: ['sharing-image-title'],
-      append: widget
-    });
-    builders.element('strong', {
-      text: picker_('Sharing Image', 'sharing-image'),
-      append: title
-    });
-  }
-
-  var picker = builders.element('div', {
-    classes: ['sharing-image-picker'],
-    append: widget
-  });
-  var data = picker_params.meta || {}; // Create poster block.
-
-  createPoster(picker, data); // Create fields designer.
-
-  picker_createDesigner(picker, data);
-  builders.element('div', {
-    classes: ['sharing-image-picker-warning'],
-    append: picker
-  }); // Create metabox manager block.
-
-  createManager(picker);
   builders.element('input', {
     attributes: {
       type: 'hidden',
       name: 'sharing_image_nonce',
-      value: picker_params.nonce
+      value: config_params.nonce
     },
-    append: picker
+    append: options
+  });
+  builders.element('button', {
+    text: config_('Save changes', 'sharing-image'),
+    classes: ['button', 'button-primary'],
+    attributes: {
+      type: 'submit'
+    },
+    append: options
   });
 }
+/**
+ * Create templates catalog from options.
+ *
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings field.
+ */
 
-/* harmony default export */ var sections_picker = (createPicker);
+
+function createConfig(content, settings) {
+  config_params = settings; // Set params name for template form fields.
+
+  config_params.name = 'sharing_image_config'; // Find config element
+
+  var config = content.querySelector('.sharing-image-config');
+
+  if (null === config) {
+    return;
+  }
+
+  var options = builders.element('form', {
+    classes: ['sharing-image-config-options'],
+    attributes: {
+      action: config_params.links.action,
+      method: 'POST'
+    },
+    append: config
+  });
+  var data = config_params.config || {}; // Poster image options.
+
+  createImageOptions(options, data); // Uploads directory options.
+
+  createUploadsOptions(options, data); // Rest poster.
+
+  createRestOptions(options, data); // Create required form fields
+
+  createMetaFields(options);
+}
+
+/* harmony default export */ var sections_config = (createConfig);
 // CONCATENATED MODULE: ./src/scripts/sections/premium.js
 /**
  * Premium settings tab.
@@ -3075,7 +2936,393 @@ function createPremium(content, settings) {
 }
 
 /* harmony default export */ var sections_premium = (createPremium);
+// CONCATENATED MODULE: ./src/scripts/sections/picker.js
+/**
+ * Metabox handler.
+ */
+
+/* global ajaxurl:true */
+
+var picker_ = wp.i18n.__; // Store global script object for metabox.
+
+var picker_params = null; // Poster HTML element.
+
+var poster = null;
+/**
+ * Show picker warning message.
+ *
+ * @param {string} message Warning message.
+ */
+
+function showPickerError(message) {
+  var picker = poster.parentNode; // Try to find warning element.
+
+  var warning = picker.querySelector('.sharing-image-picker-warning');
+
+  if (null === warning) {
+    return;
+  }
+
+  warning.classList.add('warning-visible');
+  warning.textContent = message || picker_('Unknown generation error', 'sharing-image');
+}
+/**
+ * Remove warning message block.
+ */
+
+
+function hidePickerError() {
+  var picker = poster.parentNode; // Try to find warning element.
+
+  var warning = picker.querySelector('.sharing-image-picker-warning');
+
+  if (null === warning) {
+    return;
+  }
+
+  warning.classList.remove('warning-visible');
+}
+/**
+ * Handle poster generation action.
+ *
+ * @param {HTMLElement} picker Picker element.
+ */
+
+
+function generatePoster(picker) {
+  var request = new XMLHttpRequest();
+  request.open('POST', ajaxurl);
+  request.responseType = 'json';
+  poster.classList.add('poster-loader'); // Create data form data bundle.
+
+  var bundle = new window.FormData();
+  bundle.set('action', 'sharing_image_generate');
+  var fields = picker.querySelectorAll('[name]');
+  fields.forEach(function (field) {
+    bundle.append(field.name, field.value);
+  });
+  hidePickerError(); // Hide preview loader on request complete.
+
+  request.addEventListener('readystatechange', function () {
+    if (request.readyState === 4) {
+      poster.classList.remove('poster-loader');
+    }
+  });
+  request.addEventListener('load', function () {
+    var response = request.response || {};
+
+    if (!response.success) {
+      return showPickerError(response.data);
+    }
+
+    var input = poster.querySelector('input');
+
+    if (null !== input) {
+      input.setAttribute('value', response.data);
+    }
+
+    var image = poster.querySelector('img');
+
+    if (null === image) {
+      image = builders.element('img', {
+        append: poster
+      });
+    }
+
+    image.src = response.data; // Show the poster.
+
+    poster.classList.add('poster-visible');
+  });
+  request.addEventListener('error', function () {
+    showPickerError();
+  });
+  request.send(bundle);
+}
+/**
+ * Create designer template selector.
+ *
+ * @param {HTMLElement} picker Picker element.
+ * @param {HTMLElement} designer Designer element.
+ * @param {Object} data Picker data object.
+ */
+
+
+function createTemplate(picker, designer, data) {
+  var fields = {};
+  picker_params.templates.forEach(function (template, i) {
+    fields[i] = template.title || picker_('Untitled', 'sharing-image');
+  });
+  var template = builders.select({
+    classes: ['sharing-image-picker-template'],
+    options: fields,
+    attributes: {
+      name: picker_params.name + '[template]'
+    },
+    selected: String(data.template)
+  }, picker);
+  template.addEventListener('change', function () {
+    var fieldset = designer.childNodes;
+
+    for (var i = 0; i < fieldset.length; i++) {
+      fieldset[i].classList.remove('fieldset-visible');
+
+      if (i === parseInt(template.value)) {
+        fieldset[i].classList.add('fieldset-visible');
+      }
+    }
+  });
+  return template;
+}
+
+function createDesignerAttachment(fieldset, template, values, name) {
+  if ('dynamic' === template.background) {
+    builders.media({
+      name: name + '[attachment]',
+      classes: ['sharing-image-picker-details'],
+      value: values.attachment || '',
+      link: picker_params.links.uploads,
+      labels: {
+        button: picker_('Upload background', 'sharing-image'),
+        heading: picker_('Select background image', 'sharing-image'),
+        details: picker_('Attachment', 'sharing-image')
+      },
+      append: fieldset
+    });
+  }
+}
+
+function createDesignerCaptions(fieldset, template, values, name) {
+  // Set default layers list.
+  template.layers = template.layers || [];
+  template.layers.forEach(function (layer, n) {
+    if ('text' === layer.type && layer.dynamic) {
+      var textarea = builders.textarea({
+        classes: ['sharing-image-picker-caption'],
+        label: layer.title || null,
+        attributes: {
+          name: name + "[captions][".concat(n, "]")
+        }
+      }, fieldset);
+
+      if (values.captions && values.captions[n]) {
+        textarea.textContent = values.captions[n];
+      }
+    }
+  });
+}
+/**
+ * Create fields designer.
+ *
+ * @param {HTMLElement} picker Picker element.
+ * @param {Object} data Picker data object.
+ */
+
+
+function picker_createDesigner(picker, data) {
+  var designer = builders.element('div', {
+    classes: ['sharing-image-picker-designer']
+  }); // Create designer fields
+
+  picker_params.templates.forEach(function (template, i) {
+    // Set default layers list.
+    template.layers = template.layers || [];
+    var fieldset = builders.element('div', {
+      classes: ['sharing-image-picker-fieldset'],
+      append: designer
+    });
+    var selected = data.template || 0;
+
+    if (i === parseInt(selected)) {
+      fieldset.classList.add('fieldset-visible');
+    }
+
+    var values = {};
+
+    if (data.fieldset && data.fieldset[i]) {
+      values = data.fieldset[i];
+    }
+
+    var name = picker_params.name + "[fieldset][".concat(i, "]");
+    builders.element('input', {
+      attributes: {
+        type: 'hidden',
+        name: name
+      },
+      append: fieldset
+    }); // Create attachment field.
+
+    createDesignerAttachment(fieldset, template, values, name); // Create all caption fields.
+
+    createDesignerCaptions(fieldset, template, values, name);
+  }); // Create template selector.
+
+  if (picker_params.templates.length > 1) {
+    createTemplate(picker, designer, data);
+  }
+
+  picker.appendChild(designer);
+}
+/**
+ * Create button to generate new metabox poster.
+ *
+ * @param {HTMLElement} picker Picker element.
+ * @param {HTMLElement} manager Manager element.
+ */
+
+
+function picker_createGenerateButton(picker, manager) {
+  var button = builders.element('button', {
+    classes: ['sharing-image-picker-generate', 'button'],
+    text: picker_('Generate', 'sharing-image'),
+    attributes: {
+      type: 'button'
+    },
+    append: manager
+  });
+  button.addEventListener('click', function () {
+    generatePoster(picker);
+  });
+}
+/**
+ * Create button to delete current metabox poster.
+ *
+ * @param {HTMLElement} manager Manager element.
+ */
+
+
+function picker_createDeleteButton(manager) {
+  var button = builders.element('button', {
+    classes: ['sharing-image-picker-delete', 'button', 'button-delete'],
+    text: picker_('Remove', 'sharing-image'),
+    attributes: {
+      type: 'button'
+    },
+    append: manager
+  });
+  button.addEventListener('click', function () {
+    var image = poster.querySelector('img');
+
+    if (null !== image) {
+      poster.removeChild(image);
+    }
+
+    var input = poster.querySelector('input');
+
+    if (null !== input) {
+      input.value = '';
+    }
+
+    poster.classList.remove('poster-visible');
+  });
+}
+/**
+ * Create picker manager.
+ *
+ * @param {HTMLElement} picker Picker element.
+ */
+
+
+function createManager(picker) {
+  var manager = builders.element('div', {
+    classes: ['sharing-image-picker-manager'],
+    append: picker
+  }); // Create poster generation button.
+
+  picker_createGenerateButton(picker, manager); // Create poster removing button.
+
+  picker_createDeleteButton(manager);
+  builders.element('span', {
+    classes: ['sharing-image-picker-spinner', 'spinner'],
+    append: manager
+  });
+}
+/**
+ * Create poster block.
+ *
+ * @param {HTMLElement} picker Picker element.
+ * @param {Object} data Picker data object.
+ */
+
+
+function createPoster(picker, data) {
+  poster = builders.element('div', {
+    classes: ['sharing-image-picker-poster'],
+    append: picker
+  });
+
+  if (data.poster) {
+    builders.element('img', {
+      attributes: {
+        src: data.poster,
+        alt: ''
+      },
+      append: poster
+    });
+    poster.classList.add('poster-visible');
+  }
+
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: picker_params.name + '[poster]',
+      value: data.poster || ''
+    },
+    append: poster
+  });
+  return poster;
+}
+/**
+ * Create metabox generator picker.
+ *
+ * @param {HTMLElement} widget Widget element.
+ * @param {Object} settings Global settings object.
+ */
+
+
+function createPicker(widget, settings) {
+  picker_params = settings; // Set params name for template form fields.
+
+  picker_params.name = 'sharing_image_picker';
+
+  if ('taxonomy' === picker_params.context) {
+    var title = builders.element('div', {
+      classes: ['sharing-image-title'],
+      append: widget
+    });
+    builders.element('strong', {
+      text: picker_('Sharing Image', 'sharing-image'),
+      append: title
+    });
+  }
+
+  var picker = builders.element('div', {
+    classes: ['sharing-image-picker'],
+    append: widget
+  });
+  var data = picker_params.meta || {}; // Create poster block.
+
+  createPoster(picker, data); // Create fields designer.
+
+  picker_createDesigner(picker, data);
+  builders.element('div', {
+    classes: ['sharing-image-picker-warning'],
+    append: picker
+  }); // Create metabox manager block.
+
+  createManager(picker);
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_nonce',
+      value: picker_params.nonce
+    },
+    append: picker
+  });
+}
+
+/* harmony default export */ var sections_picker = (createPicker);
 // CONCATENATED MODULE: ./src/scripts/sections/index.js
+
 
 
 
@@ -3083,8 +3330,9 @@ function createPremium(content, settings) {
 var Section = {
   catalog: sections_catalog,
   editor: sections_editor,
-  picker: sections_picker,
-  premium: sections_premium
+  config: sections_config,
+  premium: sections_premium,
+  picker: sections_picker
 };
 /* harmony default export */ var sections = __webpack_exports__["a"] = (Section);
 
@@ -3147,10 +3395,15 @@ function initPremiumTab(content, settings) {
 }
 /**
  * Init config settings tab.
+ *
+ * @param {HTMLElement} content Settings content element.
+ * @param {Object} settings Global settings object.
  */
 
 
-function initConfigTab() {}
+function initConfigTab(content, settings) {
+  _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].config(content, settings);
+}
 /**
  * Init config settings tab.
  *

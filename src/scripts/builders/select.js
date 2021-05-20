@@ -13,7 +13,7 @@ function buildSelect( args, parent ) {
 	} );
 
 	if ( args.hasOwnProperty( 'label' ) ) {
-		const label = buildElement( 'strong', {
+		const label = buildElement( 'h4', {
 			text: args.label,
 		} );
 
@@ -23,6 +23,7 @@ function buildSelect( args, parent ) {
 	}
 
 	const select = buildElement( 'select', {
+		dataset: args.dataset || {},
 		append: field,
 	} );
 

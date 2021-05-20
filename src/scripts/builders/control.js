@@ -25,7 +25,7 @@ function buildControl( args ) {
 	}
 
 	if ( args.hasOwnProperty( 'label' ) ) {
-		buildElement( 'strong', {
+		buildElement( 'h3', {
 			text: args.label,
 			append: control,
 		} );

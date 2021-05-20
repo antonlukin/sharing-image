@@ -19,7 +19,7 @@ function buildLayer( args ) {
 	}
 
 	if ( args.hasOwnProperty( 'label' ) ) {
-		buildElement( 'h3', {
+		buildElement( 'h2', {
 			text: args.label,
 			append: layer,
 		} );
