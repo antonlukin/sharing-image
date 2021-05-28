@@ -842,7 +842,7 @@ function createNewButton(catalog, index) {
 
   var license = params.config.license || {};
 
-  if (params.config.premium || license.develop) {
+  if (license.premium || license.develop) {
     return;
   }
 
@@ -2359,7 +2359,7 @@ function createRestOptions(options, data) {
     append: options
   });
   builders.media({
-    name: config_params.name + '[default]',
+    name: config_params.name + '[rest]',
     classes: ['sharing-image-control-media'],
     label: config_('Default poster', 'sharing-image'),
     value: data.rest,
@@ -2389,7 +2389,7 @@ function createRestOptions(options, data) {
 
 function createUploadsOptions(options, data) {
   var control = builders.control({
-    classes: ['sharing-image-control', 'control-config', 'control-filepath'],
+    classes: ['sharing-image-control', 'control-config', 'control-storage'],
     label: config_('Upload directory', 'sharing-image'),
     append: options
   });
@@ -2418,15 +2418,19 @@ function createUploadsOptions(options, data) {
   var input = builders.input({
     classes: ['sharing-image-control-input'],
     attributes: {
-      name: config_params.name + '[filepath]',
-      value: data.filepath || config_params.links.filepath,
+      name: config_params.name + '[storage]',
+      value: data.storage || config_params.links.storage,
       disabled: 'disabled'
     }
-  }, control); // Find all radio fields.
+  }, control);
+  builders.element('small', {
+    text: config_('Use relative path from site root. Directory should be writeable.', 'sharing-image'),
+    append: control
+  }); // Find all radio fields.
 
   var fields = control.querySelectorAll('input[type="radio"]');
   fields.forEach(function (radio) {
-    // Show filepath input for checked custom radio.
+    // Show storage input for checked custom radio.
     if (radio.checked && 'custom' === radio.value) {
       input.removeAttribute('disabled', 'disabled');
     }
@@ -2473,7 +2477,7 @@ function createImageOptions(options, data) {
         min: 0,
         max: 100,
         step: 5,
-        value: data.quality || '95',
+        value: data.quality || '90',
         disabled: 'disabled'
       },
       label: config_('Image quality', 'sharing-image')
@@ -2585,7 +2589,7 @@ var premium = null;
  * Parse error code from settings or AJAX response.
  *
  * @param {string} code Error code from settings or AJAX response.
- * @param {string} title Prepended error title.
+ * @param {string} title Prepended error title. Optional.
  */
 
 function parseErrorCode(code, title) {
@@ -2667,18 +2671,20 @@ function revokePremium(access) {
   hidePremiumError(); // Hide form loader class.
 
   request.addEventListener('readystatechange', function () {
-    access.classList.remove('access-loader');
+    if (request.readyState === 4) {
+      access.classList.remove('access-loader');
+    }
   });
   request.addEventListener('load', function () {
     var response = request.response || {};
 
-    if (response.success) {
-      premium_params.config.premium = false; // Refresh premium fields.
-
-      return preparePremiumFields();
+    if (!response.success) {
+      return showPremiumError(response.data);
     }
 
-    showPremiumError(response.data);
+    premium_params.config.license = response.data; // Refresh premium fields.
+
+    preparePremiumFields();
   });
   request.addEventListener('error', function () {
     showPremiumError();
@@ -2703,24 +2709,20 @@ function verifyPremium(access) {
   hidePremiumError(); // Hide form loader class.
 
   request.addEventListener('readystatechange', function () {
-    access.classList.remove('access-loader');
+    if (request.readyState === 4) {
+      access.classList.remove('access-loader');
+    }
   });
   request.addEventListener('load', function () {
     var response = request.response || {};
 
-    if (response.success) {
-      premium_params.config.premium = true; // Refresh premium fields.
-
-      return preparePremiumFields();
+    if (!response.success) {
+      return showPremiumError(parseErrorCode(response.code, response.data));
     }
 
-    var message = response.data;
+    premium_params.config.license = response.data; // Refresh premium fields.
 
-    if (response.code) {
-      message = parseErrorCode(response.code, message);
-    }
-
-    showPremiumError(message);
+    preparePremiumFields();
   });
   request.addEventListener('error', function () {
     showPremiumError();
@@ -2797,7 +2799,7 @@ function showRevokeButton(access) {
   var description = [];
   description.push(premium_('Disabling premium mode will not remove the license for this domain.', 'sharing-image'));
   description.push(premium_('Your current key will also be saved in the plugin settings.', 'sharing-image'));
-  description.push(premium_('Use key management tool to delete the license for this domain.', 'sharing-image'));
+  description.push(premium_('Use key management tool to delete the license for the site.', 'sharing-image'));
   builders.element('p', {
     text: description.join(' '),
     append: revoke
@@ -2878,22 +2880,18 @@ function showPremiumData(access, license) {
 function preparePremiumFields() {
   var access = premium.querySelector('.sharing-image-premium-access');
 
-  if (null === access) {
-    access = builders.element('form', {
-      classes: ['sharing-image-premium-access'],
-      attributes: {
-        action: '',
-        method: 'POST'
-      },
-      append: premium
-    });
-  } // Clear all access chidlren elements.
-
-
-  while (access.firstChild) {
-    access.removeChild(access.lastChild);
+  if (null !== access) {
+    premium.removeChild(access);
   }
 
+  access = builders.element('form', {
+    classes: ['sharing-image-premium-access'],
+    attributes: {
+      action: '',
+      method: 'POST'
+    },
+    append: premium
+  });
   premium.classList.remove('premium-enabled');
   builders.element('input', {
     attributes: {
@@ -2903,13 +2901,9 @@ function preparePremiumFields() {
     },
     append: access
   });
-  builders.element('div', {
-    classes: ['sharing-image-premium-warning'],
-    append: premium
-  });
   var license = premium_params.config.license || {}; // Show fields if user has the license.
 
-  if (premium_params.config.premium || license.develop) {
+  if (license.premium || license.develop) {
     return showPremiumData(access, license);
   }
 
@@ -2932,6 +2926,10 @@ function createPremium(content, settings) {
     return;
   }
 
+  builders.element('div', {
+    classes: ['sharing-image-premium-warning'],
+    append: premium
+  });
   preparePremiumFields();
 }
 
@@ -3043,11 +3041,11 @@ function generatePoster(picker) {
  *
  * @param {HTMLElement} picker Picker element.
  * @param {HTMLElement} designer Designer element.
- * @param {Object} data Picker data object.
+ * @param {Object} selected Seleted template.
  */
 
 
-function createTemplate(picker, designer, data) {
+function createTemplate(picker, designer, selected) {
   var fields = {};
   picker_params.templates.forEach(function (template, i) {
     fields[i] = template.title || picker_('Untitled', 'sharing-image');
@@ -3058,7 +3056,7 @@ function createTemplate(picker, designer, data) {
     attributes: {
       name: picker_params.name + '[template]'
     },
-    selected: String(data.template)
+    selected: String(selected)
   }, picker);
   template.addEventListener('change', function () {
     var fieldset = designer.childNodes;
@@ -3121,7 +3119,13 @@ function createDesignerCaptions(fieldset, template, values, name) {
 function picker_createDesigner(picker, data) {
   var designer = builders.element('div', {
     classes: ['sharing-image-picker-designer']
-  }); // Create designer fields
+  });
+  var selected = data.template || 0; // Reset selected template if index undefined.
+
+  if (!picker_params.templates[selected]) {
+    selected = 0;
+  } // Create designer fields
+
 
   picker_params.templates.forEach(function (template, i) {
     // Set default layers list.
@@ -3130,7 +3134,6 @@ function picker_createDesigner(picker, data) {
       classes: ['sharing-image-picker-fieldset'],
       append: designer
     });
-    var selected = data.template || 0;
 
     if (i === parseInt(selected)) {
       fieldset.classList.add('fieldset-visible');

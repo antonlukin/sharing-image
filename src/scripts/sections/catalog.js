@@ -90,7 +90,7 @@ function createNewButton( catalog, index ) {
 
 	const license = params.config.license || {};
 
-	if ( params.config.premium || license.develop ) {
+	if ( license.premium || license.develop ) {
 		return;
 	}
 

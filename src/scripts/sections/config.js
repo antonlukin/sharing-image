@@ -23,7 +23,7 @@ function createRestOptions( options, data ) {
 	} );
 
 	Build.media( {
-		name: params.name + '[default]',
+		name: params.name + '[rest]',
 		classes: [ 'sharing-image-control-media' ],
 		label: __( 'Default poster', 'sharing-image' ),
 		value: data.rest,
@@ -55,7 +55,7 @@ function createRestOptions( options, data ) {
  */
 function createUploadsOptions( options, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-control', 'control-config', 'control-filepath' ],
+		classes: [ 'sharing-image-control', 'control-config', 'control-storage' ],
 		label: __( 'Upload directory', 'sharing-image' ),
 		append: options,
 	} );
@@ -95,19 +95,24 @@ function createUploadsOptions( options, data ) {
 		{
 			classes: [ 'sharing-image-control-input' ],
 			attributes: {
-				name: params.name + '[filepath]',
-				value: data.filepath || params.links.filepath,
+				name: params.name + '[storage]',
+				value: data.storage || params.links.storage,
 				disabled: 'disabled',
 			},
 		},
 		control
 	);
 
+	Build.element( 'small', {
+		text: __( 'Use relative path from site root. Directory should be writeable.', 'sharing-image' ),
+		append: control,
+	} );
+
 	// Find all radio fields.
 	const fields = control.querySelectorAll( 'input[type="radio"]' );
 
 	fields.forEach( ( radio ) => {
-		// Show filepath input for checked custom radio.
+		// Show storage input for checked custom radio.
 		if ( radio.checked && 'custom' === radio.value ) {
 			input.removeAttribute( 'disabled', 'disabled' );
 		}
@@ -155,7 +160,7 @@ function createImageOptions( options, data ) {
 					min: 0,
 					max: 100,
 					step: 5,
-					value: data.quality || '95',
+					value: data.quality || '90',
 					disabled: 'disabled',
 				},
 				label: __( 'Image quality', 'sharing-image' ),

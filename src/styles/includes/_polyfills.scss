@@ -39,6 +39,32 @@ input[type="range"] {
     background: darken( $color-border, 5 );
   }
 
+  &:disabled::-webkit-slider-thumb {
+    cursor: default;
+
+    background-color: darken( $color-border, 5 );
+  }
+
+  &:disabled::-webkit-slider-runnable-track {
+    cursor: default;
+
+    background-color: lighten( $color-border, 5 );
+    border: solid 1px darken( $color-border, 5 );
+  }
+
+  &::-moz-range-thumb {
+    cursor: pointer;
+    appearance: none;
+
+    width: 16px;
+    height: 16px;
+    margin-top: -5.5px;
+
+    background: $color-links;
+    border: 0;
+    border-radius: 50%;
+  }
+
   &::-moz-range-track {
     cursor: pointer;
 
@@ -63,21 +89,28 @@ input[type="range"] {
     border: solid 1px $color-links;
   }
 
-  &::-moz-range-thumb {
-    cursor: pointer;
-    appearance: none;
-
-    width: 16px;
-    height: 16px;
-    margin-top: -5.5px;
-
-    background: $color-links;
-    border: 0;
-    border-radius: 50%;
-  }
-
   &:focus::-moz-range-thumb {
     background: darken( $color-links, 10 );
+  }
+
+  &:disabled::-moz-range-thumb {
+    cursor: default;
+
+    background-color: darken( $color-border, 5 );
+  }
+
+  &:disabled::-moz-range-track {
+    cursor: default;
+
+    background-color: lighten( $color-border, 5 );
+    border: solid 1px darken( $color-border, 5 );
+  }
+
+  &:disabled::-moz-range-progress {
+    cursor: default;
+
+    background-color: lighten( $color-border, 5 );
+    border: solid 1px darken( $color-border, 5 );
   }
 
   &::-ms-track {
@@ -90,20 +123,6 @@ input[type="range"] {
 
     border-radius: 4px;
     border: solid 1px darken( $color-border, 10 );
-  }
-
-  &::-ms-fill-lower {
-    background: $color-border;
-
-    border-radius: 4px;
-    border: solid 1px darken( $color-border, 10 );
-  }
-
-  &::-ms-fill-upper {
-    background: $color-links;
-
-    border-radius: 4px;
-    border: solid 1px $color-links;
   }
 
   &::-ms-thumb {
@@ -121,5 +140,18 @@ input[type="range"] {
 
   &:focus::-ms-thumb {
     background: darken( $color-links, 10 );
+  }
+
+  &:disabled::-ms-thumb {
+    cursor: default;
+
+    background-color: darken( $color-border, 5 );
+  }
+
+  &:disabled::-ms-track {
+    cursor: default;
+
+    background-color: lighten( $color-border, 5 );
+    border: solid 1px darken( $color-border, 5 );
   }
 }

@@ -17,7 +17,7 @@ let premium = null;
  * Parse error code from settings or AJAX response.
  *
  * @param {string} code Error code from settings or AJAX response.
- * @param {string} title Prepended error title.
+ * @param {string} title Prepended error title. Optional.
  */
 function parseErrorCode( code, title ) {
 	const message = [];
@@ -102,20 +102,22 @@ function revokePremium( access ) {
 
 	// Hide form loader class.
 	request.addEventListener( 'readystatechange', () => {
-		access.classList.remove( 'access-loader' );
+		if ( request.readyState === 4 ) {
+			access.classList.remove( 'access-loader' );
+		}
 	} );
 
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
-		if ( response.success ) {
-			params.config.premium = false;
-
-			// Refresh premium fields.
-			return preparePremiumFields();
+		if ( ! response.success ) {
+			return showPremiumError( response.data );
 		}
 
-		showPremiumError( response.data );
+		params.config.license = response.data;
+
+		// Refresh premium fields.
+		preparePremiumFields();
 	} );
 
 	request.addEventListener( 'error', () => {
@@ -145,26 +147,22 @@ function verifyPremium( access ) {
 
 	// Hide form loader class.
 	request.addEventListener( 'readystatechange', () => {
-		access.classList.remove( 'access-loader' );
+		if ( request.readyState === 4 ) {
+			access.classList.remove( 'access-loader' );
+		}
 	} );
 
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
-		if ( response.success ) {
-			params.config.premium = true;
-
-			// Refresh premium fields.
-			return preparePremiumFields();
+		if ( ! response.success ) {
+			return showPremiumError( parseErrorCode( response.code, response.data ) );
 		}
 
-		let message = response.data;
+		params.config.license = response.data;
 
-		if ( response.code ) {
-			message = parseErrorCode( response.code, message );
-		}
-
-		showPremiumError( message );
+		// Refresh premium fields.
+		preparePremiumFields();
 	} );
 
 	request.addEventListener( 'error', () => {
@@ -248,7 +246,7 @@ function showRevokeButton( access ) {
 
 	description.push( __( 'Disabling premium mode will not remove the license for this domain.', 'sharing-image' ) );
 	description.push( __( 'Your current key will also be saved in the plugin settings.', 'sharing-image' ) );
-	description.push( __( 'Use key management tool to delete the license for this domain.', 'sharing-image' ) );
+	description.push( __( 'Use key management tool to delete the license for the site.', 'sharing-image' ) );
 
 	Build.element( 'p', {
 		text: description.join( ' ' ),
@@ -335,21 +333,18 @@ function showPremiumData( access, license ) {
 function preparePremiumFields() {
 	let access = premium.querySelector( '.sharing-image-premium-access' );
 
-	if ( null === access ) {
-		access = Build.element( 'form', {
-			classes: [ 'sharing-image-premium-access' ],
-			attributes: {
-				action: '',
-				method: 'POST',
-			},
-			append: premium,
-		} );
+	if ( null !== access ) {
+		premium.removeChild( access );
 	}
 
-	// Clear all access chidlren elements.
-	while ( access.firstChild ) {
-		access.removeChild( access.lastChild );
-	}
+	access = Build.element( 'form', {
+		classes: [ 'sharing-image-premium-access' ],
+		attributes: {
+			action: '',
+			method: 'POST',
+		},
+		append: premium,
+	} );
 
 	premium.classList.remove( 'premium-enabled' );
 
@@ -362,15 +357,10 @@ function preparePremiumFields() {
 		append: access,
 	} );
 
-	Build.element( 'div', {
-		classes: [ 'sharing-image-premium-warning' ],
-		append: premium,
-	} );
-
 	const license = params.config.license || {};
 
 	// Show fields if user has the license.
-	if ( params.config.premium || license.develop ) {
+	if ( license.premium || license.develop ) {
 		return showPremiumData( access, license );
 	}
 
@@ -392,6 +382,11 @@ function createPremium( content, settings ) {
 	if ( null === premium ) {
 		return;
 	}
+
+	Build.element( 'div', {
+		classes: [ 'sharing-image-premium-warning' ],
+		append: premium,
+	} );
 
 	preparePremiumFields();
 }

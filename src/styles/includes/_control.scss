@@ -175,13 +175,13 @@
     }
   }
 
-  &.control-filepath {
+  &.control-storage {
     label {
       margin: 0 0 5px;
     }
 
-    &>*:last-child {
-      margin-top: 10px;
+    &>*:nth-child(2) {
+      margin-bottom: 10px;
     }
   }
 

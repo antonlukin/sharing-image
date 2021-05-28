@@ -52,7 +52,14 @@ class Settings {
 	 *
 	 * @var string
 	 */
-	const SERVER_LICENSES = 'https://notset.org/sharing-image/licenses/';
+	const REMOTE_LICENSES = 'https://notset.org/sharing-image/licenses/';
+
+	/**
+	 * Premium verification event name.
+	 *
+	 * @var string
+	 */
+	const PREMIUM_EVENT = 'sharing_image_premium_event';
 
 	/**
 	 * List of settings tabs.
@@ -77,20 +84,20 @@ class Settings {
 		// Handle settings POST requests.
 		add_action( 'admin_init', array( $this, 'handle_post_requests' ) );
 
-		// Handle settins AJAX requests.
+		// Handle settings AJAX requests.
 		add_action( 'admin_init', array( $this, 'handle_ajax_requests' ) );
+
+		// Allow uploading custom fonts for templates editor.
+		add_action( 'admin_init', array( $this, 'allow_custom_fonts' ) );
 
 		// Add settings link to plugins list.
 		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
 
-		// Allow True Type fonts uploading.
-		add_filter( 'wp_check_filetype_and_ext', array( $this, 'fix_ttf_mime_type' ), 10, 3 );
-
-		// Add new .ttf font mime type.
-		add_filter( 'upload_mimes', array( $this, 'add_ttf_mime_type' ) );
-
 		// Update admin title for different tabs.
 		add_action( 'admin_title', array( $this, 'update_settings_title' ) );
+
+		// Schedule Premium license verification.
+		add_action( self::PREMIUM_EVENT, array( $this, 'launch_verification_event' ), 10, 1 );
 	}
 
 	/**
@@ -126,9 +133,9 @@ class Settings {
 	 */
 	public function handle_post_requests() {
 		$actions = array(
+			'config' => 'save_settings_config',
 			'editor' => 'save_settings_template',
 			'delete' => 'delete_settings_template',
-			'config' => 'save_settings_config',
 		);
 
 		foreach ( $actions as $key => $method ) {
@@ -161,6 +168,30 @@ class Settings {
 	}
 
 	/**
+	 * Allow uploading custom fonts for templates editor.
+	 * This function may affect the security of the site.
+	 * Disable font uploading if you are not going to use it.
+	 */
+	public function allow_custom_fonts() {
+		/**
+		 * Easy way to disable custom font uploading.
+		 *
+		 * @param bool $disable_ttf Set true to disable fonts uploading.
+		 */
+		$disable_fonts = apply_filters( 'sharing_image_allow_custom_fonts', false );
+
+		if ( $disable_fonts ) {
+			return;
+		}
+
+		// Allow True Type fonts uploading.
+		add_filter( 'wp_check_filetype_and_ext', array( $this, 'fix_ttf_mime_type' ), 10, 3 );
+
+		// Add new .ttf font mime type.
+		add_filter( 'upload_mimes', array( $this, 'add_ttf_mime_type' ) );
+	}
+
+	/**
 	 * Add settings link to plugins list.
 	 *
 	 * @param array  $actions     An array of plugin action links.
@@ -179,6 +210,35 @@ class Settings {
 		}
 
 		return $actions;
+	}
+
+	/**
+	 * Save settings config fields.
+	 */
+	public function save_settings_config() {
+		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+		}
+
+		$return = $this->get_tab_link( 'config' );
+
+		if ( null === $return ) {
+			$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
+		}
+
+		if ( ! isset( $_POST['sharing_image_config'] ) ) {
+			$this->redirect_with_message( $return, 5 );
+		}
+
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$config = $this->sanitize_config( wp_unslash( $_POST['sharing_image_config'] ) );
+
+		$this->update_config( $config );
+
+		// Redirect with success message.
+		$this->redirect_with_message( $return, 1 );
 	}
 
 	/**
@@ -213,9 +273,9 @@ class Settings {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
-		// Update settings template.
-		$this->replace_template( $editor, $index );
+		$this->update_templates( $index, $editor );
 
+		// Redirect with success message.
 		$this->redirect_with_message( $return, 1 );
 	}
 
@@ -238,34 +298,11 @@ class Settings {
 		// Get index from template ID.
 		$index = absint( $_REQUEST['template'] ) - 1;
 
-		if ( ! $this->delete_template( $index ) ) {
+		if ( ! $this->update_templates( $index ) ) {
 			$this->redirect_with_message( $return, 4 );
 		}
 
 		$this->redirect_with_message( $return, 3 );
-	}
-
-
-	/**
-	 * Save config fields.
-	 */
-	public function save_settings_config() {
-		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
-		}
-
-		$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
-
-		/*
-		if ( isset( $this->tabs['config']['link'] ) ) {
-			$return = $this->tabs['config']['link'];
-		}
-		*/
-
-		print_r( $_POST );
-		exit;
 	}
 
 	/**
@@ -342,21 +379,20 @@ class Settings {
 			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
 		}
 
-		if ( ! isset( $_POST['sharing_image_key'] ) ) {
+		if ( empty( $_POST['sharing_image_key'] ) ) {
 			wp_send_json_error( __( 'Premium key undefined.', 'sharing-image' ), 400 );
 		}
 
 		$key = sanitize_text_field( wp_unslash( $_POST['sharing_image_key'] ) );
 
 		$args = array(
-			'method' => 'POST',
-			'body'   => array(
+			'body' => array(
 				'key'  => $key,
 				'host' => wp_parse_url( site_url(), PHP_URL_HOST ),
 			),
 		);
 
-		$response = wp_remote_request( self::SERVER_LICENSES, $args );
+		$response = wp_remote_post( self::REMOTE_LICENSES, $args );
 
 		if ( is_wp_error( $response ) ) {
 			wp_send_json_error( __( 'Unable to get a response from the verification server.', 'sharing-image' ), 400 );
@@ -368,20 +404,30 @@ class Settings {
 			wp_send_json_error( __( 'Unable to get a response from the verification server.', 'sharing-image' ), 400 );
 		}
 
-		if ( false === $answer['success'] ) {
-			$error = array(
-				'success' => false,
-				'data'    => __( 'Verification failed.', 'sharing-image' ),
-			);
+		// Remove license verification event.
+		wp_unschedule_hook( self::PREMIUM_EVENT );
 
-			if ( isset( $answer['error'] ) ) {
-				$error['code'] = $answer['error'];
-			}
+		if ( true === $answer['success'] ) {
+			$license = $this->update_license( true, $key );
 
-			wp_send_json( $error, 403 );
+			// Schedule license verification twice daily.
+			$this->schedule_verification( array( $key ) );
+
+			wp_send_json_success( $license );
 		}
 
-		wp_send_json_success();
+		$error = array(
+			'success' => false,
+			'data'    => __( 'Verification failed.', 'sharing-image' ),
+		);
+
+		if ( isset( $answer['error'] ) ) {
+			$error['code'] = $answer['error'];
+		}
+
+		$this->update_license( false, $key );
+
+		wp_send_json( $error, 403 );
 	}
 
 	/**
@@ -394,7 +440,13 @@ class Settings {
 			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
 		}
 
-		wp_send_json_success();
+		// Remove license verification event.
+		wp_unschedule_hook( self::PREMIUM_EVENT );
+
+		// Disable Premium license.
+		$license = $this->update_license( false );
+
+		wp_send_json_success( $license );
 	}
 
 	/**
@@ -491,44 +543,12 @@ class Settings {
 	}
 
 	/**
-	 * Get availible fonts.
-	 *
-	 * @return array List of availible poster fonts.
-	 */
-	public function get_fonts() {
-		$fonts = array(
-			'open-sans'    => 'Open Sans',
-			'merriweather' => 'Merriweather',
-			'roboto-slab'  => 'Roboto Slab',
-			'ubuntu'       => 'Ubuntu',
-			'rubik-bold'   => 'Rubik Bold',
-			'montserrat'   => 'Montserrat',
-		);
-
-		/**
-		 * Filters settigns config.
-		 *
-		 * @param array List of availible poster fonts.
-		 */
-		return apply_filters( 'sharing_image_get_fonts', $fonts );
-	}
-
-	/**
 	 * Get plugin config settings.
 	 *
 	 * @return array List of plugin config settings.
 	 */
 	public function get_config() {
 		$config = get_option( self::OPTION_CONFIG, array() );
-
-		$config = array(
-			'premium' => false,
-			'license' => array(
-				'key'     => 'avbc-dfig-34op',
-				'error'   => 'LIMIT_EXCEEDED',
-				'develop' => false,
-			),
-		);
 
 		/**
 		 * Check if the plugin in development mode.
@@ -547,6 +567,57 @@ class Settings {
 		 * @param array List of plugin config settings.
 		 */
 		return apply_filters( 'sharing_image_get_config', $config );
+	}
+
+	/**
+	 * Update config settings.
+	 *
+	 * @param array $updated License settings config data.
+	 */
+	public function update_config( $updated ) {
+		$config = get_option( self::OPTION_CONFIG, array() );
+
+		if ( isset( $config['license'] ) ) {
+			$updated['license'] = $config['license'];
+		}
+
+		/**
+		 * Filters config options before their update in database.
+		 *
+		 * @param array $config Settings config data.
+		 */
+		$updated = apply_filters( 'sharing_image_update_config', $updated );
+
+		update_option( self::OPTION_CONFIG, $updated );
+	}
+
+	/**
+	 * Set license options.
+	 *
+	 * @param bool   $premium Premium status.
+	 * @param string $key     License key.
+	 * @param string $error   Verification error code.
+	 * @return array
+	 */
+	public function update_license( $premium, $key = '', $error = '' ) {
+		$config = get_option( self::OPTION_CONFIG, array() );
+
+		$config['license']['premium'] = $premium;
+
+		if ( ! empty( $key ) ) {
+			$config['license']['key'] = $key;
+		}
+
+		unset( $config['license']['error'] );
+
+		if ( ! empty( $error ) ) {
+			$config['license']['error'] = $error;
+		}
+
+		// Save updated config option in database.
+		update_option( self::OPTION_CONFIG, $config );
+
+		return $config['license'];
 	}
 
 	/**
@@ -570,57 +641,29 @@ class Settings {
 	}
 
 	/**
-	 * Update templates in options.
+	 * Update templates using index.
 	 *
-	 * @param array $templates List of new templates.
-	 * @return bool
-	 */
-	public function update_templates( $templates ) {
-		/**
-		 * Filters list of templates before update in database.
-		 *
-		 * @param array $templates List of templates.
-		 */
-		$templates = apply_filters( 'sharing_image_update_templates', $templates );
-
-		return update_option( self::OPTION_TEMPLATES, $templates );
-	}
-
-	/**
-	 * Update single template by index.
-	 * Method get_templates() is not used to save old templates during Premium switching.
-	 *
-	 * @param array $editor New template data.
 	 * @param int   $index  Template index to update.
-	 * @return bool
+	 * @param array $editor New template data.
 	 */
-	public function replace_template( $editor, $index ) {
+	public function update_templates( $index, $editor = null ) {
+		// Method get_templates() is not used to save old templates during Premium switching.
 		$templates = get_option( self::OPTION_TEMPLATES, array() );
 
 		$templates[ $index ] = $editor;
 
-		// Reindex templates array.
-		$templates = array_values( $templates );
+		if ( null === $editor ) {
+			unset( $templates[ $index ] );
+		}
 
-		return $this->update_templates( $templates );
-	}
+		/**
+		 * Filters list of templates before update in database.
+		 *
+		 * @param array $templates List of reindexed templates.
+		 */
+		$templates = apply_filters( 'sharing_image_update_templates', array_values( $templates ) );
 
-	/**
-	 * Delete template by index.
-	 * Method get_templates() is not used to save old templates during Premium switching.
-	 *
-	 * @param int $index Template index to delete.
-	 * @return bool
-	 */
-	public function delete_template( $index ) {
-		$templates = get_option( self::OPTION_TEMPLATES, array() );
-
-		unset( $templates[ $index ] );
-
-		// Reindex templates array.
-		$templates = array_values( $templates );
-
-		return $this->update_templates( $templates );
+		update_option( self::OPTION_TEMPLATES, $templates );
 	}
 
 	/**
@@ -650,6 +693,43 @@ class Settings {
 	}
 
 	/**
+	 * Launch scheduled license verification event.
+	 * Do not disable Premium if the verification server does not respond.
+	 *
+	 * @param string $key License key.
+	 */
+	public function launch_verification_event( $key ) {
+		$args = array(
+			'body' => array(
+				'key'  => $key,
+				'host' => wp_parse_url( site_url(), PHP_URL_HOST ),
+			),
+		);
+
+		$response = wp_remote_post( self::REMOTE_LICENSES, $args );
+
+		if ( is_wp_error( $response ) ) {
+			return;
+		}
+
+		$answer = json_decode( $response['body'], true );
+
+		if ( ! isset( $answer['success'] ) ) {
+			return;
+		}
+
+		if ( true === $answer['success'] ) {
+			return $this->update_license( true, $key );
+		}
+
+		if ( ! isset( $answer['error'] ) ) {
+			return $this->update_license( false, $key );
+		}
+
+		$this->update_license( false, $key, $answer['error'] );
+	}
+
+	/**
 	 * Check if Premium features availible.
 	 *
 	 * @return bool
@@ -657,11 +737,28 @@ class Settings {
 	public function is_premium_features() {
 		$config = $this->get_config();
 
-		if ( ! empty( $config['premium'] ) || ! empty( $config['license']['develop'] ) ) {
-			return true;
+		if ( isset( $config['license'] ) ) {
+			$license = $config['license'];
+
+			if ( ! empty( $license['premium'] ) || ! empty( $license['develop'] ) ) {
+				return true;
+			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Schedule license verification.
+	 *
+	 * @param array $args List of event arguments. License key by default.
+	 */
+	public function schedule_verification( $args = array() ) {
+		if ( wp_next_scheduled( self::PREMIUM_EVENT, $args ) ) {
+			return;
+		}
+
+		wp_schedule_event( time() + DAY_IN_SECONDS / 2, 'twicedaily', self::PREMIUM_EVENT, $args );
 	}
 
 	/**
@@ -672,13 +769,16 @@ class Settings {
 	private function create_script_object() {
 		$uploads = wp_get_upload_dir();
 
+		// Get uploads directory path from WordPress root.
+		$basedir = str_replace( ABSPATH, '', $uploads['basedir'] );
+
 		$object = array(
 			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
 			'links'     => array(
-				'uploads'  => esc_url( admin_url( 'upload.php' ) ),
-				'action'   => esc_url( admin_url( 'admin-post.php' ) ),
-				'filepath' => path_join( $uploads['basedir'], 'sharing-image' ),
-				'premium'  => esc_url_raw( $this->get_tab_link( 'premium' ) ),
+				'uploads' => esc_url( admin_url( 'upload.php' ) ),
+				'action'  => esc_url( admin_url( 'admin-post.php' ) ),
+				'premium' => esc_url_raw( $this->get_tab_link( 'premium' ) ),
+				'storage' => path_join( $basedir, 'sharing-image' ),
 			),
 			'fonts'     => $this->get_fonts(),
 			'config'    => $this->get_config(),
@@ -1015,6 +1115,60 @@ class Settings {
 	}
 
 	/**
+	 * Sanitize config settings.
+	 *
+	 * @param array $config Config settings.
+	 * @return array
+	 */
+	private function sanitize_config( $config ) {
+		$sanitized = array();
+
+		if ( ! empty( $config['rest'] ) ) {
+			$sanitized['rest'] = absint( $config['rest'] );
+		}
+
+		$sanitized['format'] = 'jpg';
+
+		if ( isset( $config['format'] ) ) {
+			$format = $config['format'];
+
+			if ( in_array( $format, array( 'jpg', 'png' ), true ) ) {
+				$sanitized['format'] = $config['format'];
+			}
+		}
+
+		if ( isset( $config['quality'] ) ) {
+			$quality = (int) $config['quality'];
+
+			if ( $quality >= 0 && $quality <= 100 ) {
+				$sanitized['quality'] = $quality;
+			}
+		}
+
+		$sanitized['uploads'] = 'default';
+
+		if ( isset( $config['uploads'] ) ) {
+			$uploads = $config['uploads'];
+
+			if ( in_array( $uploads, array( 'custom', 'default' ), true ) ) {
+				$sanitized['uploads'] = $config['uploads'];
+			}
+		}
+
+		if ( isset( $config['storage'] ) ) {
+			$sanitized['storage'] = sanitize_text_field( $config['storage'] );
+		}
+
+		/**
+		 * Filters template editor sanitized fields.
+		 *
+		 * @param array $sanitized List of sanitized config fields.
+		 * @param array $config    List of config fields before sanitization.
+		 */
+		return apply_filters( 'sharing_image_sanitize_config', $sanitized, $config );
+	}
+
+	/**
 	 * Show settings tab template.
 	 */
 	private function show_settings_section() {
@@ -1047,6 +1201,10 @@ class Settings {
 
 			case 4:
 				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to delete template.', 'sharing-image' ) );
+				break;
+
+			case 5:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to save configuration settings.', 'sharing-image' ) );
 				break;
 		}
 
@@ -1107,6 +1265,29 @@ class Settings {
 				esc_html( $args['label'] )
 			);
 		}
+	}
+
+	/**
+	 * Get availible fonts.
+	 *
+	 * @return array List of availible poster fonts.
+	 */
+	private function get_fonts() {
+		$fonts = array(
+			'open-sans'    => 'Open Sans',
+			'merriweather' => 'Merriweather',
+			'roboto-slab'  => 'Roboto Slab',
+			'ubuntu'       => 'Ubuntu',
+			'rubik-bold'   => 'Rubik Bold',
+			'montserrat'   => 'Montserrat',
+		);
+
+		/**
+		 * Filters settigns config.
+		 *
+		 * @param array List of availible poster fonts.
+		 */
+		return apply_filters( 'sharing_image_get_fonts', $fonts );
 	}
 
 	/**

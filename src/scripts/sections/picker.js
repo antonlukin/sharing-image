@@ -118,9 +118,9 @@ function generatePoster( picker ) {
  *
  * @param {HTMLElement} picker Picker element.
  * @param {HTMLElement} designer Designer element.
- * @param {Object} data Picker data object.
+ * @param {Object} selected Seleted template.
  */
-function createTemplate( picker, designer, data ) {
+function createTemplate( picker, designer, selected ) {
 	const fields = {};
 
 	params.templates.forEach( ( template, i ) => {
@@ -134,7 +134,7 @@ function createTemplate( picker, designer, data ) {
 			attributes: {
 				name: params.name + '[template]',
 			},
-			selected: String( data.template ),
+			selected: String( selected ),
 		},
 		picker
 	);
@@ -206,6 +206,13 @@ function createDesigner( picker, data ) {
 		classes: [ 'sharing-image-picker-designer' ],
 	} );
 
+	let selected = data.template || 0;
+
+	// Reset selected template if index undefined.
+	if ( ! params.templates[ selected ] ) {
+		selected = 0;
+	}
+
 	// Create designer fields
 	params.templates.forEach( ( template, i ) => {
 		// Set default layers list.
@@ -215,8 +222,6 @@ function createDesigner( picker, data ) {
 			classes: [ 'sharing-image-picker-fieldset' ],
 			append: designer,
 		} );
-
-		const selected = data.template || 0;
 
 		if ( i === parseInt( selected ) ) {
 			fieldset.classList.add( 'fieldset-visible' );
