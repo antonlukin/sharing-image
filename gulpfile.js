@@ -11,8 +11,7 @@ const named = require( 'vinyl-named' );
  * Create styles file from sources/
  */
 gulp.task( 'styles', ( done ) => {
-	const styles = gulp
-		.src( 'src/styles/*.scss' )
+	gulp.src( 'src/styles/*.scss' )
 		.pipe( plumber() )
 		.pipe(
 			sassGlob( {
@@ -24,9 +23,8 @@ gulp.task( 'styles', ( done ) => {
 				errLogToConsole: true,
 			} )
 		)
-		.pipe( prefix() );
-
-	styles.pipe( gulp.dest( 'assets/styles/' ) );
+		.pipe( prefix() )
+		.pipe( gulp.dest( 'assets/styles/' ) );
 
 	done();
 } );
@@ -35,8 +33,7 @@ gulp.task( 'styles', ( done ) => {
  * Create scripts file from sources.
  */
 gulp.task( 'scripts', ( done ) => {
-	const scripts = gulp
-		.src( 'src/scripts/*.js' )
+	gulp.src( 'src/scripts/*.js' )
 		.pipe( plumber() )
 		.pipe( named() )
 		.pipe(
@@ -49,9 +46,8 @@ gulp.task( 'scripts', ( done ) => {
 				file.basename = file.basename;
 				file.extname = '.js';
 			} )
-		);
-
-	scripts.pipe( gulp.dest( 'assets/scripts/' ) );
+		)
+		.pipe( gulp.dest( 'assets/scripts/' ) );
 
 	done();
 } );
@@ -59,16 +55,18 @@ gulp.task( 'scripts', ( done ) => {
 /**
  * Watch soruces and update styles and scripts
  */
-gulp.task( 'watch', () => {
-	gulp.watch( './src/**/*', gulp.series( 'styles', 'scripts' ) );
+gulp.task( 'watch', ( done ) => {
+	gulp.watch( './src/**/*', gulp.parallel( 'styles', 'scripts' ) );
+
+	done();
 } );
 
 /**
  * Build static files
  */
-gulp.task( 'build', gulp.series( 'styles', 'scripts' ) );
+gulp.task( 'build', gulp.parallel( 'styles', 'scripts' ) );
 
 /**
  * Build static files and watch changes by default.
  */
-gulp.task( 'default', gulp.series( 'styles', 'scripts', 'watch' ) );
+gulp.task( 'serve', gulp.parallel( 'styles', 'scripts', 'watch' ) );

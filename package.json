@@ -5,7 +5,8 @@
   "description": "Sharing Image",
   "license": "MIT",
   "scripts": {
-    "build": "gulp build"
+    "build": "gulp build",
+    "serve": "gulp serve"
   },
   "prettier": {
     "printWidth": 120

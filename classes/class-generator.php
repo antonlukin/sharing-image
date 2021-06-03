@@ -12,6 +12,10 @@ use Exception;
 use WP_Error;
 use PosterEditor\PosterEditor;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	die;
+}
+
 /**
  * Poster generator class
  *
@@ -36,6 +40,8 @@ class Generator {
 	 * Compose image using picker data.
 	 *
 	 * @param array $picker Picker data from metabox.
+	 *
+	 * @return array|WP_Error Poster url, width and height or WP_Error on failure.
 	 */
 	public function compose( $picker ) {
 		if ( ! isset( $picker['template'] ) ) {
@@ -61,14 +67,20 @@ class Generator {
 
 		list( $path, $url ) = $this->get_upload_file();
 
-		// Generate image and save it.
+		// Generate image and save it to given path.
 		$poster = $this->create_poster( $template, $path );
 
 		if ( is_wp_error( $poster ) ) {
 			return $poster;
 		}
 
-		return $url;
+		$result = array(
+			'poster' => $url,
+			'width'  => $template['width'],
+			'height' => $template['height'],
+		);
+
+		return $result;
 	}
 
 	/**
@@ -77,7 +89,7 @@ class Generator {
 	 * @param array $template Templates data from settings page.
 	 * @param int   $index    Template index.
 	 *
-	 * @return WP_Error
+	 * @return void|WP_Error WP_Error on failure.
 	 */
 	public function show( $template, $index ) {
 		$template = $this->prepare_template( $template, null, $index );
@@ -98,7 +110,7 @@ class Generator {
 	 * @param array $template Templates data from settings page.
 	 * @param int   $index    Template index.
 	 *
-	 * @return WP_Error
+	 * @return string|WP_Error Generated poster url or WP_Error on failure.
 	 */
 	public function save( $template, $index ) {
 		$template = $this->prepare_template( $template, null, $index );
@@ -122,6 +134,8 @@ class Generator {
 	 * @param array   $template List of template data.
 	 * @param array   $fieldset Optional. Fieldset data from picker.
 	 * @param integer $index    Optional. Template index from editor.
+	 *
+	 * @return array List of template data.
 	 */
 	private function prepare_template( $template, $fieldset = array(), $index = null ) {
 		$layers = array();
@@ -183,6 +197,8 @@ class Generator {
 	 *
 	 * @param array  $template List of template options.
 	 * @param string $path     Optional. File path to save.
+	 *
+	 * @return void|WP_Error WP_Error on failure.
 	 */
 	private function create_poster( $template, $path = null ) {
 		try {
@@ -195,10 +211,10 @@ class Generator {
 			}
 
 			if ( null === $path ) {
-				return $poster->show( 90, 'jpg' );
+				return $poster->show( $this->settings->get_quality() );
 			}
 
-			$poster->save( $path, 90, 'jpg' );
+			$poster->save( $path, $this->settings->get_quality() );
 
 		} catch ( Exception $e ) {
 			return new WP_Error( 'generate', $e->getMessage() );
@@ -211,7 +227,7 @@ class Generator {
 	 * @param PosterEditor $poster Instance of PosterEditor class.
 	 * @param array        $layers List of layers options.
 	 *
-	 * @return PosterEditor
+	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function append_layers( $poster, $layers ) {
 		$layers = array_reverse( $layers );
@@ -249,7 +265,7 @@ class Generator {
 	 * @param PosterEditor $poster Instance of PosterEditor class.
 	 * @param array        $layer  Filter layer options.
 	 *
-	 * @return PosterEditor
+	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function draw_filter( $poster, $layer ) {
 		if ( ! empty( $layer['grayscale'] ) ) {
@@ -281,7 +297,7 @@ class Generator {
 	 * @param PosterEditor $poster Instance of PosterEditor class.
 	 * @param array        $layer  Rectangle layer options.
 	 *
-	 * @return PosterEditor
+	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function draw_rectangle( $poster, $layer ) {
 		// Both x and y should be set.
@@ -315,7 +331,7 @@ class Generator {
 	 * @param PosterEditor $poster Instance of PosterEditor class.
 	 * @param object       $layer  Option name.
 	 *
-	 * @return PosterEditor
+	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function draw_image( $poster, $layer ) {
 		// Attachment id is required.
@@ -340,7 +356,7 @@ class Generator {
 	 * @param PosterEditor $poster Instance of PosterEditor class.
 	 * @param array        $layer  Rectangle layer options.
 	 *
-	 * @return PosterEditor
+	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function draw_text( $poster, $layer ) {
 		$args = $this->prepare_args( $layer, array( 'x', 'y', 'width', 'height', 'fontsize', 'color', 'lineheight', 'opacity', 'horizontal', 'vertical' ) );
@@ -384,17 +400,18 @@ class Generator {
 	/**
 	 * Generate upload file path and url.
 	 *
-	 * @return array Server file path and url to image.
+	 * @return array Server file path and url to uploaded image.
 	 */
 	private function get_upload_file() {
-		$uploads = wp_upload_dir();
+		// Get uploads directory url and path array.
+		list( $path, $url ) = $this->settings->get_upload_dir();
 
-		// Create random file name.
-		$name = wp_unique_filename( $uploads['path'], uniqid() . '.jpg' );
+		// Create random file name with proper extension.
+		$name = wp_unique_filename( $path, uniqid() . '.' . $this->settings->get_file_format() );
 
 		$file = array(
-			trailingslashit( $uploads['path'] ) . $name,
-			trailingslashit( $uploads['url'] ) . $name,
+			trailingslashit( $path ) . $name,
+			trailingslashit( $url ) . $name,
 		);
 
 		/**
@@ -412,7 +429,7 @@ class Generator {
 	 * @param array $template Template data.
 	 * @param array $fieldset Fieldset data from request.
 	 *
-	 * @return array Template
+	 * @return array Template data.
 	 */
 	private function set_picker_fields( $template, $fieldset ) {
 		if ( isset( $fieldset['attachment'] ) ) {

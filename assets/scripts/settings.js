@@ -840,7 +840,7 @@ function createNewButton(catalog, index) {
     return;
   }
 
-  var license = params.config.license || {};
+  var license = params.license || {};
 
   if (license.premium || license.develop) {
     return;
@@ -852,7 +852,7 @@ function createNewButton(catalog, index) {
   });
 
   if (params.links.premium) {
-    button.setAttribute('href', params.links.premium);
+    button.href = params.links.premium;
   }
 }
 /**
@@ -948,15 +948,11 @@ function generateTemplate() {
         request.responseType = 'blob';
       }
     }
-  }); // Hide preview loader on request complete.
-
-  request.addEventListener('readystatechange', function () {
-    if (request.readyState === 4) {
-      editor_preview.classList.remove('preview-blank', 'preview-loader');
-    }
   });
   request.addEventListener('load', function () {
-    var response = request.response || {};
+    var response = request.response || {}; // Hide preview loader on request complete.
+
+    editor_preview.classList.remove('preview-blank', 'preview-loader');
 
     if (200 !== request.status) {
       return showTemplateError(response.data);
@@ -974,7 +970,9 @@ function generateTemplate() {
     image.src = window.URL.createObjectURL(response);
   });
   request.addEventListener('error', function () {
-    showTemplateError();
+    showTemplateError(); // Hide preview loader on request complete.
+
+    editor_preview.classList.remove('preview-blank', 'preview-loader');
   });
   request.send(bundle);
 }
@@ -990,31 +988,31 @@ function saveTemplate() {
   editor_preview.classList.add('preview-loader'); // Create data bundle using editor data.
 
   var bundle = new window.FormData(editor);
-  bundle.set('action', 'sharing_image_save'); // Hide preview loader on request complete.
-
-  request.addEventListener('readystatechange', function () {
-    if (request.readyState === 4) {
-      editor_preview.classList.remove('preview-loader');
-    }
-  });
+  bundle.set('action', 'sharing_image_save');
   request.addEventListener('load', function () {
     var response = request.response || {};
 
+    if (!response.data) {
+      return showTemplateError();
+    }
+
     if (!response.success) {
+      // Hide preview loader on request complete.
+      editor_preview.classList.remove('preview-loader');
       return showTemplateError(response.data);
     }
 
     var input = editor_preview.querySelector('input');
 
     if (null !== input) {
-      input.setAttribute('value', response.data);
+      input.value = response.data;
     }
 
-    editor.submit(); // Show loader.
-
-    editor_preview.classList.add('preview-loader');
+    editor.submit();
   });
   request.addEventListener('error', function () {
+    // Hide preview loader on request complete.
+    editor_preview.classList.remove('preview-loader');
     showTemplateError();
   });
   request.send(bundle);
@@ -1040,7 +1038,7 @@ function reorderLayers(designer) {
         name = match[1] + "[".concat(index, "]") + match[3];
       }
 
-      field.setAttribute('name', name);
+      field.name = name;
     });
   };
 
@@ -1099,26 +1097,28 @@ function createPermanentAttachment(fieldset, data) {
     link: editor_params.links.uploads,
     labels: {
       button: editor_('Upload image', 'sharing-image'),
-      heading: editor_('Select layer image', 'sharing-image'),
+      heading: editor_('Select background image', 'sharing-image'),
       details: editor_('Attachment details', 'sharing-image')
     },
     append: fieldset
   });
   var upload = media.querySelector('button');
-  upload.setAttribute('disabled', 'disabled'); // Find all radio fields.
+  upload.disabled = true;
+  control.querySelectorAll('input').forEach(function (radio) {
+    if ('radio' !== radio.type) {
+      return;
+    } // Show upload button for checked permanent radio.
 
-  var fields = control.querySelectorAll('input[type="radio"]');
-  fields.forEach(function (radio) {
-    // Show upload button for checked permanent radio.
+
     if (radio.checked && 'permanent' === radio.value) {
-      upload.removeAttribute('disabled', 'disabled');
+      upload.disabled = false;
     }
 
     radio.addEventListener('change', function () {
-      upload.setAttribute('disabled', 'disabled');
+      upload.disabled = true;
 
       if ('permanent' === radio.value) {
-        upload.removeAttribute('disabled');
+        upload.disabled = false;
       }
     });
   });
@@ -1363,16 +1363,16 @@ function createFontField(layer, name, data) {
   });
 
   if (data.fontfile) {
-    select.setAttribute('disabled', 'disabled');
+    select.disabled = true;
   } // Find media attachment input.
 
 
   var input = media.querySelector('input');
   input.addEventListener('change', function () {
-    select.removeAttribute('disabled');
+    select.disabled = false;
 
     if (input.value) {
-      select.setAttribute('disabled', 'disabled');
+      select.disabled = true;
     }
   });
   return control;
@@ -2352,23 +2352,25 @@ var config_params = null;
  * @param {Object} data Config data object.
  */
 
-function createRestOptions(options, data) {
+function createDefaultOptions(options, data) {
   var control = builders.control({
-    classes: ['sharing-image-control', 'control-config', 'control-rest'],
+    classes: ['sharing-image-control', 'control-config', 'control-default'],
     label: config_('Default poster', 'sharing-image'),
     append: options
   });
   builders.media({
-    name: config_params.name + '[rest]',
+    name: config_params.name + '[default]',
     classes: ['sharing-image-control-media'],
     label: config_('Default poster', 'sharing-image'),
-    value: data.rest,
+    value: data.default,
     link: config_params.links.uploads,
     labels: {
       button: config_('Upload image', 'sharing-image'),
       heading: config_('Select default poster', 'sharing-image'),
-      details: config_('Attachment details', 'sharing-image')
+      details: config_('Attachment details', 'sharing-image'),
+      remove: config_('Remove image', 'sharing-image')
     },
+    remove: true,
     append: control
   });
   var description = [];
@@ -2426,20 +2428,22 @@ function createUploadsOptions(options, data) {
   builders.element('small', {
     text: config_('Use relative path from site root. Directory should be writeable.', 'sharing-image'),
     append: control
-  }); // Find all radio fields.
+  });
+  control.querySelectorAll('input').forEach(function (radio) {
+    if ('radio' !== radio.type) {
+      return;
+    } // Show storage input for checked custom radio.
 
-  var fields = control.querySelectorAll('input[type="radio"]');
-  fields.forEach(function (radio) {
-    // Show storage input for checked custom radio.
+
     if (radio.checked && 'custom' === radio.value) {
-      input.removeAttribute('disabled', 'disabled');
+      input.disabled = false;
     }
 
     radio.addEventListener('change', function () {
-      input.setAttribute('disabled', 'disabled');
+      input.disabled = true;
 
       if ('custom' === radio.value) {
-        input.removeAttribute('disabled');
+        input.disabled = false;
       }
     });
   });
@@ -2474,7 +2478,7 @@ function createImageOptions(options, data) {
       attributes: {
         type: 'range',
         name: config_params.name + '[quality]',
-        min: 0,
+        min: 10,
         max: 100,
         step: 5,
         value: data.quality || '90',
@@ -2490,14 +2494,14 @@ function createImageOptions(options, data) {
   var quality = control.querySelector('input');
 
   if ('jpg' === format.value) {
-    quality.removeAttribute('disabled');
+    quality.disabled = false;
   }
 
   format.addEventListener('change', function () {
-    quality.setAttribute('disabled', 'disabled');
+    quality.disabled = true;
 
     if ('jpg' === format.value) {
-      quality.removeAttribute('disabled');
+      quality.disabled = false;
     }
   });
 }
@@ -2565,9 +2569,9 @@ function createConfig(content, settings) {
 
   createImageOptions(options, data); // Uploads directory options.
 
-  createUploadsOptions(options, data); // Rest poster.
+  createUploadsOptions(options, data); // Default poster.
 
-  createRestOptions(options, data); // Create required form fields
+  createDefaultOptions(options, data); // Create required form fields
 
   createMetaFields(options);
 }
@@ -2668,26 +2672,28 @@ function revokePremium(access) {
 
   var bundle = new window.FormData(access);
   bundle.set('action', 'sharing_image_revoke');
-  hidePremiumError(); // Hide form loader class.
-
-  request.addEventListener('readystatechange', function () {
-    if (request.readyState === 4) {
-      access.classList.remove('access-loader');
-    }
-  });
+  hidePremiumError();
   request.addEventListener('load', function () {
-    var response = request.response || {};
+    var response = request.response || {}; // Hide form loader class.
+
+    access.classList.remove('access-loader');
+
+    if (!response.data) {
+      return showPremiumError();
+    }
 
     if (!response.success) {
       return showPremiumError(response.data);
     }
 
-    premium_params.config.license = response.data; // Refresh premium fields.
+    premium_params.license = response.data; // Refresh premium fields.
 
     preparePremiumFields();
   });
   request.addEventListener('error', function () {
-    showPremiumError();
+    showPremiumError(); // Hide form loader class.
+
+    access.classList.remove('access-loader');
   });
   request.send(bundle);
 }
@@ -2706,26 +2712,28 @@ function verifyPremium(access) {
 
   var bundle = new window.FormData(access);
   bundle.set('action', 'sharing_image_verify');
-  hidePremiumError(); // Hide form loader class.
-
-  request.addEventListener('readystatechange', function () {
-    if (request.readyState === 4) {
-      access.classList.remove('access-loader');
-    }
-  });
+  hidePremiumError();
   request.addEventListener('load', function () {
-    var response = request.response || {};
+    var response = request.response || {}; // Hide form loader class.
+
+    access.classList.remove('access-loader');
+
+    if (!response.data) {
+      return showPremiumError();
+    }
 
     if (!response.success) {
       return showPremiumError(parseErrorCode(response.code, response.data));
     }
 
-    premium_params.config.license = response.data; // Refresh premium fields.
+    premium_params.license = response.data; // Refresh premium fields.
 
     preparePremiumFields();
   });
   request.addEventListener('error', function () {
-    showPremiumError();
+    showPremiumError(); // Hide form loader class.
+
+    access.classList.remove('access-loader');
   });
   request.send(bundle);
 }
@@ -2901,7 +2909,7 @@ function preparePremiumFields() {
     },
     append: access
   });
-  var license = premium_params.config.license || {}; // Show fields if user has the license.
+  var license = premium_params.license || {}; // Show fields if user has the license.
 
   if (license.premium || license.develop) {
     return showPremiumData(access, license);
@@ -2995,28 +3003,36 @@ function generatePoster(picker) {
 
   var bundle = new window.FormData();
   bundle.set('action', 'sharing_image_generate');
-  var fields = picker.querySelectorAll('[name]');
-  fields.forEach(function (field) {
+  picker.querySelectorAll('[name]').forEach(function (field) {
     bundle.append(field.name, field.value);
   });
-  hidePickerError(); // Hide preview loader on request complete.
-
-  request.addEventListener('readystatechange', function () {
-    if (request.readyState === 4) {
-      poster.classList.remove('poster-loader');
-    }
-  });
+  hidePickerError();
   request.addEventListener('load', function () {
-    var response = request.response || {};
+    var response = request.response || {}; // Hide preview loader on request complete.
+
+    poster.classList.remove('poster-loader');
+
+    if (!response.data) {
+      return showPickerError();
+    }
 
     if (!response.success) {
       return showPickerError(response.data);
     }
 
-    var input = poster.querySelector('input');
+    var _loop = function _loop(key) {
+      // Find all poster input fields and set response data value.
+      poster.querySelectorAll('input').forEach(function (input) {
+        var name = picker_params.name + '[' + key + ']';
 
-    if (null !== input) {
-      input.setAttribute('value', response.data);
+        if (name === input.name) {
+          input.value = response.data[key];
+        }
+      });
+    };
+
+    for (var key in response.data) {
+      _loop(key);
     }
 
     var image = poster.querySelector('img');
@@ -3027,12 +3043,14 @@ function generatePoster(picker) {
       });
     }
 
-    image.src = response.data; // Show the poster.
+    image.src = response.data.poster; // Show the poster.
 
     poster.classList.add('poster-visible');
   });
   request.addEventListener('error', function () {
-    showPickerError();
+    showPickerError(); // Hide preview loader on request complete.
+
+    poster.classList.remove('poster-loader');
   });
   request.send(bundle);
 }
@@ -3077,7 +3095,7 @@ function createDesignerAttachment(fieldset, template, values, name) {
     builders.media({
       name: name + '[attachment]',
       classes: ['sharing-image-picker-details'],
-      value: values.attachment || '',
+      value: values.attachment,
       link: picker_params.links.uploads,
       labels: {
         button: picker_('Upload background', 'sharing-image'),
@@ -3160,7 +3178,7 @@ function picker_createDesigner(picker, data) {
   }); // Create template selector.
 
   if (picker_params.templates.length > 1) {
-    createTemplate(picker, designer, data);
+    createTemplate(picker, designer, selected);
   }
 
   picker.appendChild(designer);
@@ -3209,12 +3227,9 @@ function picker_createDeleteButton(manager) {
       poster.removeChild(image);
     }
 
-    var input = poster.querySelector('input');
-
-    if (null !== input) {
+    poster.querySelectorAll('input').forEach(function (input) {
       input.value = '';
-    }
-
+    });
     poster.classList.remove('poster-visible');
   });
 }
@@ -3268,11 +3283,43 @@ function createPoster(picker, data) {
     attributes: {
       type: 'hidden',
       name: picker_params.name + '[poster]',
-      value: data.poster || ''
+      value: data.poster
+    },
+    append: poster
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: picker_params.name + '[width]',
+      value: data.width
+    },
+    append: poster
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: picker_params.name + '[height]',
+      value: data.height
     },
     append: poster
   });
   return poster;
+}
+/**
+ * Check that the poster sizes are set or show an error message.
+ *
+ * @param {Object} data Picker data object.
+ */
+
+
+function showSizesWarning(data) {
+  if (!data.poster) {
+    return;
+  }
+
+  if (!data.width || !data.height) {
+    showPickerError(picker_('Image sizes are not set. Regenerate the poster.', 'sharing-image'));
+  }
 }
 /**
  * Create metabox generator picker.
@@ -3310,7 +3357,9 @@ function createPicker(widget, settings) {
   builders.element('div', {
     classes: ['sharing-image-picker-warning'],
     append: picker
-  }); // Create metabox manager block.
+  }); // Show unset poster sizes warning.
+
+  showSizesWarning(data); // Create metabox manager block.
 
   createManager(picker);
   builders.element('input', {

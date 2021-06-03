@@ -64,32 +64,35 @@ function generatePoster( picker ) {
 	const bundle = new window.FormData();
 	bundle.set( 'action', 'sharing_image_generate' );
 
-	const fields = picker.querySelectorAll( '[name]' );
-
-	fields.forEach( ( field ) => {
+	picker.querySelectorAll( '[name]' ).forEach( ( field ) => {
 		bundle.append( field.name, field.value );
 	} );
 
 	hidePickerError();
 
-	// Hide preview loader on request complete.
-	request.addEventListener( 'readystatechange', () => {
-		if ( request.readyState === 4 ) {
-			poster.classList.remove( 'poster-loader' );
-		}
-	} );
-
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
+
+		// Hide preview loader on request complete.
+		poster.classList.remove( 'poster-loader' );
+
+		if ( ! response.data ) {
+			return showPickerError();
+		}
 
 		if ( ! response.success ) {
 			return showPickerError( response.data );
 		}
 
-		const input = poster.querySelector( 'input' );
+		for ( const key in response.data ) {
+			// Find all poster input fields and set response data value.
+			poster.querySelectorAll( 'input' ).forEach( ( input ) => {
+				const name = params.name + '[' + key + ']';
 
-		if ( null !== input ) {
-			input.setAttribute( 'value', response.data );
+				if ( name === input.name ) {
+					input.value = response.data[ key ];
+				}
+			} );
 		}
 
 		let image = poster.querySelector( 'img' );
@@ -100,7 +103,7 @@ function generatePoster( picker ) {
 			} );
 		}
 
-		image.src = response.data;
+		image.src = response.data.poster;
 
 		// Show the poster.
 		poster.classList.add( 'poster-visible' );
@@ -108,6 +111,9 @@ function generatePoster( picker ) {
 
 	request.addEventListener( 'error', () => {
 		showPickerError();
+
+		// Hide preview loader on request complete.
+		poster.classList.remove( 'poster-loader' );
 	} );
 
 	request.send( bundle );
@@ -159,7 +165,7 @@ function createDesignerAttachment( fieldset, template, values, name ) {
 		Build.media( {
 			name: name + '[attachment]',
 			classes: [ 'sharing-image-picker-details' ],
-			value: values.attachment || '',
+			value: values.attachment,
 			link: params.links.uploads,
 			labels: {
 				button: __( 'Upload background', 'sharing-image' ),
@@ -252,7 +258,7 @@ function createDesigner( picker, data ) {
 
 	// Create template selector.
 	if ( params.templates.length > 1 ) {
-		createTemplate( picker, designer, data );
+		createTemplate( picker, designer, selected );
 	}
 
 	picker.appendChild( designer );
@@ -301,11 +307,9 @@ function createDeleteButton( manager ) {
 			poster.removeChild( image );
 		}
 
-		const input = poster.querySelector( 'input' );
-
-		if ( null !== input ) {
+		poster.querySelectorAll( 'input' ).forEach( ( input ) => {
 			input.value = '';
-		}
+		} );
 
 		poster.classList.remove( 'poster-visible' );
 	} );
@@ -362,12 +366,45 @@ function createPoster( picker, data ) {
 		attributes: {
 			type: 'hidden',
 			name: params.name + '[poster]',
-			value: data.poster || '',
+			value: data.poster,
+		},
+		append: poster,
+	} );
+
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: params.name + '[width]',
+			value: data.width,
+		},
+		append: poster,
+	} );
+
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: params.name + '[height]',
+			value: data.height,
 		},
 		append: poster,
 	} );
 
 	return poster;
+}
+
+/**
+ * Check that the poster sizes are set or show an error message.
+ *
+ * @param {Object} data Picker data object.
+ */
+function showSizesWarning( data ) {
+	if ( ! data.poster ) {
+		return;
+	}
+
+	if ( ! data.width || ! data.height ) {
+		showPickerError( __( 'Image sizes are not set. Regenerate the poster.', 'sharing-image' ) );
+	}
 }
 
 /**
@@ -411,6 +448,9 @@ function createPicker( widget, settings ) {
 		classes: [ 'sharing-image-picker-warning' ],
 		append: picker,
 	} );
+
+	// Show unset poster sizes warning.
+	showSizesWarning( data );
 
 	// Create metabox manager block.
 	createManager( picker );

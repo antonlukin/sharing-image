@@ -205,7 +205,7 @@ input[type="range"] {
     max-width: 300px; }
   .sharing-image-control.control-footer {
     margin-bottom: 0; }
-  .sharing-image-control.control-rest small {
+  .sharing-image-control.control-default small {
     margin-top: 10px; }
   .sharing-image-control.control-pinned {
     margin-bottom: 15px; }

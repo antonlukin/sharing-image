@@ -26,7 +26,7 @@ class Widget {
 	const WIDGET_META = '_sharing_image';
 
 	/**
-	 * The instance of settings class.
+	 * The instance of Settings class.
 	 *
 	 * @var instance
 	 */
@@ -327,7 +327,7 @@ class Widget {
 		wp_enqueue_script(
 			'sharing-image-widget',
 			SHARING_IMAGE_URL . 'assets/scripts/widget.js',
-			array( 'wp-i18n' ),
+			array( 'wp-i18n', 'wp-polyfill-formdata' ),
 			SHARING_IMAGE_VERSION,
 			true
 		);
@@ -349,6 +349,14 @@ class Widget {
 
 		if ( isset( $picker['poster'] ) ) {
 			$sanitized['poster'] = sanitize_text_field( $picker['poster'] );
+		}
+
+		if ( isset( $picker['width'] ) ) {
+			$sanitized['width'] = absint( $picker['width'] );
+		}
+
+		if ( isset( $picker['height'] ) ) {
+			$sanitized['height'] = absint( $picker['height'] );
 		}
 
 		$template = 0;

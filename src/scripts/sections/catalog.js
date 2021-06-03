@@ -88,7 +88,7 @@ function createNewButton( catalog, index ) {
 		return;
 	}
 
-	const license = params.config.license || {};
+	const license = params.license || {};
 
 	if ( license.premium || license.develop ) {
 		return;
@@ -100,7 +100,7 @@ function createNewButton( catalog, index ) {
 	} );
 
 	if ( params.links.premium ) {
-		button.setAttribute( 'href', params.links.premium );
+		button.href = params.links.premium;
 	}
 }
 

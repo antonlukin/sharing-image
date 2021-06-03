@@ -40,12 +40,18 @@ class Settings {
 	const OPTION_CONFIG = 'sharing_image_config';
 
 	/**
+	 * Sharing Image license options name.
+	 *
+	 * @var string
+	 */
+	const OPTION_LICENSE = 'sharing_image_license';
+
+	/**
 	 * Plugin admin menu slug.
 	 *
 	 * @var string
 	 */
 	const SETTINGS_SLUG = 'sharing-image';
-
 
 	/**
 	 * Remote licenses API url.
@@ -59,7 +65,7 @@ class Settings {
 	 *
 	 * @var string
 	 */
-	const PREMIUM_EVENT = 'sharing_image_premium_event';
+	const EVENT_PREMIUM = 'sharing_image_event_premium';
 
 	/**
 	 * List of settings tabs.
@@ -97,7 +103,7 @@ class Settings {
 		add_action( 'admin_title', array( $this, 'update_settings_title' ) );
 
 		// Schedule Premium license verification.
-		add_action( self::PREMIUM_EVENT, array( $this, 'launch_verification_event' ), 10, 1 );
+		add_action( self::EVENT_PREMIUM, array( $this, 'launch_verification_event' ), 10, 1 );
 	}
 
 	/**
@@ -405,7 +411,7 @@ class Settings {
 		}
 
 		// Remove license verification event.
-		wp_unschedule_hook( self::PREMIUM_EVENT );
+		wp_unschedule_hook( self::EVENT_PREMIUM );
 
 		if ( true === $answer['success'] ) {
 			$license = $this->update_license( true, $key );
@@ -441,7 +447,7 @@ class Settings {
 		}
 
 		// Remove license verification event.
-		wp_unschedule_hook( self::PREMIUM_EVENT );
+		wp_unschedule_hook( self::EVENT_PREMIUM );
 
 		// Disable Premium license.
 		$license = $this->update_license( false );
@@ -526,7 +532,7 @@ class Settings {
 		wp_enqueue_script(
 			'sharing-image-settings',
 			SHARING_IMAGE_URL . 'assets/scripts/settings.js',
-			array( 'wp-i18n', 'wp-polyfill-url' ),
+			array( 'wp-i18n', 'wp-polyfill-url', 'wp-polyfill-formdata' ),
 			SHARING_IMAGE_VERSION,
 			true
 		);
@@ -540,84 +546,6 @@ class Settings {
 
 		// Add settings script object.
 		wp_localize_script( 'sharing-image-settings', 'sharingImageSettings', $object );
-	}
-
-	/**
-	 * Get plugin config settings.
-	 *
-	 * @return array List of plugin config settings.
-	 */
-	public function get_config() {
-		$config = get_option( self::OPTION_CONFIG, array() );
-
-		/**
-		 * Check if the plugin in development mode.
-		 *
-		 * @param bool Current development state. Disabled by default.
-		 */
-		$develop = apply_filters( 'sharing_image_develop', false );
-
-		if ( $develop ) {
-			$config['license']['develop'] = true;
-		}
-
-		/**
-		 * Filters settigns config.
-		 *
-		 * @param array List of plugin config settings.
-		 */
-		return apply_filters( 'sharing_image_get_config', $config );
-	}
-
-	/**
-	 * Update config settings.
-	 *
-	 * @param array $updated License settings config data.
-	 */
-	public function update_config( $updated ) {
-		$config = get_option( self::OPTION_CONFIG, array() );
-
-		if ( isset( $config['license'] ) ) {
-			$updated['license'] = $config['license'];
-		}
-
-		/**
-		 * Filters config options before their update in database.
-		 *
-		 * @param array $config Settings config data.
-		 */
-		$updated = apply_filters( 'sharing_image_update_config', $updated );
-
-		update_option( self::OPTION_CONFIG, $updated );
-	}
-
-	/**
-	 * Set license options.
-	 *
-	 * @param bool   $premium Premium status.
-	 * @param string $key     License key.
-	 * @param string $error   Verification error code.
-	 * @return array
-	 */
-	public function update_license( $premium, $key = '', $error = '' ) {
-		$config = get_option( self::OPTION_CONFIG, array() );
-
-		$config['license']['premium'] = $premium;
-
-		if ( ! empty( $key ) ) {
-			$config['license']['key'] = $key;
-		}
-
-		unset( $config['license']['error'] );
-
-		if ( ! empty( $error ) ) {
-			$config['license']['error'] = $error;
-		}
-
-		// Save updated config option in database.
-		update_option( self::OPTION_CONFIG, $config );
-
-		return $config['license'];
 	}
 
 	/**
@@ -664,6 +592,171 @@ class Settings {
 		$templates = apply_filters( 'sharing_image_update_templates', array_values( $templates ) );
 
 		update_option( self::OPTION_TEMPLATES, $templates );
+	}
+
+	/**
+	 * Get plugin config settings.
+	 *
+	 * @return array List of plugin config settings.
+	 */
+	public function get_config() {
+		$config = get_option( self::OPTION_CONFIG, array() );
+
+		/**
+		 * Filters settigns config.
+		 *
+		 * @param array List of plugin config settings.
+		 */
+		return apply_filters( 'sharing_image_get_config', $config );
+	}
+
+	/**
+	 * Update config settings.
+	 *
+	 * @param array $config License settings config data.
+	 */
+	public function update_config( $config ) {
+		/**
+		 * Filters config options before their update in database.
+		 *
+		 * @param array $config Settings config data.
+		 */
+		$config = apply_filters( 'sharing_image_update_config', $config );
+
+		update_option( self::OPTION_CONFIG, $config );
+	}
+
+	/**
+	 * Get plugin license settings.
+	 *
+	 * @return array List of plugin license settings.
+	 */
+	public function get_license() {
+		$license = get_option( self::OPTION_LICENSE, array() );
+
+		/**
+		 * Check if the plugin in development mode.
+		 *
+		 * @param bool Current development state. Disabled by default.
+		 */
+		$develop = apply_filters( 'sharing_image_develop', false );
+
+		if ( $develop ) {
+			$license['develop'] = true;
+		}
+
+		/**
+		 * Filters license settings.
+		 *
+		 * @param array List of plugin license settings.
+		 */
+		return apply_filters( 'sharing_image_get_license', $license );
+	}
+
+	/**
+	 * Set license options.
+	 *
+	 * @param bool   $premium Premium status.
+	 * @param string $key     License key.
+	 * @param string $error   Verification error code.
+	 * @return array
+	 */
+	public function update_license( $premium, $key = '', $error = '' ) {
+		$license = get_option( self::OPTION_LICENSE, array() );
+
+		$license['premium'] = $premium;
+
+		if ( ! empty( $key ) ) {
+			$license['key'] = $key;
+		}
+
+		unset( $license['error'] );
+
+		if ( ! empty( $error ) ) {
+			$license['error'] = $error;
+		}
+
+		// Save updated license settings in database.
+		update_option( self::OPTION_LICENSE, $license );
+
+		return $license;
+	}
+
+	/**
+	 * Get directory to uploaded posters.
+	 *
+	 * @return array
+	 */
+	public function get_upload_dir() {
+		$config = $this->get_config();
+
+		if ( ! isset( $config['uploads'] ) ) {
+			$config['uploads'] = 'default';
+		}
+
+		// Create custom upload directory.
+		if ( isset( $config['storage'] ) && 'custom' === $config['uploads'] ) {
+			return $this->create_upload_dir( $config['storage'] );
+		}
+
+		$uploads = wp_upload_dir();
+
+		return array( $uploads['path'], $uploads['url'] );
+	}
+
+	/**
+	 * Get generated image file format.
+	 *
+	 * @param string $format Optional. Default image format.
+	 * @return string
+	 */
+	public function get_file_format( $format = 'jpg' ) {
+		$config = $this->get_config();
+
+		if ( isset( $config['format'] ) ) {
+			$format = $config['format'];
+		}
+
+		return $format;
+	}
+
+	/**
+	 * Get quality of generated poster.
+	 *
+	 * @param int $quality Optional. Default image quality.
+	 * @return int
+	 */
+	public function get_quality( $quality = 90 ) {
+		$config = $this->get_config();
+
+		if ( isset( $config['quality'] ) ) {
+			$quality = $config['quality'];
+		}
+
+		return $quality;
+	}
+
+	/**
+	 * Try to get default poster image data.
+	 * Returns array with image url, width and height.
+	 *
+	 * @see https://developer.wordpress.org/reference/functions/wp_get_attachment_image_src/
+	 * @return array
+	 */
+	public function get_default_poster_src() {
+		$config = $this->get_config();
+
+		if ( empty( $config['default'] ) ) {
+			return false;
+		}
+
+		$poster = wp_get_attachment_image_src( $config['default'], 'full' );
+
+		if ( is_array( $poster ) ) {
+			$poster = array_slice( $poster, 0, 3 );
+		}
+
+		return $poster;
 	}
 
 	/**
@@ -735,14 +828,10 @@ class Settings {
 	 * @return bool
 	 */
 	public function is_premium_features() {
-		$config = $this->get_config();
+		$license = $this->get_license();
 
-		if ( isset( $config['license'] ) ) {
-			$license = $config['license'];
-
-			if ( ! empty( $license['premium'] ) || ! empty( $license['develop'] ) ) {
-				return true;
-			}
+		if ( ! empty( $license['premium'] ) || ! empty( $license['develop'] ) ) {
+			return true;
 		}
 
 		return false;
@@ -754,11 +843,11 @@ class Settings {
 	 * @param array $args List of event arguments. License key by default.
 	 */
 	public function schedule_verification( $args = array() ) {
-		if ( wp_next_scheduled( self::PREMIUM_EVENT, $args ) ) {
+		if ( wp_next_scheduled( self::EVENT_PREMIUM, $args ) ) {
 			return;
 		}
 
-		wp_schedule_event( time() + DAY_IN_SECONDS / 2, 'twicedaily', self::PREMIUM_EVENT, $args );
+		wp_schedule_event( time() + DAY_IN_SECONDS / 2, 'twicedaily', self::EVENT_PREMIUM, $args );
 	}
 
 	/**
@@ -780,13 +869,14 @@ class Settings {
 				'premium' => esc_url_raw( $this->get_tab_link( 'premium' ) ),
 				'storage' => path_join( $basedir, 'sharing-image' ),
 			),
-			'fonts'     => $this->get_fonts(),
-			'config'    => $this->get_config(),
 			'templates' => $this->get_templates(),
+			'config'    => $this->get_config(),
+			'license'   => $this->get_license(),
+			'fonts'     => $this->get_fonts(),
 		);
 
 		/**
-		 * Filter settings script object.
+		 * Filters settings script object.
 		 *
 		 * @param array $object Array of settings script object.
 		 */
@@ -1123,8 +1213,8 @@ class Settings {
 	private function sanitize_config( $config ) {
 		$sanitized = array();
 
-		if ( ! empty( $config['rest'] ) ) {
-			$sanitized['rest'] = absint( $config['rest'] );
+		if ( ! empty( $config['default'] ) ) {
+			$sanitized['default'] = absint( $config['default'] );
 		}
 
 		$sanitized['format'] = 'jpg';
@@ -1140,7 +1230,7 @@ class Settings {
 		if ( isset( $config['quality'] ) ) {
 			$quality = (int) $config['quality'];
 
-			if ( $quality >= 0 && $quality <= 100 ) {
+			if ( $quality >= 1 && $quality <= 100 ) {
 				$sanitized['quality'] = $quality;
 			}
 		}
@@ -1174,9 +1264,11 @@ class Settings {
 	private function show_settings_section() {
 		$tab = $this->get_current_tab();
 
-		if ( ! empty( $tab ) ) {
-			include_once SHARING_IMAGE_DIR . "/templates/{$tab}.php";
+		if ( null === $tab ) {
+			return;
 		}
+
+		include_once SHARING_IMAGE_DIR . "/templates/{$tab}.php";
 	}
 
 	/**
@@ -1232,7 +1324,7 @@ class Settings {
 		);
 
 		/**
-		 * Filter tabs in settings page.
+		 * Filters tabs in settings page.
 		 *
 		 * @param array $tabs List of settings tabs.
 		 */
@@ -1283,11 +1375,11 @@ class Settings {
 		);
 
 		/**
-		 * Filters settigns config.
+		 * Filters poster fonts.
 		 *
 		 * @param array List of availible poster fonts.
 		 */
-		return apply_filters( 'sharing_image_get_fonts', $fonts );
+		return apply_filters( 'sharing_image_poster_fonts', $fonts );
 	}
 
 	/**
@@ -1311,7 +1403,7 @@ class Settings {
 	 */
 	private function get_current_tab() {
 		// phpcs:disable WordPress.Security.NonceVerification
-		if ( isset( $_GET['tab'] ) ) {
+		if ( ! empty( $_GET['tab'] ) ) {
 			$tab = sanitize_file_name( wp_unslash( $_GET['tab'] ) );
 
 			if ( array_key_exists( $tab, $this->tabs ) ) {
@@ -1321,6 +1413,28 @@ class Settings {
 		// phpcs:enable WordPress.Security.NonceVerification
 
 		return null;
+	}
+
+	/**
+	 * Create upload directory and return its path and url
+	 *
+	 * @param string $storage Relative directory path.
+	 * @return array
+	 */
+	private function create_upload_dir( $storage ) {
+		$storage = trim( $storage, '/' );
+
+		/**
+		 * Change permissions when creating new folders.
+		 *
+		 * @param int $permissions New directory access permissions. By default 0755.
+		 */
+		$permissions = apply_filters( 'sharing_image_directory_permissions', 0755 );
+
+		// We do not pay attention to the possible error.
+		mkdir( ABSPATH . $storage, $permissions, true );
+
+		return array( ABSPATH . $storage, site_url( $storage ) );
 	}
 
 	/**

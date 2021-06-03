@@ -78,15 +78,11 @@ function generateTemplate() {
 		}
 	} );
 
-	// Hide preview loader on request complete.
-	request.addEventListener( 'readystatechange', () => {
-		if ( request.readyState === 4 ) {
-			preview.classList.remove( 'preview-blank', 'preview-loader' );
-		}
-	} );
-
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
+
+		// Hide preview loader on request complete.
+		preview.classList.remove( 'preview-blank', 'preview-loader' );
 
 		if ( 200 !== request.status ) {
 			return showTemplateError( response.data );
@@ -106,6 +102,9 @@ function generateTemplate() {
 
 	request.addEventListener( 'error', () => {
 		showTemplateError();
+
+		// Hide preview loader on request complete.
+		preview.classList.remove( 'preview-blank', 'preview-loader' );
 	} );
 
 	request.send( bundle );
@@ -125,33 +124,33 @@ function saveTemplate() {
 	const bundle = new window.FormData( editor );
 	bundle.set( 'action', 'sharing_image_save' );
 
-	// Hide preview loader on request complete.
-	request.addEventListener( 'readystatechange', () => {
-		if ( request.readyState === 4 ) {
-			preview.classList.remove( 'preview-loader' );
-		}
-	} );
-
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
 
+		if ( ! response.data ) {
+			return showTemplateError();
+		}
+
 		if ( ! response.success ) {
+			// Hide preview loader on request complete.
+			preview.classList.remove( 'preview-loader' );
+
 			return showTemplateError( response.data );
 		}
 
 		const input = preview.querySelector( 'input' );
 
 		if ( null !== input ) {
-			input.setAttribute( 'value', response.data );
+			input.value = response.data;
 		}
 
 		editor.submit();
-
-		// Show loader.
-		preview.classList.add( 'preview-loader' );
 	} );
 
 	request.addEventListener( 'error', () => {
+		// Hide preview loader on request complete.
+		preview.classList.remove( 'preview-loader' );
+
 		showTemplateError();
 	} );
 
@@ -179,7 +178,7 @@ function reorderLayers( designer ) {
 				name = match[ 1 ] + `[${ index }]` + match[ 3 ];
 			}
 
-			field.setAttribute( 'name', name );
+			field.name = name;
 		} );
 	}
 }
@@ -239,29 +238,30 @@ function createPermanentAttachment( fieldset, data ) {
 		link: params.links.uploads,
 		labels: {
 			button: __( 'Upload image', 'sharing-image' ),
-			heading: __( 'Select layer image', 'sharing-image' ),
+			heading: __( 'Select background image', 'sharing-image' ),
 			details: __( 'Attachment details', 'sharing-image' ),
 		},
 		append: fieldset,
 	} );
 
 	const upload = media.querySelector( 'button' );
-	upload.setAttribute( 'disabled', 'disabled' );
+	upload.disabled = true;
 
-	// Find all radio fields.
-	const fields = control.querySelectorAll( 'input[type="radio"]' );
+	control.querySelectorAll( 'input' ).forEach( ( radio ) => {
+		if ( 'radio' !== radio.type ) {
+			return;
+		}
 
-	fields.forEach( ( radio ) => {
 		// Show upload button for checked permanent radio.
 		if ( radio.checked && 'permanent' === radio.value ) {
-			upload.removeAttribute( 'disabled', 'disabled' );
+			upload.disabled = false;
 		}
 
 		radio.addEventListener( 'change', () => {
-			upload.setAttribute( 'disabled', 'disabled' );
+			upload.disabled = true;
 
 			if ( 'permanent' === radio.value ) {
-				upload.removeAttribute( 'disabled' );
+				upload.disabled = false;
 			}
 		} );
 	} );
@@ -542,17 +542,17 @@ function createFontField( layer, name, data ) {
 	} );
 
 	if ( data.fontfile ) {
-		select.setAttribute( 'disabled', 'disabled' );
+		select.disabled = true;
 	}
 
 	// Find media attachment input.
 	const input = media.querySelector( 'input' );
 
 	input.addEventListener( 'change', () => {
-		select.removeAttribute( 'disabled' );
+		select.disabled = false;
 
 		if ( input.value ) {
-			select.setAttribute( 'disabled', 'disabled' );
+			select.disabled = true;
 		}
 	} );
 

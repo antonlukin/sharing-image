@@ -41,16 +41,31 @@ define( 'SHARING_IMAGE_DIR', plugin_dir_path( __FILE__ ) );
  */
 define( 'SHARING_IMAGE_URL', plugin_dir_url( __FILE__ ) );
 
-/**
- * Run plugin function.
- */
-function sharing_image_plugin() {
-	require_once SHARING_IMAGE_DIR . 'vendor/autoload.php';
+if ( ! function_exists( 'sharing_image_plugin' ) ) {
+	/**
+	 * Run main plugin function.
+	 */
+	function sharing_image_plugin() {
+		require_once SHARING_IMAGE_DIR . 'vendor/autoload.php';
 
-	$classes = array( 'Sharing_Image\Widget', 'Sharing_Image\Settings' );
+		$classes = array(
+			'Sharing_Image\Meta',
+			'Sharing_Image\Settings',
+			'Sharing_Image\Widget',
+		);
 
-	foreach ( $classes as $class ) {
-		( new $class() )->init();
+		/**
+		 * Filters list of automatically initialized classes.
+		 *
+		 * @param array $classes List of classes.
+		 */
+		$classes = apply_filters( 'sharing_image_plugin_classes', $classes );
+
+		foreach ( $classes as $class ) {
+			( new $class() )->init();
+		}
+
+		include SHARING_IMAGE_DIR . 'functions.php';
 	}
 }
 

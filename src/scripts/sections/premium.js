@@ -100,21 +100,21 @@ function revokePremium( access ) {
 
 	hidePremiumError();
 
-	// Hide form loader class.
-	request.addEventListener( 'readystatechange', () => {
-		if ( request.readyState === 4 ) {
-			access.classList.remove( 'access-loader' );
-		}
-	} );
-
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
+
+		// Hide form loader class.
+		access.classList.remove( 'access-loader' );
+
+		if ( ! response.data ) {
+			return showPremiumError();
+		}
 
 		if ( ! response.success ) {
 			return showPremiumError( response.data );
 		}
 
-		params.config.license = response.data;
+		params.license = response.data;
 
 		// Refresh premium fields.
 		preparePremiumFields();
@@ -122,6 +122,9 @@ function revokePremium( access ) {
 
 	request.addEventListener( 'error', () => {
 		showPremiumError();
+
+		// Hide form loader class.
+		access.classList.remove( 'access-loader' );
 	} );
 
 	request.send( bundle );
@@ -145,21 +148,21 @@ function verifyPremium( access ) {
 
 	hidePremiumError();
 
-	// Hide form loader class.
-	request.addEventListener( 'readystatechange', () => {
-		if ( request.readyState === 4 ) {
-			access.classList.remove( 'access-loader' );
-		}
-	} );
-
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
+
+		// Hide form loader class.
+		access.classList.remove( 'access-loader' );
+
+		if ( ! response.data ) {
+			return showPremiumError();
+		}
 
 		if ( ! response.success ) {
 			return showPremiumError( parseErrorCode( response.code, response.data ) );
 		}
 
-		params.config.license = response.data;
+		params.license = response.data;
 
 		// Refresh premium fields.
 		preparePremiumFields();
@@ -167,6 +170,9 @@ function verifyPremium( access ) {
 
 	request.addEventListener( 'error', () => {
 		showPremiumError();
+
+		// Hide form loader class.
+		access.classList.remove( 'access-loader' );
 	} );
 
 	request.send( bundle );
@@ -357,7 +363,7 @@ function preparePremiumFields() {
 		append: access,
 	} );
 
-	const license = params.config.license || {};
+	const license = params.license || {};
 
 	// Show fields if user has the license.
 	if ( license.premium || license.develop ) {

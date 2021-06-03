@@ -15,24 +15,26 @@ let params = null;
  * @param {HTMLElement} options Options form element.
  * @param {Object} data Config data object.
  */
-function createRestOptions( options, data ) {
+function createDefaultOptions( options, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-control', 'control-config', 'control-rest' ],
+		classes: [ 'sharing-image-control', 'control-config', 'control-default' ],
 		label: __( 'Default poster', 'sharing-image' ),
 		append: options,
 	} );
 
 	Build.media( {
-		name: params.name + '[rest]',
+		name: params.name + '[default]',
 		classes: [ 'sharing-image-control-media' ],
 		label: __( 'Default poster', 'sharing-image' ),
-		value: data.rest,
+		value: data.default,
 		link: params.links.uploads,
 		labels: {
 			button: __( 'Upload image', 'sharing-image' ),
 			heading: __( 'Select default poster', 'sharing-image' ),
 			details: __( 'Attachment details', 'sharing-image' ),
+			remove: __( 'Remove image', 'sharing-image' ),
 		},
+		remove: true,
 		append: control,
 	} );
 
@@ -108,20 +110,21 @@ function createUploadsOptions( options, data ) {
 		append: control,
 	} );
 
-	// Find all radio fields.
-	const fields = control.querySelectorAll( 'input[type="radio"]' );
+	control.querySelectorAll( 'input' ).forEach( ( radio ) => {
+		if ( 'radio' !== radio.type ) {
+			return;
+		}
 
-	fields.forEach( ( radio ) => {
 		// Show storage input for checked custom radio.
 		if ( radio.checked && 'custom' === radio.value ) {
-			input.removeAttribute( 'disabled', 'disabled' );
+			input.disabled = false;
 		}
 
 		radio.addEventListener( 'change', () => {
-			input.setAttribute( 'disabled', 'disabled' );
+			input.disabled = true;
 
 			if ( 'custom' === radio.value ) {
-				input.removeAttribute( 'disabled' );
+				input.disabled = false;
 			}
 		} );
 	} );
@@ -157,7 +160,7 @@ function createImageOptions( options, data ) {
 				attributes: {
 					type: 'range',
 					name: params.name + '[quality]',
-					min: 0,
+					min: 10,
 					max: 100,
 					step: 5,
 					value: data.quality || '90',
@@ -176,14 +179,14 @@ function createImageOptions( options, data ) {
 	const quality = control.querySelector( 'input' );
 
 	if ( 'jpg' === format.value ) {
-		quality.removeAttribute( 'disabled' );
+		quality.disabled = false;
 	}
 
 	format.addEventListener( 'change', () => {
-		quality.setAttribute( 'disabled', 'disabled' );
+		quality.disabled = true;
 
 		if ( 'jpg' === format.value ) {
-			quality.removeAttribute( 'disabled' );
+			quality.disabled = false;
 		}
 	} );
 }
@@ -258,8 +261,8 @@ function createConfig( content, settings ) {
 	// Uploads directory options.
 	createUploadsOptions( options, data );
 
-	// Rest poster.
-	createRestOptions( options, data );
+	// Default poster.
+	createDefaultOptions( options, data );
 
 	// Create required form fields
 	createMetaFields( options );
