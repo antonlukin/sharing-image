@@ -11,18 +11,242 @@
     margin-right: 48px;
     margin-bottom: 24px;
 
-    @media screen and (max-width: 1279px) {
+    @media screen and (max-width: 1023px) {
       flex: 0 1 640px;
       margin-right: 0;
     }
   }
 
+  .sharing-image-editor-control {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+
+    position: relative;
+    margin-bottom: 24px;
+
+    p {
+      margin: 0 0 5px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    h3, h4 {
+      display: block;
+      cursor: default;
+
+      width: 100%;
+      margin: 0 0 5px;
+
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    small {
+      display: block;
+      cursor: default;
+
+      width: 100%;
+      margin-top: 6px;
+
+      font-size: 10.5px;
+      line-height: 1.5;
+    }
+
+    &.control-hidden {
+      display: none;
+    }
+
+    &.control-compact {
+      width: 300px;
+      max-width: 100%;
+    }
+
+    &.control-media {
+      flex-flow: row nowrap;
+      align-items: center;
+
+      .button {
+        margin-right: 14px;
+      }
+
+      .button:disabled~* {
+        display: none;
+      }
+    }
+
+    &.control-reduced {
+      margin-bottom: 14px;
+    }
+
+    &.control-sizes {
+      flex-flow: row nowrap;
+
+      &>* {
+        margin-right: 14px;
+      }
+
+      &>*:nth-child(2) {
+        margin-right: 54px;
+      }
+
+      &>*:last-child {
+        margin-right: 0;
+      }
+
+      @media screen and (max-width: 782px) {
+        flex-flow: row wrap;
+
+        &>* {
+          width: calc(50% - 7px);
+        }
+
+        &>*:first-child {
+          margin-bottom: 14px;
+        }
+
+        &>*:nth-child(2) {
+          margin-right: 0;
+          margin-bottom: 14px;
+        }
+      }
+    }
+
+    &.control-select {
+      flex-flow: row nowrap;
+      align-items: center;
+
+      &>* {
+        margin-right: 14px;
+      }
+
+      &>*:last-child {
+        margin-right: 0;
+      }
+    }
+
+    &.control-footer {
+      flex-flow: row nowrap;
+      align-items: center;
+
+      margin-bottom: 0;
+      padding-top: 20px;
+      border-top: solid 1px #dcdcde;
+
+      &>* {
+        margin-right: 28px;
+      }
+
+      &>*:last-child {
+        margin-right: 0;
+      }
+    }
+
+    &.control-series {
+      flex-flow: row nowrap;
+
+      &>*:first-child {
+        margin-right: 54px;
+      }
+
+      @media screen and (max-width: 782px) {
+        flex-flow: row wrap;
+
+        &>* {
+          width: 100%;
+        }
+
+        &>*:first-child {
+          margin-right: 0;
+          margin-bottom: 24px;
+        }
+      }
+    }
+
+    &.control-upload {
+      flex-flow: row wrap;
+      align-items: flex-end;
+
+      &>*:first-child {
+        flex: 1 1 auto;
+        margin-right: 14px;
+      }
+
+      &>*:nth-child(2) {
+        margin-top: 8px;
+      }
+    }
+
+    &.control-extend {
+      > * {
+        width: 100%;
+      }
+    }
+
+    .sharing-image-editor-control-input {
+      @include control-input;
+    }
+
+    .sharing-image-editor-control-radio {
+      @include control-radio;
+    }
+
+    .sharing-image-editor-control-select {
+      @include control-select;
+    }
+
+    .sharing-image-editor-control-checkbox {
+      @include control-checkbox;
+    }
+
+    .sharing-image-editor-control-textarea {
+      @include control-textarea;
+    }
+
+    .sharing-image-editor-control-range {
+      @include control-range;
+    }
+
+    .sharing-image-editor-control-media {
+      @include control-media;
+    }
+
+    .sharing-image-editor-control-color {
+      @include control-color;
+    }
+  }
+
   .sharing-image-editor-designer {
     display: block;
-    width: 100%;
+    position: relative;
 
-    &:last-child {
-      margin-bottom: 0;
+    width: 100%;
+    margin-top: -10px;
+  }
+
+  .sharing-image-editor-more {
+    display: block;
+    cursor: pointer;
+
+    margin: 0;
+    padding: 0;
+
+    color: $color-links;
+    background: transparent;
+
+    border: none;
+    border-bottom: solid 1px;
+
+    transition: border 0.25s;
+
+    &:focus {
+      @include link-focus;
+    }
+
+    &:hover {
+      border-bottom-color: transparent;
     }
   }
 
@@ -133,7 +357,7 @@
     order: 2;
 
     @media screen and (max-width: 1279px) {
-      flex: 0 1 640px;
+      flex: 0 0 400px;
     }
   }
 
@@ -269,7 +493,7 @@
     }
   }
 
-  @media screen and (max-width: 1279px) {
+  @media screen and (max-width: 1023px) {
     flex-flow: row wrap;
   }
 }

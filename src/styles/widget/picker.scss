@@ -26,9 +26,9 @@
     }
   }
 
-  .sharing-image-picker-details {
+  .sharing-image-picker-media {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     align-items: center;
 
     margin-bottom: 12px;
@@ -38,10 +38,43 @@
     }
   }
 
+  .sharing-image-picker-featured {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    padding: 0;
+    font-size: 18px;
+
+    color: #8c8f94;
+
+    background: 0;
+    border: none;
+
+    transition: color 0.25s;
+
+    &::after {
+      font-family: dashicons;
+      content: "\f128";
+    }
+
+    &:hover {
+      color: #2271b1;
+    }
+
+    &.featured-seleted {
+      color: #2271b1;
+    }
+  }
+
   .sharing-image-picker-caption {
     display: block;
     width: 100%;
     margin-bottom: 12px;
+
+    h4 {
+      margin: 0;
+    }
 
     & > * {
       display: block;

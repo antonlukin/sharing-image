@@ -1,11 +1,14 @@
 const gulp = require( 'gulp' );
-const sass = require( 'gulp-sass' );
+const nodeSass = require( 'node-sass' );
+const gulpSass = require( 'gulp-sass' );
 const sassGlob = require( 'gulp-sass-glob' );
 const plumber = require( 'gulp-plumber' );
 const prefix = require( 'gulp-autoprefixer' );
 const webpack = require( 'webpack-stream' );
 const rename = require( 'gulp-rename' );
 const named = require( 'vinyl-named' );
+
+const sass = gulpSass( nodeSass );
 
 /**
  * Create styles file from sources/
@@ -69,4 +72,4 @@ gulp.task( 'build', gulp.parallel( 'styles', 'scripts' ) );
 /**
  * Build static files and watch changes by default.
  */
-gulp.task( 'serve', gulp.parallel( 'styles', 'scripts', 'watch' ) );
+gulp.task( 'serve', gulp.series( 'styles', 'scripts', 'watch' ) );

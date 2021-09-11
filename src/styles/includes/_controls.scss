@@ -1,0 +1,120 @@
+@mixin control-input {
+  display: block;
+  position: relative;
+
+  input {
+    display: block;
+    width: calc(100% - 2px);
+  }
+}
+
+@mixin control-radio {
+  display: block;
+  position: relative;
+
+  margin-top: 5px;
+
+  span {
+    user-select: none;
+  }
+
+  input {
+    margin-right: 8px;
+  }
+
+  @media screen and (max-width: 782px) {
+    margin-top: 10px;
+  }
+}
+
+@mixin control-select {
+  display: block;
+  position: relative;
+
+  flex: 1 1 100%;
+
+  select {
+    display: block;
+    width: calc(100% - 2px);
+    max-width: none;
+  }
+}
+
+@mixin control-checkbox {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  margin-top: 5px;
+
+  span {
+    user-select: none;
+  }
+
+  input[type="checkbox"] {
+    margin: 0 8px 0 0;
+  }
+}
+
+@mixin control-textarea {
+  display: block;
+  position: relative;
+
+  textarea {
+    display: block;
+    width: calc(100% - 2px);
+    min-height: 30px;
+  }
+}
+
+@mixin control-range {
+  display: block;
+  position: relative;
+  width: 100%;
+
+  input {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+  }
+
+  em {
+    display: block;
+    cursor: default;
+
+    position: absolute;
+    right: 2px;
+    top: 0;
+
+    font-size: 10px;
+    font-style: normal;
+
+    color: $color-links
+  }
+}
+
+@mixin control-media {
+  display: flex;
+  align-items: center;
+
+  a {
+    margin-left: 14px;
+  }
+
+  button {
+    margin-bottom: 0;
+  }
+
+  small {
+    margin-top: 10px;
+  }
+}
+
+@mixin control-color {
+  display: block;
+  position: relative;
+
+  input[type="color"] {
+    cursor: pointer;
+  }
+}

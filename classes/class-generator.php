@@ -65,6 +65,10 @@ class Generator {
 
 		$template = $this->prepare_template( $templates[ $id ], $fieldset );
 
+		if ( ! $this->check_required( $template ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Wrong template settings', 'sharing-image' ) );
+		}
+
 		list( $path, $url ) = $this->get_upload_file();
 
 		// Generate image and save it to given path.
@@ -94,6 +98,10 @@ class Generator {
 	public function show( $template, $index ) {
 		$template = $this->prepare_template( $template, null, $index );
 
+		if ( ! $this->check_required( $template ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Wrong template settings', 'sharing-image' ) );
+		}
+
 		// Generate image and show it immediately.
 		$poster = $this->create_poster( $template );
 
@@ -114,6 +122,10 @@ class Generator {
 	 */
 	public function save( $template, $index ) {
 		$template = $this->prepare_template( $template, null, $index );
+
+		if ( ! $this->check_required( $template ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Wrong template settings', 'sharing-image' ) );
+		}
 
 		list( $path, $url ) = $this->get_upload_file();
 
@@ -164,26 +176,26 @@ class Generator {
 			}
 		}
 
-		$template['image'] = null;
+		$template['layers'] = $layers;
 
-		if ( null !== $index ) {
-			$template['image'] = sprintf( SHARING_IMAGE_DIR . '/assets/images/%d.jpg', ( $index % 12 ) + 1 );
+		if ( 'dynamic' === $template['background'] ) {
+			if ( null !== $index ) {
+				$template['image'] = sprintf( SHARING_IMAGE_DIR . 'assets/images/%d.jpg', ( $index % 12 ) + 1 );
+			}
+
+			if ( ! empty( $fieldset['attachment'] ) ) {
+				$template['image'] = get_attached_file( $fieldset['attachment'] );
+			}
 		}
 
 		if ( 'permanent' === $template['background'] ) {
-			if ( isset( $template['attachment'] ) ) {
+			if ( ! empty( $template['attachment'] ) ) {
 				$template['image'] = get_attached_file( $template['attachment'] );
 			}
 		}
 
-		if ( isset( $fieldset['attachment'] ) ) {
-			$template['image'] = get_attached_file( $fieldset['attachment'] );
-		}
-
-		$template['layers'] = $layers;
-
 		/**
-		 * Filters image generator background.
+		 * Filters template before generation.
 		 *
 		 * @param array   $template List of template data.
 		 * @param array   $fieldset Fieldset data from picker.
@@ -204,17 +216,28 @@ class Generator {
 		try {
 			$poster = new PosterEditor();
 
-			$poster->make( $template['image'] )->fit( $template['width'], $template['height'] );
+			// Set color canvas options.
+			$options = array( 'color' => $template['fill'] );
 
-			if ( isset( $template['layers'] ) ) {
+			// Create empty poster.
+			$poster->canvas( $template['width'], $template['height'], $options );
+
+			// Recreate poster with image if exists.
+			if ( ! empty( $template['image'] ) ) {
+				$poster->make( $template['image'] )->fit( $template['width'], $template['height'] );
+			}
+
+			if ( ! empty( $template['layers'] ) ) {
 				$poster = $this->append_layers( $poster, $template['layers'] );
 			}
 
+			$settings = $this->settings;
+
 			if ( null === $path ) {
-				return $poster->show( $this->settings->get_quality() );
+				return $poster->show( $settings->get_quality(), $settings->get_file_format() );
 			}
 
-			$poster->save( $path, $this->settings->get_quality() );
+			$poster->save( $path, $settings->get_quality() );
 
 		} catch ( Exception $e ) {
 			return new WP_Error( 'generate', $e->getMessage() );
@@ -381,7 +404,7 @@ class Generator {
 	 */
 	private function get_fontpath( $layer, $path = '' ) {
 		if ( isset( $layer['fontname'] ) ) {
-			$path = sprintf( SHARING_IMAGE_DIR . '/assets/fonts/%s.ttf', $layer['fontname'] );
+			$path = sprintf( SHARING_IMAGE_DIR . 'assets/fonts/%s.ttf', $layer['fontname'] );
 		}
 
 		if ( isset( $layer['fontfile'] ) ) {
@@ -424,43 +447,6 @@ class Generator {
 	}
 
 	/**
-	 * Update template data using picker fieldset data.
-	 *
-	 * @param array $template Template data.
-	 * @param array $fieldset Fieldset data from request.
-	 *
-	 * @return array Template data.
-	 */
-	private function set_picker_fields( $template, $fieldset ) {
-		if ( isset( $fieldset['attachment'] ) ) {
-			$template['attachment'] = $fieldset['attachment'];
-			$template['background'] = 'uploaded';
-		}
-
-		if ( empty( $template['layers'] ) ) {
-			return $template;
-		}
-
-		foreach ( $template['layers'] as $i => &$layer ) {
-			if ( empty( $layer['type'] ) || empty( $layer['dynamic'] ) ) {
-				continue;
-			}
-
-			if ( 'text' !== $layer['type'] ) {
-				continue;
-			}
-
-			if ( ! isset( $fieldset['captions'][ $i ] ) ) {
-				continue;
-			}
-
-			$layer['content'] = $fieldset['captions'][ $i ];
-		}
-
-		return $template;
-	}
-
-	/**
 	 * Prepare args and remove not-allowed keys.
 	 *
 	 * @param array $args    List of source arguments.
@@ -469,6 +455,26 @@ class Generator {
 	 * @return array List of prepared args.
 	 */
 	private function prepare_args( $args, $allowed ) {
-		return array_intersect_key( $args, array_flip( $allowed ) );
+		return wp_array_slice_assoc( $args, $allowed );
+	}
+
+	/**
+	 * Check requred template values.
+	 *
+	 * @param array $template List of template settings.
+	 *
+	 * @return bool Whether all required values isset.
+	 */
+	private function check_required( $template ) {
+		$required = array( 'width', 'height', 'fill' );
+
+		// Count intersected values.
+		$prepared = count( $this->prepare_args( $template, $required ) );
+
+		if ( count( $required ) === $prepared ) {
+			return true;
+		}
+
+		return false;
 	}
 }

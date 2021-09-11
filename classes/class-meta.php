@@ -68,10 +68,11 @@ class Meta {
 	}
 
 	/**
-	 * Common method to get Sharing Image poster.
+	 * Public method to get Sharing Image poster.
 	 *
 	 * @param int $object_id Optional. Post ID or Taxonomy term ID.
-	 * @return string
+
+	 * @return string Url to poster.
 	 */
 	public function get_poster( $object_id = null ) {
 		$poster = $this->get_poster_src( $object_id );
@@ -84,10 +85,11 @@ class Meta {
 	}
 
 	/**
-	 * Common method to get Sharing Image poster url, width and height.
+	 * Public method to get Sharing Image poster url, width and height.
 	 *
 	 * @param int $object_id Optional. Post ID or Taxonomy term ID.
-	 * @return array|false
+
+	 * @return array|false Poster image, width and height data or false if undefined.
 	 */
 	public function get_poster_src( $object_id = null ) {
 		$poster = $this->get_widget_poster_src( $object_id );
@@ -109,7 +111,8 @@ class Meta {
 	 * Get post or term meta Sharing Image poster data.
 	 *
 	 * @param int $object_id Optional. Post ID or Taxonomy term ID.
-	 * @return array|false
+
+	 * @return array|false Widget poster image, width and height data or false if undefined.
 	 */
 	public function get_widget_poster_src( $object_id = null ) {
 		$meta = array();
@@ -139,7 +142,8 @@ class Meta {
 	 * Get singular template poster meta.
 	 *
 	 * @param int $post_id Optional. Post ID.
-	 * @return array|false
+
+	 * @return array|false Singular poster meta. False if undefined.
 	 */
 	private function get_singular_poster_meta( $post_id = null ) {
 		$post = get_post( $post_id );
@@ -160,7 +164,8 @@ class Meta {
 	 * Get taxonomy template poster data.
 	 *
 	 * @param int $term_id Optional. Term ID.
-	 * @return array
+
+	 * @return array|false Taxonomy poster meta. False if undefined.
 	 */
 	private function get_taxonomy_poster_meta( $term_id = null ) {
 		if ( ! $this->settings->is_premium_features() ) {

@@ -17,14 +17,14 @@ let params = null;
  */
 function createDefaultOptions( options, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-control', 'control-config', 'control-default' ],
+		classes: [ 'sharing-image-config-control' ],
 		label: __( 'Default poster', 'sharing-image' ),
 		append: options,
 	} );
 
 	Build.media( {
 		name: params.name + '[default]',
-		classes: [ 'sharing-image-control-media' ],
+		classes: [ 'sharing-image-config-control-media' ],
 		label: __( 'Default poster', 'sharing-image' ),
 		value: data.default,
 		link: params.links.uploads,
@@ -57,19 +57,19 @@ function createDefaultOptions( options, data ) {
  */
 function createUploadsOptions( options, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-control', 'control-config', 'control-storage' ],
+		classes: [ 'sharing-image-config-control' ],
 		label: __( 'Upload directory', 'sharing-image' ),
 		append: options,
 	} );
 
 	const fieldset = Build.element( 'div', {
-		classes: [ 'sharing-image-control-fieldset' ],
+		classes: [ 'sharing-image-config-control-fieldset' ],
 		append: control,
 	} );
 
 	Build.radio(
 		{
-			classes: [ 'sharing-image-control-radio' ],
+			classes: [ 'sharing-image-config-control-radio' ],
 			attributes: {
 				name: params.name + '[uploads]',
 				value: 'default',
@@ -82,7 +82,7 @@ function createUploadsOptions( options, data ) {
 
 	Build.radio(
 		{
-			classes: [ 'sharing-image-control-radio' ],
+			classes: [ 'sharing-image-config-control-radio' ],
 			attributes: {
 				name: params.name + '[uploads]',
 				value: 'custom',
@@ -95,7 +95,7 @@ function createUploadsOptions( options, data ) {
 
 	const input = Build.input(
 		{
-			classes: [ 'sharing-image-control-input' ],
+			classes: [ 'sharing-image-config-control-input' ],
 			attributes: {
 				name: params.name + '[storage]',
 				value: data.storage || params.links.storage,
@@ -138,13 +138,13 @@ function createUploadsOptions( options, data ) {
  */
 function createImageOptions( options, data ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-control', 'control-config', 'control-format' ],
+		classes: [ 'sharing-image-config-control', 'control-extra' ],
 		label: __( 'Poster image format', 'sharing-image' ),
 		help: __( 'The higher the value, the less compression. Availible for JPEG only.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'select',
-				classes: [ 'sharing-image-control-select' ],
+				classes: [ 'sharing-image-config-control-select' ],
 				options: {
 					jpg: __( 'JPEG', 'sharing-image' ),
 					png: __( 'PNG', 'sharing-image' ),
@@ -156,7 +156,7 @@ function createImageOptions( options, data ) {
 			},
 			{
 				group: 'input',
-				classes: [ 'sharing-image-control-range' ],
+				classes: [ 'sharing-image-config-control-range' ],
 				attributes: {
 					type: 'range',
 					name: params.name + '[quality]',

@@ -69,17 +69,36 @@ body.block-editor-page select {
       position: relative; }
       .sharing-image-widget .sharing-image-picker .sharing-image-picker-fieldset.fieldset-visible {
         display: block; }
-    .sharing-image-widget .sharing-image-picker .sharing-image-picker-details {
+    .sharing-image-widget .sharing-image-picker .sharing-image-picker-media {
       display: flex;
-      flex-flow: row nowrap;
+      flex-flow: row wrap;
       align-items: center;
       margin-bottom: 12px; }
-      .sharing-image-widget .sharing-image-picker .sharing-image-picker-details .button {
+      .sharing-image-widget .sharing-image-picker .sharing-image-picker-media .button {
         margin-right: 14px; }
+    .sharing-image-widget .sharing-image-picker .sharing-image-picker-featured {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 0;
+      font-size: 18px;
+      color: #8c8f94;
+      background: 0;
+      border: none;
+      transition: color 0.25s; }
+      .sharing-image-widget .sharing-image-picker .sharing-image-picker-featured::after {
+        font-family: dashicons;
+        content: "\f128"; }
+      .sharing-image-widget .sharing-image-picker .sharing-image-picker-featured:hover {
+        color: #2271b1; }
+      .sharing-image-widget .sharing-image-picker .sharing-image-picker-featured.featured-seleted {
+        color: #2271b1; }
     .sharing-image-widget .sharing-image-picker .sharing-image-picker-caption {
       display: block;
       width: 100%;
       margin-bottom: 12px; }
+      .sharing-image-widget .sharing-image-picker .sharing-image-picker-caption h4 {
+        margin: 0; }
       .sharing-image-widget .sharing-image-picker .sharing-image-picker-caption > * {
         display: block;
         width: 100%; }

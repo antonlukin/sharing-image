@@ -160,44 +160,133 @@ function createTemplate( picker, designer, selected ) {
 	return template;
 }
 
-function createDesignerAttachment( fieldset, template, values, name ) {
-	if ( 'dynamic' === template.background ) {
-		Build.media( {
-			name: name + '[attachment]',
-			classes: [ 'sharing-image-picker-details' ],
-			value: values.attachment,
-			link: params.links.uploads,
-			labels: {
-				button: __( 'Upload background', 'sharing-image' ),
-				heading: __( 'Select background image', 'sharing-image' ),
-				details: __( 'Attachment', 'sharing-image' ),
-			},
-			append: fieldset,
-		} );
+/**
+ * Prefill caption fields for classic editor.
+ *
+ * @param {HTMLElement} textarea Caption textarea field.
+ * @param {string} preset Preset field.
+ */
+function fillClassicEditorPreset( textarea, preset ) {
+	const source = document.getElementById( preset );
+
+	if ( null === source ) {
+		return;
 	}
+
+	const updateCaption = () => {
+		textarea.value = source.value;
+	};
+
+	source.addEventListener( 'change', updateCaption );
+
+	// Stop textarea update after first user input.
+	textarea.addEventListener( 'change', () => {
+		source.removeEventListener( 'change', updateCaption );
+	} );
+
+	updateCaption();
 }
 
+/**
+ * Prefill caption fields for block editor.
+ *
+ * @param {HTMLElement} textarea Caption textarea field.
+ * @param {string} preset Preset field.
+ */
+function fillBlockEditorPreset( textarea, preset ) {
+	const getAttribute = () => {
+		return wp.data.select( 'core/editor' ).getEditedPostAttribute( preset );
+	};
+
+	let attribute = getAttribute();
+
+	wp.data.subscribe( () => {
+		const updated = getAttribute();
+
+		if ( attribute !== updated ) {
+			textarea.textContent = updated;
+		}
+
+		attribute = updated;
+	} );
+}
+
+/**
+ * Try to prefill caption field.
+ *
+ * @param {HTMLElement} textarea Caption textarea field.
+ * @param {string} preset Preset field.
+ */
+function fillCaptionPreset( textarea, preset ) {
+	if ( wp.data ) {
+		return fillBlockEditorPreset( textarea, preset );
+	}
+
+	fillClassicEditorPreset( textarea, preset );
+}
+
+/**
+ * Create designer attachment field for dynamic background.
+ *
+ * @param {HTMLElement} fieldset Fieldset element.
+ * @param {Object} template Template data.
+ * @param {Array} values Template fieldset values.
+ * @param {string} name Field name attribute.
+ */
+function createDesignerAttachment( fieldset, template, values, name ) {
+	if ( 'dynamic' !== template.background ) {
+		return;
+	}
+
+	Build.media( {
+		name: name + '[attachment]',
+		classes: [ 'sharing-image-picker-media' ],
+		value: values.attachment,
+		link: params.links.uploads,
+		labels: {
+			button: __( 'Upload background', 'sharing-image' ),
+			heading: __( 'Select background image', 'sharing-image' ),
+			details: __( 'Attachment', 'sharing-image' ),
+		},
+		append: fieldset,
+	} );
+}
+
+/**
+ * Create designer captions for text layers.
+ *
+ * @param {HTMLElement} fieldset Fieldset element.
+ * @param {Object} template Template data.
+ * @param {Array} values Template fieldset values.
+ * @param {string} name Field name attribute.
+ */
 function createDesignerCaptions( fieldset, template, values, name ) {
+	const captions = values.captions || [];
+
 	// Set default layers list.
 	template.layers = template.layers || [];
 
 	template.layers.forEach( ( layer, n ) => {
-		if ( 'text' === layer.type && layer.dynamic ) {
-			const textarea = Build.textarea(
-				{
-					classes: [ 'sharing-image-picker-caption' ],
-					label: layer.title || null,
-					attributes: {
-						name: name + `[captions][${ n }]`,
-					},
-				},
-				fieldset
-			);
-
-			if ( values.captions && values.captions[ n ] ) {
-				textarea.textContent = values.captions[ n ];
-			}
+		if ( 'text' !== layer.type || ! layer.dynamic ) {
+			return;
 		}
+
+		const textarea = Build.textarea(
+			{
+				classes: [ 'sharing-image-picker-caption' ],
+				label: layer.title || null,
+				attributes: {
+					name: name + `[captions][${ n }]`,
+				},
+			},
+			fieldset
+		);
+
+		if ( ! captions[ n ] ) {
+			fillCaptionPreset( textarea, layer.preset );
+		}
+
+		textarea.textContent = captions[ n ];
 	} );
 }
 

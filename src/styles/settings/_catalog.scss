@@ -98,9 +98,6 @@
     img {
       display: block;
 
-      object-position: center;
-      object-fit: cover;
-
       @include fill-parent;
     }
   }

@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				esc_html__( 'Read the detailed instructions for configuring the plugin on the plugin %s.', 'sharing-image' ),
 				sprintf(
 					'<a href="%s" target="_blank" rel="noopener">%s</a>',
-					esc_attr( 'https://notset.org/sharing-image/' ),
+					esc_attr( 'https://wpget.org/sharing-image/' ),
 					esc_html__( 'website', 'sharing-image' )
 				),
 			);

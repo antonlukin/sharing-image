@@ -205,7 +205,7 @@ class Widget {
 		/**
 		 * Filters post meta on update.
 		 *
-		 * @param string $picker  Picker data.
+		 * @param string $meta  Updated post meta.
 		 * @param string $post_id Post ID.
 		 */
 		$meta = apply_filters( 'sharing_image_update_post_meta', $meta, $post_id );
@@ -243,7 +243,7 @@ class Widget {
 		/**
 		 * Filters term meta on update.
 		 *
-		 * @param string $picker  Picker data.
+		 * @param string $meta    Updated term meta.
 		 * @param string $term_id Term ID.
 		 */
 		$meta = apply_filters( 'sharing_image_update_term_meta', $meta, $term_id );
@@ -255,7 +255,7 @@ class Widget {
 	 * Display widget.
 	 */
 	public function display_widget() {
-		include_once SHARING_IMAGE_DIR . '/templates/widget.php';
+		include_once SHARING_IMAGE_DIR . 'templates/widget.php';
 
 		/**
 		 * Fires on widget template including.
@@ -342,7 +342,8 @@ class Widget {
 	 * Sanitize picker widget data before saving.
 	 *
 	 * @param array $picker Widget POST data.
-	 * @return array
+
+	 * @return array Sanitized picker fields.
 	 */
 	private function sanitize_picker( $picker ) {
 		$sanitized = array();
@@ -351,11 +352,11 @@ class Widget {
 			$sanitized['poster'] = sanitize_text_field( $picker['poster'] );
 		}
 
-		if ( isset( $picker['width'] ) ) {
+		if ( ! empty( $picker['width'] ) ) {
 			$sanitized['width'] = absint( $picker['width'] );
 		}
 
-		if ( isset( $picker['height'] ) ) {
+		if ( ! empty( $picker['height'] ) ) {
 			$sanitized['height'] = absint( $picker['height'] );
 		}
 
@@ -392,7 +393,8 @@ class Widget {
 	 * Sanitize picker widget fieldset list.
 	 *
 	 * @param array $fields Fieldset widget list.
-	 * @return array
+	 *
+	 * @return array Sanitized fieldset data.
 	 */
 	public function sanitize_fieldset( $fields ) {
 		$sanitized = array();
@@ -413,7 +415,8 @@ class Widget {
 	 *
 	 * @param array  $meta    Term or Post meta data.
 	 * @param string $context Widget context. For example: metabox or taxonomy.
-	 * @return array
+
+	 * @return array Filtered widget script object.
 	 */
 	private function create_script_object( $meta, $context ) {
 		$object = array(
@@ -439,7 +442,7 @@ class Widget {
 	/**
 	 * Get an array of post types where the metabox is displayed.
 	 *
-	 * @return array
+	 * @return array Array of post types.
 	 */
 	private function get_metabox_post_types() {
 		$post_types = get_post_types(
@@ -461,7 +464,7 @@ class Widget {
 	/**
 	 * Get an array of taxonomeis where the widget is displayed.
 	 *
-	 * @return array
+	 * @return array Array of taxonomies.
 	 */
 	private function get_widget_taxonomies() {
 		$taxonomies = get_taxonomies(

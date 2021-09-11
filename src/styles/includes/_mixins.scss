@@ -13,6 +13,11 @@
   padding: 20px;
 }
 
+@mixin settings-compact($width: 300px) {
+  width: $width;
+  max-width: 100%;
+}
+
 @mixin button-focus {
   border-color: #007cba;
   color: #016087;

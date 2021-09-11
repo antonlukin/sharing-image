@@ -58,7 +58,7 @@ class Settings {
 	 *
 	 * @var string
 	 */
-	const REMOTE_LICENSES = 'https://notset.org/sharing-image/licenses/';
+	const REMOTE_LICENSES = 'https://wpget.org/sharing-image/verify/';
 
 	/**
 	 * Premium verification event name.
@@ -202,7 +202,8 @@ class Settings {
 	 *
 	 * @param array  $actions     An array of plugin action links.
 	 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
-	 * @return array
+
+	 * @return array Array of settings actions.
 	 */
 	public function add_settings_link( $actions, $plugin_file ) {
 		$actions = (array) $actions;
@@ -393,8 +394,8 @@ class Settings {
 
 		$args = array(
 			'body' => array(
-				'key'  => $key,
-				'host' => wp_parse_url( site_url(), PHP_URL_HOST ),
+				'key'    => $key,
+				'domain' => wp_parse_url( site_url(), PHP_URL_HOST ),
 			),
 		);
 
@@ -427,8 +428,8 @@ class Settings {
 			'data'    => __( 'Verification failed.', 'sharing-image' ),
 		);
 
-		if ( isset( $answer['error'] ) ) {
-			$error['code'] = $answer['error'];
+		if ( isset( $answer['result'] ) ) {
+			$error['code'] = $answer['result'];
 		}
 
 		$this->update_license( false, $key );
@@ -463,7 +464,7 @@ class Settings {
 			return;
 		}
 
-		include_once SHARING_IMAGE_DIR . '/templates/settings.php';
+		include_once SHARING_IMAGE_DIR . 'templates/settings.php';
 
 		/**
 		 * Fires on settings template including.
@@ -477,6 +478,8 @@ class Settings {
 	 * @param array  $types    Values for the extension, mime type, and corrected filename.
 	 * @param string $file     Full path to the file.
 	 * @param string $filename The name of the file (may differ from $file due to.
+	 *
+	 * @return array List of file types.
 	 */
 	public function fix_ttf_mime_type( $types, $file, $filename ) {
 		$extension = pathinfo( $filename, PATHINFO_EXTENSION );
@@ -497,6 +500,8 @@ class Settings {
 	 * Add new .ttf font mime type.
 	 *
 	 * @param array $types Allowed file types to upload.
+	 *
+	 * @return array Allowed file types to upload.
 	 */
 	public function add_ttf_mime_type( $types ) {
 		$types['ttf'] = 'application/x-font-ttf';
@@ -591,7 +596,7 @@ class Settings {
 		 */
 		$templates = apply_filters( 'sharing_image_update_templates', array_values( $templates ) );
 
-		update_option( self::OPTION_TEMPLATES, $templates );
+		return update_option( self::OPTION_TEMPLATES, $templates );
 	}
 
 	/**
@@ -659,7 +664,8 @@ class Settings {
 	 * @param bool   $premium Premium status.
 	 * @param string $key     License key.
 	 * @param string $error   Verification error code.
-	 * @return array
+
+	 * @return array License options.
 	 */
 	public function update_license( $premium, $key = '', $error = '' ) {
 		$license = get_option( self::OPTION_LICENSE, array() );
@@ -685,7 +691,7 @@ class Settings {
 	/**
 	 * Get directory to uploaded posters.
 	 *
-	 * @return array
+	 * @return array Path and url to upload directory.
 	 */
 	public function get_upload_dir() {
 		$config = $this->get_config();
@@ -701,14 +707,20 @@ class Settings {
 
 		$uploads = wp_upload_dir();
 
-		return array( $uploads['path'], $uploads['url'] );
+		/**
+		 * Filters upload directory.
+		 *
+		 * @param array $dir Path and url to upload directory.
+		 */
+		return apply_filters( 'sharing_image_upload_dir', array( $uploads['path'], $uploads['url'] ) );
 	}
 
 	/**
 	 * Get generated image file format.
 	 *
 	 * @param string $format Optional. Default image format.
-	 * @return string
+
+	 * @return string Image file format.
 	 */
 	public function get_file_format( $format = 'jpg' ) {
 		$config = $this->get_config();
@@ -717,14 +729,20 @@ class Settings {
 			$format = $config['format'];
 		}
 
-		return $format;
+		/**
+		 * Filters Image file format.
+		 *
+		 * @param string $format Image file format.
+		 */
+		return apply_filters( 'sharing_image_file_format', $format );
 	}
 
 	/**
 	 * Get quality of generated poster.
 	 *
 	 * @param int $quality Optional. Default image quality.
-	 * @return int
+	 *
+	 * @return int Image quality.
 	 */
 	public function get_quality( $quality = 90 ) {
 		$config = $this->get_config();
@@ -733,7 +751,12 @@ class Settings {
 			$quality = $config['quality'];
 		}
 
-		return $quality;
+		/**
+		 * Filters poster image quality.
+		 *
+		 * @param string $quality Image quality.
+		 */
+		return apply_filters( 'sharing_image_poster_quality', $quality );
 	}
 
 	/**
@@ -741,7 +764,8 @@ class Settings {
 	 * Returns array with image url, width and height.
 	 *
 	 * @see https://developer.wordpress.org/reference/functions/wp_get_attachment_image_src/
-	 * @return array
+	 *
+	 * @return array|false Array of image data, or boolean false if no image is available.
 	 */
 	public function get_default_poster_src() {
 		$config = $this->get_config();
@@ -756,14 +780,15 @@ class Settings {
 			$poster = array_slice( $poster, 0, 3 );
 		}
 
-		return $poster;
+		return apply_filters( 'sharing_image_default_poster_src', $poster );
 	}
 
 	/**
 	 * Update settings page title.
 	 *
 	 * @param string $title Plugin settings page title.
-	 * @return string
+	 *
+	 * @return string Plugin settings title
 	 */
 	public function update_settings_title( $title ) {
 		if ( ! $this->is_settings_screen() ) {
@@ -794,8 +819,8 @@ class Settings {
 	public function launch_verification_event( $key ) {
 		$args = array(
 			'body' => array(
-				'key'  => $key,
-				'host' => wp_parse_url( site_url(), PHP_URL_HOST ),
+				'key'    => $key,
+				'domain' => wp_parse_url( site_url(), PHP_URL_HOST ),
 			),
 		);
 
@@ -815,17 +840,17 @@ class Settings {
 			return $this->update_license( true, $key );
 		}
 
-		if ( ! isset( $answer['error'] ) ) {
+		if ( ! isset( $answer['result'] ) ) {
 			return $this->update_license( false, $key );
 		}
 
-		$this->update_license( false, $key, $answer['error'] );
+		$this->update_license( false, $key, $answer['result'] );
 	}
 
 	/**
 	 * Check if Premium features availible.
 	 *
-	 * @return bool
+	 * @return bool Whether premium featured enabled.
 	 */
 	public function is_premium_features() {
 		$license = $this->get_license();
@@ -853,7 +878,7 @@ class Settings {
 	/**
 	 * Create script object to inject with settings.
 	 *
-	 * @return array
+	 * @return array Filtered script settings object.
 	 */
 	private function create_script_object() {
 		$uploads = wp_get_upload_dir();
@@ -887,16 +912,17 @@ class Settings {
 	 * Sanitize editor template settings.
 	 *
 	 * @param array $editor Template editor settings.
+	 *
 	 * @return array
 	 */
 	private function sanitize_editor( $editor ) {
 		$sanitized = array();
 
-		if ( isset( $editor['preview'] ) ) {
+		if ( ! empty( $editor['preview'] ) ) {
 			$sanitized['preview'] = sanitize_text_field( $editor['preview'] );
 		}
 
-		if ( isset( $editor['title'] ) ) {
+		if ( ! empty( $editor['title'] ) ) {
 			$sanitized['title'] = sanitize_text_field( $editor['title'] );
 		}
 
@@ -908,10 +934,16 @@ class Settings {
 			$sanitized['suspend'] = 'suspend';
 		}
 
-		$sanitized['background'] = 'dynamic';
+		$sanitized['fill'] = '#000000';
+
+		if ( ! empty( $editor['fill'] ) ) {
+			$sanitized['fill'] = sanitize_hex_color( $editor['fill'] );
+		}
+
+		$sanitized['background'] = 'blank';
 
 		if ( isset( $editor['background'] ) ) {
-			$background = array( 'dynamic', 'thumbnail', 'permanent' );
+			$background = array( 'dynamic', 'blank', 'permanent' );
 
 			// Set default background for permanent option without attachment.
 			if ( empty( $sanitized['attachment'] ) ) {
@@ -978,7 +1010,8 @@ class Settings {
 	 * Sanitize template editor text layer.
 	 *
 	 * @param array $layer Layer settings.
-	 * @return array
+	 *
+	 * @return array Sanitized layer settings.
 	 */
 	private function sanitize_text_layer( $layer ) {
 		$sanitized = array();
@@ -1071,7 +1104,8 @@ class Settings {
 	 * Sanitize template editor image layer.
 	 *
 	 * @param array $layer Layer settings.
-	 * @return array
+	 *
+	 * @return array Sanitized image layer settings.
 	 */
 	private function sanitize_image_layer( $layer ) {
 		$sanitized = array();
@@ -1100,7 +1134,8 @@ class Settings {
 	 * Sanitize template editor filter layer.
 	 *
 	 * @param array $layer Layer settings.
-	 * @return array
+	 *
+	 * @return array Sanitized filter layer settings.
 	 */
 	private function sanitize_filter_layer( $layer ) {
 		$sanitized = array();
@@ -1153,7 +1188,8 @@ class Settings {
 	 * Sanitize template editor rectagle layer.
 	 *
 	 * @param array $layer Layer settings.
-	 * @return array
+	 *
+	 * @return array Sanitized rectangle layer settings.
 	 */
 	private function sanitize_rectangle_layer( $layer ) {
 		$sanitized = array();
@@ -1208,7 +1244,8 @@ class Settings {
 	 * Sanitize config settings.
 	 *
 	 * @param array $config Config settings.
-	 * @return array
+	 *
+	 * @return array Sanitized config settings.
 	 */
 	private function sanitize_config( $config ) {
 		$sanitized = array();
@@ -1268,7 +1305,7 @@ class Settings {
 			return;
 		}
 
-		include_once SHARING_IMAGE_DIR . "/templates/{$tab}.php";
+		include_once SHARING_IMAGE_DIR . "templates/{$tab}.php";
 	}
 
 	/**
@@ -1386,7 +1423,8 @@ class Settings {
 	 * Get tab link by slug.
 	 *
 	 * @param string $tab Tab name.
-	 * @return string|null
+	 *
+	 * @return string|null Tab link.
 	 */
 	private function get_tab_link( $tab ) {
 		if ( empty( $this->tabs[ $tab ]['link'] ) ) {
@@ -1399,7 +1437,7 @@ class Settings {
 	/**
 	 * Get current tab.
 	 *
-	 * @return string|null
+	 * @return string|null Current tab name.
 	 */
 	private function get_current_tab() {
 		// phpcs:disable WordPress.Security.NonceVerification
@@ -1419,7 +1457,8 @@ class Settings {
 	 * Create upload directory and return its path and url
 	 *
 	 * @param string $storage Relative directory path.
-	 * @return array
+	 *
+	 * @return array Path and url to upload directory.
 	 */
 	private function create_upload_dir( $storage ) {
 		$storage = trim( $storage, '/' );
@@ -1453,7 +1492,7 @@ class Settings {
 	/**
 	 * Is current admin screen the plugin options screen.
 	 *
-	 * @return bool
+	 * @return bool Whether the settings screen of this plugin is displayed or not.
 	 */
 	private function is_settings_screen() {
 		$current_screen = get_current_screen();

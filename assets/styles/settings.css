@@ -96,229 +96,6 @@ input[type="range"] {
     background-color: #eaeaea;
     border: solid 1px #d0d0d0; }
 
-.sharing-image-control {
-  display: flex;
-  flex-flow: column nowrap;
-  align-items: flex-start;
-  position: relative;
-  width: 100%;
-  margin-bottom: 24px; }
-  .sharing-image-control p {
-    margin: 0 0 5px; }
-    .sharing-image-control p:last-child {
-      margin-bottom: 0; }
-  .sharing-image-control h3, .sharing-image-control h4 {
-    display: block;
-    cursor: default;
-    width: 100%;
-    margin: 0 0 5px;
-    font-size: 13px;
-    font-weight: 600; }
-  .sharing-image-control small {
-    display: block;
-    cursor: default;
-    width: 100%;
-    margin-top: 6px;
-    font-size: 10.5px;
-    line-height: 1.5; }
-  .sharing-image-control.control-row {
-    flex-flow: row nowrap;
-    align-items: center; }
-    .sharing-image-control.control-row > * {
-      margin-right: 14px; }
-    .sharing-image-control.control-row > *:last-child {
-      margin-right: 0; }
-  .sharing-image-control.control-extend > * {
-    width: 100%; }
-  .sharing-image-control.control-table {
-    flex-flow: row nowrap; }
-    .sharing-image-control.control-table > * {
-      margin-right: 14px; }
-    .sharing-image-control.control-table > *:nth-child(2) {
-      margin-right: 54px; }
-    .sharing-image-control.control-table > *:last-child {
-      margin-right: 0; }
-    @media screen and (max-width: 782px) {
-      .sharing-image-control.control-table {
-        flex-flow: row wrap; }
-        .sharing-image-control.control-table > * {
-          width: calc(50% - 7px); }
-        .sharing-image-control.control-table > *:first-child {
-          margin-bottom: 14px; }
-        .sharing-image-control.control-table > *:nth-child(2) {
-          margin-right: 0;
-          margin-bottom: 14px; } }
-  .sharing-image-control.control-config {
-    display: grid;
-    grid-template-columns: 240px auto;
-    position: relative;
-    width: 100%;
-    max-width: 620px;
-    margin: 40px 0; }
-    .sharing-image-control.control-config h3 {
-      grid-column: 1;
-      margin: 6px 0;
-      font-size: 14px; }
-    .sharing-image-control.control-config h4 {
-      margin: 0; }
-    .sharing-image-control.control-config h3 ~ * {
-      grid-column: 2;
-      width: 100%; }
-  .sharing-image-control.control-single {
-    flex-flow: row nowrap; }
-    .sharing-image-control.control-single > * {
-      width: calc(50% - 27px); }
-  .sharing-image-control.control-double {
-    flex-flow: row nowrap; }
-    .sharing-image-control.control-double > *:first-child {
-      margin-right: 54px; }
-    @media screen and (max-width: 782px) {
-      .sharing-image-control.control-double {
-        flex-flow: row wrap; }
-        .sharing-image-control.control-double > * {
-          width: 100%; }
-        .sharing-image-control.control-double > *:first-child {
-          margin-right: 0;
-          margin-bottom: 14px; } }
-  .sharing-image-control.control-upload {
-    flex-flow: row wrap;
-    align-items: flex-end; }
-    .sharing-image-control.control-upload > *:first-child {
-      flex: 1 1 auto;
-      margin-right: 14px; }
-    .sharing-image-control.control-upload > *:nth-child(2) {
-      margin-top: 8px; }
-  .sharing-image-control.control-hidden {
-    display: none; }
-  .sharing-image-control.control-details {
-    flex-flow: row nowrap;
-    align-items: center; }
-    .sharing-image-control.control-details .button {
-      margin-right: 14px; }
-    .sharing-image-control.control-details .button:disabled ~ * {
-      display: none; }
-  .sharing-image-control.control-storage label {
-    margin: 0 0 5px; }
-  .sharing-image-control.control-storage > *:nth-child(2) {
-    margin-bottom: 10px; }
-  .sharing-image-control.control-compact {
-    max-width: 300px; }
-  .sharing-image-control.control-footer {
-    margin-bottom: 0; }
-  .sharing-image-control.control-default small {
-    margin-top: 10px; }
-  .sharing-image-control.control-pinned {
-    margin-bottom: 15px; }
-  .sharing-image-control.control-format h3 + * {
-    margin-bottom: 20px; }
-  .sharing-image-control.control-footer {
-    flex-flow: row nowrap;
-    align-items: center;
-    padding-top: 20px;
-    border-top: solid 1px #dcdcde; }
-    .sharing-image-control.control-footer > * {
-      margin-right: 28px; }
-    .sharing-image-control.control-footer > *:last-child {
-      margin-right: 0; }
-  .sharing-image-control .sharing-image-control-fieldset {
-    display: flex;
-    flex-flow: column nowrap;
-    align-items: flex-start; }
-  .sharing-image-control .sharing-image-control-media {
-    display: flex;
-    align-items: center; }
-    .sharing-image-control .sharing-image-control-media a {
-      margin-left: 14px; }
-    .sharing-image-control .sharing-image-control-media button {
-      margin-bottom: 0; }
-  .sharing-image-control .sharing-image-control-radio {
-    display: block;
-    position: relative;
-    margin-top: 5px; }
-    .sharing-image-control .sharing-image-control-radio span {
-      -webkit-user-select: none;
-         -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none; }
-    .sharing-image-control .sharing-image-control-radio input {
-      margin-right: 8px; }
-    @media screen and (max-width: 782px) {
-      .sharing-image-control .sharing-image-control-radio {
-        margin-top: 10px; } }
-  .sharing-image-control .sharing-image-control-color {
-    display: block;
-    position: relative; }
-    .sharing-image-control .sharing-image-control-color input[type="color"] {
-      cursor: pointer; }
-  .sharing-image-control .sharing-image-control-checkbox {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin-top: 5px; }
-    .sharing-image-control .sharing-image-control-checkbox span {
-      -webkit-user-select: none;
-         -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none; }
-    .sharing-image-control .sharing-image-control-checkbox input[type="checkbox"] {
-      margin: 0 8px 0 0; }
-  .sharing-image-control .sharing-image-control-range {
-    display: block;
-    position: relative;
-    width: 100%; }
-    .sharing-image-control .sharing-image-control-range input {
-      display: block;
-      width: 100%;
-      margin: 8px 0; }
-    .sharing-image-control .sharing-image-control-range em {
-      display: block;
-      cursor: default;
-      position: absolute;
-      right: 2px;
-      top: 0;
-      font-size: 10px;
-      font-style: normal;
-      color: #3582c4; }
-  .sharing-image-control .sharing-image-control-button {
-    display: block;
-    margin-bottom: 0; }
-  .sharing-image-control .sharing-image-control-input {
-    display: block;
-    position: relative; }
-    .sharing-image-control .sharing-image-control-input input {
-      display: block;
-      width: calc(100% - 2px); }
-  .sharing-image-control .sharing-image-control-textarea {
-    display: block;
-    position: relative; }
-    .sharing-image-control .sharing-image-control-textarea textarea {
-      display: block;
-      width: calc(100% - 2px);
-      min-height: 30px; }
-  .sharing-image-control .sharing-image-control-select {
-    display: block;
-    position: relative;
-    flex: 1 1 100%; }
-    .sharing-image-control .sharing-image-control-select select {
-      display: block;
-      width: calc(100% - 2px);
-      max-width: none; }
-  .sharing-image-control .sharing-image-control-more {
-    display: block;
-    cursor: pointer;
-    margin: 0;
-    padding: 0;
-    color: #3582c4;
-    background: transparent;
-    border: none;
-    border-bottom: solid 1px;
-    transition: border 0.25s; }
-    .sharing-image-control .sharing-image-control-more:focus {
-      box-shadow: 0 0 0 1px #5b9dd9, 0 0 2px 1px rgba(30, 140, 190, 0.8);
-      outline: 1px solid transparent; }
-    .sharing-image-control .sharing-image-control-more:hover {
-      border-bottom-color: transparent; }
-
 @-webkit-keyframes rotate {
   0% {
     transform: rotate(0deg); }
@@ -422,10 +199,6 @@ body.settings_page_sharing-image #sharing-image-settings {
       background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAALElEQVQYGWO8d+/efwYkoKioiMRjYGBC4WHhUK6A8T8QIJt8//59ZC493AAAQssKpBK4F5AAAAAASUVORK5CYII="); }
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-catalog .sharing-image-catalog-preview img {
         display: block;
-        -o-object-position: center;
-           object-position: center;
-        -o-object-fit: cover;
-           object-fit: cover;
         position: absolute;
         top: 0;
         left: 0;
@@ -465,6 +238,87 @@ body.settings_page_sharing-image #sharing-image-settings {
       margin: 12px 0; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-config > * {
       margin: 24px 0; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control {
+      display: grid;
+      grid-template-columns: 240px auto;
+      position: relative;
+      width: 100%;
+      max-width: 620px;
+      margin: 40px 0;
+      width: 100%;
+      margin-bottom: 24px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control small {
+        margin-top: 6px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control h3 {
+        grid-column: 1;
+        margin: 6px 0;
+        font-size: 14px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control h4 {
+        margin: 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control h3 ~ * {
+        grid-column: 2;
+        width: 100%; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control.control-extra h3 + * {
+        margin-bottom: 20px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-input {
+        display: block;
+        position: relative; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-input input {
+          display: block;
+          width: calc(100% - 2px); }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-radio {
+        display: block;
+        position: relative;
+        margin-top: 5px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-radio span {
+          -webkit-user-select: none;
+             -moz-user-select: none;
+              -ms-user-select: none;
+                  user-select: none; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-radio input {
+          margin-right: 8px; }
+        @media screen and (max-width: 782px) {
+          body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-radio {
+            margin-top: 10px; } }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-select {
+        display: block;
+        position: relative;
+        flex: 1 1 100%; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-select select {
+          display: block;
+          width: calc(100% - 2px);
+          max-width: none; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-range {
+        display: block;
+        position: relative;
+        width: 100%; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-range input {
+          display: block;
+          width: 100%;
+          margin: 8px 0; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-range em {
+          display: block;
+          cursor: default;
+          position: absolute;
+          right: 2px;
+          top: 0;
+          font-size: 10px;
+          font-style: normal;
+          color: #3582c4; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-media {
+        display: flex;
+        align-items: center; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-media a {
+          margin-left: 14px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-media button {
+          margin-bottom: 0; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control .sharing-image-config-control-media small {
+          margin-top: 10px; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control-fieldset {
+      display: block;
+      position: relative;
+      width: 100%;
+      margin-bottom: 10px; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-config ~ #setting-error-sharing-image {
       max-width: 760px; }
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-content {
@@ -485,15 +339,203 @@ body.settings_page_sharing-image #sharing-image-settings {
       flex: 1 1 auto;
       margin-right: 48px;
       margin-bottom: 24px; }
-      @media screen and (max-width: 1279px) {
+      @media screen and (max-width: 1023px) {
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-fieldset {
           flex: 0 1 640px;
           margin-right: 0; } }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control {
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: flex-start;
+      position: relative;
+      margin-bottom: 24px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control p {
+        margin: 0 0 5px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control p:last-child {
+          margin-bottom: 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control h3, body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control h4 {
+        display: block;
+        cursor: default;
+        width: 100%;
+        margin: 0 0 5px;
+        font-size: 13px;
+        font-weight: 600; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control small {
+        display: block;
+        cursor: default;
+        width: 100%;
+        margin-top: 6px;
+        font-size: 10.5px;
+        line-height: 1.5; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-hidden {
+        display: none; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-compact {
+        width: 300px;
+        max-width: 100%; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-media {
+        flex-flow: row nowrap;
+        align-items: center; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-media .button {
+          margin-right: 14px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-media .button:disabled ~ * {
+          display: none; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-reduced {
+        margin-bottom: 14px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes {
+        flex-flow: row nowrap; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes > * {
+          margin-right: 14px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes > *:nth-child(2) {
+          margin-right: 54px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes > *:last-child {
+          margin-right: 0; }
+        @media screen and (max-width: 782px) {
+          body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes {
+            flex-flow: row wrap; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes > * {
+              width: calc(50% - 7px); }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes > *:first-child {
+              margin-bottom: 14px; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-sizes > *:nth-child(2) {
+              margin-right: 0;
+              margin-bottom: 14px; } }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-select {
+        flex-flow: row nowrap;
+        align-items: center; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-select > * {
+          margin-right: 14px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-select > *:last-child {
+          margin-right: 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-footer {
+        flex-flow: row nowrap;
+        align-items: center;
+        margin-bottom: 0;
+        padding-top: 20px;
+        border-top: solid 1px #dcdcde; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-footer > * {
+          margin-right: 28px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-footer > *:last-child {
+          margin-right: 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-series {
+        flex-flow: row nowrap; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-series > *:first-child {
+          margin-right: 54px; }
+        @media screen and (max-width: 782px) {
+          body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-series {
+            flex-flow: row wrap; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-series > * {
+              width: 100%; }
+            body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-series > *:first-child {
+              margin-right: 0;
+              margin-bottom: 24px; } }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-upload {
+        flex-flow: row wrap;
+        align-items: flex-end; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-upload > *:first-child {
+          flex: 1 1 auto;
+          margin-right: 14px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-upload > *:nth-child(2) {
+          margin-top: 8px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-extend > * {
+        width: 100%; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-input {
+        display: block;
+        position: relative; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-input input {
+          display: block;
+          width: calc(100% - 2px); }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-radio {
+        display: block;
+        position: relative;
+        margin-top: 5px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-radio span {
+          -webkit-user-select: none;
+             -moz-user-select: none;
+              -ms-user-select: none;
+                  user-select: none; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-radio input {
+          margin-right: 8px; }
+        @media screen and (max-width: 782px) {
+          body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-radio {
+            margin-top: 10px; } }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-select {
+        display: block;
+        position: relative;
+        flex: 1 1 100%; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-select select {
+          display: block;
+          width: calc(100% - 2px);
+          max-width: none; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-checkbox {
+        display: flex;
+        align-items: center;
+        position: relative;
+        margin-top: 5px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-checkbox span {
+          -webkit-user-select: none;
+             -moz-user-select: none;
+              -ms-user-select: none;
+                  user-select: none; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-checkbox input[type="checkbox"] {
+          margin: 0 8px 0 0; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-textarea {
+        display: block;
+        position: relative; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-textarea textarea {
+          display: block;
+          width: calc(100% - 2px);
+          min-height: 30px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-range {
+        display: block;
+        position: relative;
+        width: 100%; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-range input {
+          display: block;
+          width: 100%;
+          margin: 8px 0; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-range em {
+          display: block;
+          cursor: default;
+          position: absolute;
+          right: 2px;
+          top: 0;
+          font-size: 10px;
+          font-style: normal;
+          color: #3582c4; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-media {
+        display: flex;
+        align-items: center; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-media a {
+          margin-left: 14px; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-media button {
+          margin-bottom: 0; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-media small {
+          margin-top: 10px; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-color {
+        display: block;
+        position: relative; }
+        body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control .sharing-image-editor-control-color input[type="color"] {
+          cursor: pointer; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-designer {
       display: block;
-      width: 100%; }
-      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-designer:last-child {
-        margin-bottom: 0; }
+      position: relative;
+      width: 100%;
+      margin-top: -10px; }
+    body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-more {
+      display: block;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+      color: #3582c4;
+      background: transparent;
+      border: none;
+      border-bottom: solid 1px;
+      transition: border 0.25s; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-more:focus {
+        box-shadow: 0 0 0 1px #5b9dd9, 0 0 2px 1px rgba(30, 140, 190, 0.8);
+        outline: 1px solid transparent; }
+      body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-more:hover {
+        border-bottom-color: transparent; }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-delete {
       display: block;
       cursor: pointer;
@@ -566,10 +608,9 @@ body.settings_page_sharing-image #sharing-image-settings {
       order: 2; }
       @media screen and (max-width: 1279px) {
         body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-monitor {
-          flex: 0 1 640px; } }
+          flex: 0 0 400px; } }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-viewport {
       display: block;
-      position: -webkit-sticky;
       position: sticky;
       top: 52px;
       width: 100%; }
@@ -652,7 +693,7 @@ body.settings_page_sharing-image #sharing-image-settings {
           order: 0;
           width: 100%;
           margin-bottom: 24px; } }
-    @media screen and (max-width: 1279px) {
+    @media screen and (max-width: 1023px) {
       body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor {
         flex-flow: row wrap; } }
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-error {
