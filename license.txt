@@ -1,4 +1,4 @@
-Rus Package WordPress Plugin, 2017 Anton Lukin
+Rus Package WordPress Plugin, 2021 Anton Lukin
 Rus Package is distributed under the terms of the GNU GPL
 
 This program is free software; you can redistribute it and/or modify
