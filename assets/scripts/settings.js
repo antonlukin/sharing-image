@@ -1,108 +1,20 @@
-/******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// define __esModule on exports
-/******/ 	__webpack_require__.r = function(exports) {
-/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 		}
-/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 	};
-/******/
-/******/ 	// create a fake namespace object
-/******/ 	// mode & 1: value is a module id, require it
-/******/ 	// mode & 2: merge all properties of value into the ns
-/******/ 	// mode & 4: return value when already ns object
-/******/ 	// mode & 8|1: behave like require
-/******/ 	__webpack_require__.t = function(value, mode) {
-/******/ 		if(mode & 1) value = __webpack_require__(value);
-/******/ 		if(mode & 8) return value;
-/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
-/******/ 		var ns = Object.create(null);
-/******/ 		__webpack_require__.r(ns);
-/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
-/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
-/******/ 		return ns;
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+var __webpack_exports__ = {};
 
-"use strict";
-
-// CONCATENATED MODULE: ./src/scripts/helpers/param.js
+;// CONCATENATED MODULE: ./src/scripts/helpers/param.js
 /**
  * Get current location search parameter.
  *
  * @param {string} key URL parameter key.
  */
 function getSearchParam(key) {
-  var params = new URL(document.location.href);
+  const params = new URL(document.location.href);
   return params.searchParams.get(key);
 }
 
-/* harmony default export */ var param = (getSearchParam);
-// CONCATENATED MODULE: ./src/scripts/helpers/attachment.js
+/* harmony default export */ const param = (getSearchParam);
+;// CONCATENATED MODULE: ./src/scripts/helpers/attachment.js
 /**
  * Upload media frame.
  *
@@ -110,12 +22,12 @@ function getSearchParam(key) {
  * @param {Function} callback Callback function.
  */
 function uploadMedia(header, callback) {
-  var frame = wp.media({
+  const frame = wp.media({
     title: header,
     multiple: false
   });
-  frame.on('select', function () {
-    var selection = frame.state().get('selection').first().toJSON();
+  frame.on('select', () => {
+    const selection = frame.state().get('selection').first().toJSON();
 
     if (selection.id) {
       callback(selection.id);
@@ -124,8 +36,8 @@ function uploadMedia(header, callback) {
   frame.open();
 }
 
-/* harmony default export */ var attachment = (uploadMedia);
-// CONCATENATED MODULE: ./src/scripts/helpers/defaults.js
+/* harmony default export */ const attachment = (uploadMedia);
+;// CONCATENATED MODULE: ./src/scripts/helpers/defaults.js
 /**
  * Append empty default properties to object if not exist.
  *
@@ -133,7 +45,7 @@ function uploadMedia(header, callback) {
  * @param {Array} defaults Required defaults properties.
  */
 function intersectDefaults(object, defaults) {
-  defaults.forEach(function (item) {
+  defaults.forEach(item => {
     if (undefined === object[item]) {
       object[item] = {};
     }
@@ -141,25 +53,18 @@ function intersectDefaults(object, defaults) {
   return object;
 }
 
-/* harmony default export */ var defaults = (intersectDefaults);
-// CONCATENATED MODULE: ./src/scripts/helpers/index.js
+/* harmony default export */ const defaults = (intersectDefaults);
+;// CONCATENATED MODULE: ./src/scripts/helpers/index.js
 
 
 
-var Helper = {
+const Helper = {
   param: param,
   attachment: attachment,
   defaults: defaults
 };
-/* harmony default export */ var helpers = __webpack_exports__["a"] = (Helper);
-
-/***/ }),
-/* 1 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-// CONCATENATED MODULE: ./src/scripts/builders/element.js
+/* harmony default export */ const helpers = (Helper);
+;// CONCATENATED MODULE: ./src/scripts/builders/element.js
 /**
  * Helper to create new DOM element.
  *
@@ -167,10 +72,10 @@ var Helper = {
  * @param {Object} args List of element options.
  */
 function buildElement(tag, args) {
-  var element = document.createElement(tag); // Set class list
+  const element = document.createElement(tag); // Set class list
 
   if (args.hasOwnProperty('classes')) {
-    args.classes.forEach(function (cl) {
+    args.classes.forEach(cl => {
       element.classList.add(cl);
     });
   } // Set textContent
@@ -187,8 +92,8 @@ function buildElement(tag, args) {
 
 
   if (args.hasOwnProperty('attributes')) {
-    for (var key in args.attributes) {
-      var value = args.attributes[key];
+    for (const key in args.attributes) {
+      const value = args.attributes[key];
 
       if (undefined === value) {
         continue;
@@ -200,8 +105,8 @@ function buildElement(tag, args) {
 
 
   if (args.hasOwnProperty('dataset')) {
-    for (var _key in args.dataset) {
-      element.setAttribute('data-' + _key, args.dataset[_key]);
+    for (const key in args.dataset) {
+      element.setAttribute('data-' + key, args.dataset[key]);
     }
   } // Append child
 
@@ -218,8 +123,8 @@ function buildElement(tag, args) {
   return element;
 }
 
-/* harmony default export */ var builders_element = (buildElement);
-// CONCATENATED MODULE: ./src/scripts/builders/input.js
+/* harmony default export */ const builders_element = (buildElement);
+;// CONCATENATED MODULE: ./src/scripts/builders/input.js
 
 
 /**
@@ -230,13 +135,13 @@ function buildElement(tag, args) {
  */
 
 function buildInput(args, parent) {
-  var field = builders_element('div', {
+  const field = builders_element('div', {
     classes: args.classes || [],
     append: parent
   });
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('h4', {
+    const label = builders_element('h4', {
       text: args.label
     });
 
@@ -245,7 +150,7 @@ function buildInput(args, parent) {
     }
   }
 
-  var input = builders_element('input', {
+  const input = builders_element('input', {
     attributes: {
       type: 'text'
     },
@@ -254,8 +159,8 @@ function buildInput(args, parent) {
   }); // Set attributes.
 
   if (args.hasOwnProperty('attributes')) {
-    for (var key in args.attributes) {
-      var value = args.attributes[key];
+    for (const key in args.attributes) {
+      const value = args.attributes[key];
 
       if (undefined === value) {
         continue;
@@ -266,14 +171,14 @@ function buildInput(args, parent) {
   }
 
   if ('range' === input.type) {
-    var counter = builders.element('em', {
+    const counter = builders.element('em', {
       text: input.value,
       append: field
     });
-    input.addEventListener('change', function () {
+    input.addEventListener('change', () => {
       counter.textContent = input.value;
     });
-    input.addEventListener('input', function () {
+    input.addEventListener('input', () => {
       counter.textContent = input.value;
     });
   }
@@ -281,8 +186,8 @@ function buildInput(args, parent) {
   return input;
 }
 
-/* harmony default export */ var builders_input = (buildInput);
-// CONCATENATED MODULE: ./src/scripts/builders/checkbox.js
+/* harmony default export */ const input = (buildInput);
+;// CONCATENATED MODULE: ./src/scripts/builders/checkbox.js
 
 /**
  * Helper to create radio field.
@@ -292,11 +197,11 @@ function buildInput(args, parent) {
  */
 
 function buildCheckbox(args, parent) {
-  var field = builders_element('label', {
+  const field = builders_element('label', {
     classes: args.classes || [],
     append: parent
   });
-  var checkbox = builders_element('input', {
+  const checkbox = builders_element('input', {
     attributes: {
       type: 'checkbox'
     },
@@ -305,8 +210,8 @@ function buildCheckbox(args, parent) {
   }); // Set attributes
 
   if (args.hasOwnProperty('attributes')) {
-    for (var key in args.attributes) {
-      var value = args.attributes[key];
+    for (const key in args.attributes) {
+      const value = args.attributes[key];
 
       if (undefined === value) {
         continue;
@@ -317,7 +222,7 @@ function buildCheckbox(args, parent) {
   }
 
   if (args.hasOwnProperty('checked')) {
-    var checked = args.checked;
+    const checked = args.checked;
 
     if (checked && checked === checkbox.value) {
       checkbox.setAttribute('checked', 'checked');
@@ -325,7 +230,7 @@ function buildCheckbox(args, parent) {
   }
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('span', {
+    const label = builders_element('span', {
       text: args.label
     });
 
@@ -337,8 +242,8 @@ function buildCheckbox(args, parent) {
   return checkbox;
 }
 
-/* harmony default export */ var builders_checkbox = (buildCheckbox);
-// CONCATENATED MODULE: ./src/scripts/builders/radio.js
+/* harmony default export */ const builders_checkbox = (buildCheckbox);
+;// CONCATENATED MODULE: ./src/scripts/builders/radio.js
 
 /**
  * Helper to create radio field.
@@ -348,11 +253,11 @@ function buildCheckbox(args, parent) {
  */
 
 function buildRadio(args, parent) {
-  var field = builders_element('label', {
+  const field = builders_element('label', {
     classes: args.classes || [],
     append: parent
   });
-  var radio = builders_element('input', {
+  const radio = builders_element('input', {
     attributes: {
       type: 'radio'
     },
@@ -361,8 +266,8 @@ function buildRadio(args, parent) {
   }); // Set attributes
 
   if (args.hasOwnProperty('attributes')) {
-    for (var key in args.attributes) {
-      var value = args.attributes[key];
+    for (const key in args.attributes) {
+      const value = args.attributes[key];
 
       if (undefined === value) {
         continue;
@@ -373,7 +278,7 @@ function buildRadio(args, parent) {
   }
 
   if (args.hasOwnProperty('checked')) {
-    var checked = args.checked;
+    const checked = args.checked;
 
     if (checked && checked === radio.value) {
       radio.setAttribute('checked', 'checked');
@@ -381,7 +286,7 @@ function buildRadio(args, parent) {
   }
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('span', {
+    const label = builders_element('span', {
       text: args.label
     });
 
@@ -393,8 +298,8 @@ function buildRadio(args, parent) {
   return radio;
 }
 
-/* harmony default export */ var builders_radio = (buildRadio);
-// CONCATENATED MODULE: ./src/scripts/builders/select.js
+/* harmony default export */ const builders_radio = (buildRadio);
+;// CONCATENATED MODULE: ./src/scripts/builders/select.js
 
 /**
  * Helper to create select field.
@@ -404,13 +309,13 @@ function buildRadio(args, parent) {
  */
 
 function buildSelect(args, parent) {
-  var field = builders_element('div', {
+  const field = builders_element('div', {
     classes: args.classes || [],
     append: parent
   });
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('h4', {
+    const label = builders_element('h4', {
       text: args.label
     });
 
@@ -419,14 +324,14 @@ function buildSelect(args, parent) {
     }
   }
 
-  var select = builders_element('select', {
+  const select = builders_element('select', {
     dataset: args.dataset || {},
     append: field
   }); // Set attributes
 
   if (args.hasOwnProperty('attributes')) {
-    for (var key in args.attributes) {
-      var value = args.attributes[key];
+    for (const key in args.attributes) {
+      const value = args.attributes[key];
 
       if (undefined === value) {
         continue;
@@ -436,19 +341,19 @@ function buildSelect(args, parent) {
     }
   }
 
-  var options = args.options || {};
+  const options = args.options || {};
 
-  for (var _key in options) {
-    var option = builders_element('option', {
-      text: options[_key],
+  for (const key in options) {
+    const option = builders_element('option', {
+      text: options[key],
       attributes: {
-        value: _key
+        value: key
       },
       append: select
     });
 
     if (args.hasOwnProperty('selected')) {
-      var selected = args.selected;
+      const selected = args.selected;
 
       if (selected && selected === option.value) {
         option.setAttribute('selected', 'selected');
@@ -459,8 +364,8 @@ function buildSelect(args, parent) {
   return select;
 }
 
-/* harmony default export */ var builders_select = (buildSelect);
-// CONCATENATED MODULE: ./src/scripts/builders/textarea.js
+/* harmony default export */ const builders_select = (buildSelect);
+;// CONCATENATED MODULE: ./src/scripts/builders/textarea.js
 
 /**
  * Helper to create input field.
@@ -470,13 +375,13 @@ function buildSelect(args, parent) {
  */
 
 function buildTextarea(args, parent) {
-  var field = builders_element('div', {
+  const field = builders_element('div', {
     classes: args.classes || [],
     append: parent
   });
 
   if (args.hasOwnProperty('label')) {
-    var label = builders_element('h4', {
+    const label = builders_element('h4', {
       text: args.label
     });
 
@@ -485,14 +390,14 @@ function buildTextarea(args, parent) {
     }
   }
 
-  var textarea = builders_element('textarea', {
+  const textarea = builders_element('textarea', {
     dataset: args.dataset || {},
     append: field
   }); // Set attributes
 
   if (args.hasOwnProperty('attributes')) {
-    for (var key in args.attributes) {
-      var value = args.attributes[key];
+    for (const key in args.attributes) {
+      const value = args.attributes[key];
 
       if (undefined === value) {
         continue;
@@ -504,7 +409,7 @@ function buildTextarea(args, parent) {
 
 
   if (args.hasOwnProperty('content')) {
-    var content = args.content;
+    const content = args.content;
 
     if (undefined !== content) {
       textarea.innerHTML = content;
@@ -514,8 +419,8 @@ function buildTextarea(args, parent) {
   return textarea;
 }
 
-/* harmony default export */ var builders_textarea = (buildTextarea);
-// CONCATENATED MODULE: ./src/scripts/builders/control.js
+/* harmony default export */ const builders_textarea = (buildTextarea);
+;// CONCATENATED MODULE: ./src/scripts/builders/control.js
 
 
 
@@ -529,7 +434,7 @@ function buildTextarea(args, parent) {
  */
 
 function buildControl(args) {
-  var control = builders_element('div', {
+  const control = builders_element('div', {
     classes: args.classes || []
   });
 
@@ -556,10 +461,10 @@ function buildControl(args) {
   }
 
   if (args.hasOwnProperty('fields')) {
-    args.fields.forEach(function (field) {
+    args.fields.forEach(field => {
       switch (field.group) {
         case 'input':
-          builders_input(field, control);
+          input(field, control);
           break;
 
         case 'textarea':
@@ -591,8 +496,8 @@ function buildControl(args) {
   return control;
 }
 
-/* harmony default export */ var builders_control = (buildControl);
-// CONCATENATED MODULE: ./src/scripts/builders/layer.js
+/* harmony default export */ const control = (buildControl);
+;// CONCATENATED MODULE: ./src/scripts/builders/layer.js
 
 /**
  * Helper to create layer.
@@ -601,7 +506,7 @@ function buildControl(args) {
  */
 
 function buildLayer(args) {
-  var layer = builders_element('div', {
+  const layer = builders_element('div', {
     classes: args.classes || []
   });
 
@@ -630,11 +535,8 @@ function buildLayer(args) {
   return layer;
 }
 
-/* harmony default export */ var builders_layer = (buildLayer);
-// EXTERNAL MODULE: ./src/scripts/helpers/index.js + 3 modules
-var helpers = __webpack_require__(0);
-
-// CONCATENATED MODULE: ./src/scripts/builders/media.js
+/* harmony default export */ const builders_layer = (buildLayer);
+;// CONCATENATED MODULE: ./src/scripts/builders/media.js
 
 
 
@@ -645,7 +547,7 @@ var helpers = __webpack_require__(0);
  */
 
 function buildMedia(args) {
-  var media = builders_control({
+  const media = control({
     classes: args.classes || []
   });
 
@@ -659,14 +561,14 @@ function buildMedia(args) {
 
 
   args.labels = args.labels || {};
-  var attachment = builders_element('input', {
+  const attachment = builders_element('input', {
     attributes: {
       type: 'hidden',
       name: args.name
     },
     append: media
   });
-  var upload = builders_element('button', {
+  const upload = builders_element('button', {
     classes: ['button'],
     text: args.labels.button,
     attributes: {
@@ -674,7 +576,7 @@ function buildMedia(args) {
     },
     append: media
   });
-  var details = builders_element('a', {
+  const details = builders_element('a', {
     classes: ['hidden'],
     text: args.labels.details,
     attributes: {
@@ -687,12 +589,12 @@ function buildMedia(args) {
   } // Helper function to update attachment value.
 
 
-  var setAttachment = function setAttachment(id) {
+  const setAttachment = id => {
     attachment.setAttribute('value', id);
     attachment.dispatchEvent(new Event('change', {
       bubbles: true
     }));
-    var link = null;
+    let link = null;
 
     if (args.hasOwnProperty('link')) {
       link = new URL(args.link);
@@ -708,7 +610,7 @@ function buildMedia(args) {
   }; // Helper function to remove attachment value.
 
 
-  var removeAttachment = function removeAttachment() {
+  const removeAttachment = () => {
     attachment.setAttribute('value', '');
     attachment.dispatchEvent(new Event('change', {
       bubbles: true
@@ -723,20 +625,20 @@ function buildMedia(args) {
     setAttachment(args.value);
   }
 
-  upload.addEventListener('click', function () {
+  upload.addEventListener('click', () => {
     if (args.remove && attachment.value) {
       return removeAttachment();
     }
 
-    helpers["a" /* default */].attachment(args.labels.heading, function (id) {
+    helpers.attachment(args.labels.heading, id => {
       setAttachment(id);
     });
   });
   return media;
 }
 
-/* harmony default export */ var builders_media = (buildMedia);
-// CONCATENATED MODULE: ./src/scripts/builders/index.js
+/* harmony default export */ const media = (buildMedia);
+;// CONCATENATED MODULE: ./src/scripts/builders/index.js
 
 
 
@@ -746,23 +648,25 @@ function buildMedia(args) {
 
 
 
-var Build = {
+const Build = {
   element: builders_element,
-  control: builders_control,
+  control: control,
   layer: builders_layer,
   checkbox: builders_checkbox,
-  media: builders_media,
-  input: builders_input,
+  media: media,
+  input: input,
   textarea: builders_textarea,
   radio: builders_radio,
   select: builders_select
 };
-/* harmony default export */ var builders = (Build);
-// CONCATENATED MODULE: ./src/scripts/sections/catalog.js
+/* harmony default export */ const builders = (Build);
+;// CONCATENATED MODULE: ./src/scripts/sections/catalog.js
 
-var __ = wp.i18n.__; // Store global scriot object for settings page.
+const {
+  __
+} = wp.i18n; // Store global scriot object for settings page.
 
-var params = null;
+let params = null;
 /**
  * Create template card in catalog.
  *
@@ -772,11 +676,11 @@ var params = null;
  */
 
 function createCard(catalog, index, option) {
-  var card = builders.element('div', {
+  const card = builders.element('div', {
     classes: ['sharing-image-catalog-card'],
     append: catalog
   });
-  var preview = builders.element('figure', {
+  const preview = builders.element('figure', {
     classes: ['sharing-image-catalog-preview'],
     append: card
   });
@@ -791,7 +695,7 @@ function createCard(catalog, index, option) {
     });
   }
 
-  var footer = builders.element('footer', {
+  const footer = builders.element('footer', {
     classes: ['sharing-image-catalog-footer'],
     append: card
   });
@@ -799,7 +703,7 @@ function createCard(catalog, index, option) {
     text: option.title || __('Untitled', 'sharing-image'),
     append: footer
   });
-  var link = new URL(document.location.href);
+  const link = new URL(document.location.href);
   link.searchParams.set('template', index);
   builders.element('a', {
     classes: ['button'],
@@ -819,16 +723,16 @@ function createCard(catalog, index, option) {
 
 
 function createNewButton(catalog, index) {
-  var link = new URL(document.location.href);
+  const link = new URL(document.location.href);
   link.searchParams.set('template', index);
-  var button = builders.element('a', {
+  const button = builders.element('a', {
     classes: ['sharing-image-catalog-new'],
     attributes: {
       href: link.href
     },
     append: catalog
   });
-  var title = builders.element('h2', {
+  const title = builders.element('h2', {
     append: button
   });
   builders.element('strong', {
@@ -840,7 +744,7 @@ function createNewButton(catalog, index) {
     return;
   }
 
-  var license = params.license || {};
+  const license = params.license || {};
 
   if (license.premium || license.develop) {
     return;
@@ -865,32 +769,34 @@ function createNewButton(catalog, index) {
 
 function createCatalog(content, settings) {
   params = settings;
-  var catalog = builders.element('div', {
+  const catalog = builders.element('div', {
     classes: ['sharing-image-catalog'],
     append: content
   });
-  var index = 1;
-  settings.templates.forEach(function (template) {
+  let index = 1;
+  settings.templates.forEach(template => {
     createCard(catalog, index++, template);
   });
   createNewButton(catalog, index);
 }
 
-/* harmony default export */ var sections_catalog = (createCatalog);
-// CONCATENATED MODULE: ./src/scripts/sections/editor.js
+/* harmony default export */ const catalog = (createCatalog);
+;// CONCATENATED MODULE: ./src/scripts/sections/editor.js
 /**
  * Editor settings.
  */
 
 /* global ajaxurl:true */
 
-var editor_ = wp.i18n.__; // Store global scriot object for settings page.
+const {
+  __: editor_
+} = wp.i18n; // Store global scriot object for settings page.
 
-var editor_params = null; // Preview element.
+let editor_params = null; // Preview element.
 
-var editor_preview = null; // Root editor element.
+let preview = null; // Root editor element.
 
-var editor = null;
+let editor = null;
 /**
  * Show template warning message.
  *
@@ -898,9 +804,9 @@ var editor = null;
  */
 
 function showTemplateError(message) {
-  var viewport = editor_preview.parentNode; // Try to find warning element.
+  const viewport = preview.parentNode; // Try to find warning element.
 
-  var warning = viewport.querySelector('.sharing-image-editor-warning');
+  const warning = viewport.querySelector('.sharing-image-editor-warning');
 
   if (null === warning) {
     return;
@@ -915,9 +821,9 @@ function showTemplateError(message) {
 
 
 function hideTemplateError() {
-  var viewport = editor_preview.parentNode; // Try to find warning element.
+  const viewport = preview.parentNode; // Try to find warning element.
 
-  var warning = viewport.querySelector('.sharing-image-editor-warning');
+  const warning = viewport.querySelector('.sharing-image-editor-warning');
 
   if (null === warning) {
     return;
@@ -931,16 +837,16 @@ function hideTemplateError() {
 
 
 function generateTemplate() {
-  editor_preview.classList.add('preview-loader');
-  var request = new XMLHttpRequest();
+  preview.classList.add('preview-loader');
+  const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'blob'; // Create data bundle using form data.
 
-  var bundle = new window.FormData(editor);
+  const bundle = new window.FormData(editor);
   bundle.set('action', 'sharing_image_show');
   hideTemplateError(); // Set blob for success response.
 
-  request.addEventListener('readystatechange', function () {
+  request.addEventListener('readystatechange', () => {
     if (request.readyState === 2) {
       request.responseType = 'json';
 
@@ -949,30 +855,30 @@ function generateTemplate() {
       }
     }
   });
-  request.addEventListener('load', function () {
-    var response = request.response || {}; // Hide preview loader on request complete.
+  request.addEventListener('load', () => {
+    const response = request.response || {}; // Hide preview loader on request complete.
 
-    editor_preview.classList.remove('preview-blank', 'preview-loader');
+    preview.classList.remove('preview-blank', 'preview-loader');
 
     if (200 !== request.status) {
       return showTemplateError(response.data);
     }
 
-    var image = editor_preview.querySelector('img');
+    let image = preview.querySelector('img');
 
     if (null === image) {
       image = builders.element('img', {
-        append: editor_preview
+        append: preview
       });
     } // Set new blob image source.
 
 
     image.src = window.URL.createObjectURL(response);
   });
-  request.addEventListener('error', function () {
+  request.addEventListener('error', () => {
     showTemplateError(); // Hide preview loader on request complete.
 
-    editor_preview.classList.remove('preview-blank', 'preview-loader');
+    preview.classList.remove('preview-blank', 'preview-loader');
   });
   request.send(bundle);
 }
@@ -982,15 +888,15 @@ function generateTemplate() {
 
 
 function saveTemplate() {
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
-  editor_preview.classList.add('preview-loader'); // Create data bundle using editor data.
+  preview.classList.add('preview-loader'); // Create data bundle using editor data.
 
-  var bundle = new window.FormData(editor);
+  const bundle = new window.FormData(editor);
   bundle.set('action', 'sharing_image_save');
-  request.addEventListener('load', function () {
-    var response = request.response || {};
+  request.addEventListener('load', () => {
+    const response = request.response || {};
 
     if (!response.data) {
       return showTemplateError();
@@ -998,11 +904,11 @@ function saveTemplate() {
 
     if (!response.success) {
       // Hide preview loader on request complete.
-      editor_preview.classList.remove('preview-loader');
+      preview.classList.remove('preview-loader');
       return showTemplateError(response.data);
     }
 
-    var input = editor_preview.querySelector('input');
+    const input = preview.querySelector('input');
 
     if (null !== input) {
       input.value = response.data;
@@ -1010,9 +916,9 @@ function saveTemplate() {
 
     editor.submit();
   });
-  request.addEventListener('error', function () {
+  request.addEventListener('error', () => {
     // Hide preview loader on request complete.
-    editor_preview.classList.remove('preview-loader');
+    preview.classList.remove('preview-loader');
     showTemplateError();
   });
   request.send(bundle);
@@ -1025,25 +931,21 @@ function saveTemplate() {
 
 
 function reorderLayers(designer) {
-  var layers = designer.children;
+  const layers = designer.children;
 
-  var _loop = function _loop(index) {
-    var fields = layers[index].querySelectorAll('[name]');
-    fields.forEach(function (field) {
-      var name = field.getAttribute('name'); // Try to find layer index.
+  for (let index = 0; index < layers.length; index++) {
+    const fields = layers[index].querySelectorAll('[name]');
+    fields.forEach(field => {
+      let name = field.getAttribute('name'); // Try to find layer index.
 
-      var match = name.match(/(.+?\[layers\])\[(\d+)\](\[.+?\])$/);
+      const match = name.match(/(.+?\[layers\])\[(\d+)\](\[.+?\])$/);
 
       if (null !== match) {
-        name = match[1] + "[".concat(index, "]") + match[3];
+        name = match[1] + `[${index}]` + match[3];
       }
 
       field.name = name;
     });
-  };
-
-  for (var index = 0; index < layers.length; index++) {
-    _loop(index);
   }
 }
 /**
@@ -1057,7 +959,7 @@ function reorderLayers(designer) {
 function createPermanentAttachment(fieldset, data) {
   data.background = data.background || null; // Create background settings control.
 
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-editor-control', 'control-reduced'],
     label: editor_('Template background settings', 'sharing-image'),
     fields: [{
@@ -1090,7 +992,7 @@ function createPermanentAttachment(fieldset, data) {
     }],
     append: fieldset
   });
-  var media = builders.media({
+  const media = builders.media({
     name: editor_params.name + '[attachment]',
     classes: ['sharing-image-editor-control', 'control-media'],
     value: data.attachment,
@@ -1102,7 +1004,7 @@ function createPermanentAttachment(fieldset, data) {
     },
     append: fieldset
   });
-  var upload = media.querySelector('button');
+  const upload = media.querySelector('button');
   upload.disabled = true;
   builders.control({
     classes: ['sharing-image-editor-control'],
@@ -1118,7 +1020,7 @@ function createPermanentAttachment(fieldset, data) {
     }],
     append: fieldset
   });
-  control.querySelectorAll('input').forEach(function (radio) {
+  control.querySelectorAll('input').forEach(radio => {
     if ('radio' !== radio.type) {
       return;
     } // Show upload button for checked permanent radio.
@@ -1128,7 +1030,7 @@ function createPermanentAttachment(fieldset, data) {
       upload.disabled = false;
     }
 
-    radio.addEventListener('change', function () {
+    radio.addEventListener('change', () => {
       upload.disabled = true;
 
       if ('permanent' === radio.value) {
@@ -1147,11 +1049,11 @@ function createPermanentAttachment(fieldset, data) {
 
 
 function createDynamicFields(layer, name, data) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-editor-control'],
     append: layer
   });
-  var checkbox = builders.checkbox({
+  const checkbox = builders.checkbox({
     classes: ['sharing-image-editor-control-checkbox'],
     attributes: {
       name: name + '[dynamic]',
@@ -1160,7 +1062,7 @@ function createDynamicFields(layer, name, data) {
     label: editor_('Dynamic field. Filled in the post editing screen.', 'sharing-image'),
     checked: data.dynamic
   }, control);
-  var fields = [];
+  const fields = [];
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-extend', 'control-hidden'],
     help: editor_('Displayed only in the metabox.', 'sharing-image'),
@@ -1248,8 +1150,8 @@ function createDynamicFields(layer, name, data) {
     append: layer
   }); // Helper function to toggle contols visibility.
 
-  var toggleClasses = function toggleClasses() {
-    fields.forEach(function (field) {
+  const toggleClasses = () => {
+    fields.forEach(field => {
       field.classList.toggle('control-hidden');
     });
   };
@@ -1258,7 +1160,7 @@ function createDynamicFields(layer, name, data) {
     toggleClasses();
   }
 
-  checkbox.addEventListener('change', function () {
+  checkbox.addEventListener('change', () => {
     toggleClasses();
   });
 }
@@ -1272,7 +1174,7 @@ function createDynamicFields(layer, name, data) {
 
 
 function createMoreFields(layer, name, data) {
-  var fields = [];
+  const fields = [];
   fields[fields.length] = createFontField(layer, name, data);
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-hidden'],
@@ -1319,11 +1221,11 @@ function createMoreFields(layer, name, data) {
     }],
     append: layer
   });
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-editor-control'],
     append: layer
   });
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     classes: ['sharing-image-editor-more'],
     text: editor_('More options', 'sharing-image'),
     attributes: {
@@ -1331,8 +1233,8 @@ function createMoreFields(layer, name, data) {
     },
     append: control
   });
-  button.addEventListener('click', function () {
-    fields.forEach(function (field) {
+  button.addEventListener('click', () => {
+    fields.forEach(field => {
       field.classList.remove('control-hidden');
     }); // Remove button on expand.
 
@@ -1353,11 +1255,11 @@ function createMoreFields(layer, name, data) {
 
 
 function createFontField(layer, name, data) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-editor-control', 'control-upload', 'control-hidden'],
     append: layer
   });
-  var select = builders.select({
+  const select = builders.select({
     classes: ['sharing-image-editor-control-select'],
     options: editor_params.fonts,
     attributes: {
@@ -1366,7 +1268,7 @@ function createFontField(layer, name, data) {
     label: editor_('Font family', 'sharing-image'),
     selected: data.fontname
   }, control);
-  var media = builders.media({
+  const media = builders.media({
     name: name + '[fontfile]',
     classes: ['sharing-image-editor-control-media'],
     value: data.fontfile,
@@ -1390,8 +1292,8 @@ function createFontField(layer, name, data) {
   } // Find media attachment input.
 
 
-  var input = media.querySelector('input');
-  input.addEventListener('change', function () {
+  const input = media.querySelector('input');
+  input.addEventListener('change', () => {
     select.disabled = false;
 
     if (input.value) {
@@ -1410,11 +1312,11 @@ function createFontField(layer, name, data) {
 
 
 function createRectangleOutline(layer, name, data) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-editor-control'],
     append: layer
   });
-  var checkbox = builders.checkbox({
+  const checkbox = builders.checkbox({
     classes: ['sharing-image-editor-control-checkbox'],
     attributes: {
       name: name + '[outline]',
@@ -1423,7 +1325,7 @@ function createRectangleOutline(layer, name, data) {
     label: editor_('Outline rectangle.', 'sharing-image'),
     checked: data.outline
   }, control);
-  var range = builders.control({
+  const range = builders.control({
     classes: ['sharing-image-editor-control', 'control-hidden'],
     fields: [{
       group: 'input',
@@ -1445,7 +1347,7 @@ function createRectangleOutline(layer, name, data) {
     range.classList.remove('control-hidden');
   }
 
-  checkbox.addEventListener('change', function () {
+  checkbox.addEventListener('change', () => {
     range.classList.add('control-hidden');
 
     if (checkbox.checked) {
@@ -1461,7 +1363,7 @@ function createRectangleOutline(layer, name, data) {
 
 
 function createCatalogButton(footer) {
-  var link = new URL(document.location.href);
+  const link = new URL(document.location.href);
   link.searchParams.delete('template');
   builders.element('a', {
     classes: ['button'],
@@ -1480,11 +1382,11 @@ function createCatalogButton(footer) {
 
 
 function createDeleteButton(footer) {
-  var href = new URL(document.location.href); // Get template index from current link.
+  const href = new URL(document.location.href); // Get template index from current link.
 
-  var index = href.searchParams.get('template'); // Set template index to delete link.
+  const index = href.searchParams.get('template'); // Set template index to delete link.
 
-  var link = new URL(editor.getAttribute('action'));
+  const link = new URL(editor.getAttribute('action'));
   link.searchParams.set('action', 'sharing_image_delete');
   link.searchParams.set('template', index);
   link.searchParams.set('nonce', editor_params.nonce);
@@ -1506,7 +1408,7 @@ function createDeleteButton(footer) {
 
 
 function createPreview(viewport, data) {
-  editor_preview = builders.element('div', {
+  preview = builders.element('div', {
     classes: ['sharing-image-editor-preview', 'preview-blank'],
     append: viewport
   });
@@ -1517,14 +1419,14 @@ function createPreview(viewport, data) {
         src: data.preview,
         alt: ''
       },
-      append: editor_preview
+      append: preview
     });
-    editor_preview.classList.remove('preview-blank');
+    preview.classList.remove('preview-blank');
   }
 
   builders.element('span', {
     classes: ['sharing-image-editor-loader'],
-    append: editor_preview
+    append: preview
   });
   builders.element('input', {
     attributes: {
@@ -1532,9 +1434,9 @@ function createPreview(viewport, data) {
       name: editor_params.name + '[preview]',
       value: data.preview
     },
-    append: editor_preview
+    append: preview
   });
-  return editor_preview;
+  return preview;
 }
 /**
  * Create button inside layer box to change order.
@@ -1545,7 +1447,7 @@ function createPreview(viewport, data) {
 
 
 function createOrderLayersButton(designer, layer) {
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     classes: ['sharing-image-editor-order'],
     attributes: {
       type: 'button',
@@ -1553,7 +1455,7 @@ function createOrderLayersButton(designer, layer) {
     },
     append: layer
   });
-  button.addEventListener('click', function () {
+  button.addEventListener('click', () => {
     if (layer.previousSibling) {
       designer.insertBefore(layer, layer.previousSibling);
     } // Update fields name attributes.
@@ -1577,11 +1479,11 @@ function createOrderLayersButton(designer, layer) {
 
 
 function createDeleteLayerButton(designer, layer) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-editor-control', 'control-footer'],
     append: layer
   });
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     classes: ['sharing-image-editor-delete'],
     text: editor_('Delete layer', 'sharing-image'),
     attributes: {
@@ -1589,7 +1491,7 @@ function createDeleteLayerButton(designer, layer) {
     },
     append: control
   });
-  button.addEventListener('click', function () {
+  button.addEventListener('click', () => {
     designer.removeChild(layer); // Update fields name attributes.
 
     reorderLayers(designer);
@@ -1610,17 +1512,17 @@ function createDeleteLayerButton(designer, layer) {
 
 
 function createLayerImage(index, data) {
-  var description = [];
+  const description = [];
   description.push(editor_('Use jpg, gif or png image formats.', 'sharing-image'));
   description.push(editor_('Leave width and height fields blank to use the original image size.', 'sharing-image'));
   description.push(editor_('Sizes are calculated proportionally if not filled.', 'sharing-image'));
-  var layer = builders.layer({
+  const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-image'],
     label: editor_('Image', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = editor_params.name + "[layers][".concat(index, "]");
+  const name = editor_params.name + `[layers][${index}]`;
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1691,17 +1593,17 @@ function createLayerImage(index, data) {
 
 
 function createLayerText(index, data) {
-  var description = [];
+  const description = [];
   description.push(editor_('Write a text to the current image.', 'sharing-image'));
   description.push(editor_('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
   description.push(editor_('Avoid using large font sizes for long text – this affects performance.', 'sharing-image'));
-  var layer = builders.layer({
+  const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: editor_('Text', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = editor_params.name + "[layers][".concat(index, "]");
+  const name = editor_params.name + `[layers][${index}]`;
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1798,16 +1700,16 @@ function createLayerText(index, data) {
 
 
 function createLayerFilter(index, data) {
-  var description = [];
+  const description = [];
   description.push(editor_('Filters are applied one after another to the entire editor image.', 'sharing-image'));
   description.push(editor_('If you want to control their order, create multiple layers.', 'sharing-image'));
-  var layer = builders.layer({
+  const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: editor_('Filter', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = editor_params.name + "[layers][".concat(index, "]");
+  const name = editor_params.name + `[layers][${index}]`;
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1906,17 +1808,17 @@ function createLayerFilter(index, data) {
 
 
 function createLayerRectangle(index, data) {
-  var description = [];
+  const description = [];
   description.push(editor_('Draw a colored rectangle on current image.', 'sharing-image'));
   description.push(editor_('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
   description.push(editor_('Use small height to draw the line.', 'sharing-image'));
-  var layer = builders.layer({
+  const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: editor_('Rectangle', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  var name = editor_params.name + "[layers][".concat(index, "]");
+  const name = editor_params.name + `[layers][${index}]`;
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1946,7 +1848,7 @@ function createLayerRectangle(index, data) {
       classes: ['sharing-image-editor-control-input'],
       attributes: {
         type: 'text',
-        name: name + '[x]' || false,
+        name: name + '[x]' || 0,
         value: data.x
       },
       label: editor_('X', 'sharing-image')
@@ -1955,7 +1857,7 @@ function createLayerRectangle(index, data) {
       classes: ['sharing-image-editor-control-input'],
       attributes: {
         type: 'text',
-        name: name + '[y]' || false,
+        name: name + '[y]' || 0,
         value: data.y
       },
       label: editor_('Y', 'sharing-image')
@@ -2010,9 +1912,8 @@ function createLayerRectangle(index, data) {
  */
 
 
-function createLayer(designer, type, index) {
-  var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  var layer = null;
+function createLayer(designer, type, index, data = {}) {
+  let layer = null;
 
   switch (type) {
     case 'image':
@@ -2052,7 +1953,7 @@ function createLayer(designer, type, index) {
 
 
 function createDesigner(fieldset, data) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-editor-control', 'control-select', 'control-compact'],
     fields: [{
       group: 'select',
@@ -2066,7 +1967,7 @@ function createDesigner(fieldset, data) {
     }],
     append: fieldset
   });
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     classes: ['button'],
     text: editor_('Add new', 'sharing-image'),
     attributes: {
@@ -2074,20 +1975,20 @@ function createDesigner(fieldset, data) {
     },
     append: control
   });
-  var designer = builders.element('div', {
+  const designer = builders.element('div', {
     classes: ['sharing-image-editor-designer'],
     append: fieldset
   }); // Set default layers set.
 
-  var layers = data.layers || [];
+  let layers = data.layers || [];
   layers = layers.reverse();
-  layers.forEach(function (layer, index) {
+  layers.forEach((layer, index) => {
     if (layer.hasOwnProperty('type')) {
       createLayer(designer, layer.type, index++, layer);
     }
   });
-  button.addEventListener('click', function () {
-    var select = control.querySelector('select');
+  button.addEventListener('click', () => {
+    const select = control.querySelector('select');
 
     if (null === select) {
       return;
@@ -2104,7 +2005,7 @@ function createDesigner(fieldset, data) {
 
 
 function createFieldset(data) {
-  var fieldset = builders.element('div', {
+  const fieldset = builders.element('div', {
     classes: ['sharing-image-editor-fieldset'],
     append: editor
   }); // Create template title control.
@@ -2152,7 +2053,7 @@ function createFieldset(data) {
     }],
     append: fieldset
   });
-  var description = [];
+  const description = [];
   description.push(editor_('You can add multiple layers on your editor.', 'sharing-image'));
   description.push(editor_('Note that the stacking order of the layers is important.', 'sharing-image'));
   description.push(editor_('You can change the order using the arrows in the corner of each box.', 'sharing-image'));
@@ -2164,7 +2065,7 @@ function createFieldset(data) {
   }); // Create layers designer block.
 
   createDesigner(fieldset, data);
-  var footer = builders.control({
+  const footer = builders.control({
     classes: ['sharing-image-editor-control', 'control-footer'],
     append: fieldset
   }); // Create back to catalog button.
@@ -2172,12 +2073,12 @@ function createFieldset(data) {
   createCatalogButton(footer); // Create template deletion button.
 
   createDeleteButton(footer);
-  fieldset.addEventListener('change', function (e) {
+  fieldset.addEventListener('change', e => {
     if (editor.classList.contains('editor-suspend')) {
       return;
     }
 
-    var target = e.target; // Skip fields that don't affect the poster.
+    const target = e.target; // Skip fields that don't affect the poster.
 
     if (target.hasAttribute('data-persistent')) {
       return;
@@ -2215,7 +2116,7 @@ function createSubmitButton(manager) {
 
 
 function createGenerateButton(manager) {
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     text: editor_('Generate preview', 'sharing-image'),
     classes: ['button'],
     attributes: {
@@ -2223,7 +2124,7 @@ function createGenerateButton(manager) {
     },
     append: manager
   });
-  button.addEventListener('click', function () {
+  button.addEventListener('click', () => {
     generateTemplate();
   });
 }
@@ -2236,7 +2137,7 @@ function createGenerateButton(manager) {
 
 
 function createSuspendCheckbox(manager, data) {
-  var checkbox = builders.checkbox({
+  const checkbox = builders.checkbox({
     classes: ['sharing-image-editor-suspend'],
     attributes: {
       name: editor_params.name + '[suspend]',
@@ -2250,7 +2151,7 @@ function createSuspendCheckbox(manager, data) {
     editor.classList.add('editor-suspend');
   }
 
-  checkbox.addEventListener('change', function () {
+  checkbox.addEventListener('change', () => {
     editor.classList.remove('editor-suspend');
 
     if (checkbox.checked) {
@@ -2266,11 +2167,11 @@ function createSuspendCheckbox(manager, data) {
 
 
 function createMonitor(data) {
-  var monitor = builders.element('div', {
+  const monitor = builders.element('div', {
     classes: ['sharing-image-editor-monitor'],
     append: editor
   });
-  var viewport = builders.element('div', {
+  const viewport = builders.element('div', {
     classes: ['sharing-image-editor-viewport'],
     append: monitor
   });
@@ -2279,7 +2180,7 @@ function createMonitor(data) {
     classes: ['sharing-image-editor-warning'],
     append: viewport
   });
-  var manager = builders.element('div', {
+  const manager = builders.element('div', {
     classes: ['sharing-image-editor-manager'],
     append: viewport
   }); // Create live-reload manager checkbox.
@@ -2300,7 +2201,7 @@ function createMonitor(data) {
 
 function prepareEditor(content, index) {
   editor_params.name = 'sharing_image_editor';
-  var form = builders.element('form', {
+  const form = builders.element('form', {
     classes: ['sharing-image-editor'],
     attributes: {
       action: editor_params.links.action,
@@ -2332,7 +2233,7 @@ function prepareEditor(content, index) {
     },
     append: form
   });
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', e => {
     e.preventDefault();
     saveTemplate();
   });
@@ -2348,8 +2249,7 @@ function prepareEditor(content, index) {
  */
 
 
-function createEditor(content, settings, index) {
-  var data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+function createEditor(content, settings, index, data = {}) {
   editor_params = settings; // Prepare form with hidden fields and events.
 
   editor = prepareEditor(content, index); // Create monitor section part.
@@ -2359,15 +2259,17 @@ function createEditor(content, settings, index) {
   createFieldset(data);
 }
 
-/* harmony default export */ var sections_editor = (createEditor);
-// CONCATENATED MODULE: ./src/scripts/sections/config.js
+/* harmony default export */ const sections_editor = (createEditor);
+;// CONCATENATED MODULE: ./src/scripts/sections/config.js
 /**
  * Config settings tab.
  */
 
-var config_ = wp.i18n.__; // Store global scriot object for settings page.
+const {
+  __: config_
+} = wp.i18n; // Store global scriot object for settings page.
 
-var config_params = null;
+let config_params = null;
 /**
  * Create default poster option.
  *
@@ -2376,7 +2278,7 @@ var config_params = null;
  */
 
 function createDefaultOptions(options, data) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-config-control'],
     label: config_('Default poster', 'sharing-image'),
     append: options
@@ -2396,7 +2298,7 @@ function createDefaultOptions(options, data) {
     remove: true,
     append: control
   });
-  var description = [];
+  const description = [];
   description.push(config_('The default poster is used on pages where there is no generated.', 'sharing-image'));
   description.push(config_('Best image size: 1200×630 pixels.', 'sharing-image'));
   builders.element('small', {
@@ -2413,12 +2315,12 @@ function createDefaultOptions(options, data) {
 
 
 function createUploadsOptions(options, data) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-config-control'],
     label: config_('Upload directory', 'sharing-image'),
     append: options
   });
-  var fieldset = builders.element('div', {
+  const fieldset = builders.element('div', {
     classes: ['sharing-image-config-control-fieldset'],
     append: control
   });
@@ -2440,7 +2342,7 @@ function createUploadsOptions(options, data) {
     label: config_('Choose custom storage for posters', 'sharing-image'),
     checked: data.uploads || 'default'
   }, fieldset);
-  var input = builders.input({
+  const input = builders.input({
     classes: ['sharing-image-config-control-input'],
     attributes: {
       name: config_params.name + '[storage]',
@@ -2452,7 +2354,7 @@ function createUploadsOptions(options, data) {
     text: config_('Use relative path from site root. Directory should be writeable.', 'sharing-image'),
     append: control
   });
-  control.querySelectorAll('input').forEach(function (radio) {
+  control.querySelectorAll('input').forEach(radio => {
     if ('radio' !== radio.type) {
       return;
     } // Show storage input for checked custom radio.
@@ -2462,7 +2364,7 @@ function createUploadsOptions(options, data) {
       input.disabled = false;
     }
 
-    radio.addEventListener('change', function () {
+    radio.addEventListener('change', () => {
       input.disabled = true;
 
       if ('custom' === radio.value) {
@@ -2480,7 +2382,7 @@ function createUploadsOptions(options, data) {
 
 
 function createImageOptions(options, data) {
-  var control = builders.control({
+  const control = builders.control({
     classes: ['sharing-image-config-control', 'control-extra'],
     label: config_('Poster image format', 'sharing-image'),
     help: config_('The higher the value, the less compression. Availible for JPEG only.', 'sharing-image'),
@@ -2512,15 +2414,15 @@ function createImageOptions(options, data) {
     append: options
   }); // Find control format select.
 
-  var format = control.querySelector('select'); // Find control quiality input.
+  const format = control.querySelector('select'); // Find control quiality input.
 
-  var quality = control.querySelector('input');
+  const quality = control.querySelector('input');
 
   if ('jpg' === format.value) {
     quality.disabled = false;
   }
 
-  format.addEventListener('change', function () {
+  format.addEventListener('change', () => {
     quality.disabled = true;
 
     if ('jpg' === format.value) {
@@ -2574,13 +2476,13 @@ function createConfig(content, settings) {
 
   config_params.name = 'sharing_image_config'; // Find config element
 
-  var config = content.querySelector('.sharing-image-config');
+  const config = content.querySelector('.sharing-image-config');
 
   if (null === config) {
     return;
   }
 
-  var options = builders.element('form', {
+  const options = builders.element('form', {
     classes: ['sharing-image-config-options'],
     attributes: {
       action: config_params.links.action,
@@ -2588,7 +2490,7 @@ function createConfig(content, settings) {
     },
     append: config
   });
-  var data = config_params.config || {}; // Poster image options.
+  const data = config_params.config || {}; // Poster image options.
 
   createImageOptions(options, data); // Uploads directory options.
 
@@ -2599,19 +2501,21 @@ function createConfig(content, settings) {
   createMetaFields(options);
 }
 
-/* harmony default export */ var sections_config = (createConfig);
-// CONCATENATED MODULE: ./src/scripts/sections/premium.js
+/* harmony default export */ const config = (createConfig);
+;// CONCATENATED MODULE: ./src/scripts/sections/premium.js
 /**
  * Premium settings tab.
  */
 
 /* global ajaxurl:true */
 
-var premium_ = wp.i18n.__; // Store global scriot object for settings page.
+const {
+  __: premium_
+} = wp.i18n; // Store global scriot object for settings page.
 
-var premium_params = null; // Premium HTML emelent.
+let premium_params = null; // Premium HTML emelent.
 
-var premium = null;
+let premium = null;
 /**
  * Parse error code from settings or AJAX response.
  *
@@ -2620,7 +2524,7 @@ var premium = null;
  */
 
 function parseErrorCode(code, title) {
-  var message = [];
+  const message = [];
 
   if (undefined === title) {
     title = premium_('Verification failed.', 'sharing-image');
@@ -2656,7 +2560,7 @@ function parseErrorCode(code, title) {
 
 function showPremiumError(message) {
   // Try to find warning element.
-  var warning = premium.querySelector('.sharing-image-premium-warning');
+  const warning = premium.querySelector('.sharing-image-premium-warning');
 
   if (null === warning) {
     return;
@@ -2672,7 +2576,7 @@ function showPremiumError(message) {
 
 function hidePremiumError() {
   // Try to find warning element.
-  var warning = premium.querySelector('.sharing-image-premium-warning');
+  const warning = premium.querySelector('.sharing-image-premium-warning');
 
   if (null === warning) {
     return;
@@ -2689,15 +2593,15 @@ function hidePremiumError() {
 
 function revokePremium(access) {
   access.classList.add('access-loader');
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json'; // Create data bundle using form data.
 
-  var bundle = new window.FormData(access);
+  const bundle = new window.FormData(access);
   bundle.set('action', 'sharing_image_revoke');
   hidePremiumError();
-  request.addEventListener('load', function () {
-    var response = request.response || {}; // Hide form loader class.
+  request.addEventListener('load', () => {
+    const response = request.response || {}; // Hide form loader class.
 
     access.classList.remove('access-loader');
 
@@ -2713,7 +2617,7 @@ function revokePremium(access) {
 
     preparePremiumFields();
   });
-  request.addEventListener('error', function () {
+  request.addEventListener('error', () => {
     showPremiumError(); // Hide form loader class.
 
     access.classList.remove('access-loader');
@@ -2729,15 +2633,15 @@ function revokePremium(access) {
 
 function verifyPremium(access) {
   access.classList.add('access-loader');
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json'; // Create data bundle using form data.
 
-  var bundle = new window.FormData(access);
+  const bundle = new window.FormData(access);
   bundle.set('action', 'sharing_image_verify');
   hidePremiumError();
-  request.addEventListener('load', function () {
-    var response = request.response || {}; // Hide form loader class.
+  request.addEventListener('load', () => {
+    const response = request.response || {}; // Hide form loader class.
 
     access.classList.remove('access-loader');
 
@@ -2753,7 +2657,7 @@ function verifyPremium(access) {
 
     preparePremiumFields();
   });
-  request.addEventListener('error', function () {
+  request.addEventListener('error', () => {
     showPremiumError(); // Hide form loader class.
 
     access.classList.remove('access-loader');
@@ -2777,7 +2681,7 @@ function showVerifyForm(access, license) {
     text: premium_('Do you already have a key? Enter it here', 'sharing-image'),
     append: access
   });
-  var verify = builders.element('div', {
+  const verify = builders.element('div', {
     classes: ['sharing-image-premium-verify'],
     append: access
   });
@@ -2802,7 +2706,7 @@ function showVerifyForm(access, license) {
     classes: ['spinner'],
     append: verify
   });
-  access.addEventListener('submit', function (e) {
+  access.addEventListener('submit', e => {
     e.preventDefault();
     verifyPremium(access);
   });
@@ -2823,11 +2727,11 @@ function showDevelopAlert() {
 
 
 function showRevokeButton(access) {
-  var revoke = builders.element('div', {
+  const revoke = builders.element('div', {
     classes: ['sharing-image-premium-revoke'],
     append: access
   });
-  var description = [];
+  const description = [];
   description.push(premium_('Disabling premium mode will not remove the license for this domain.', 'sharing-image'));
   description.push(premium_('Your current key will also be saved in the plugin settings.', 'sharing-image'));
   description.push(premium_('Use key management tool to delete the license for the site.', 'sharing-image'));
@@ -2847,7 +2751,7 @@ function showRevokeButton(access) {
     classes: ['spinner'],
     append: revoke
   });
-  access.addEventListener('submit', function (e) {
+  access.addEventListener('submit', e => {
     e.preventDefault();
     revokePremium(access);
   });
@@ -2861,11 +2765,11 @@ function showRevokeButton(access) {
 
 
 function showLicenseInfo(access, key) {
-  var permit = builders.element('div', {
+  const permit = builders.element('div', {
     classes: ['sharing-image-premium-permit'],
     append: access
   });
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     classes: ['sharing-image-premium-show', 'button'],
     text: premium_('Show License key'),
     attributes: {
@@ -2873,7 +2777,7 @@ function showLicenseInfo(access, key) {
     },
     append: permit
   });
-  button.addEventListener('click', function () {
+  button.addEventListener('click', () => {
     permit.classList.toggle('permit-visible');
   });
   builders.element('strong', {
@@ -2909,7 +2813,7 @@ function showPremiumData(access, license) {
 
 
 function preparePremiumFields() {
-  var access = premium.querySelector('.sharing-image-premium-access');
+  let access = premium.querySelector('.sharing-image-premium-access');
 
   if (null !== access) {
     premium.removeChild(access);
@@ -2932,7 +2836,7 @@ function preparePremiumFields() {
     },
     append: access
   });
-  var license = premium_params.license || {}; // Show fields if user has the license.
+  const license = premium_params.license || {}; // Show fields if user has the license.
 
   if (license.premium || license.develop) {
     return showPremiumData(access, license);
@@ -2964,19 +2868,21 @@ function createPremium(content, settings) {
   preparePremiumFields();
 }
 
-/* harmony default export */ var sections_premium = (createPremium);
-// CONCATENATED MODULE: ./src/scripts/sections/picker.js
+/* harmony default export */ const sections_premium = (createPremium);
+;// CONCATENATED MODULE: ./src/scripts/sections/picker.js
 /**
  * Metabox handler.
  */
 
 /* global ajaxurl:true */
 
-var picker_ = wp.i18n.__; // Store global script object for metabox.
+const {
+  __: picker_
+} = wp.i18n; // Store global script object for metabox.
 
-var picker_params = null; // Poster HTML element.
+let picker_params = null; // Poster HTML element.
 
-var poster = null;
+let poster = null;
 /**
  * Show picker warning message.
  *
@@ -2984,9 +2890,9 @@ var poster = null;
  */
 
 function showPickerError(message) {
-  var picker = poster.parentNode; // Try to find warning element.
+  const picker = poster.parentNode; // Try to find warning element.
 
-  var warning = picker.querySelector('.sharing-image-picker-warning');
+  const warning = picker.querySelector('.sharing-image-picker-warning');
 
   if (null === warning) {
     return;
@@ -3001,9 +2907,9 @@ function showPickerError(message) {
 
 
 function hidePickerError() {
-  var picker = poster.parentNode; // Try to find warning element.
+  const picker = poster.parentNode; // Try to find warning element.
 
-  var warning = picker.querySelector('.sharing-image-picker-warning');
+  const warning = picker.querySelector('.sharing-image-picker-warning');
 
   if (null === warning) {
     return;
@@ -3019,19 +2925,19 @@ function hidePickerError() {
 
 
 function generatePoster(picker) {
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
   poster.classList.add('poster-loader'); // Create data form data bundle.
 
-  var bundle = new window.FormData();
+  const bundle = new window.FormData();
   bundle.set('action', 'sharing_image_generate');
-  picker.querySelectorAll('[name]').forEach(function (field) {
+  picker.querySelectorAll('[name]').forEach(field => {
     bundle.append(field.name, field.value);
   });
   hidePickerError();
-  request.addEventListener('load', function () {
-    var response = request.response || {}; // Hide preview loader on request complete.
+  request.addEventListener('load', () => {
+    const response = request.response || {}; // Hide preview loader on request complete.
 
     poster.classList.remove('poster-loader');
 
@@ -3043,22 +2949,18 @@ function generatePoster(picker) {
       return showPickerError(response.data);
     }
 
-    var _loop = function _loop(key) {
+    for (const key in response.data) {
       // Find all poster input fields and set response data value.
-      poster.querySelectorAll('input').forEach(function (input) {
-        var name = picker_params.name + '[' + key + ']';
+      poster.querySelectorAll('input').forEach(input => {
+        const name = picker_params.name + '[' + key + ']';
 
         if (name === input.name) {
           input.value = response.data[key];
         }
       });
-    };
-
-    for (var key in response.data) {
-      _loop(key);
     }
 
-    var image = poster.querySelector('img');
+    let image = poster.querySelector('img');
 
     if (null === image) {
       image = builders.element('img', {
@@ -3070,7 +2972,7 @@ function generatePoster(picker) {
 
     poster.classList.add('poster-visible');
   });
-  request.addEventListener('error', function () {
+  request.addEventListener('error', () => {
     showPickerError(); // Hide preview loader on request complete.
 
     poster.classList.remove('poster-loader');
@@ -3087,11 +2989,11 @@ function generatePoster(picker) {
 
 
 function createTemplate(picker, designer, selected) {
-  var fields = {};
-  picker_params.templates.forEach(function (template, i) {
+  const fields = {};
+  picker_params.templates.forEach((template, i) => {
     fields[i] = template.title || picker_('Untitled', 'sharing-image');
   });
-  var template = builders.select({
+  const template = builders.select({
     classes: ['sharing-image-picker-template'],
     options: fields,
     attributes: {
@@ -3099,10 +3001,10 @@ function createTemplate(picker, designer, selected) {
     },
     selected: String(selected)
   }, picker);
-  template.addEventListener('change', function () {
-    var fieldset = designer.childNodes;
+  template.addEventListener('change', () => {
+    const fieldset = designer.childNodes;
 
-    for (var i = 0; i < fieldset.length; i++) {
+    for (let i = 0; i < fieldset.length; i++) {
       fieldset[i].classList.remove('fieldset-visible');
 
       if (i === parseInt(template.value)) {
@@ -3121,19 +3023,19 @@ function createTemplate(picker, designer, selected) {
 
 
 function fillClassicEditorPreset(textarea, preset) {
-  var source = document.getElementById(preset);
+  const source = document.getElementById(preset);
 
   if (null === source) {
     return;
   }
 
-  var updateCaption = function updateCaption() {
+  const updateCaption = () => {
     textarea.value = source.value;
   };
 
   source.addEventListener('change', updateCaption); // Stop textarea update after first user input.
 
-  textarea.addEventListener('change', function () {
+  textarea.addEventListener('change', () => {
     source.removeEventListener('change', updateCaption);
   });
   updateCaption();
@@ -3147,13 +3049,13 @@ function fillClassicEditorPreset(textarea, preset) {
 
 
 function fillBlockEditorPreset(textarea, preset) {
-  var getAttribute = function getAttribute() {
+  const getAttribute = () => {
     return wp.data.select('core/editor').getEditedPostAttribute(preset);
   };
 
-  var attribute = getAttribute();
-  wp.data.subscribe(function () {
-    var updated = getAttribute();
+  let attribute = getAttribute();
+  wp.data.subscribe(() => {
+    const updated = getAttribute();
 
     if (attribute !== updated) {
       textarea.textContent = updated;
@@ -3216,19 +3118,19 @@ function createDesignerAttachment(fieldset, template, values, name) {
 
 
 function createDesignerCaptions(fieldset, template, values, name) {
-  var captions = values.captions || []; // Set default layers list.
+  const captions = values.captions || []; // Set default layers list.
 
   template.layers = template.layers || [];
-  template.layers.forEach(function (layer, n) {
+  template.layers.forEach((layer, n) => {
     if ('text' !== layer.type || !layer.dynamic) {
       return;
     }
 
-    var textarea = builders.textarea({
+    const textarea = builders.textarea({
       classes: ['sharing-image-picker-caption'],
       label: layer.title || null,
       attributes: {
-        name: name + "[captions][".concat(n, "]")
+        name: name + `[captions][${n}]`
       }
     }, fieldset);
 
@@ -3248,20 +3150,20 @@ function createDesignerCaptions(fieldset, template, values, name) {
 
 
 function picker_createDesigner(picker, data) {
-  var designer = builders.element('div', {
+  const designer = builders.element('div', {
     classes: ['sharing-image-picker-designer']
   });
-  var selected = data.template || 0; // Reset selected template if index undefined.
+  let selected = data.template || 0; // Reset selected template if index undefined.
 
   if (!picker_params.templates[selected]) {
     selected = 0;
   } // Create designer fields
 
 
-  picker_params.templates.forEach(function (template, i) {
+  picker_params.templates.forEach((template, i) => {
     // Set default layers list.
     template.layers = template.layers || [];
-    var fieldset = builders.element('div', {
+    const fieldset = builders.element('div', {
       classes: ['sharing-image-picker-fieldset'],
       append: designer
     });
@@ -3270,13 +3172,13 @@ function picker_createDesigner(picker, data) {
       fieldset.classList.add('fieldset-visible');
     }
 
-    var values = {};
+    let values = {};
 
     if (data.fieldset && data.fieldset[i]) {
       values = data.fieldset[i];
     }
 
-    var name = picker_params.name + "[fieldset][".concat(i, "]");
+    const name = picker_params.name + `[fieldset][${i}]`;
     builders.element('input', {
       attributes: {
         type: 'hidden',
@@ -3305,7 +3207,7 @@ function picker_createDesigner(picker, data) {
 
 
 function picker_createGenerateButton(picker, manager) {
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     classes: ['sharing-image-picker-generate', 'button'],
     text: picker_('Generate', 'sharing-image'),
     attributes: {
@@ -3313,7 +3215,7 @@ function picker_createGenerateButton(picker, manager) {
     },
     append: manager
   });
-  button.addEventListener('click', function () {
+  button.addEventListener('click', () => {
     generatePoster(picker);
   });
 }
@@ -3325,7 +3227,7 @@ function picker_createGenerateButton(picker, manager) {
 
 
 function picker_createDeleteButton(manager) {
-  var button = builders.element('button', {
+  const button = builders.element('button', {
     classes: ['sharing-image-picker-delete', 'button', 'button-delete'],
     text: picker_('Remove', 'sharing-image'),
     attributes: {
@@ -3333,14 +3235,14 @@ function picker_createDeleteButton(manager) {
     },
     append: manager
   });
-  button.addEventListener('click', function () {
-    var image = poster.querySelector('img');
+  button.addEventListener('click', () => {
+    const image = poster.querySelector('img');
 
     if (null !== image) {
       poster.removeChild(image);
     }
 
-    poster.querySelectorAll('input').forEach(function (input) {
+    poster.querySelectorAll('input').forEach(input => {
       input.value = '';
     });
     poster.classList.remove('poster-visible');
@@ -3354,7 +3256,7 @@ function picker_createDeleteButton(manager) {
 
 
 function createManager(picker) {
-  var manager = builders.element('div', {
+  const manager = builders.element('div', {
     classes: ['sharing-image-picker-manager'],
     append: picker
   }); // Create poster generation button.
@@ -3448,7 +3350,7 @@ function createPicker(widget, settings) {
   picker_params.name = 'sharing_image_picker';
 
   if ('taxonomy' === picker_params.context) {
-    var title = builders.element('div', {
+    const title = builders.element('div', {
       classes: ['sharing-image-title'],
       append: widget
     });
@@ -3458,11 +3360,11 @@ function createPicker(widget, settings) {
     });
   }
 
-  var picker = builders.element('div', {
+  const picker = builders.element('div', {
     classes: ['sharing-image-picker'],
     append: widget
   });
-  var data = picker_params.meta || {}; // Create poster block.
+  const data = picker_params.meta || {}; // Create poster block.
 
   createPoster(picker, data); // Create fields designer.
 
@@ -3485,67 +3387,22 @@ function createPicker(widget, settings) {
   });
 }
 
-/* harmony default export */ var sections_picker = (createPicker);
-// CONCATENATED MODULE: ./src/scripts/sections/index.js
+/* harmony default export */ const picker = (createPicker);
+;// CONCATENATED MODULE: ./src/scripts/sections/index.js
 
 
 
 
 
-var Section = {
-  catalog: sections_catalog,
+const Section = {
+  catalog: catalog,
   editor: sections_editor,
-  config: sections_config,
+  config: config,
   premium: sections_premium,
-  picker: sections_picker
+  picker: picker
 };
-/* harmony default export */ var sections = __webpack_exports__["a"] = (Section);
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports) {
-
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    module.exports = _typeof = function _typeof(obj) {
-      return typeof obj;
-    };
-
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  } else {
-    module.exports = _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-
-    module.exports["default"] = module.exports, module.exports.__esModule = true;
-  }
-
-  return _typeof(obj);
-}
-
-module.exports = _typeof;
-module.exports["default"] = module.exports, module.exports.__esModule = true;
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(4);
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(2);
-/* harmony import */ var _babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(0);
-/* harmony import */ var _sections__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(1);
-
+/* harmony default export */ const sections = (Section);
+;// CONCATENATED MODULE: ./src/scripts/settings.js
 
 
 /**
@@ -3556,7 +3413,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function initPremiumTab(content, settings) {
-  _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].premium(content, settings);
+  sections.premium(content, settings);
 }
 /**
  * Init config settings tab.
@@ -3567,7 +3424,7 @@ function initPremiumTab(content, settings) {
 
 
 function initConfigTab(content, settings) {
-  _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].config(content, settings);
+  sections.config(content, settings);
 }
 /**
  * Init config settings tab.
@@ -3579,26 +3436,26 @@ function initConfigTab(content, settings) {
 
 function initTemplatesTab(content, settings) {
   // Get index from URL search parameter.
-  var index = null; // Set default templates empty list.
+  let index = null; // Set default templates empty list.
 
   settings.templates = settings.templates || [];
 
-  if (_helpers__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].param('template')) {
-    index = parseInt(_helpers__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].param('template')) - 1;
+  if (helpers.param('template')) {
+    index = parseInt(helpers.param('template')) - 1;
   }
 
-  var data = settings.templates[index]; // Create editor for existing template.
+  const data = settings.templates[index]; // Create editor for existing template.
 
   if (undefined !== data) {
-    return _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].editor(content, settings, index, data);
+    return sections.editor(content, settings, index, data);
   } // Create editor for new template.
 
 
   if (settings.templates.length === index) {
-    return _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].editor(content, settings, index);
+    return sections.editor(content, settings, index);
   }
 
-  _sections__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"].catalog(content, settings);
+  sections.catalog(content, settings);
 }
 /**
  * Init settings page handler.
@@ -3606,15 +3463,15 @@ function initTemplatesTab(content, settings) {
 
 
 (function () {
-  if (_babel_runtime_helpers_typeof__WEBPACK_IMPORTED_MODULE_0___default()('undefined') === wp) {
+  if (typeof 'undefined' === wp) {
     return;
   }
 
-  var object = window.sharingImageSettings || {}; // Add default required values to object.
+  let object = window.sharingImageSettings || {}; // Add default required values to object.
 
-  object = _helpers__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].defaults(object, ['links', 'fonts', 'config', 'templates', 'license']); // Find settings content element.
+  object = helpers.defaults(object, ['links', 'fonts', 'config', 'templates', 'license']); // Find settings content element.
 
-  var content = document.querySelector('#sharing-image-settings .sharing-image-content');
+  const content = document.querySelector('#sharing-image-settings .sharing-image-content');
 
   if (null === content) {
     return;
@@ -3622,7 +3479,7 @@ function initTemplatesTab(content, settings) {
 
   content.classList.add('content-visible');
 
-  switch (_helpers__WEBPACK_IMPORTED_MODULE_1__[/* default */ "a"].param('tab')) {
+  switch (helpers.param('tab')) {
     case 'config':
       initConfigTab(content, object);
       break;
@@ -3635,6 +3492,5 @@ function initTemplatesTab(content, settings) {
       initTemplatesTab(content, object);
   }
 })();
-
-/***/ })
-/******/ ]);
+/******/ })()
+;

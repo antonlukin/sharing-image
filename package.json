@@ -12,22 +12,23 @@
     "printWidth": 120
   },
   "devDependencies": {
-    "@babel/core": "^7.12.3",
-    "@babel/preset-env": "^7.12.1",
-    "@wordpress/babel-preset-default": "^5.0.1",
-    "@wordpress/eslint-plugin": "^8.0.2",
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "@wordpress/babel-preset-default": "^6.3.4",
+    "@wordpress/eslint-plugin": "^9.2.0",
     "babel-core": "^6.26.3",
-    "babel-loader": "^8.2.2",
+    "babel-loader": "^8.2.3",
     "babel-preset-latest": "^6.24.1",
-    "eslint": "^7.12.1",
+    "eslint": "^8.1.0",
     "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^7.0.1",
+    "gulp-autoprefixer": "^8.0.0",
     "gulp-plumber": "^1.2.1",
     "gulp-rename": "^2.0.0",
     "gulp-sass": "^5.0.0",
     "gulp-sass-glob": "^1.1.0",
     "node-sass": "^6.0.1",
     "vinyl-named": "^1.1.0",
-    "webpack-stream": "^6.1.2"
+    "webpack": "^5.61.0",
+    "webpack-stream": "^7.0.0"
   }
 }

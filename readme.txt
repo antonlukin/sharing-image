@@ -8,10 +8,10 @@ Stable tag: 1.0.0
 Requires PHP: 5.5
 License: GPLv2 or later
 
-Sharing Image is a Wordpress plugin for generating sharing posters in social networks.
+Sharing Image is a WordPress plugin for generating sharing posters in social networks.
 
 == Description ==
-Sharing Image is a Wordpress plugin for generating sharing posters in social networks. Allows you to use text, watermarks and various filters. It is possible to create different posters for any posts types, archives and taxonomies. Compatible with various SEO plugins.
+Sharing Image is a WordPress plugin for generating sharing posters in social networks. Allows you to use text, watermarks and various filters. It is possible to create different posters for any posts types, archives and taxonomies. Compatible with various SEO plugins.
 Custom posters draw attention to your social media links and make them stand out from the rest in your feed. You can also place your company logo as a watermark to increase your brand awareness. If you are posting video or audio, it can be a good idea to add a play icon to your poster to help users identify the type of content.
 
 = Get support =

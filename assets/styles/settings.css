@@ -611,6 +611,7 @@ body.settings_page_sharing-image #sharing-image-settings {
           flex: 0 0 400px; } }
     body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-viewport {
       display: block;
+      position: -webkit-sticky;
       position: sticky;
       top: 52px;
       width: 100%; }

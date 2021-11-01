@@ -56,20 +56,6 @@ gulp.task( 'scripts', ( done ) => {
 } );
 
 /**
- * Watch soruces and update styles and scripts
- */
-gulp.task( 'watch', ( done ) => {
-	gulp.watch( './src/**/*', gulp.parallel( 'styles', 'scripts' ) );
-
-	done();
-} );
-
-/**
  * Build static files
  */
 gulp.task( 'build', gulp.parallel( 'styles', 'scripts' ) );
-
-/**
- * Build static files and watch changes by default.
- */
-gulp.task( 'serve', gulp.series( 'styles', 'scripts', 'watch' ) );
