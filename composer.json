@@ -12,6 +12,6 @@
         "wp-coding-standards/wpcs": "^2.3"
     },
     "require": {
-        "antonlukin/poster-editor": "^3.0"
+        "antonlukin/poster-editor": "^5.4"
     }
 }

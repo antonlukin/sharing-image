@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name:       Sharing Image
- * Description:       Create social sharing image for Facebook, VK.com, Telegram and other social networks
- * Version:           0.1
- * Requires at least: 5.0
+ * Description:       Create sharing image for Facebook, VK.com, Telegram and other social networks
+ * Version:           0.1.0
+ * Requires at least: 5.3
  * Requires PHP:      5.5
  * Plugin URI:        https://wpget.org/sharing-image/
  * Author:            Anton Lukin

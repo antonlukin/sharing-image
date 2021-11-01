@@ -234,7 +234,7 @@ class Generator {
 			$settings = $this->settings;
 
 			if ( null === $path ) {
-				return $poster->show( $settings->get_quality(), $settings->get_file_format() );
+				return $poster->show( $settings->get_file_format(), $settings->get_quality() );
 			}
 
 			$poster->save( $path, $settings->get_quality() );

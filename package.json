@@ -1,12 +1,12 @@
 {
   "name": "sharing-image",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "Anton Lukin",
   "description": "Sharing Image",
   "license": "MIT",
   "scripts": {
-    "build": "gulp build",
-    "serve": "gulp serve"
+    "build": "./node_modules/gulp-cli/bin/gulp.js build",
+    "serve": "./node_modules/gulp-cli/bin/gulp.js serve"
   },
   "prettier": {
     "printWidth": 120

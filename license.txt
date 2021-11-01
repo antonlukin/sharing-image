@@ -1,5 +1,5 @@
-Rus Package WordPress Plugin, 2021 Anton Lukin
-Rus Package is distributed under the terms of the GNU GPL
+Sharing Image WordPress Plugin, 2021 Anton Lukin
+Sharing Image is distributed under the terms of the GNU GPL
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -42,7 +42,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</ul>
 
 		<p>
-			<?php esc_html_e( 'To get the Premium version, you need to buy a key on the official website of the plugin.', 'sharing-image' ); ?>
+			<?php esc_html_e( 'To get the Premium version, you need to receive the license on the official website of the plugin.', 'sharing-image' ); ?>
 			<?php esc_html_e( 'If you already have the key, activate it in the box below.', 'sharing-image' ); ?>
 			<?php esc_html_e( 'Each key can be used up to 5 times on different sites.', 'sharing-image' ); ?>
 		</p>
@@ -81,7 +81,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			?>
 
 			<?php esc_html_e( 'Attach the access key, if you have one.', 'sharing-image' ); ?>
-			<?php esc_html_e( 'We will try to answer as soon as possible, but usually it takes no more than 2 days.', 'sharing-image' ); ?>
+			<?php esc_html_e( 'We will try to answer as soon as possible, but usually it takes no more than 3 days.', 'sharing-image' ); ?>
 
 			<?php
 			printf(
