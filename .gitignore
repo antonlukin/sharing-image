@@ -1,4 +1,6 @@
-composer.lock
-node_modules/
-vendor/
-.vscode/
+/composer.lock
+/node_modules/
+/vendor/dealerdirect/
+/vendor/squizlabs/
+/vendor/wp-coding-standards/
+/vendor/bin/

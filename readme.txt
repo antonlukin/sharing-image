@@ -4,7 +4,7 @@ Donate link: https://wpget.org/about/
 Tags: socialnetworks, socialnetwork, social networks, social network, facebook, twitter, telegram, vkontakte, vk.com, ok.ru, api, social image, sharing image, og image, twitter image
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 1.0.0
+Stable tag: 2.0.0
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -25,5 +25,5 @@ If you find a bug or want to add new feature to this plugin, create new [issue](
 
 == Changelog ==
 
-= 1.0.0 =
+= 2.0.0 =
 * Initial version for WordPress Plugin Directory.
