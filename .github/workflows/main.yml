@@ -18,10 +18,10 @@ jobs:
       env:
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-        SLUG: social-planner
+        SLUG: sharing-image
     - name: WordPress Plugin Readme/Assets Update
       uses: 10up/action-wordpress-plugin-asset-update@1.4.1
       env:
         SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
-        SLUG: social-planner
+        SLUG: sharing-image
