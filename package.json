@@ -5,8 +5,7 @@
   "description": "Sharing Image",
   "license": "MIT",
   "scripts": {
-    "build": "./node_modules/gulp-cli/bin/gulp.js build",
-    "serve": "./node_modules/gulp-cli/bin/gulp.js serve"
+    "build": "./node_modules/gulp-cli/bin/gulp.js build"
   },
   "prettier": {
     "printWidth": 120

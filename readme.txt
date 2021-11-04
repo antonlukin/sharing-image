@@ -20,8 +20,8 @@ If you find a bug or want to add new feature to this plugin, create new [issue](
 
 == Screenshots ==
 1. Example of a poster in Twitter feed
-2. Generate Sharing Image poster for certain post
-3. Add new post metabox
+2. Create poster template via plugin Settings
+3. Generate Sharing Image poster for certain post
 
 == Changelog ==
 
