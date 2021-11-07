@@ -4,7 +4,7 @@ Donate link: https://wpget.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 2.0.1
+Stable tag: 2.0.0
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,9 +29,6 @@ Read more on the [plugin page](https://wpget.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
-
-= 2.0.1 =
-* Update readme and add WordPress catalog assets.
 
 = 2.0.0 =
 * Initial version for WordPress Plugin Directory.
