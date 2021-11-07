@@ -48,7 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</p>
 
 		<p>
-			<a class="button button-primary" href="https://wpget.org/sharing-image/premium/" target="_blank" rel="noopener"><?php esc_html_e( 'Get Premium', 'sharing-image' ); ?></a>
+			<a class="button button-primary" href="https://wpget.org/sharing-image/#premium" target="_blank" rel="noopener"><?php esc_html_e( 'Get Premium', 'sharing-image' ); ?></a>
 		</p>
 	</div>
 

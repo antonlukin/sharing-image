@@ -7,7 +7,7 @@
  * Requires PHP:      5.5
  * Plugin URI:        https://wpget.org/sharing-image/
  * Author:            Anton Lukin
- * Author URI:        https://lukin.me/
+ * Author URI:        https://wpget.org/
  * Text Domain:       sharing-image
  *
  * @package sharing-image
