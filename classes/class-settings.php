@@ -182,9 +182,9 @@ class Settings {
 		/**
 		 * Easy way to disable custom font uploading.
 		 *
-		 * @param bool $disable_ttf Set true to disable fonts uploading.
+		 * @param bool $disable_fonts Set true to disable fonts uploading.
 		 */
-		$disable_fonts = apply_filters( 'sharing_image_allow_custom_fonts', false );
+		$disable_fonts = apply_filters( 'sharing_image_disable_custom_fonts', false );
 
 		if ( $disable_fonts ) {
 			return;
@@ -780,6 +780,11 @@ class Settings {
 			$poster = array_slice( $poster, 0, 3 );
 		}
 
+		/**
+		 * Filters default poster data.
+		 *
+		 * @param array|false Array of image data, or boolean false if no image is available.
+		 */
 		return apply_filters( 'sharing_image_default_poster_src', $poster );
 	}
 

@@ -205,7 +205,7 @@ class Widget {
 		/**
 		 * Filters post meta on update.
 		 *
-		 * @param string $meta  Updated post meta.
+		 * @param string $meta    Updated post meta.
 		 * @param string $post_id Post ID.
 		 */
 		$meta = apply_filters( 'sharing_image_update_post_meta', $meta, $post_id );
