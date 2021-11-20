@@ -43,9 +43,6 @@ function parseErrorCode( code, title ) {
 			message.push( __( 'Unable to get a response from the verification server.', 'sharing-image' ) );
 
 			break;
-
-		default:
-			message.push( __( 'Unknown error.', 'sharing-image' ) );
 	}
 
 	return message.join( ' ' );

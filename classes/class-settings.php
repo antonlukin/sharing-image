@@ -402,13 +402,13 @@ class Settings {
 		$response = wp_remote_post( self::REMOTE_LICENSES, $args );
 
 		if ( is_wp_error( $response ) ) {
-			wp_send_json_error( __( 'Unable to get a response from the verification server.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Remote request error: ', 'sharing-image' ) . $response->get_error_message(), 400 );
 		}
 
 		$answer = json_decode( $response['body'], true );
 
 		if ( ! isset( $answer['success'] ) ) {
-			wp_send_json_error( __( 'Unable to get a response from the verification server.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Invalid response received from the verification server.', 'sharing-image' ), 400 );
 		}
 
 		// Remove license verification event.

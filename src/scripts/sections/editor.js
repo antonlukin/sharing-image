@@ -1293,8 +1293,6 @@ function createLayer( designer, type, index, data = {} ) {
 
 	designer.insertBefore( layer, designer.firstChild );
 
-	reorderLayers( designer );
-
 	// Delete this layer button.
 	createDeleteLayerButton( designer, layer );
 

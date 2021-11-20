@@ -4,7 +4,7 @@ Donate link: https://wpget.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,6 +29,10 @@ Read more on the [plugin page](https://wpget.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 2.0.4 =
+* Fixed a bug with non-saved radio buttons in the template settings.
+* Added a detailed description of the error when requesting Premium.
 
 = 2.0.3 =
 * Replace `sharing_image_allow_custom_fonts` filter with `sharing_image_disable_custom_fonts`.

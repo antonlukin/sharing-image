@@ -1937,8 +1937,7 @@ function createLayer(designer, type, index, data = {}) {
     return;
   }
 
-  designer.insertBefore(layer, designer.firstChild);
-  reorderLayers(designer); // Delete this layer button.
+  designer.insertBefore(layer, designer.firstChild); // Delete this layer button.
 
   createDeleteLayerButton(designer, layer); // Reorder layers button.
 
@@ -2544,9 +2543,6 @@ function parseErrorCode(code, title) {
     case 'SERVER_ERROR':
       message.push(premium_('Unable to get a response from the verification server.', 'sharing-image'));
       break;
-
-    default:
-      message.push(premium_('Unknown error.', 'sharing-image'));
   }
 
   return message.join(' ');

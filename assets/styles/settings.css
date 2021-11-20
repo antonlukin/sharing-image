@@ -108,6 +108,15 @@ input[type="range"] {
   100% {
     transform: rotate(360deg); } }
 
+body.settings_page_sharing-image input[type=radio][cc]::before {
+  content: "";
+  border-radius: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: 0.1875rem;
+  background-color: #f0f;
+  line-height: 1.14285714; }
+
 body.settings_page_sharing-image #wpcontent {
   padding-left: 0; }
 

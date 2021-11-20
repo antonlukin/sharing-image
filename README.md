@@ -13,3 +13,7 @@ Pay attention to the page with available [hooks and filters](https://wpget.org/s
 2. Install npm modules with `yarn`
 3. Add composer packages with `composer update`
 4. Use `yarn build` to build static files
+
+## Banner sources
+
+To edit WordPress catalog assets, use this Pixelmator [archived files](https://github.com/antonlukin/sharing-image/files/7575188/sources.zip).
