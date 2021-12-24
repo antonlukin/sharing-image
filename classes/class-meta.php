@@ -46,11 +46,11 @@ class Meta {
 		/**
 		 * Easy way to hide poster meta.
 		 *
-		 * @param bool $hide_header Set true to hide poster meta.
+		 * @param bool $hide_meta Set true to hide poster meta.
 		 */
-		$hide_header = apply_filters( 'sharing_image_hide_meta', false );
+		$hide_meta = apply_filters( 'sharing_image_hide_meta', false );
 
-		if ( $hide_settings ) {
+		if ( $hide_meta ) {
 			return;
 		}
 
