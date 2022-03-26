@@ -1,10 +1,10 @@
 === Sharing Image ===
 Contributors: antonlukin
-Donate link: https://wpget.org/about/
+Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 2.0.5
+Stable tag: 2.0.6
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -16,12 +16,12 @@ Sharing Image is a WordPress plugin for generating sharing posters in social net
 Custom posters draw attention to your social media links and make them stand out from the rest in your feed. You can also place your company logo as a watermark to increase your brand awareness. If you are posting video or audio, it can be a good idea to add a play icon to your poster to help users identify the type of content.
 
 = Get support =
-First of all read the [plugin documentation](https://wpget.org/sharing-image/). If you find a bug or want to add new feature to this plugin, create new [issue](https://github.com/antonlukin/sharing-image/issues) on Github or send a [pull reguest](https://github.com/antonlukin/sharing-image/pulls).
+First of all read the [plugin documentation](https://wpset.org/sharing-image/). If you find a bug or want to add new feature to this plugin, create new [issue](https://github.com/antonlukin/sharing-image/issues) on Github or send a [pull reguest](https://github.com/antonlukin/sharing-image/pulls).
 
 = Premium =
 
 The Premium version of the plugin adds new features and helps the product develop. While the plugin is in beta testing, it is absolutely free.
-Read more on the [plugin page](https://wpget.org/sharing-image/#premium).
+Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 
 == Screenshots ==
 1. Example of a poster in Twitter feed
@@ -29,6 +29,9 @@ Read more on the [plugin page](https://wpget.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 2.0.6 =
+* Replacing official plugin site url
 
 = 2.0.5 =
 * Fixed `sharing_image_hide_meta` filter

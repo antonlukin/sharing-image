@@ -4,8 +4,8 @@ Sharing Image is a WordPress plugin for generating sharing posters in social net
 
 ## Documentation
 
-Detailed information about the plugin, its configuration and enhancement, is described on the [official website](https://wpget.org/sharing-image/).
-Pay attention to the page with available [hooks and filters](https://wpget.org/sharing-image/hooks/).
+Detailed information about the plugin, its configuration and enhancement, is described on the [official website](https://wpset.org/sharing-image/).
+Pay attention to the page with available [hooks and filters](https://wpset.org/sharing-image/hooks/).
 
 ## Development
 

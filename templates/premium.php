@@ -48,7 +48,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</p>
 
 		<p>
-			<a class="button button-primary" href="https://wpget.org/sharing-image/#premium" target="_blank" rel="noopener"><?php esc_html_e( 'Get Premium', 'sharing-image' ); ?></a>
+			<a class="button button-primary" href="https://wpset.org/sharing-image/#premium" target="_blank" rel="noopener"><?php esc_html_e( 'Get Premium', 'sharing-image' ); ?></a>
 		</p>
 	</div>
 
@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				esc_html__( 'On all questions write on e-mail address: %s.', 'sharing-image' ),
 				sprintf(
 					'<a href="mailto:%1$s">%1$s</a>',
-					esc_attr( 'support@wpget.org' )
+					esc_attr( 'support@wpset.org' )
 				),
 			);
 			?>
@@ -89,7 +89,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				esc_html__( 'You can manage your licenses using a special %s.', 'sharing-image' ),
 				sprintf(
 					'<a href="%s" target="_blank" rel="noopener">%s</a>',
-					esc_attr( 'https://wpget.org/sharing-image/licenses/' ),
+					esc_attr( 'https://wpset.org/sharing-image/licenses/' ),
 					esc_html__( 'tool', 'sharing-image' )
 				),
 			);

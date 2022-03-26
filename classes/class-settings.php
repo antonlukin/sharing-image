@@ -58,7 +58,7 @@ class Settings {
 	 *
 	 * @var string
 	 */
-	const REMOTE_LICENSES = 'https://wpget.org/sharing-image/verify/';
+	const REMOTE_LICENSES = 'https://wpset.org/sharing-image/verify/';
 
 	/**
 	 * Premium verification event name.

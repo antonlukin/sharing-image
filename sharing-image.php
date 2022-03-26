@@ -2,12 +2,12 @@
 /**
  * Plugin Name:       Sharing Image
  * Description:       Create sharing image for Facebook, VK.com, Telegram and other social networks
- * Version:           2.0.5
+ * Version:           2.0.6
  * Requires at least: 5.3
  * Requires PHP:      5.5
- * Plugin URI:        https://wpget.org/sharing-image/
+ * Plugin URI:        https://wpset.org/sharing-image/
  * Author:            Anton Lukin
- * Author URI:        https://wpget.org/
+ * Author URI:        https://wpset.org/
  * Text Domain:       sharing-image
  *
  * @package sharing-image
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin version.
  */
-define( 'SHARING_IMAGE_VERSION', '2.0.5' );
+define( 'SHARING_IMAGE_VERSION', '2.0.6' );
 
 /**
  * Main plugin file.
