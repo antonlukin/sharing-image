@@ -1,7 +1,7 @@
 /**
  * Upload media frame.
  *
- * @param {string} header Frame header text.
+ * @param {string}   header   Frame header text.
  * @param {Function} callback Callback function.
  */
 function uploadMedia( header, callback ) {

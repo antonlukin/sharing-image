@@ -122,9 +122,9 @@ function generatePoster( picker ) {
 /**
  * Create designer template selector.
  *
- * @param {HTMLElement} picker Picker element.
+ * @param {HTMLElement} picker   Picker element.
  * @param {HTMLElement} designer Designer element.
- * @param {Object} selected Seleted template.
+ * @param {Object}      selected Seleted template.
  */
 function createTemplate( picker, designer, selected ) {
 	const fields = {};
@@ -142,7 +142,7 @@ function createTemplate( picker, designer, selected ) {
 			},
 			selected: String( selected ),
 		},
-		picker
+		picker,
 	);
 
 	template.addEventListener( 'change', () => {
@@ -164,7 +164,7 @@ function createTemplate( picker, designer, selected ) {
  * Prefill caption fields for classic editor.
  *
  * @param {HTMLElement} textarea Caption textarea field.
- * @param {string} preset Preset field.
+ * @param {string}      preset   Preset field.
  */
 function fillClassicEditorPreset( textarea, preset ) {
 	const source = document.getElementById( preset );
@@ -191,7 +191,7 @@ function fillClassicEditorPreset( textarea, preset ) {
  * Prefill caption fields for block editor.
  *
  * @param {HTMLElement} textarea Caption textarea field.
- * @param {string} preset Preset field.
+ * @param {string}      preset   Preset field.
  */
 function fillBlockEditorPreset( textarea, preset ) {
 	const getAttribute = () => {
@@ -215,10 +215,10 @@ function fillBlockEditorPreset( textarea, preset ) {
  * Try to prefill caption field.
  *
  * @param {HTMLElement} textarea Caption textarea field.
- * @param {string} preset Preset field.
+ * @param {string}      preset   Preset field.
  */
 function fillCaptionPreset( textarea, preset ) {
-	if ( wp.data ) {
+	if ( wp.data && wp.data.select( 'core/editor' ) ) {
 		return fillBlockEditorPreset( textarea, preset );
 	}
 
@@ -229,9 +229,9 @@ function fillCaptionPreset( textarea, preset ) {
  * Create designer attachment field for dynamic background.
  *
  * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object} template Template data.
- * @param {Array} values Template fieldset values.
- * @param {string} name Field name attribute.
+ * @param {Object}      template Template data.
+ * @param {Array}       values   Template fieldset values.
+ * @param {string}      name     Field name attribute.
  */
 function createDesignerAttachment( fieldset, template, values, name ) {
 	if ( 'dynamic' !== template.background ) {
@@ -256,9 +256,9 @@ function createDesignerAttachment( fieldset, template, values, name ) {
  * Create designer captions for text layers.
  *
  * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object} template Template data.
- * @param {Array} values Template fieldset values.
- * @param {string} name Field name attribute.
+ * @param {Object}      template Template data.
+ * @param {Array}       values   Template fieldset values.
+ * @param {string}      name     Field name attribute.
  */
 function createDesignerCaptions( fieldset, template, values, name ) {
 	const captions = values.captions || [];
@@ -279,7 +279,7 @@ function createDesignerCaptions( fieldset, template, values, name ) {
 					name: name + `[captions][${ n }]`,
 				},
 			},
-			fieldset
+			fieldset,
 		);
 
 		if ( ! captions[ n ] ) {
@@ -294,7 +294,7 @@ function createDesignerCaptions( fieldset, template, values, name ) {
  * Create fields designer.
  *
  * @param {HTMLElement} picker Picker element.
- * @param {Object} data Picker data object.
+ * @param {Object}      data   Picker data object.
  */
 function createDesigner( picker, data ) {
 	const designer = Build.element( 'div', {
@@ -356,7 +356,7 @@ function createDesigner( picker, data ) {
 /**
  * Create button to generate new metabox poster.
  *
- * @param {HTMLElement} picker Picker element.
+ * @param {HTMLElement} picker  Picker element.
  * @param {HTMLElement} manager Manager element.
  */
 function createGenerateButton( picker, manager ) {
@@ -431,7 +431,7 @@ function createManager( picker ) {
  * Create poster block.
  *
  * @param {HTMLElement} picker Picker element.
- * @param {Object} data Picker data object.
+ * @param {Object}      data   Picker data object.
  */
 function createPoster( picker, data ) {
 	poster = Build.element( 'div', {
@@ -499,8 +499,8 @@ function showSizesWarning( data ) {
 /**
  * Create metabox generator picker.
  *
- * @param {HTMLElement} widget Widget element.
- * @param {Object} settings Global settings object.
+ * @param {HTMLElement} widget   Widget element.
+ * @param {Object}      settings Global settings object.
  */
 function createPicker( widget, settings ) {
 	params = settings;

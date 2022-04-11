@@ -3,7 +3,6 @@ module.exports = {
 		browser: true,
 		es2021: true,
 	},
-	requireConfigFile: false,
 	extends: [ 'plugin:@wordpress/eslint-plugin/recommended' ],
 	parserOptions: {
 		ecmaVersion: 12,

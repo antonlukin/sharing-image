@@ -4,8 +4,8 @@ import Section from './sections';
 /**
  * Init premium settings tab.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings object.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings object.
  */
 function initPremiumTab( content, settings ) {
 	Section.premium( content, settings );
@@ -14,8 +14,8 @@ function initPremiumTab( content, settings ) {
 /**
  * Init config settings tab.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings object.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings object.
  */
 function initConfigTab( content, settings ) {
 	Section.config( content, settings );
@@ -24,8 +24,8 @@ function initConfigTab( content, settings ) {
 /**
  * Init config settings tab.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings object.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings object.
  */
 function initTemplatesTab( content, settings ) {
 	// Get index from URL search parameter.
@@ -56,7 +56,7 @@ function initTemplatesTab( content, settings ) {
 /**
  * Init settings page handler.
  */
-( function () {
+( function() {
 	if ( typeof 'undefined' === wp ) {
 		return;
 	}
@@ -89,4 +89,4 @@ function initTemplatesTab( content, settings ) {
 		default:
 			initTemplatesTab( content, object );
 	}
-} )();
+}() );

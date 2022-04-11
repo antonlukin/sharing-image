@@ -9,8 +9,8 @@ let params = null;
  * Create template card in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number} index Current card index.
- * @param {Object} option List of template options.
+ * @param {number}      index   Current card index.
+ * @param {Object}      option  List of template options.
  */
 function createCard( catalog, index, option ) {
 	const card = Build.element( 'div', {
@@ -60,7 +60,7 @@ function createCard( catalog, index, option ) {
  * Create new template button in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number} index New card index.
+ * @param {number}      index   New card index.
  */
 function createNewButton( catalog, index ) {
 	const link = new URL( document.location.href );
@@ -107,8 +107,8 @@ function createNewButton( catalog, index ) {
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings field.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
  */
 function createCatalog( content, settings ) {
 	params = settings;

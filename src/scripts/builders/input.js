@@ -4,7 +4,7 @@ import Build from './index.js';
 /**
  * Helper to create input field.
  *
- * @param {Object} args List of control options.
+ * @param {Object}      args   List of control options.
  * @param {HTMLElement} parent Parent HTML element to append this field.
  */
 function buildInput( args, parent ) {

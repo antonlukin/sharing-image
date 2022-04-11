@@ -3,7 +3,7 @@ import Section from './sections';
 /**
  * Init metabox handler.
  */
-( function () {
+( function() {
 	if ( typeof 'undefined' === wp ) {
 		return;
 	}
@@ -23,4 +23,4 @@ import Section from './sections';
 
 		Section.picker( widget, object );
 	} );
-} )();
+}() );

@@ -1,7 +1,7 @@
 /**
  * Helper to create new DOM element.
  *
- * @param {string} tag Element tagname.
+ * @param {string} tag  Element tagname.
  * @param {Object} args List of element options.
  */
 function buildElement( tag, args ) {

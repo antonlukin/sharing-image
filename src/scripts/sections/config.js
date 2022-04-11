@@ -13,7 +13,7 @@ let params = null;
  * Create default poster option.
  *
  * @param {HTMLElement} options Options form element.
- * @param {Object} data Config data object.
+ * @param {Object}      data    Config data object.
  */
 function createDefaultOptions( options, data ) {
 	const control = Build.control( {
@@ -53,7 +53,7 @@ function createDefaultOptions( options, data ) {
  * Create uploads directory option.
  *
  * @param {HTMLElement} options Options form element.
- * @param {Object} data Config data object.
+ * @param {Object}      data    Config data object.
  */
 function createUploadsOptions( options, data ) {
 	const control = Build.control( {
@@ -77,7 +77,7 @@ function createUploadsOptions( options, data ) {
 			label: __( 'Use default uploads directory', 'sharing-image' ),
 			checked: data.uploads || 'default',
 		},
-		fieldset
+		fieldset,
 	);
 
 	Build.radio(
@@ -90,7 +90,7 @@ function createUploadsOptions( options, data ) {
 			label: __( 'Choose custom storage for posters', 'sharing-image' ),
 			checked: data.uploads || 'default',
 		},
-		fieldset
+		fieldset,
 	);
 
 	const input = Build.input(
@@ -102,7 +102,7 @@ function createUploadsOptions( options, data ) {
 				disabled: 'disabled',
 			},
 		},
-		control
+		control,
 	);
 
 	Build.element( 'small', {
@@ -134,7 +134,7 @@ function createUploadsOptions( options, data ) {
  * Create format and quality poster options.
  *
  * @param {HTMLElement} options Options form element.
- * @param {Object} data Config data object.
+ * @param {Object}      data    Config data object.
  */
 function createImageOptions( options, data ) {
 	const control = Build.control( {
@@ -228,8 +228,8 @@ function createMetaFields( options ) {
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings field.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
  */
 function createConfig( content, settings ) {
 	params = settings;

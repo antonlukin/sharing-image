@@ -2,16 +2,21 @@
     "name": "antonlukin/sharing-image",
     "license": "GPL-2.0-or-later",
     "description": "Sharing Image",
-	"autoload": {
+    "autoload": {
         "classmap": [
             "classes"
         ]
     },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
     "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-        "wp-coding-standards/wpcs": "^2.3"
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "wp-coding-standards/wpcs": "*"
     },
     "require": {
-        "antonlukin/poster-editor": "^5.4"
+        "antonlukin/poster-editor": "5.5"
     }
 }

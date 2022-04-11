@@ -16,7 +16,7 @@ let premium = null;
 /**
  * Parse error code from settings or AJAX response.
  *
- * @param {string} code Error code from settings or AJAX response.
+ * @param {string} code  Error code from settings or AJAX response.
  * @param {string} title Prepended error title. Optional.
  */
 function parseErrorCode( code, title ) {
@@ -178,8 +178,8 @@ function verifyPremium( access ) {
 /**
  * Show verify form if stil not premium.
  *
- * @param {HTMLElement} access Access HTML element.
- * @param {Object} license License data.
+ * @param {HTMLElement} access  Access HTML element.
+ * @param {Object}      license License data.
  */
 function showVerifyForm( access, license ) {
 	if ( license.error ) {
@@ -281,7 +281,7 @@ function showRevokeButton( access ) {
  * Show permit information.
  *
  * @param {HTMLElement} access Access HTML element.
- * @param {string} key License key from settings.
+ * @param {string}      key    License key from settings.
  */
 function showLicenseInfo( access, key ) {
 	const permit = Build.element( 'div', {
@@ -313,8 +313,8 @@ function showLicenseInfo( access, key ) {
 /**
  * Show fields if user has the license.
  *
- * @param {HTMLElement} access Access HTML element.
- * @param {Object} license License data.
+ * @param {HTMLElement} access  Access HTML element.
+ * @param {Object}      license License data.
  */
 function showPremiumData( access, license ) {
 	premium.classList.add( 'premium-enabled' );
@@ -373,8 +373,8 @@ function preparePremiumFields() {
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings field.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
  */
 function createPremium( content, settings ) {
 	params = settings;

@@ -3,7 +3,7 @@ import buildElement from './element.js';
 /**
  * Helper to create input field.
  *
- * @param {Object} args List of control options.
+ * @param {Object}      args   List of control options.
  * @param {HTMLElement} parent Parent HTML element to append this field.
  */
 function buildTextarea( args, parent ) {

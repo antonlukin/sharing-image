@@ -4,16 +4,17 @@
   "description": "Sharing Image",
   "license": "MIT",
   "scripts": {
-    "build": "./node_modules/gulp-cli/bin/gulp.js build"
+    "build": "./node_modules/gulp-cli/bin/gulp.js build",
+    "watch": "./node_modules/gulp-cli/bin/gulp.js watch"
   },
   "prettier": {
     "printWidth": 120
   },
   "devDependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/preset-env": "^7.16.0",
-    "@wordpress/babel-preset-default": "^6.3.4",
-    "@wordpress/eslint-plugin": "^9.2.0",
+    "@babel/core": "^7.16.11",
+    "@babel/preset-env": "^7.16.11",
+    "@wordpress/babel-preset-default": "^6.8.0",
+    "@wordpress/eslint-plugin": "^12.0.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.2.3",
     "babel-preset-latest": "^6.24.1",

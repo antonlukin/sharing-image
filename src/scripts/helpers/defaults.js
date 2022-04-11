@@ -1,8 +1,8 @@
 /**
  * Append empty default properties to object if not exist.
  *
- * @param {Object} object Source object.
- * @param {Array} defaults Required defaults properties.
+ * @param {Object} object   Source object.
+ * @param {Array}  defaults Required defaults properties.
  */
 function intersectDefaults( object, defaults ) {
 	defaults.forEach( ( item ) => {

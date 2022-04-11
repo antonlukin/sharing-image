@@ -187,7 +187,7 @@ function reorderLayers( designer ) {
  * Update template background settings with custom logic.
  *
  * @param {HTMLElement} fieldset Fieldset HTML element.
- * @param {Object} data Current template data.
+ * @param {Object}      data     Current template data.
  */
 function createPermanentAttachment( fieldset, data ) {
 	data.background = data.background || null;
@@ -288,8 +288,8 @@ function createPermanentAttachment( fieldset, data ) {
  * Text layer dynamic/static fields manager.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 function createDynamicFields( layer, name, data ) {
 	const control = Build.control( {
@@ -307,7 +307,7 @@ function createDynamicFields( layer, name, data ) {
 			label: __( 'Dynamic field. Filled in the post editing screen.', 'sharing-image' ),
 			checked: data.dynamic,
 		},
-		control
+		control,
 	);
 
 	const fields = [];
@@ -432,8 +432,8 @@ function createDynamicFields( layer, name, data ) {
  * Text layer more options fields manager.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 function createMoreFields( layer, name, data ) {
 	const fields = [];
@@ -525,8 +525,8 @@ function createMoreFields( layer, name, data ) {
  * Create font field in text layer.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 function createFontField( layer, name, data ) {
 	const control = Build.control( {
@@ -544,7 +544,7 @@ function createFontField( layer, name, data ) {
 			label: __( 'Font family', 'sharing-image' ),
 			selected: data.fontname,
 		},
-		control
+		control,
 	);
 
 	const media = Build.media( {
@@ -589,8 +589,8 @@ function createFontField( layer, name, data ) {
  * Rectangle layer outline option.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 function createRectangleOutline( layer, name, data ) {
 	const control = Build.control( {
@@ -608,7 +608,7 @@ function createRectangleOutline( layer, name, data ) {
 			label: __( 'Outline rectangle.', 'sharing-image' ),
 			checked: data.outline,
 		},
-		control
+		control,
 	);
 
 	const range = Build.control( {
@@ -695,7 +695,7 @@ function createDeleteButton( footer ) {
  * Create preview element.
  *
  * @param {HTMLElement} viewport Monitor viewport element.
- * @param {Object} data Template data object.
+ * @param {Object}      data     Template data object.
  */
 function createPreview( viewport, data ) {
 	preview = Build.element( 'div', {
@@ -733,10 +733,44 @@ function createPreview( viewport, data ) {
 }
 
 /**
+ *
+ * @param {*} designer
+ * @param {*} layer
+ */
+function createCollapseButton( designer, layer ) {
+	const label = layer.querySelector( 'h2' );
+
+	const button = Build.element( 'button', {
+		classes: [ 'sharing-image-editor-collapse' ],
+		attributes: {
+			type: 'button',
+			title: __( 'Collapse layer', 'sharing-image' ),
+		},
+		append: label,
+	} );
+
+	button.addEventListener( 'click', ( e ) => {
+		e.preventDefault();
+
+		// Set default button title.
+		button.setAttribute( 'title', __( 'Collapse layer', 'sharing-image' ) );
+
+		layer.classList.toggle( 'layer-collapsed' );
+
+		// Check if new class is collapsed.
+		const collapsed = layer.classList.contains( 'layer-collapsed' );
+
+		if ( collapsed ) {
+			button.setAttribute( 'title', __( 'Expand layer', 'sharing-image' ) );
+		}
+	} );
+}
+
+/**
  * Create button inside layer box to change order.
  *
  * @param {HTMLElement} designer Layers designer HTML element.
- * @param {HTMLElement} layer Current layer HTML emelemt.
+ * @param {HTMLElement} layer    Current layer HTML emelemt.
  */
 function createOrderLayersButton( designer, layer ) {
 	const button = Build.element( 'button', {
@@ -768,7 +802,7 @@ function createOrderLayersButton( designer, layer ) {
  * Create button to delete layer.
  *
  * @param {HTMLElement} designer Layers designer HTML element.
- * @param {HTMLElement} layer Current layer HTML emelemt.
+ * @param {HTMLElement} layer    Current layer HTML emelemt.
  */
 function createDeleteLayerButton( designer, layer ) {
 	const control = Build.control( {
@@ -803,7 +837,7 @@ function createDeleteLayerButton( designer, layer ) {
  * Create image layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template layer data.
+ * @param {Object} data  Current template layer data.
  */
 function createLayerImage( index, data ) {
 	const description = [];
@@ -895,7 +929,7 @@ function createLayerImage( index, data ) {
  * Create text layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template data.
+ * @param {Object} data  Current template data.
  */
 function createLayerText( index, data ) {
 	const description = [];
@@ -1018,7 +1052,7 @@ function createLayerText( index, data ) {
  * Create filter layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template data.
+ * @param {Object} data  Current template data.
  */
 function createLayerFilter( index, data ) {
 	const description = [];
@@ -1145,7 +1179,7 @@ function createLayerFilter( index, data ) {
  * Create rectangle layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template data.
+ * @param {Object} data  Current template data.
  */
 function createLayerRectangle( index, data ) {
 	const description = [];
@@ -1265,9 +1299,9 @@ function createLayerRectangle( index, data ) {
  * Create new layer.
  *
  * @param {HTMLElement} designer Designer HTML element.
- * @param {string} type New layer type.
- * @param {number} index Layer index.
- * @param {Object} data New layer data.
+ * @param {string}      type     New layer type.
+ * @param {number}      index    Layer index.
+ * @param {Object}      data     New layer data.
  */
 function createLayer( designer, type, index, data = {} ) {
 	let layer = null;
@@ -1296,6 +1330,9 @@ function createLayer( designer, type, index, data = {} ) {
 	// Delete this layer button.
 	createDeleteLayerButton( designer, layer );
 
+	// Create collapse button.
+	createCollapseButton( designer, layer );
+
 	// Reorder layers button.
 	createOrderLayersButton( designer, layer );
 }
@@ -1304,7 +1341,7 @@ function createLayer( designer, type, index, data = {} ) {
  * Create layers designer control.
  *
  * @param {HTMLElement} fieldset Fieldset HTML element.
- * @param {Object} data Current template data.
+ * @param {Object}      data     Current template data.
  */
 function createDesigner( fieldset, data ) {
 	const control = Build.control( {
@@ -1510,7 +1547,7 @@ function createGenerateButton( manager ) {
  * Create disable live-reloading checkbox.
  *
  * @param {HTMLElement} manager Manager element.
- * @param {Object} data Template data.
+ * @param {Object}      data    Template data.
  */
 function createSuspendCheckbox( manager, data ) {
 	const checkbox = Build.checkbox(
@@ -1523,7 +1560,7 @@ function createSuspendCheckbox( manager, data ) {
 			label: __( 'Disable live-reload', 'sharing-image' ),
 			checked: data.suspend,
 		},
-		manager
+		manager,
 	);
 
 	if ( data.suspend ) {
@@ -1581,7 +1618,7 @@ function createMonitor( data ) {
  * Create form hidden settings fields.
  *
  * @param {HTMLElement} content Settings content element.
- * @param {number} index Current option index.
+ * @param {number}      index   Current option index.
  */
 function prepareEditor( content, index ) {
 	params.name = 'sharing_image_editor';
@@ -1634,10 +1671,10 @@ function prepareEditor( content, index ) {
 /**
  * Create template editor page.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings object.
- * @param {number} index Current option index.
- * @param {Object} data Template data.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings object.
+ * @param {number}      index    Current option index.
+ * @param {Object}      data     Template data.
  */
 function createEditor( content, settings, index, data = {} ) {
 	params = settings;

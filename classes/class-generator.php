@@ -362,15 +362,27 @@ class Generator {
 			return $poster;
 		}
 
-		$args = $this->prepare_args( $layer, array( 'x', 'y', 'width', 'height' ) );
+		$image = new PosterEditor();
 
-		// Get attachment file by id.
-		$image = get_attached_file( $layer['attachment'] );
+		// Prepare common layer args.
+		$args = $this->prepare_args( $layer, array( 'x', 'y' ) );
 
-		// Insert image to poster.
-		$poster->insert( $image, $args );
+		// Create new editor  instance by attachment id.
+		$attachment = $image->make( get_attached_file( $layer['attachment'] ) );
 
-		return $poster;
+		if ( isset( $layer['width'], $layer['height'] ) ) {
+			return $poster->insert( $attachment->resize( $layer['width'], $layer['height'] ), $args );
+		}
+
+		if ( ! isset( $layer['width'] ) ) {
+			$layer['width'] = null;
+		}
+
+		if ( ! isset( $layer['height'] ) ) {
+			$layer['height'] = null;
+		}
+
+		return $poster->insert( $attachment->downsize( $layer['width'], $layer['height'] ), $args );
 	}
 
 	/**

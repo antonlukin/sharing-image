@@ -6,7 +6,7 @@ var __webpack_exports__ = {};
 /**
  * Helper to create new DOM element.
  *
- * @param {string} tag Element tagname.
+ * @param {string} tag  Element tagname.
  * @param {Object} args List of element options.
  */
 function buildElement(tag, args) {
@@ -68,7 +68,7 @@ function buildElement(tag, args) {
 /**
  * Helper to create input field.
  *
- * @param {Object} args List of control options.
+ * @param {Object}      args   List of control options.
  * @param {HTMLElement} parent Parent HTML element to append this field.
  */
 
@@ -130,7 +130,7 @@ function buildInput(args, parent) {
 /**
  * Helper to create radio field.
  *
- * @param {Object} args List of control options.
+ * @param {Object}      args   List of control options.
  * @param {HTMLElement} parent Parent HTML element to append this field.
  */
 
@@ -186,7 +186,7 @@ function buildCheckbox(args, parent) {
 /**
  * Helper to create radio field.
  *
- * @param {Object} args List of control options.
+ * @param {Object}      args   List of control options.
  * @param {HTMLElement} parent Parent HTML element to append this field.
  */
 
@@ -242,7 +242,7 @@ function buildRadio(args, parent) {
 /**
  * Helper to create select field.
  *
- * @param {Object} args List of control options.
+ * @param {Object}      args   List of control options.
  * @param {HTMLElement} parent Parent HTML element to append this field.
  */
 
@@ -308,7 +308,7 @@ function buildSelect(args, parent) {
 /**
  * Helper to create input field.
  *
- * @param {Object} args List of control options.
+ * @param {Object}      args   List of control options.
  * @param {HTMLElement} parent Parent HTML element to append this field.
  */
 
@@ -456,12 +456,14 @@ function buildLayer(args) {
     args.prepend.insertBefore(layer, args.prepend.firstChild);
   }
 
-  if (args.hasOwnProperty('label')) {
-    builders_element('h2', {
-      text: args.label,
-      append: layer
-    });
+  if (!args.hasOwnProperty('label')) {
+    args.label = '';
   }
+
+  builders_element('h2', {
+    text: args.label,
+    append: layer
+  });
 
   if (args.hasOwnProperty('description')) {
     builders_element('h5', {
@@ -490,7 +492,7 @@ function getSearchParam(key) {
 /**
  * Upload media frame.
  *
- * @param {string} header Frame header text.
+ * @param {string}   header   Frame header text.
  * @param {Function} callback Callback function.
  */
 function uploadMedia(header, callback) {
@@ -513,8 +515,8 @@ function uploadMedia(header, callback) {
 /**
  * Append empty default properties to object if not exist.
  *
- * @param {Object} object Source object.
- * @param {Array} defaults Required defaults properties.
+ * @param {Object} object   Source object.
+ * @param {Array}  defaults Required defaults properties.
  */
 function intersectDefaults(object, defaults) {
   defaults.forEach(item => {
@@ -671,8 +673,8 @@ let params = null;
  * Create template card in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number} index Current card index.
- * @param {Object} option List of template options.
+ * @param {number}      index   Current card index.
+ * @param {Object}      option  List of template options.
  */
 
 function createCard(catalog, index, option) {
@@ -718,7 +720,7 @@ function createCard(catalog, index, option) {
  * Create new template button in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number} index New card index.
+ * @param {number}      index   New card index.
  */
 
 
@@ -762,8 +764,8 @@ function createNewButton(catalog, index) {
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings field.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
  */
 
 
@@ -952,7 +954,7 @@ function reorderLayers(designer) {
  * Update template background settings with custom logic.
  *
  * @param {HTMLElement} fieldset Fieldset HTML element.
- * @param {Object} data Current template data.
+ * @param {Object}      data     Current template data.
  */
 
 
@@ -1043,8 +1045,8 @@ function createPermanentAttachment(fieldset, data) {
  * Text layer dynamic/static fields manager.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 
 
@@ -1168,8 +1170,8 @@ function createDynamicFields(layer, name, data) {
  * Text layer more options fields manager.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 
 
@@ -1249,8 +1251,8 @@ function createMoreFields(layer, name, data) {
  * Create font field in text layer.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 
 
@@ -1306,8 +1308,8 @@ function createFontField(layer, name, data) {
  * Rectangle layer outline option.
  *
  * @param {HTMLElement} layer Current layer element.
- * @param {string} name Fields name attribute prefix.
- * @param {Object} data Layer data object.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
  */
 
 
@@ -1403,7 +1405,7 @@ function createDeleteButton(footer) {
  * Create preview element.
  *
  * @param {HTMLElement} viewport Monitor viewport element.
- * @param {Object} data Template data object.
+ * @param {Object}      data     Template data object.
  */
 
 
@@ -1439,10 +1441,40 @@ function createPreview(viewport, data) {
   return preview;
 }
 /**
+ *
+ * @param {*} designer
+ * @param {*} layer
+ */
+
+
+function createCollapseButton(designer, layer) {
+  const label = layer.querySelector('h2');
+  const button = builders.element('button', {
+    classes: ['sharing-image-editor-collapse'],
+    attributes: {
+      type: 'button',
+      title: editor_('Collapse layer', 'sharing-image')
+    },
+    append: label
+  });
+  button.addEventListener('click', e => {
+    e.preventDefault(); // Set default button title.
+
+    button.setAttribute('title', editor_('Collapse layer', 'sharing-image'));
+    layer.classList.toggle('layer-collapsed'); // Check if new class is collapsed.
+
+    const collapsed = layer.classList.contains('layer-collapsed');
+
+    if (collapsed) {
+      button.setAttribute('title', editor_('Expand layer', 'sharing-image'));
+    }
+  });
+}
+/**
  * Create button inside layer box to change order.
  *
  * @param {HTMLElement} designer Layers designer HTML element.
- * @param {HTMLElement} layer Current layer HTML emelemt.
+ * @param {HTMLElement} layer    Current layer HTML emelemt.
  */
 
 
@@ -1474,7 +1506,7 @@ function createOrderLayersButton(designer, layer) {
  * Create button to delete layer.
  *
  * @param {HTMLElement} designer Layers designer HTML element.
- * @param {HTMLElement} layer Current layer HTML emelemt.
+ * @param {HTMLElement} layer    Current layer HTML emelemt.
  */
 
 
@@ -1507,7 +1539,7 @@ function createDeleteLayerButton(designer, layer) {
  * Create image layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template layer data.
+ * @param {Object} data  Current template layer data.
  */
 
 
@@ -1588,7 +1620,7 @@ function createLayerImage(index, data) {
  * Create text layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template data.
+ * @param {Object} data  Current template data.
  */
 
 
@@ -1695,7 +1727,7 @@ function createLayerText(index, data) {
  * Create filter layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template data.
+ * @param {Object} data  Current template data.
  */
 
 
@@ -1803,7 +1835,7 @@ function createLayerFilter(index, data) {
  * Create rectangle layer.
  *
  * @param {number} index Current layer index.
- * @param {Object} data Current template data.
+ * @param {Object} data  Current template data.
  */
 
 
@@ -1906,13 +1938,14 @@ function createLayerRectangle(index, data) {
  * Create new layer.
  *
  * @param {HTMLElement} designer Designer HTML element.
- * @param {string} type New layer type.
- * @param {number} index Layer index.
- * @param {Object} data New layer data.
+ * @param {string}      type     New layer type.
+ * @param {number}      index    Layer index.
+ * @param {Object}      data     New layer data.
  */
 
 
-function createLayer(designer, type, index, data = {}) {
+function createLayer(designer, type, index) {
+  let data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   let layer = null;
 
   switch (type) {
@@ -1939,7 +1972,9 @@ function createLayer(designer, type, index, data = {}) {
 
   designer.insertBefore(layer, designer.firstChild); // Delete this layer button.
 
-  createDeleteLayerButton(designer, layer); // Reorder layers button.
+  createDeleteLayerButton(designer, layer); // Create collapse button.
+
+  createCollapseButton(designer, layer); // Reorder layers button.
 
   createOrderLayersButton(designer, layer);
 }
@@ -1947,7 +1982,7 @@ function createLayer(designer, type, index, data = {}) {
  * Create layers designer control.
  *
  * @param {HTMLElement} fieldset Fieldset HTML element.
- * @param {Object} data Current template data.
+ * @param {Object}      data     Current template data.
  */
 
 
@@ -2131,7 +2166,7 @@ function createGenerateButton(manager) {
  * Create disable live-reloading checkbox.
  *
  * @param {HTMLElement} manager Manager element.
- * @param {Object} data Template data.
+ * @param {Object}      data    Template data.
  */
 
 
@@ -2194,7 +2229,7 @@ function createMonitor(data) {
  * Create form hidden settings fields.
  *
  * @param {HTMLElement} content Settings content element.
- * @param {number} index Current option index.
+ * @param {number}      index   Current option index.
  */
 
 
@@ -2241,14 +2276,15 @@ function prepareEditor(content, index) {
 /**
  * Create template editor page.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings object.
- * @param {number} index Current option index.
- * @param {Object} data Template data.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings object.
+ * @param {number}      index    Current option index.
+ * @param {Object}      data     Template data.
  */
 
 
-function createEditor(content, settings, index, data = {}) {
+function createEditor(content, settings, index) {
+  let data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
   editor_params = settings; // Prepare form with hidden fields and events.
 
   editor = prepareEditor(content, index); // Create monitor section part.
@@ -2273,7 +2309,7 @@ let config_params = null;
  * Create default poster option.
  *
  * @param {HTMLElement} options Options form element.
- * @param {Object} data Config data object.
+ * @param {Object}      data    Config data object.
  */
 
 function createDefaultOptions(options, data) {
@@ -2309,7 +2345,7 @@ function createDefaultOptions(options, data) {
  * Create uploads directory option.
  *
  * @param {HTMLElement} options Options form element.
- * @param {Object} data Config data object.
+ * @param {Object}      data    Config data object.
  */
 
 
@@ -2376,7 +2412,7 @@ function createUploadsOptions(options, data) {
  * Create format and quality poster options.
  *
  * @param {HTMLElement} options Options form element.
- * @param {Object} data Config data object.
+ * @param {Object}      data    Config data object.
  */
 
 
@@ -2465,8 +2501,8 @@ function createMetaFields(options) {
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings field.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
  */
 
 
@@ -2518,7 +2554,7 @@ let premium = null;
 /**
  * Parse error code from settings or AJAX response.
  *
- * @param {string} code Error code from settings or AJAX response.
+ * @param {string} code  Error code from settings or AJAX response.
  * @param {string} title Prepended error title. Optional.
  */
 
@@ -2663,8 +2699,8 @@ function verifyPremium(access) {
 /**
  * Show verify form if stil not premium.
  *
- * @param {HTMLElement} access Access HTML element.
- * @param {Object} license License data.
+ * @param {HTMLElement} access  Access HTML element.
+ * @param {Object}      license License data.
  */
 
 
@@ -2756,7 +2792,7 @@ function showRevokeButton(access) {
  * Show permit information.
  *
  * @param {HTMLElement} access Access HTML element.
- * @param {string} key License key from settings.
+ * @param {string}      key    License key from settings.
  */
 
 
@@ -2785,8 +2821,8 @@ function showLicenseInfo(access, key) {
 /**
  * Show fields if user has the license.
  *
- * @param {HTMLElement} access Access HTML element.
- * @param {Object} license License data.
+ * @param {HTMLElement} access  Access HTML element.
+ * @param {Object}      license License data.
  */
 
 
@@ -2843,8 +2879,8 @@ function preparePremiumFields() {
 /**
  * Create templates catalog from options.
  *
- * @param {HTMLElement} content Settings content element.
- * @param {Object} settings Global settings field.
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
  */
 
 
@@ -2978,9 +3014,9 @@ function generatePoster(picker) {
 /**
  * Create designer template selector.
  *
- * @param {HTMLElement} picker Picker element.
+ * @param {HTMLElement} picker   Picker element.
  * @param {HTMLElement} designer Designer element.
- * @param {Object} selected Seleted template.
+ * @param {Object}      selected Seleted template.
  */
 
 
@@ -3014,7 +3050,7 @@ function createTemplate(picker, designer, selected) {
  * Prefill caption fields for classic editor.
  *
  * @param {HTMLElement} textarea Caption textarea field.
- * @param {string} preset Preset field.
+ * @param {string}      preset   Preset field.
  */
 
 
@@ -3040,7 +3076,7 @@ function fillClassicEditorPreset(textarea, preset) {
  * Prefill caption fields for block editor.
  *
  * @param {HTMLElement} textarea Caption textarea field.
- * @param {string} preset Preset field.
+ * @param {string}      preset   Preset field.
  */
 
 
@@ -3064,12 +3100,12 @@ function fillBlockEditorPreset(textarea, preset) {
  * Try to prefill caption field.
  *
  * @param {HTMLElement} textarea Caption textarea field.
- * @param {string} preset Preset field.
+ * @param {string}      preset   Preset field.
  */
 
 
 function fillCaptionPreset(textarea, preset) {
-  if (wp.data) {
+  if (wp.data && wp.data.select('core/editor')) {
     return fillBlockEditorPreset(textarea, preset);
   }
 
@@ -3079,9 +3115,9 @@ function fillCaptionPreset(textarea, preset) {
  * Create designer attachment field for dynamic background.
  *
  * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object} template Template data.
- * @param {Array} values Template fieldset values.
- * @param {string} name Field name attribute.
+ * @param {Object}      template Template data.
+ * @param {Array}       values   Template fieldset values.
+ * @param {string}      name     Field name attribute.
  */
 
 
@@ -3107,9 +3143,9 @@ function createDesignerAttachment(fieldset, template, values, name) {
  * Create designer captions for text layers.
  *
  * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object} template Template data.
- * @param {Array} values Template fieldset values.
- * @param {string} name Field name attribute.
+ * @param {Object}      template Template data.
+ * @param {Array}       values   Template fieldset values.
+ * @param {string}      name     Field name attribute.
  */
 
 
@@ -3141,7 +3177,7 @@ function createDesignerCaptions(fieldset, template, values, name) {
  * Create fields designer.
  *
  * @param {HTMLElement} picker Picker element.
- * @param {Object} data Picker data object.
+ * @param {Object}      data   Picker data object.
  */
 
 
@@ -3197,7 +3233,7 @@ function picker_createDesigner(picker, data) {
 /**
  * Create button to generate new metabox poster.
  *
- * @param {HTMLElement} picker Picker element.
+ * @param {HTMLElement} picker  Picker element.
  * @param {HTMLElement} manager Manager element.
  */
 
@@ -3269,7 +3305,7 @@ function createManager(picker) {
  * Create poster block.
  *
  * @param {HTMLElement} picker Picker element.
- * @param {Object} data Picker data object.
+ * @param {Object}      data   Picker data object.
  */
 
 
@@ -3335,8 +3371,8 @@ function showSizesWarning(data) {
 /**
  * Create metabox generator picker.
  *
- * @param {HTMLElement} widget Widget element.
- * @param {Object} settings Global settings object.
+ * @param {HTMLElement} widget   Widget element.
+ * @param {Object}      settings Global settings object.
  */
 
 

@@ -18,12 +18,14 @@ function buildLayer( args ) {
 		args.prepend.insertBefore( layer, args.prepend.firstChild );
 	}
 
-	if ( args.hasOwnProperty( 'label' ) ) {
-		buildElement( 'h2', {
-			text: args.label,
-			append: layer,
-		} );
+	if ( ! args.hasOwnProperty( 'label' ) ) {
+		args.label = '';
 	}
+
+	buildElement( 'h2', {
+		text: args.label,
+		append: layer,
+	} );
 
 	if ( args.hasOwnProperty( 'description' ) ) {
 		buildElement( 'h5', {

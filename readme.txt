@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
 Tested up to: 5.8
-Stable tag: 2.0.6
+Stable tag: 2.0.7
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,6 +29,11 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 2.0.7 =
+* Fixed a bug with layer image sizes
+* Added the ability to collapse layer on the settings page
+* Trying to fix undeclared wp.data error
 
 = 2.0.6 =
 * Replacing official plugin site url
