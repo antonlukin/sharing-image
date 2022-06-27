@@ -51,6 +51,13 @@ function buildRadio( args, parent ) {
 		}
 	}
 
+	if ( args.hasOwnProperty( 'help' ) ) {
+		buildElement( 'small', {
+			text: args.help,
+			append: field,
+		} );
+	}
+
 	return radio;
 }
 

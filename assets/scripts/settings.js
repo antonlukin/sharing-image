@@ -295,6 +295,13 @@ function buildRadio(args, parent) {
     }
   }
 
+  if (args.hasOwnProperty('help')) {
+    builders_element('small', {
+      text: args.help,
+      append: field
+    });
+  }
+
   return radio;
 }
 
@@ -981,6 +988,7 @@ function createPermanentAttachment(fieldset, data) {
         value: 'dynamic'
       },
       label: editor_('Select for each post separately', 'sharing-image'),
+      help: editor_('Post thumbnail will be used if autogenerate', 'sharing-image'),
       checked: data.background
     }, {
       group: 'radio',
@@ -2466,6 +2474,38 @@ function createImageOptions(options, data) {
   });
 }
 /**
+ * Create autogenerate poster options.
+ *
+ * @param {HTMLElement} options   Options form element.
+ * @param {Object}      data      Config data object.
+ * @param {Array}       templates List of templates.
+ */
+
+
+function createAutogenerateOptions(options, data, templates) {
+  const fields = {}; // Add the option for disabling feature.
+
+  fields.manual = config_('Disable auto generation', 'sharing-image');
+  templates.forEach((template, i) => {
+    fields[i] = template.title || config_('Untitled', 'sharing-image');
+  });
+  builders.control({
+    classes: ['sharing-image-config-control'],
+    label: config_('Auto generate poster', 'sharing-image'),
+    help: config_('This template will be applied automatically on post save.', 'sharing-image'),
+    fields: [{
+      group: 'select',
+      classes: ['sharing-image-config-control-select'],
+      options: fields,
+      attributes: {
+        name: config_params.name + '[autogenerate]'
+      },
+      selected: String(data.autogenerate) || 'manual'
+    }],
+    append: options
+  });
+}
+/**
  * Create required form meta fields.
  *
  * @param {HTMLElement} options Options form element.
@@ -2525,9 +2565,12 @@ function createConfig(content, settings) {
     },
     append: config
   });
-  const data = config_params.config || {}; // Poster image options.
+  const data = config_params.config || {};
+  const templates = config_params.templates || []; // Poster image options.
 
-  createImageOptions(options, data); // Uploads directory options.
+  createImageOptions(options, data); // Autogenerate poster.
+
+  createAutogenerateOptions(options, data, templates); // Uploads directory options.
 
   createUploadsOptions(options, data); // Default poster.
 
@@ -2914,7 +2957,9 @@ const {
 
 let picker_params = null; // Poster HTML element.
 
-let poster = null;
+let poster = null; // Is gutenberg editor used.
+
+let gutenberg = false;
 /**
  * Show picker warning message.
  *
@@ -3105,7 +3150,7 @@ function fillBlockEditorPreset(textarea, preset) {
 
 
 function fillCaptionPreset(textarea, preset) {
-  if (wp.data && wp.data.select('core/editor')) {
+  if (gutenberg) {
     return fillBlockEditorPreset(textarea, preset);
   }
 
@@ -3369,17 +3414,88 @@ function showSizesWarning(data) {
   }
 }
 /**
- * Create metabox generator picker.
+ * Get new config with AJAX call and reinit metabox.
+ *
+ * @param {HTMLElement} widget Widget element.
+ */
+
+
+const rebuildPicker = widget => {
+  const request = new XMLHttpRequest();
+  request.open('POST', ajaxurl);
+  request.responseType = 'json';
+  poster.classList.add('poster-loader'); // We need post ID for this request.
+
+  const postId = wp.data.select('core/editor').getCurrentPostId(); // Create data form data bundle.
+
+  const bundle = new window.FormData();
+  bundle.set('action', 'sharing_image_rebuild');
+  bundle.set('post', postId); // Find picker child.
+
+  const picker = widget.querySelector('.sharing-image-picker');
+  picker.querySelectorAll('[name]').forEach(field => {
+    if ('sharing_image_nonce' === field.name) {
+      bundle.append(field.name, field.value);
+    }
+  });
+  hidePickerError();
+  request.addEventListener('load', () => {
+    const response = request.response || {}; // Hide preview loader on request complete.
+
+    poster.classList.remove('poster-loader');
+
+    if (!response.data) {
+      return showPickerError();
+    }
+
+    if (!response.success) {
+      return showPickerError(response.data);
+    }
+
+    buildPicker(widget, response.data);
+  });
+  request.addEventListener('error', () => {
+    showPickerError(); // Hide preview loader on request complete.
+
+    poster.classList.remove('poster-loader');
+  });
+  request.send(bundle);
+};
+/**
+ * Wait Gutenberg post saving and reinit tasks list.
+ *
+ * @param {HTMLElement} widget Widget element.
+ */
+
+
+const subscribeOnSaving = widget => {
+  let wasSavingPost = wp.data.select('core/edit-post').isSavingMetaBoxes();
+  wp.data.subscribe(() => {
+    const isSavingPost = wp.data.select('core/edit-post').isSavingMetaBoxes();
+
+    if (wasSavingPost && !isSavingPost) {
+      rebuildPicker(widget);
+    }
+
+    wasSavingPost = isSavingPost;
+  });
+};
+/**
+ * Build metabox fields.
  *
  * @param {HTMLElement} widget   Widget element.
  * @param {Object}      settings Global settings object.
  */
 
 
-function createPicker(widget, settings) {
+function buildPicker(widget, settings) {
   picker_params = settings; // Set params name for template form fields.
 
   picker_params.name = 'sharing_image_picker';
+
+  while (widget.firstChild) {
+    widget.removeChild(widget.lastChild);
+  }
 
   if ('taxonomy' === picker_params.context) {
     const title = builders.element('div', {
@@ -3417,6 +3533,22 @@ function createPicker(widget, settings) {
     },
     append: picker
   });
+}
+/**
+ * Create metabox generator picker and subscribe to events.
+ *
+ * @param {HTMLElement} widget   Widget element.
+ * @param {Object}      settings Global settings object.
+ */
+
+
+function createPicker(widget, settings) {
+  buildPicker(widget, settings);
+  gutenberg = wp.data && wp.data.select('core/editor');
+
+  if (gutenberg) {
+    subscribeOnSaving(widget);
+  }
 }
 
 /* harmony default export */ const picker = (createPicker);

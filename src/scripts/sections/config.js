@@ -192,6 +192,42 @@ function createImageOptions( options, data ) {
 }
 
 /**
+ * Create autogenerate poster options.
+ *
+ * @param {HTMLElement} options   Options form element.
+ * @param {Object}      data      Config data object.
+ * @param {Array}       templates List of templates.
+ */
+function createAutogenerateOptions( options, data, templates ) {
+	const fields = {};
+
+	// Add the option for disabling feature.
+	fields.manual = __( 'Disable auto generation', 'sharing-image' );
+
+	templates.forEach( ( template, i ) => {
+		fields[ i ] = template.title || __( 'Untitled', 'sharing-image' );
+	} );
+
+	Build.control( {
+		classes: [ 'sharing-image-config-control' ],
+		label: __( 'Auto generate poster', 'sharing-image' ),
+		help: __( 'This template will be applied automatically on post save.', 'sharing-image' ),
+		fields: [
+			{
+				group: 'select',
+				classes: [ 'sharing-image-config-control-select' ],
+				options: fields,
+				attributes: {
+					name: params.name + '[autogenerate]',
+				},
+				selected: String( data.autogenerate ) || 'manual',
+			},
+		],
+		append: options,
+	} );
+}
+
+/**
  * Create required form meta fields.
  *
  * @param {HTMLElement} options Options form element.
@@ -254,9 +290,13 @@ function createConfig( content, settings ) {
 	} );
 
 	const data = params.config || {};
+	const templates = params.templates || [];
 
 	// Poster image options.
 	createImageOptions( options, data );
+
+	// Autogenerate poster.
+	createAutogenerateOptions( options, data, templates );
 
 	// Uploads directory options.
 	createUploadsOptions( options, data );

@@ -215,6 +215,7 @@ function createPermanentAttachment( fieldset, data ) {
 					value: 'dynamic',
 				},
 				label: __( 'Select for each post separately', 'sharing-image' ),
+				help: __( 'Post thumbnail will be used if autogenerate', 'sharing-image' ),
 				checked: data.background,
 			},
 			{

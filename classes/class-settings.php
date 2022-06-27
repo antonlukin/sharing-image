@@ -1291,6 +1291,16 @@ class Settings {
 			$sanitized['storage'] = sanitize_text_field( $config['storage'] );
 		}
 
+		$sanitized['autogenerate'] = 'manual';
+
+		if ( isset( $config['autogenerate'] ) && is_numeric( $config['autogenerate'] ) ) {
+			$autogenerate = absint( $config['autogenerate'] );
+
+			if ( count( $this->get_templates() ) > $autogenerate ) {
+				$sanitized['autogenerate'] = $autogenerate;
+			}
+		}
+
 		/**
 		 * Filters template editor sanitized fields.
 		 *

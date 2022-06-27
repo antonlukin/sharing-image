@@ -13,6 +13,9 @@ let params = null;
 // Poster HTML element.
 let poster = null;
 
+// Is gutenberg editor used.
+let gutenberg = false;
+
 /**
  * Show picker warning message.
  *
@@ -218,7 +221,7 @@ function fillBlockEditorPreset( textarea, preset ) {
  * @param {string}      preset   Preset field.
  */
 function fillCaptionPreset( textarea, preset ) {
-	if ( wp.data && wp.data.select( 'core/editor' ) ) {
+	if ( gutenberg ) {
 		return fillBlockEditorPreset( textarea, preset );
 	}
 
@@ -497,16 +500,97 @@ function showSizesWarning( data ) {
 }
 
 /**
- * Create metabox generator picker.
+ * Get new config with AJAX call and reinit metabox.
+ *
+ * @param {HTMLElement} widget Widget element.
+ */
+const rebuildPicker = ( widget ) => {
+	const request = new XMLHttpRequest();
+	request.open( 'POST', ajaxurl );
+	request.responseType = 'json';
+
+	poster.classList.add( 'poster-loader' );
+
+	// We need post ID for this request.
+	const postId = wp.data.select( 'core/editor' ).getCurrentPostId();
+
+	// Create data form data bundle.
+	const bundle = new window.FormData();
+	bundle.set( 'action', 'sharing_image_rebuild' );
+	bundle.set( 'post', postId );
+
+	// Find picker child.
+	const picker = widget.querySelector( '.sharing-image-picker' );
+
+	picker.querySelectorAll( '[name]' ).forEach( ( field ) => {
+		if ( 'sharing_image_nonce' === field.name ) {
+			bundle.append( field.name, field.value );
+		}
+	} );
+
+	hidePickerError();
+
+	request.addEventListener( 'load', () => {
+		const response = request.response || {};
+
+		// Hide preview loader on request complete.
+		poster.classList.remove( 'poster-loader' );
+
+		if ( ! response.data ) {
+			return showPickerError();
+		}
+
+		if ( ! response.success ) {
+			return showPickerError( response.data );
+		}
+
+		buildPicker( widget, response.data );
+	} );
+
+	request.addEventListener( 'error', () => {
+		showPickerError();
+
+		// Hide preview loader on request complete.
+		poster.classList.remove( 'poster-loader' );
+	} );
+
+	request.send( bundle );
+};
+
+/**
+ * Wait Gutenberg post saving and reinit tasks list.
+ *
+ * @param {HTMLElement} widget Widget element.
+ */
+const subscribeOnSaving = ( widget ) => {
+	let wasSavingPost = wp.data.select( 'core/edit-post' ).isSavingMetaBoxes();
+
+	wp.data.subscribe( () => {
+		const isSavingPost = wp.data.select( 'core/edit-post' ).isSavingMetaBoxes();
+
+		if ( wasSavingPost && ! isSavingPost ) {
+			rebuildPicker( widget );
+		}
+
+		wasSavingPost = isSavingPost;
+	} );
+};
+
+/**
+ * Build metabox fields.
  *
  * @param {HTMLElement} widget   Widget element.
  * @param {Object}      settings Global settings object.
  */
-function createPicker( widget, settings ) {
+function buildPicker( widget, settings ) {
 	params = settings;
 
 	// Set params name for template form fields.
 	params.name = 'sharing_image_picker';
+
+	while ( widget.firstChild ) {
+		widget.removeChild( widget.lastChild );
+	}
 
 	if ( 'taxonomy' === params.context ) {
 		const title = Build.element( 'div', {
@@ -552,6 +636,22 @@ function createPicker( widget, settings ) {
 		},
 		append: picker,
 	} );
+}
+
+/**
+ * Create metabox generator picker and subscribe to events.
+ *
+ * @param {HTMLElement} widget   Widget element.
+ * @param {Object}      settings Global settings object.
+ */
+function createPicker( widget, settings ) {
+	buildPicker( widget, settings );
+
+	gutenberg = wp.data && wp.data.select( 'core/editor' );
+
+	if ( gutenberg ) {
+		subscribeOnSaving( widget );
+	}
 }
 
 export default createPicker;

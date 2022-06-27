@@ -5,18 +5,18 @@
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'f3c9092a3abcedf8c01d9ecdf41e21f06da50485',
+        'reference' => '20e92f4b8e27a2053d4e08e61beb10c162b526f1',
         'name' => 'antonlukin/sharing-image',
         'dev' => true,
     ),
     'versions' => array(
         'antonlukin/poster-editor' => array(
-            'pretty_version' => '5.5',
-            'version' => '5.5.0.0',
+            'pretty_version' => '5.6',
+            'version' => '5.6.0.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../antonlukin/poster-editor',
             'aliases' => array(),
-            'reference' => '1f8f2a2e4e3a23726465fd57d2bfc47f89ca0749',
+            'reference' => '4404d50ade6537c984561d0d93128aca402dc9e5',
             'dev_requirement' => false,
         ),
         'antonlukin/sharing-image' => array(
@@ -25,7 +25,7 @@
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'f3c9092a3abcedf8c01d9ecdf41e21f06da50485',
+            'reference' => '20e92f4b8e27a2053d4e08e61beb10c162b526f1',
             'dev_requirement' => false,
         ),
         'dealerdirect/phpcodesniffer-composer-installer' => array(
@@ -38,12 +38,12 @@
             'dev_requirement' => true,
         ),
         'squizlabs/php_codesniffer' => array(
-            'pretty_version' => '3.6.2',
-            'version' => '3.6.2.0',
+            'pretty_version' => '3.7.1',
+            'version' => '3.7.1.0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../squizlabs/php_codesniffer',
             'aliases' => array(),
-            'reference' => '5e4e71592f69da17871dba6e80dd51bce74a351a',
+            'reference' => '1359e176e9307e906dc3d890bcc9603ff6d90619',
             'dev_requirement' => true,
         ),
         'wp-coding-standards/wpcs' => array(

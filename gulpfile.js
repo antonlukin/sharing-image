@@ -1,5 +1,5 @@
 const gulp = require( 'gulp' );
-const nodeSass = require( 'node-sass' );
+const nodeSass = require( 'sass' );
 const gulpSass = require( 'gulp-sass' );
 const sassGlob = require( 'gulp-sass-glob' );
 const plumber = require( 'gulp-plumber' );
@@ -19,12 +19,12 @@ gulp.task( 'styles', ( done ) => {
 		.pipe(
 			sassGlob( {
 				allowEmpty: true,
-			} )
+			} ),
 		)
 		.pipe(
 			sass( {
 				errLogToConsole: true,
-			} )
+			} ),
 		)
 		.pipe( prefix() )
 		.pipe( gulp.dest( 'assets/styles/' ) );
@@ -42,13 +42,13 @@ gulp.task( 'scripts', ( done ) => {
 		.pipe(
 			webpack( {
 				config: require( './webpack.config.js' ),
-			} )
+			} ),
 		)
 		.pipe(
 			rename( ( file ) => {
 				file.basename = file.basename;
 				file.extname = '.js';
-			} )
+			} ),
 		)
 		.pipe( gulp.dest( 'assets/scripts/' ) );
 
@@ -66,3 +66,8 @@ gulp.task( 'watch', () => {
  * Build static files
  */
 gulp.task( 'build', gulp.parallel( 'styles', 'scripts' ) );
+
+/**
+ * Start development handler
+ */
+gulp.task( 'start', gulp.series( 'build', 'watch' ) );

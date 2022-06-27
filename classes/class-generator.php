@@ -37,6 +37,46 @@ class Generator {
 	}
 
 	/**
+	 * Autogenerate new poster using post data for preset fields.
+	 *
+	 * @param integer $id      Template id using for poster generator.
+	 * @param integer $post_id Post id.
+	 *
+	 * @return array|false New poster url or false on failure.
+	 */
+	public function autogenerate( $id, $post_id ) {
+		// Get templates list from settings.
+		$templates = $this->settings->get_templates();
+
+		if ( ! isset( $templates[ $id ] ) ) {
+			return false;
+		}
+
+		$template = $this->generate_template( $templates[ $id ], $post_id );
+
+		if ( ! $this->check_required( $template ) ) {
+			return false;
+		}
+
+		list( $path, $url ) = $this->get_upload_file();
+
+		// Generate image and save it.
+		$poster = $this->create_poster( $template, $path );
+
+		if ( is_wp_error( $poster ) ) {
+			return false;
+		}
+
+		$result = array(
+			'poster' => $url,
+			'width'  => $template['width'],
+			'height' => $template['height'],
+		);
+
+		return $result;
+	}
+
+	/**
 	 * Compose image using picker data.
 	 *
 	 * @param array $picker Picker data from metabox.
@@ -137,6 +177,52 @@ class Generator {
 		}
 
 		return $url;
+	}
+
+	/**
+	 * Update template with post data for preset fields.
+	 *
+	 * @param array $template Templates data from settings page.
+	 * @param int   $post_id  Post id.
+	 *
+	 * @return array List of template data.
+	 */
+	private function generate_template( $template, $post_id ) {
+		$layers = array();
+
+		if ( isset( $template['layers'] ) ) {
+			$layers = $template['layers'];
+		}
+
+		$fieldset = array();
+
+		foreach ( $layers as $i => $layer ) {
+			if ( empty( $layer['type'] ) || 'text' !== $layer['type'] ) {
+				continue;
+			}
+
+			if ( empty( $layer['dynamic'] ) || empty( $layer['preset'] ) ) {
+				continue;
+			}
+
+			if ( 'title' === $layer['preset'] ) {
+				$fieldset['captions'][ $i ] = get_the_title( $post_id );
+			}
+
+			if ( 'excerpt' === $layer['preset'] ) {
+				$fieldset['captions'][ $i ] = get_the_excerpt( $post_id );
+			}
+		}
+
+		$thumbnail_id = get_post_thumbnail_id( $post_id );
+
+		if ( ! empty( $thumbnail_id ) ) {
+			$fieldset['attachment'] = $thumbnail_id;
+		}
+
+		$template = $this->prepare_template( $template, $fieldset );
+
+		return $template;
 	}
 
 	/**
