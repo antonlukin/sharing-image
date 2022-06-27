@@ -208,6 +208,12 @@ function createAutogenerateOptions( options, data, templates ) {
 		fields[ i ] = template.title || __( 'Untitled', 'sharing-image' );
 	} );
 
+	let selected = data.autogenerate;
+
+	if ( typeof selected === 'undefined' ) {
+		selected = 'manual';
+	}
+
 	Build.control( {
 		classes: [ 'sharing-image-config-control' ],
 		label: __( 'Auto generate poster', 'sharing-image' ),
@@ -220,7 +226,7 @@ function createAutogenerateOptions( options, data, templates ) {
 				attributes: {
 					name: params.name + '[autogenerate]',
 				},
-				selected: String( data.autogenerate ) || 'manual',
+				selected: String( selected ),
 			},
 		],
 		append: options,
