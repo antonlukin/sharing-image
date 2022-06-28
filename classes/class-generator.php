@@ -67,13 +67,13 @@ class Generator {
 			return false;
 		}
 
-		$result = array(
+		$source = array(
 			'poster' => $url,
 			'width'  => $template['width'],
 			'height' => $template['height'],
 		);
 
-		return $result;
+		return $source;
 	}
 
 	/**
@@ -118,13 +118,13 @@ class Generator {
 			return $poster;
 		}
 
-		$result = array(
+		$source = array(
 			'poster' => $url,
 			'width'  => $template['width'],
 			'height' => $template['height'],
 		);
 
-		return $result;
+		return $source;
 	}
 
 	/**

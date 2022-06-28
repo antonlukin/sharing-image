@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "antonlukin/poster-editor",
-            "version": "5.6",
-            "version_normalized": "5.6.0.0",
+            "version": "5.7",
+            "version_normalized": "5.7.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/antonlukin/poster-editor.git",
-                "reference": "4404d50ade6537c984561d0d93128aca402dc9e5"
+                "reference": "826f86c59d748ff53bdfe08ec1720becbe967947"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/antonlukin/poster-editor/zipball/4404d50ade6537c984561d0d93128aca402dc9e5",
-                "reference": "4404d50ade6537c984561d0d93128aca402dc9e5",
+                "url": "https://api.github.com/repos/antonlukin/poster-editor/zipball/826f86c59d748ff53bdfe08ec1720becbe967947",
+                "reference": "826f86c59d748ff53bdfe08ec1720becbe967947",
                 "shasum": ""
             },
             "require": {
@@ -25,7 +25,7 @@
             "suggest": {
                 "ext-gd": "to use GD library based image processing."
             },
-            "time": "2022-06-27T22:26:37+00:00",
+            "time": "2022-06-28T21:51:53+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -53,7 +53,7 @@
             ],
             "support": {
                 "issues": "https://github.com/antonlukin/poster-editor/issues",
-                "source": "https://github.com/antonlukin/poster-editor/tree/v5.6"
+                "source": "https://github.com/antonlukin/poster-editor/tree/v5.7"
             },
             "install-path": "../antonlukin/poster-editor"
         },

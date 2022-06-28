@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 2.0.9
+Stable tag: 2.0.10
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,6 +29,10 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 2.0.10 =
+* Updated PosterEditor class to fix default opacity canvas.
+* Fixed param type in phpdoc block.
 
 = 2.0.9 =
 * Fixed bug with default autogenerate template on config page.

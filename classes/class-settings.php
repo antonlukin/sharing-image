@@ -336,10 +336,10 @@ class Settings {
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
 		// Show poster using generator class.
-		$poster = ( new Generator() )->show( $editor, $index );
+		$source = ( new Generator() )->show( $editor, $index );
 
-		if ( is_wp_error( $poster ) ) {
-			wp_send_json_error( $poster->get_error_message(), 400 );
+		if ( is_wp_error( $source ) ) {
+			wp_send_json_error( $source->get_error_message(), 400 );
 		}
 	}
 
@@ -367,13 +367,13 @@ class Settings {
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
 		// Save poster using generator class.
-		$poster = ( new Generator() )->save( $editor, $index );
+		$source = ( new Generator() )->save( $editor, $index );
 
-		if ( is_wp_error( $poster ) ) {
-			wp_send_json_error( $poster->get_error_message(), 400 );
+		if ( is_wp_error( $source ) ) {
+			wp_send_json_error( $source->get_error_message(), 400 );
 		}
 
-		wp_send_json_success( $poster );
+		wp_send_json_success( $source );
 	}
 
 	/**
