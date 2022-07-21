@@ -332,17 +332,21 @@ class Widget {
 	}
 
 	/**
-	 * Generate poster by AJAX request.
+	 * Try to autogenerate poster on post insert or update.
 	 *
-	 * @param integer $post_id Desired post_id.
-	 *
-	 * @return string|false Generated poster link.
+	 * @param integer $post_id Updated post_id.
 	 */
 	public function autogenerate_poster( $post_id ) {
+		$status = get_post_status( $post_id );
+
+		if ( 'auto-draft' === $status ) {
+			return;
+		}
+
 		$meta = get_post_meta( $post_id, self::WIDGET_META, true );
 
 		if ( empty( $meta ) ) {
-			return;
+			$meta = array();
 		}
 
 		if ( ! empty( $meta['poster'] ) ) {
