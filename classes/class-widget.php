@@ -337,6 +337,18 @@ class Widget {
 	 * @param integer $post_id Updated post_id.
 	 */
 	public function autogenerate_poster( $post_id ) {
+		/**
+		 * Easy way disable autogeneration.
+		 *
+		 * @param bool $disable_autogeneration Set true to disable autogeneration.
+		 * @param int  $post_id Post ID.
+		 */
+		$disable_autogeneration = apply_filters( 'sharing_image_disable_autogeneration', false, $post_id );
+
+		if ( $disable_autogeneration ) {
+			return;
+		}
+
 		$status = get_post_status( $post_id );
 
 		if ( 'auto-draft' === $status ) {
