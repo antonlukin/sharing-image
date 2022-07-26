@@ -76,6 +76,28 @@ class Meta {
 			'<meta property="og:image:height" content="%s">' . "\n",
 			esc_attr( $height )
 		);
+
+		/**
+		 * Hide twitter meta tags.
+		 *
+		 * @since 2.0.12
+		 *
+		 * @param bool $hide_twitter_meta Set true to hide poster meta.
+		 */
+		$hide_twitter_meta = apply_filters( 'sharing_image_hide_twitter_meta', false );
+
+		if ( $hide_twitter_meta ) {
+			return;
+		}
+
+		print(
+			'<meta name="twitter:card" content="summary_large_image">' . "\n"
+		);
+
+		printf(
+			'<meta name="twitter:image" content="%s">' . "\n",
+			esc_url( $image )
+		);
 	}
 
 	/**

@@ -32,6 +32,7 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 
 = 2.0.12 =
 * Added filter to disable posters autogeneration according post id.
+* Updated HTML meta tags to be able to display Twitter cards.
 
 = 2.0.11 =
 * Added the ability to autogenerate posters for entries added programmatically, for example, via cron.
