@@ -63,17 +63,17 @@ class Meta {
 		list( $image, $width, $height ) = $poster;
 
 		printf(
-			'<meta property="og:image" content="%s">' . "\n",
+			'<meta property="og:image" content="%s">' . PHP_EOL,
 			esc_url( $image )
 		);
 
 		printf(
-			'<meta property="og:image:width" content="%s">' . "\n",
+			'<meta property="og:image:width" content="%s">' . PHP_EOL,
 			esc_attr( $width )
 		);
 
 		printf(
-			'<meta property="og:image:height" content="%s">' . "\n",
+			'<meta property="og:image:height" content="%s">' . PHP_EOL,
 			esc_attr( $height )
 		);
 
@@ -91,11 +91,11 @@ class Meta {
 		}
 
 		print(
-			'<meta name="twitter:card" content="summary_large_image">' . "\n"
+			'<meta name="twitter:card" content="summary_large_image">' . PHP_EOL
 		);
 
 		printf(
-			'<meta name="twitter:image" content="%s">' . "\n",
+			'<meta name="twitter:image" content="%s">' . PHP_EOL,
 			esc_url( $image )
 		);
 	}
@@ -103,12 +103,14 @@ class Meta {
 	/**
 	 * Public method to get Sharing Image poster.
 	 *
-	 * @param int $object_id Optional. Post ID or Taxonomy term ID.
+	 * @param int    $object_id   Optional. Post ID or Taxonomy term ID.
+	 * @param string $object_type Optional. Requested meta type, can be singular or taxonomy.
+	 *                            Default is determined by the type of the template in which it is called.
 
 	 * @return string Url to poster.
 	 */
-	public function get_poster( $object_id = null ) {
-		$poster = $this->get_poster_src( $object_id );
+	public function get_poster( $object_id = null, $object_type = null ) {
+		$poster = $this->get_poster_src( $object_id, $object_type );
 
 		if ( ! isset( $poster[0] ) ) {
 			return null;
@@ -120,12 +122,14 @@ class Meta {
 	/**
 	 * Public method to get Sharing Image poster url, width and height.
 	 *
-	 * @param int $object_id Optional. Post ID or Taxonomy term ID.
+	 * @param int    $object_id   Optional. Post ID or Taxonomy term ID.
+	 * @param string $object_type Optional. Requested meta type, can be singular or taxonomy.
+	 *                            Default is determined by the type of the template in which it is called.
 
 	 * @return array|false Poster image, width and height data or false if undefined.
 	 */
-	public function get_poster_src( $object_id = null ) {
-		$poster = $this->get_widget_poster_src( $object_id );
+	public function get_poster_src( $object_id = null, $object_type = null ) {
+		$poster = $this->get_widget_poster_src( $object_id, $object_type );
 
 		if ( false === $poster ) {
 			$poster = $this->settings->get_default_poster_src();
@@ -143,18 +147,32 @@ class Meta {
 	/**
 	 * Get post or term meta Sharing Image poster data.
 	 *
-	 * @param int $object_id Optional. Post ID or Taxonomy term ID.
+	 * @param int    $object_id   Optional. Post ID or Taxonomy term ID.
+	 * @param string $object_type Optional. Requested meta type, can be singular or taxonomy.
+	 *                            Default is determined by the type of the template in which it is called.
 
 	 * @return array|false Widget poster image, width and height data or false if undefined.
 	 */
-	public function get_widget_poster_src( $object_id = null ) {
+	public function get_widget_poster_src( $object_id = null, $object_type = null ) {
 		$meta = array();
 
-		if ( is_singular() ) {
+		if ( 'singular' !== $object_type && 'taxonomy' !== $object_type ) {
+			$object_type = null;
+		}
+
+		if ( is_null( $object_type ) && is_singular() ) {
+			$object_type = 'singular';
+		}
+
+		if ( is_null( $object_type ) && ( is_category() || is_tag() || is_tax() ) ) {
+			$object_type = 'taxonomy';
+		}
+
+		if ( 'singular' === $object_type ) {
 			$meta = $this->get_singular_poster_meta( $object_id );
 		}
 
-		if ( is_category() || is_tag() || is_tax() ) {
+		if ( 'taxonomy' === $object_type ) {
 			$meta = $this->get_taxonomy_poster_meta( $object_id );
 		}
 
@@ -181,8 +199,11 @@ class Meta {
 	private function get_singular_poster_meta( $post_id = null ) {
 		$post = get_post( $post_id );
 
-		// Get post meta using Widget meta name const.
-		$meta = get_post_meta( $post->ID, Widget::WIDGET_META, true );
+		if ( isset( $post->ID ) ) {
+			$post_id = $post->ID;
+		}
+
+		$meta = get_post_meta( $post_id, Widget::WIDGET_META, true );
 
 		/**
 		 * Filters singular template poster data.

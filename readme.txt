@@ -3,8 +3,8 @@ Contributors: antonlukin
 Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
-Tested up to: 6.0
-Stable tag: 2.0.12
+Tested up to: 6.1
+Stable tag: 2.0.13
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,6 +29,11 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 2.0.13 =
+* Added second parameter to sharing_image_poster and sharing_image_poster_src public functions
+* Fixed notice on empty Post ID property
+* Minor code improvements
 
 = 2.0.12 =
 * Added filter to disable posters autogeneration according post id.
