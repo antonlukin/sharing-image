@@ -4,8 +4,6 @@
 
 import Build from '../builders';
 
-const { __ } = wp.i18n;
-
 // Store global scriot object for settings page.
 let params = null;
 
@@ -18,21 +16,21 @@ let params = null;
 function createDefaultOptions( options, data ) {
 	const control = Build.control( {
 		classes: [ 'sharing-image-config-control' ],
-		label: __( 'Default poster', 'sharing-image' ),
+		label: wp.i18n.__( 'Default poster', 'sharing-image' ),
 		append: options,
 	} );
 
 	Build.media( {
 		name: params.name + '[default]',
 		classes: [ 'sharing-image-config-control-media' ],
-		label: __( 'Default poster', 'sharing-image' ),
+		label: wp.i18n.__( 'Default poster', 'sharing-image' ),
 		value: data.default,
 		link: params.links.uploads,
 		labels: {
-			button: __( 'Upload image', 'sharing-image' ),
-			heading: __( 'Select default poster', 'sharing-image' ),
-			details: __( 'Attachment details', 'sharing-image' ),
-			remove: __( 'Remove image', 'sharing-image' ),
+			button: wp.i18n.__( 'Upload image', 'sharing-image' ),
+			heading: wp.i18n.__( 'Select default poster', 'sharing-image' ),
+			details: wp.i18n.__( 'Attachment details', 'sharing-image' ),
+			remove: wp.i18n.__( 'Remove image', 'sharing-image' ),
 		},
 		remove: true,
 		append: control,
@@ -40,8 +38,11 @@ function createDefaultOptions( options, data ) {
 
 	const description = [];
 
-	description.push( __( 'The default poster is used on pages where there is no generated.', 'sharing-image' ) );
-	description.push( __( 'Best image size: 1200×630 pixels.', 'sharing-image' ) );
+	description.push(
+		wp.i18n.__( 'The default poster is used on pages where there is no generated.', 'sharing-image' ),
+	);
+
+	description.push( wp.i18n.__( 'Best image size: 1200×630 pixels.', 'sharing-image' ) );
 
 	Build.element( 'small', {
 		text: description.join( ' ' ),
@@ -58,7 +59,7 @@ function createDefaultOptions( options, data ) {
 function createUploadsOptions( options, data ) {
 	const control = Build.control( {
 		classes: [ 'sharing-image-config-control' ],
-		label: __( 'Upload directory', 'sharing-image' ),
+		label: wp.i18n.__( 'Upload directory', 'sharing-image' ),
 		append: options,
 	} );
 
@@ -74,7 +75,7 @@ function createUploadsOptions( options, data ) {
 				name: params.name + '[uploads]',
 				value: 'default',
 			},
-			label: __( 'Use default uploads directory', 'sharing-image' ),
+			label: wp.i18n.__( 'Use default uploads directory', 'sharing-image' ),
 			checked: data.uploads || 'default',
 		},
 		fieldset,
@@ -87,7 +88,7 @@ function createUploadsOptions( options, data ) {
 				name: params.name + '[uploads]',
 				value: 'custom',
 			},
-			label: __( 'Choose custom storage for posters', 'sharing-image' ),
+			label: wp.i18n.__( 'Choose custom storage for posters', 'sharing-image' ),
 			checked: data.uploads || 'default',
 		},
 		fieldset,
@@ -106,7 +107,7 @@ function createUploadsOptions( options, data ) {
 	);
 
 	Build.element( 'small', {
-		text: __( 'Use relative path from site root. Directory should be writeable.', 'sharing-image' ),
+		text: wp.i18n.__( 'Use relative path from site root. Directory should be writeable.', 'sharing-image' ),
 		append: control,
 	} );
 
@@ -139,15 +140,15 @@ function createUploadsOptions( options, data ) {
 function createImageOptions( options, data ) {
 	const control = Build.control( {
 		classes: [ 'sharing-image-config-control', 'control-extra' ],
-		label: __( 'Poster image format', 'sharing-image' ),
-		help: __( 'The higher the value, the less compression. Availible for JPEG only.', 'sharing-image' ),
+		label: wp.i18n.__( 'Poster image format', 'sharing-image' ),
+		help: wp.i18n.__( 'The higher the value, the less compression. Availible for JPEG only.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'select',
 				classes: [ 'sharing-image-config-control-select' ],
 				options: {
-					jpg: __( 'JPEG', 'sharing-image' ),
-					png: __( 'PNG', 'sharing-image' ),
+					jpg: wp.i18n.__( 'JPEG', 'sharing-image' ),
+					png: wp.i18n.__( 'PNG', 'sharing-image' ),
 				},
 				attributes: {
 					name: params.name + '[format]',
@@ -166,7 +167,7 @@ function createImageOptions( options, data ) {
 					value: data.quality || '90',
 					disabled: 'disabled',
 				},
-				label: __( 'Image quality', 'sharing-image' ),
+				label: wp.i18n.__( 'Image quality', 'sharing-image' ),
 			},
 		],
 		append: options,
@@ -202,10 +203,10 @@ function createAutogenerateOptions( options, data, templates ) {
 	const fields = {};
 
 	// Add the option for disabling feature.
-	fields.manual = __( 'Disable auto generation', 'sharing-image' );
+	fields.manual = wp.i18n.__( 'Disable auto generation', 'sharing-image' );
 
 	templates.forEach( ( template, i ) => {
-		fields[ i ] = template.title || __( 'Untitled', 'sharing-image' );
+		fields[ i ] = template.title || wp.i18n.__( 'Untitled', 'sharing-image' );
 	} );
 
 	let selected = data.autogenerate;
@@ -216,8 +217,8 @@ function createAutogenerateOptions( options, data, templates ) {
 
 	Build.control( {
 		classes: [ 'sharing-image-config-control' ],
-		label: __( 'Auto generate poster', 'sharing-image' ),
-		help: __( 'This template will be applied automatically on post save.', 'sharing-image' ),
+		label: wp.i18n.__( 'Auto generate poster', 'sharing-image' ),
+		help: wp.i18n.__( 'This template will be applied automatically on post save.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'select',
@@ -258,7 +259,7 @@ function createMetaFields( options ) {
 	} );
 
 	Build.element( 'button', {
-		text: __( 'Save changes', 'sharing-image' ),
+		text: wp.i18n.__( 'Save changes', 'sharing-image' ),
 		classes: [ 'button', 'button-primary' ],
 		attributes: {
 			type: 'submit',

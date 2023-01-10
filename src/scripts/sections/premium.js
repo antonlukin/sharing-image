@@ -5,8 +5,6 @@
 
 import Build from '../builders';
 
-const { __ } = wp.i18n;
-
 // Store global scriot object for settings page.
 let params = null;
 
@@ -23,24 +21,24 @@ function parseErrorCode( code, title ) {
 	const message = [];
 
 	if ( undefined === title ) {
-		title = __( 'Verification failed.', 'sharing-image' );
+		title = wp.i18n.__( 'Verification failed.', 'sharing-image' );
 	}
 
 	message.push( title );
 
 	switch ( code ) {
 		case 'LIMIT_EXCEEDED':
-			message.push( __( 'The number of valid licenses for this key has been exceeded.', 'sharing-image' ) );
+			message.push( wp.i18n.__( 'The number of licenses for this key has been exceeded.', 'sharing-image' ) );
 
 			break;
 
 		case 'KEY_NOT_FOUND':
-			message.push( __( 'Premium key is invalid or expired.', 'sharing-image' ) );
+			message.push( wp.i18n.__( 'Premium key is invalid or expired.', 'sharing-image' ) );
 
 			break;
 
 		case 'SERVER_ERROR':
-			message.push( __( 'Unable to get a response from the verification server.', 'sharing-image' ) );
+			message.push( wp.i18n.__( 'Unable to get a response from the verification server.', 'sharing-image' ) );
 
 			break;
 	}
@@ -62,7 +60,7 @@ function showPremiumError( message ) {
 	}
 
 	warning.classList.add( 'warning-visible' );
-	warning.textContent = message || __( 'Unknown request error', 'sharing-image' );
+	warning.textContent = message || wp.i18n.__( 'Unknown request error', 'sharing-image' );
 }
 
 /**
@@ -187,7 +185,7 @@ function showVerifyForm( access, license ) {
 	}
 
 	Build.element( 'strong', {
-		text: __( 'Do you already have a key? Enter it here', 'sharing-image' ),
+		text: wp.i18n.__( 'Do you already have a key? Enter it here', 'sharing-image' ),
 		append: access,
 	} );
 
@@ -197,7 +195,7 @@ function showVerifyForm( access, license ) {
 	} );
 
 	Build.element( 'input', {
-		label: __( 'Your Premium key', 'sharing-image' ),
+		label: wp.i18n.__( 'Your Premium key', 'sharing-image' ),
 		attributes: {
 			type: 'text',
 			name: 'sharing_image_key',
@@ -208,7 +206,7 @@ function showVerifyForm( access, license ) {
 
 	Build.element( 'button', {
 		classes: [ 'button' ],
-		text: __( 'Submit', 'sharing-image' ),
+		text: wp.i18n.__( 'Submit', 'sharing-image' ),
 		attributes: {
 			type: 'submit',
 		},
@@ -231,7 +229,9 @@ function showVerifyForm( access, license ) {
  * Show alert for develop license mode.
  */
 function showDevelopAlert() {
-	showPremiumError( __( 'Using plugin with a development license is prohibited in production.', 'sharing-image' ) );
+	showPremiumError(
+		wp.i18n.__( 'Using plugin with a development license is prohibited in production.', 'sharing-image' ),
+	);
 }
 
 /**
@@ -247,9 +247,17 @@ function showRevokeButton( access ) {
 
 	const description = [];
 
-	description.push( __( 'Disabling premium mode will not remove the license for this domain.', 'sharing-image' ) );
-	description.push( __( 'Your current key will also be saved in the plugin settings.', 'sharing-image' ) );
-	description.push( __( 'Use key management tool to delete the license for the site.', 'sharing-image' ) );
+	description.push(
+		wp.i18n.__( 'Disabling premium mode will not remove the license for this domain.', 'sharing-image' ),
+	);
+
+	description.push(
+		wp.i18n.__( 'Your current key will also be saved in the plugin settings.', 'sharing-image' ),
+	);
+
+	description.push(
+		wp.i18n.__( 'Use key management tool to delete the license for the site.', 'sharing-image' ),
+	);
 
 	Build.element( 'p', {
 		text: description.join( ' ' ),
@@ -258,7 +266,7 @@ function showRevokeButton( access ) {
 
 	Build.element( 'button', {
 		classes: [ 'button' ],
-		text: __( 'Disable Premium' ),
+		text: wp.i18n.__( 'Disable Premium' ),
 		attributes: {
 			type: 'submit',
 		},
@@ -291,7 +299,7 @@ function showLicenseInfo( access, key ) {
 
 	const button = Build.element( 'button', {
 		classes: [ 'sharing-image-premium-show', 'button' ],
-		text: __( 'Show License key' ),
+		text: wp.i18n.__( 'Show License key' ),
 		attributes: {
 			type: 'button',
 		},

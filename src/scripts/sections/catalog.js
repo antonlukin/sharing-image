@@ -1,7 +1,5 @@
 import Build from '../builders';
 
-const { __ } = wp.i18n;
-
 // Store global scriot object for settings page.
 let params = null;
 
@@ -39,7 +37,7 @@ function createCard( catalog, index, option ) {
 	} );
 
 	Build.element( 'h2', {
-		text: option.title || __( 'Untitled', 'sharing-image' ),
+		text: option.title || wp.i18n.__( 'Untitled', 'sharing-image' ),
 		append: footer,
 	} );
 
@@ -48,7 +46,7 @@ function createCard( catalog, index, option ) {
 
 	Build.element( 'a', {
 		classes: [ 'button' ],
-		text: __( 'Edit template', 'sharing-image' ),
+		text: wp.i18n.__( 'Edit template', 'sharing-image' ),
 		attributes: {
 			href: link.href,
 		},
@@ -79,7 +77,7 @@ function createNewButton( catalog, index ) {
 	} );
 
 	Build.element( 'strong', {
-		text: __( 'Add new template', 'sharing-image' ),
+		text: wp.i18n.__( 'Add new template', 'sharing-image' ),
 		append: title,
 	} );
 
@@ -95,7 +93,7 @@ function createNewButton( catalog, index ) {
 	}
 
 	Build.element( 'span', {
-		text: __( '(Availible for Premium only)', 'sharing-image' ),
+		text: wp.i18n.__( '(Availible for Premium only)', 'sharing-image' ),
 		append: title,
 	} );
 

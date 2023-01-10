@@ -670,10 +670,7 @@ const Build = {
 };
 /* harmony default export */ const builders = (Build);
 ;// CONCATENATED MODULE: ./src/scripts/sections/catalog.js
-
-const {
-  __
-} = wp.i18n; // Store global scriot object for settings page.
+ // Store global scriot object for settings page.
 
 let params = null;
 /**
@@ -709,14 +706,14 @@ function createCard(catalog, index, option) {
     append: card
   });
   builders.element('h2', {
-    text: option.title || __('Untitled', 'sharing-image'),
+    text: option.title || wp.i18n.__('Untitled', 'sharing-image'),
     append: footer
   });
   const link = new URL(document.location.href);
   link.searchParams.set('template', index);
   builders.element('a', {
     classes: ['button'],
-    text: __('Edit template', 'sharing-image'),
+    text: wp.i18n.__('Edit template', 'sharing-image'),
     attributes: {
       href: link.href
     },
@@ -745,7 +742,7 @@ function createNewButton(catalog, index) {
     append: button
   });
   builders.element('strong', {
-    text: __('Add new template', 'sharing-image'),
+    text: wp.i18n.__('Add new template', 'sharing-image'),
     append: title
   }); // Restrict new template creation for not Premium users.
 
@@ -760,7 +757,7 @@ function createNewButton(catalog, index) {
   }
 
   builders.element('span', {
-    text: __('(Availible for Premium only)', 'sharing-image'),
+    text: wp.i18n.__('(Availible for Premium only)', 'sharing-image'),
     append: title
   });
 
@@ -796,10 +793,7 @@ function createCatalog(content, settings) {
  */
 
 /* global ajaxurl:true */
-
-const {
-  __: editor_
-} = wp.i18n; // Store global scriot object for settings page.
+ // Store global scriot object for settings page.
 
 let editor_params = null; // Preview element.
 
@@ -822,7 +816,7 @@ function showTemplateError(message) {
   }
 
   warning.classList.add('warning-visible');
-  warning.textContent = message || editor_('Unknown generation error', 'sharing-image');
+  warning.textContent = message || wp.i18n.__('Unknown generation error', 'sharing-image');
 }
 /**
  * Remove warning message block.
@@ -970,7 +964,7 @@ function createPermanentAttachment(fieldset, data) {
 
   const control = builders.control({
     classes: ['sharing-image-editor-control', 'control-reduced'],
-    label: editor_('Template background settings', 'sharing-image'),
+    label: wp.i18n.__('Template background settings', 'sharing-image'),
     fields: [{
       group: 'radio',
       classes: ['sharing-image-editor-control-radio'],
@@ -978,7 +972,7 @@ function createPermanentAttachment(fieldset, data) {
         name: editor_params.name + '[background]',
         value: 'blank'
       },
-      label: editor_('Do not use background image', 'sharing-image'),
+      label: wp.i18n.__('Do not use background image', 'sharing-image'),
       checked: data.background
     }, {
       group: 'radio',
@@ -987,8 +981,8 @@ function createPermanentAttachment(fieldset, data) {
         name: editor_params.name + '[background]',
         value: 'dynamic'
       },
-      label: editor_('Select for each post separately', 'sharing-image'),
-      help: editor_('Post thumbnail will be used if autogenerate', 'sharing-image'),
+      label: wp.i18n.__('Select for each post separately', 'sharing-image'),
+      help: wp.i18n.__('Post thumbnail will be used if autogenerate', 'sharing-image'),
       checked: data.background
     }, {
       group: 'radio',
@@ -997,7 +991,7 @@ function createPermanentAttachment(fieldset, data) {
         name: editor_params.name + '[background]',
         value: 'permanent'
       },
-      label: editor_('Upload permanent background', 'sharing-image'),
+      label: wp.i18n.__('Upload permanent background', 'sharing-image'),
       checked: data.background
     }],
     append: fieldset
@@ -1008,9 +1002,9 @@ function createPermanentAttachment(fieldset, data) {
     value: data.attachment,
     link: editor_params.links.uploads,
     labels: {
-      button: editor_('Upload image', 'sharing-image'),
-      heading: editor_('Select background image', 'sharing-image'),
-      details: editor_('Attachment details', 'sharing-image')
+      button: wp.i18n.__('Upload image', 'sharing-image'),
+      heading: wp.i18n.__('Select background image', 'sharing-image'),
+      details: wp.i18n.__('Attachment details', 'sharing-image')
     },
     append: fieldset
   });
@@ -1018,7 +1012,7 @@ function createPermanentAttachment(fieldset, data) {
   upload.disabled = true;
   builders.control({
     classes: ['sharing-image-editor-control'],
-    label: editor_('Fill color', 'sharing-image'),
+    label: wp.i18n.__('Fill color', 'sharing-image'),
     fields: [{
       group: 'input',
       classes: ['sharing-image-editor-control-color'],
@@ -1069,13 +1063,13 @@ function createDynamicFields(layer, name, data) {
       name: name + '[dynamic]',
       value: 'dynamic'
     },
-    label: editor_('Dynamic field. Filled in the post editing screen.', 'sharing-image'),
+    label: wp.i18n.__('Dynamic field. Filled in the post editing screen.', 'sharing-image'),
     checked: data.dynamic
   }, control);
   const fields = [];
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-extend', 'control-hidden'],
-    help: editor_('Displayed only in the metabox.', 'sharing-image'),
+    help: wp.i18n.__('Displayed only in the metabox.', 'sharing-image'),
     fields: [{
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1083,13 +1077,13 @@ function createDynamicFields(layer, name, data) {
         name: name + '[title]',
         value: data.title
       },
-      label: editor_('Field name', 'sharing-image')
+      label: wp.i18n.__('Field name', 'sharing-image')
     }],
     append: layer
   });
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-extend', 'control-hidden'],
-    help: editor_('This field is used for example only, to see how the editor will look.', 'sharing-image'),
+    help: wp.i18n.__('This field is used for example only, to see how the editor will look.', 'sharing-image'),
     fields: [{
       group: 'textarea',
       classes: ['sharing-image-editor-control-textarea'],
@@ -1098,13 +1092,13 @@ function createDynamicFields(layer, name, data) {
         name: name + '[sample]',
         rows: 2
       },
-      label: editor_('Text sample', 'sharing-image')
+      label: wp.i18n.__('Text sample', 'sharing-image')
     }],
     append: layer
   });
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-hidden'],
-    label: editor_('Preset text field', 'sharing-image'),
+    label: wp.i18n.__('Preset text field', 'sharing-image'),
     fields: [{
       group: 'radio',
       classes: ['sharing-image-editor-control-radio'],
@@ -1115,7 +1109,7 @@ function createDynamicFields(layer, name, data) {
       dataset: {
         persistent: true
       },
-      label: editor_('Fill in manually', 'sharing-image'),
+      label: wp.i18n.__('Fill in manually', 'sharing-image'),
       checked: data.preset || 'none'
     }, {
       group: 'radio',
@@ -1127,7 +1121,7 @@ function createDynamicFields(layer, name, data) {
       dataset: {
         persistent: true
       },
-      label: editor_('Take from post title', 'sharing-image'),
+      label: wp.i18n.__('Take from post title', 'sharing-image'),
       checked: data.preset || 'none'
     }, {
       group: 'radio',
@@ -1139,14 +1133,14 @@ function createDynamicFields(layer, name, data) {
       dataset: {
         persistent: true
       },
-      label: editor_('Use post excerpt text', 'sharing-image'),
+      label: wp.i18n.__('Use post excerpt text', 'sharing-image'),
       checked: data.preset || 'none'
     }],
     append: layer
   });
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-extend'],
-    help: editor_('You can use non-breaking spaces to manage your string position.', 'sharing-image'),
+    help: wp.i18n.__('You can use non-breaking spaces to manage your string position.', 'sharing-image'),
     fields: [{
       group: 'textarea',
       classes: ['sharing-image-editor-control-textarea'],
@@ -1155,7 +1149,7 @@ function createDynamicFields(layer, name, data) {
         name: name + '[content]',
         rows: 2
       },
-      label: editor_('Content', 'sharing-image')
+      label: wp.i18n.__('Content', 'sharing-image')
     }],
     append: layer
   }); // Helper function to toggle contols visibility.
@@ -1196,7 +1190,7 @@ function createMoreFields(layer, name, data) {
         name: name + '[color]',
         value: data.color || '#ffffff'
       },
-      label: editor_('Text color', 'sharing-image')
+      label: wp.i18n.__('Text color', 'sharing-image')
     }],
     append: layer
   });
@@ -1206,27 +1200,27 @@ function createMoreFields(layer, name, data) {
       group: 'select',
       classes: ['sharing-image-editor-control-select'],
       options: {
-        left: editor_('Left', 'sharing-image'),
-        center: editor_('Center', 'sharing-image'),
-        right: editor_('Right', 'sharing-image')
+        left: wp.i18n.__('Left', 'sharing-image'),
+        center: wp.i18n.__('Center', 'sharing-image'),
+        right: wp.i18n.__('Right', 'sharing-image')
       },
       attributes: {
         name: name + '[horizontal]'
       },
-      label: editor_('Horizontal alignment', 'sharing-image'),
+      label: wp.i18n.__('Horizontal alignment', 'sharing-image'),
       selected: data.horizontal
     }, {
       group: 'select',
       classes: ['sharing-image-editor-control-select'],
       options: {
-        top: editor_('Top', 'sharing-image'),
-        center: editor_('Center', 'sharing-image'),
-        bottom: editor_('Bottom', 'sharing-image')
+        top: wp.i18n.__('Top', 'sharing-image'),
+        center: wp.i18n.__('Center', 'sharing-image'),
+        bottom: wp.i18n.__('Bottom', 'sharing-image')
       },
       attributes: {
         name: name + '[vertical]'
       },
-      label: editor_('Vertical alignment', 'sharing-image'),
+      label: wp.i18n.__('Vertical alignment', 'sharing-image'),
       selected: data.vertical
     }],
     append: layer
@@ -1237,7 +1231,7 @@ function createMoreFields(layer, name, data) {
   });
   const button = builders.element('button', {
     classes: ['sharing-image-editor-more'],
-    text: editor_('More options', 'sharing-image'),
+    text: wp.i18n.__('More options', 'sharing-image'),
     attributes: {
       type: 'button'
     },
@@ -1275,7 +1269,7 @@ function createFontField(layer, name, data) {
     attributes: {
       name: name + '[fontname]'
     },
-    label: editor_('Font family', 'sharing-image'),
+    label: wp.i18n.__('Font family', 'sharing-image'),
     selected: data.fontname
   }, control);
   const media = builders.media({
@@ -1284,16 +1278,16 @@ function createFontField(layer, name, data) {
     value: data.fontfile,
     link: editor_params.links.uploads,
     labels: {
-      button: editor_('Upload custom font', 'sharing-image'),
-      heading: editor_('Upload custom font', 'sharing-image'),
-      details: editor_('Font attachment', 'sharing-image'),
-      remove: editor_('Remove font', 'sharing-image')
+      button: wp.i18n.__('Upload custom font', 'sharing-image'),
+      heading: wp.i18n.__('Upload custom font', 'sharing-image'),
+      details: wp.i18n.__('Font attachment', 'sharing-image'),
+      remove: wp.i18n.__('Remove font', 'sharing-image')
     },
     remove: true,
     append: control
   });
   builders.element('small', {
-    text: editor_('Custom font can only be in .ttf format.'),
+    text: wp.i18n.__('Custom font can only be in .ttf format.'),
     append: control
   });
 
@@ -1332,7 +1326,7 @@ function createRectangleOutline(layer, name, data) {
       name: name + '[outline]',
       value: 'outline'
     },
-    label: editor_('Outline rectangle.', 'sharing-image'),
+    label: wp.i18n.__('Outline rectangle.', 'sharing-image'),
     checked: data.outline
   }, control);
   const range = builders.control({
@@ -1348,7 +1342,7 @@ function createRectangleOutline(layer, name, data) {
         step: 1,
         value: data.thickness || '0'
       },
-      label: editor_('Border width', 'sharing-image')
+      label: wp.i18n.__('Border width', 'sharing-image')
     }],
     append: layer
   });
@@ -1377,7 +1371,7 @@ function createCatalogButton(footer) {
   link.searchParams.delete('template');
   builders.element('a', {
     classes: ['button'],
-    text: editor_('← Back to Catalog', 'sharing-image'),
+    text: wp.i18n.__('← Back to Catalog', 'sharing-image'),
     attributes: {
       href: link.href
     },
@@ -1402,7 +1396,7 @@ function createDeleteButton(footer) {
   link.searchParams.set('nonce', editor_params.nonce);
   builders.element('a', {
     classes: ['sharing-image-editor-delete'],
-    text: editor_('Delete template', 'sharing-image'),
+    text: wp.i18n.__('Delete template', 'sharing-image'),
     attributes: {
       href: link.href
     },
@@ -1461,20 +1455,20 @@ function createCollapseButton(designer, layer) {
     classes: ['sharing-image-editor-collapse'],
     attributes: {
       type: 'button',
-      title: editor_('Collapse layer', 'sharing-image')
+      title: wp.i18n.__('Collapse layer', 'sharing-image')
     },
     append: label
   });
   button.addEventListener('click', e => {
     e.preventDefault(); // Set default button title.
 
-    button.setAttribute('title', editor_('Collapse layer', 'sharing-image'));
+    button.setAttribute('title', wp.i18n.__('Collapse layer', 'sharing-image'));
     layer.classList.toggle('layer-collapsed'); // Check if new class is collapsed.
 
     const collapsed = layer.classList.contains('layer-collapsed');
 
     if (collapsed) {
-      button.setAttribute('title', editor_('Expand layer', 'sharing-image'));
+      button.setAttribute('title', wp.i18n.__('Expand layer', 'sharing-image'));
     }
   });
 }
@@ -1491,7 +1485,7 @@ function createOrderLayersButton(designer, layer) {
     classes: ['sharing-image-editor-order'],
     attributes: {
       type: 'button',
-      title: editor_('Raise higher', 'sharing-image')
+      title: wp.i18n.__('Raise higher', 'sharing-image')
     },
     append: layer
   });
@@ -1525,7 +1519,7 @@ function createDeleteLayerButton(designer, layer) {
   });
   const button = builders.element('button', {
     classes: ['sharing-image-editor-delete'],
-    text: editor_('Delete layer', 'sharing-image'),
+    text: wp.i18n.__('Delete layer', 'sharing-image'),
     attributes: {
       type: 'button'
     },
@@ -1553,12 +1547,12 @@ function createDeleteLayerButton(designer, layer) {
 
 function createLayerImage(index, data) {
   const description = [];
-  description.push(editor_('Use jpg, gif or png image formats.', 'sharing-image'));
-  description.push(editor_('Leave width and height fields blank to use the original image size.', 'sharing-image'));
-  description.push(editor_('Sizes are calculated proportionally if not filled.', 'sharing-image'));
+  description.push(wp.i18n.__('Use jpg, gif or png image formats.', 'sharing-image'));
+  description.push(wp.i18n.__('Leave width and height fields blank to use the original image size.', 'sharing-image'));
+  description.push(wp.i18n.__('Sizes are calculated proportionally if not filled.', 'sharing-image'));
   const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-image'],
-    label: editor_('Image', 'sharing-image'),
+    label: wp.i18n.__('Image', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
@@ -1577,9 +1571,9 @@ function createLayerImage(index, data) {
     value: data.attachment,
     link: editor_params.links.uploads,
     labels: {
-      button: editor_('Upload image', 'sharing-image'),
-      heading: editor_('Select layer image', 'sharing-image'),
-      details: editor_('Attachment details', 'sharing-image')
+      button: wp.i18n.__('Upload image', 'sharing-image'),
+      heading: wp.i18n.__('Select layer image', 'sharing-image'),
+      details: wp.i18n.__('Attachment details', 'sharing-image')
     },
     append: layer
   });
@@ -1593,7 +1587,7 @@ function createLayerImage(index, data) {
         value: data.x,
         placeholder: '10'
       },
-      label: editor_('X', 'sharing-image')
+      label: wp.i18n.__('X', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1602,7 +1596,7 @@ function createLayerImage(index, data) {
         value: data.y,
         placeholder: '10'
       },
-      label: editor_('Y', 'sharing-image')
+      label: wp.i18n.__('Y', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1610,7 +1604,7 @@ function createLayerImage(index, data) {
         name: name + '[width]',
         value: data.width
       },
-      label: editor_('Width', 'sharing-image')
+      label: wp.i18n.__('Width', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1618,7 +1612,7 @@ function createLayerImage(index, data) {
         name: name + '[height]',
         value: data.height
       },
-      label: editor_('Height', 'sharing-image')
+      label: wp.i18n.__('Height', 'sharing-image')
     }],
     append: layer
   });
@@ -1634,12 +1628,12 @@ function createLayerImage(index, data) {
 
 function createLayerText(index, data) {
   const description = [];
-  description.push(editor_('Write a text to the current image.', 'sharing-image'));
-  description.push(editor_('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
-  description.push(editor_('Avoid using large font sizes for long text – this affects performance.', 'sharing-image'));
+  description.push(wp.i18n.__('Write a text to the current image.', 'sharing-image'));
+  description.push(wp.i18n.__('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
+  description.push(wp.i18n.__('Avoid using large font sizes for long text – this affects performance.', 'sharing-image'));
   const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
-    label: editor_('Text', 'sharing-image'),
+    label: wp.i18n.__('Text', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
@@ -1663,7 +1657,7 @@ function createLayerText(index, data) {
         value: data.x,
         placeholder: '10'
       },
-      label: editor_('X', 'sharing-image')
+      label: wp.i18n.__('X', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1673,7 +1667,7 @@ function createLayerText(index, data) {
         value: data.y,
         placeholder: '10'
       },
-      label: editor_('Y', 'sharing-image')
+      label: wp.i18n.__('Y', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1683,7 +1677,7 @@ function createLayerText(index, data) {
         value: data.width,
         placeholder: '1000'
       },
-      label: editor_('Width', 'sharing-image')
+      label: wp.i18n.__('Width', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1692,7 +1686,7 @@ function createLayerText(index, data) {
         name: name + '[height]',
         value: data.height
       },
-      label: editor_('Height', 'sharing-image')
+      label: wp.i18n.__('Height', 'sharing-image')
     }],
     append: layer
   }); // Create static/dynamic text fields.
@@ -1713,7 +1707,7 @@ function createLayerText(index, data) {
         step: 1,
         value: data.fontsize || '48'
       },
-      label: editor_('Font size', 'sharing-image')
+      label: wp.i18n.__('Font size', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-range'],
@@ -1725,7 +1719,7 @@ function createLayerText(index, data) {
         step: 0.125,
         value: data.lineheight || '1.5'
       },
-      label: editor_('Line height', 'sharing-image')
+      label: wp.i18n.__('Line height', 'sharing-image')
     }],
     append: layer
   });
@@ -1741,11 +1735,11 @@ function createLayerText(index, data) {
 
 function createLayerFilter(index, data) {
   const description = [];
-  description.push(editor_('Filters are applied one after another to the entire editor image.', 'sharing-image'));
-  description.push(editor_('If you want to control their order, create multiple layers.', 'sharing-image'));
+  description.push(wp.i18n.__('Filters are applied one after another to the entire editor image.', 'sharing-image'));
+  description.push(wp.i18n.__('If you want to control their order, create multiple layers.', 'sharing-image'));
   const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
-    label: editor_('Filter', 'sharing-image'),
+    label: wp.i18n.__('Filter', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
@@ -1767,7 +1761,7 @@ function createLayerFilter(index, data) {
         name: name + '[grayscale]',
         value: 'grayscale'
       },
-      label: editor_('Turns image into a grayscale version', 'sharing-image'),
+      label: wp.i18n.__('Turns image into a grayscale version', 'sharing-image'),
       checked: data.grayscale
     }],
     append: layer
@@ -1781,7 +1775,7 @@ function createLayerFilter(index, data) {
         name: name + '[blur]',
         value: 'blur'
       },
-      label: editor_('Blur image by Gaussian effect', 'sharing-image'),
+      label: wp.i18n.__('Blur image by Gaussian effect', 'sharing-image'),
       checked: data.blur
     }],
     append: layer
@@ -1799,7 +1793,7 @@ function createLayerFilter(index, data) {
         step: 5,
         value: data.contrast || '0'
       },
-      label: editor_('Contrast', 'sharing-image')
+      label: wp.i18n.__('Contrast', 'sharing-image')
     }],
     append: layer
   });
@@ -1816,7 +1810,7 @@ function createLayerFilter(index, data) {
         step: 5,
         value: data.brightness || '0'
       },
-      label: editor_('Brightness', 'sharing-image')
+      label: wp.i18n.__('Brightness', 'sharing-image')
     }],
     append: layer
   });
@@ -1833,7 +1827,7 @@ function createLayerFilter(index, data) {
         step: 5,
         value: data.blackout || '0'
       },
-      label: editor_('Blackout', 'sharing-image')
+      label: wp.i18n.__('Blackout', 'sharing-image')
     }],
     append: layer
   });
@@ -1849,12 +1843,12 @@ function createLayerFilter(index, data) {
 
 function createLayerRectangle(index, data) {
   const description = [];
-  description.push(editor_('Draw a colored rectangle on current image.', 'sharing-image'));
-  description.push(editor_('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
-  description.push(editor_('Use small height to draw the line.', 'sharing-image'));
+  description.push(wp.i18n.__('Draw a colored rectangle on current image.', 'sharing-image'));
+  description.push(wp.i18n.__('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
+  description.push(wp.i18n.__('Use small height to draw the line.', 'sharing-image'));
   const layer = builders.layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
-    label: editor_('Rectangle', 'sharing-image'),
+    label: wp.i18n.__('Rectangle', 'sharing-image'),
     description: description.join(' ')
   }); // Form fields name for this layer.
 
@@ -1877,7 +1871,7 @@ function createLayerRectangle(index, data) {
         name: name + '[color]',
         value: data.color || '#ffffff'
       },
-      label: editor_('Rectangle color', 'sharing-image')
+      label: wp.i18n.__('Rectangle color', 'sharing-image')
     }],
     append: layer
   });
@@ -1891,7 +1885,7 @@ function createLayerRectangle(index, data) {
         name: name + '[x]' || 0,
         value: data.x
       },
-      label: editor_('X', 'sharing-image')
+      label: wp.i18n.__('X', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1900,7 +1894,7 @@ function createLayerRectangle(index, data) {
         name: name + '[y]' || 0,
         value: data.y
       },
-      label: editor_('Y', 'sharing-image')
+      label: wp.i18n.__('Y', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1909,7 +1903,7 @@ function createLayerRectangle(index, data) {
         name: name + '[width]',
         value: data.width
       },
-      label: editor_('Width', 'sharing-image')
+      label: wp.i18n.__('Width', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -1918,7 +1912,7 @@ function createLayerRectangle(index, data) {
         name: name + '[height]',
         value: data.height
       },
-      label: editor_('Height', 'sharing-image')
+      label: wp.i18n.__('Height', 'sharing-image')
     }],
     append: layer
   });
@@ -1936,7 +1930,7 @@ function createLayerRectangle(index, data) {
         step: 5,
         value: data.opacity || '0'
       },
-      label: editor_('Opacity', 'sharing-image')
+      label: wp.i18n.__('Opacity', 'sharing-image')
     }],
     append: layer
   });
@@ -2001,17 +1995,17 @@ function createDesigner(fieldset, data) {
       group: 'select',
       classes: ['sharing-image-editor-control-select'],
       options: {
-        text: editor_('Text', 'sharing-image'),
-        image: editor_('Image', 'sharing-image'),
-        filter: editor_('Filter', 'sharing-image'),
-        rectangle: editor_('Rectangle', 'sharing-image')
+        text: wp.i18n.__('Text', 'sharing-image'),
+        image: wp.i18n.__('Image', 'sharing-image'),
+        filter: wp.i18n.__('Filter', 'sharing-image'),
+        rectangle: wp.i18n.__('Rectangle', 'sharing-image')
       }
     }],
     append: fieldset
   });
   const button = builders.element('button', {
     classes: ['button'],
-    text: editor_('Add new', 'sharing-image'),
+    text: wp.i18n.__('Add new', 'sharing-image'),
     attributes: {
       type: 'button'
     },
@@ -2054,7 +2048,7 @@ function createFieldset(data) {
 
   builders.control({
     classes: ['sharing-image-editor-control', 'control-compact', 'control-extend'],
-    help: editor_('Used only in the admin panel', 'sharing-image'),
+    help: wp.i18n.__('Used only in the admin panel', 'sharing-image'),
     fields: [{
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -2065,7 +2059,7 @@ function createFieldset(data) {
       dataset: {
         persistent: true
       },
-      label: editor_('Template title', 'sharing-image')
+      label: wp.i18n.__('Template title', 'sharing-image')
     }],
     append: fieldset
   }); // Create background settings with custom logic.
@@ -2082,7 +2076,7 @@ function createFieldset(data) {
         value: data.width || '1200',
         placeholder: '1200'
       },
-      label: editor_('Editor width', 'sharing-image')
+      label: wp.i18n.__('Editor width', 'sharing-image')
     }, {
       group: 'input',
       classes: ['sharing-image-editor-control-input'],
@@ -2091,17 +2085,17 @@ function createFieldset(data) {
         value: data.height || '630',
         placeholder: '630'
       },
-      label: editor_('Editor height', 'sharing-image')
+      label: wp.i18n.__('Editor height', 'sharing-image')
     }],
     append: fieldset
   });
   const description = [];
-  description.push(editor_('You can add multiple layers on your editor.', 'sharing-image'));
-  description.push(editor_('Note that the stacking order of the layers is important.', 'sharing-image'));
-  description.push(editor_('You can change the order using the arrows in the corner of each box.', 'sharing-image'));
+  description.push(wp.i18n.__('You can add multiple layers on your editor.', 'sharing-image'));
+  description.push(wp.i18n.__('Note that the stacking order of the layers is important.', 'sharing-image'));
+  description.push(wp.i18n.__('You can change the order using the arrows in the corner of each box.', 'sharing-image'));
   builders.control({
     classes: ['sharing-image-editor-control', 'control-reduced'],
-    label: editor_('Add layers', 'sharing-image'),
+    label: wp.i18n.__('Add layers', 'sharing-image'),
     description: description.join(' '),
     append: fieldset
   }); // Create layers designer block.
@@ -2142,7 +2136,7 @@ function createFieldset(data) {
 
 function createSubmitButton(manager) {
   builders.element('button', {
-    text: editor_('Save changes', 'sharing-image'),
+    text: wp.i18n.__('Save changes', 'sharing-image'),
     classes: ['button', 'button-primary'],
     attributes: {
       type: 'submit'
@@ -2159,7 +2153,7 @@ function createSubmitButton(manager) {
 
 function createGenerateButton(manager) {
   const button = builders.element('button', {
-    text: editor_('Generate preview', 'sharing-image'),
+    text: wp.i18n.__('Generate preview', 'sharing-image'),
     classes: ['button'],
     attributes: {
       type: 'button'
@@ -2185,7 +2179,7 @@ function createSuspendCheckbox(manager, data) {
       name: editor_params.name + '[suspend]',
       value: 'suspend'
     },
-    label: editor_('Disable live-reload', 'sharing-image'),
+    label: wp.i18n.__('Disable live-reload', 'sharing-image'),
     checked: data.suspend
   }, manager);
 
@@ -2307,10 +2301,7 @@ function createEditor(content, settings, index) {
 /**
  * Config settings tab.
  */
-
-const {
-  __: config_
-} = wp.i18n; // Store global scriot object for settings page.
+ // Store global scriot object for settings page.
 
 let config_params = null;
 /**
@@ -2323,27 +2314,27 @@ let config_params = null;
 function createDefaultOptions(options, data) {
   const control = builders.control({
     classes: ['sharing-image-config-control'],
-    label: config_('Default poster', 'sharing-image'),
+    label: wp.i18n.__('Default poster', 'sharing-image'),
     append: options
   });
   builders.media({
     name: config_params.name + '[default]',
     classes: ['sharing-image-config-control-media'],
-    label: config_('Default poster', 'sharing-image'),
+    label: wp.i18n.__('Default poster', 'sharing-image'),
     value: data.default,
     link: config_params.links.uploads,
     labels: {
-      button: config_('Upload image', 'sharing-image'),
-      heading: config_('Select default poster', 'sharing-image'),
-      details: config_('Attachment details', 'sharing-image'),
-      remove: config_('Remove image', 'sharing-image')
+      button: wp.i18n.__('Upload image', 'sharing-image'),
+      heading: wp.i18n.__('Select default poster', 'sharing-image'),
+      details: wp.i18n.__('Attachment details', 'sharing-image'),
+      remove: wp.i18n.__('Remove image', 'sharing-image')
     },
     remove: true,
     append: control
   });
   const description = [];
-  description.push(config_('The default poster is used on pages where there is no generated.', 'sharing-image'));
-  description.push(config_('Best image size: 1200×630 pixels.', 'sharing-image'));
+  description.push(wp.i18n.__('The default poster is used on pages where there is no generated.', 'sharing-image'));
+  description.push(wp.i18n.__('Best image size: 1200×630 pixels.', 'sharing-image'));
   builders.element('small', {
     text: description.join(' '),
     append: control
@@ -2360,7 +2351,7 @@ function createDefaultOptions(options, data) {
 function createUploadsOptions(options, data) {
   const control = builders.control({
     classes: ['sharing-image-config-control'],
-    label: config_('Upload directory', 'sharing-image'),
+    label: wp.i18n.__('Upload directory', 'sharing-image'),
     append: options
   });
   const fieldset = builders.element('div', {
@@ -2373,7 +2364,7 @@ function createUploadsOptions(options, data) {
       name: config_params.name + '[uploads]',
       value: 'default'
     },
-    label: config_('Use default uploads directory', 'sharing-image'),
+    label: wp.i18n.__('Use default uploads directory', 'sharing-image'),
     checked: data.uploads || 'default'
   }, fieldset);
   builders.radio({
@@ -2382,7 +2373,7 @@ function createUploadsOptions(options, data) {
       name: config_params.name + '[uploads]',
       value: 'custom'
     },
-    label: config_('Choose custom storage for posters', 'sharing-image'),
+    label: wp.i18n.__('Choose custom storage for posters', 'sharing-image'),
     checked: data.uploads || 'default'
   }, fieldset);
   const input = builders.input({
@@ -2394,7 +2385,7 @@ function createUploadsOptions(options, data) {
     }
   }, control);
   builders.element('small', {
-    text: config_('Use relative path from site root. Directory should be writeable.', 'sharing-image'),
+    text: wp.i18n.__('Use relative path from site root. Directory should be writeable.', 'sharing-image'),
     append: control
   });
   control.querySelectorAll('input').forEach(radio => {
@@ -2427,14 +2418,14 @@ function createUploadsOptions(options, data) {
 function createImageOptions(options, data) {
   const control = builders.control({
     classes: ['sharing-image-config-control', 'control-extra'],
-    label: config_('Poster image format', 'sharing-image'),
-    help: config_('The higher the value, the less compression. Availible for JPEG only.', 'sharing-image'),
+    label: wp.i18n.__('Poster image format', 'sharing-image'),
+    help: wp.i18n.__('The higher the value, the less compression. Availible for JPEG only.', 'sharing-image'),
     fields: [{
       group: 'select',
       classes: ['sharing-image-config-control-select'],
       options: {
-        jpg: config_('JPEG', 'sharing-image'),
-        png: config_('PNG', 'sharing-image')
+        jpg: wp.i18n.__('JPEG', 'sharing-image'),
+        png: wp.i18n.__('PNG', 'sharing-image')
       },
       attributes: {
         name: config_params.name + '[format]'
@@ -2452,7 +2443,7 @@ function createImageOptions(options, data) {
         value: data.quality || '90',
         disabled: 'disabled'
       },
-      label: config_('Image quality', 'sharing-image')
+      label: wp.i18n.__('Image quality', 'sharing-image')
     }],
     append: options
   }); // Find control format select.
@@ -2485,9 +2476,9 @@ function createImageOptions(options, data) {
 function createAutogenerateOptions(options, data, templates) {
   const fields = {}; // Add the option for disabling feature.
 
-  fields.manual = config_('Disable auto generation', 'sharing-image');
+  fields.manual = wp.i18n.__('Disable auto generation', 'sharing-image');
   templates.forEach((template, i) => {
-    fields[i] = template.title || config_('Untitled', 'sharing-image');
+    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
   });
   let selected = data.autogenerate;
 
@@ -2497,8 +2488,8 @@ function createAutogenerateOptions(options, data, templates) {
 
   builders.control({
     classes: ['sharing-image-config-control'],
-    label: config_('Auto generate poster', 'sharing-image'),
-    help: config_('This template will be applied automatically on post save.', 'sharing-image'),
+    label: wp.i18n.__('Auto generate poster', 'sharing-image'),
+    help: wp.i18n.__('This template will be applied automatically on post save.', 'sharing-image'),
     fields: [{
       group: 'select',
       classes: ['sharing-image-config-control-select'],
@@ -2536,7 +2527,7 @@ function createMetaFields(options) {
     append: options
   });
   builders.element('button', {
-    text: config_('Save changes', 'sharing-image'),
+    text: wp.i18n.__('Save changes', 'sharing-image'),
     classes: ['button', 'button-primary'],
     attributes: {
       type: 'submit'
@@ -2592,10 +2583,7 @@ function createConfig(content, settings) {
  */
 
 /* global ajaxurl:true */
-
-const {
-  __: premium_
-} = wp.i18n; // Store global scriot object for settings page.
+ // Store global scriot object for settings page.
 
 let premium_params = null; // Premium HTML emelent.
 
@@ -2611,22 +2599,22 @@ function parseErrorCode(code, title) {
   const message = [];
 
   if (undefined === title) {
-    title = premium_('Verification failed.', 'sharing-image');
+    title = wp.i18n.__('Verification failed.', 'sharing-image');
   }
 
   message.push(title);
 
   switch (code) {
     case 'LIMIT_EXCEEDED':
-      message.push(premium_('The number of valid licenses for this key has been exceeded.', 'sharing-image'));
+      message.push(wp.i18n.__('The number of licenses for this key has been exceeded.', 'sharing-image'));
       break;
 
     case 'KEY_NOT_FOUND':
-      message.push(premium_('Premium key is invalid or expired.', 'sharing-image'));
+      message.push(wp.i18n.__('Premium key is invalid or expired.', 'sharing-image'));
       break;
 
     case 'SERVER_ERROR':
-      message.push(premium_('Unable to get a response from the verification server.', 'sharing-image'));
+      message.push(wp.i18n.__('Unable to get a response from the verification server.', 'sharing-image'));
       break;
   }
 
@@ -2648,7 +2636,7 @@ function showPremiumError(message) {
   }
 
   warning.classList.add('warning-visible');
-  warning.textContent = message || premium_('Unknown request error', 'sharing-image');
+  warning.textContent = message || wp.i18n.__('Unknown request error', 'sharing-image');
 }
 /**
  * Remove warning message block.
@@ -2759,7 +2747,7 @@ function showVerifyForm(access, license) {
   }
 
   builders.element('strong', {
-    text: premium_('Do you already have a key? Enter it here', 'sharing-image'),
+    text: wp.i18n.__('Do you already have a key? Enter it here', 'sharing-image'),
     append: access
   });
   const verify = builders.element('div', {
@@ -2767,7 +2755,7 @@ function showVerifyForm(access, license) {
     append: access
   });
   builders.element('input', {
-    label: premium_('Your Premium key', 'sharing-image'),
+    label: wp.i18n.__('Your Premium key', 'sharing-image'),
     attributes: {
       type: 'text',
       name: 'sharing_image_key',
@@ -2777,7 +2765,7 @@ function showVerifyForm(access, license) {
   });
   builders.element('button', {
     classes: ['button'],
-    text: premium_('Submit', 'sharing-image'),
+    text: wp.i18n.__('Submit', 'sharing-image'),
     attributes: {
       type: 'submit'
     },
@@ -2798,7 +2786,7 @@ function showVerifyForm(access, license) {
 
 
 function showDevelopAlert() {
-  showPremiumError(premium_('Using plugin with a development license is prohibited in production.', 'sharing-image'));
+  showPremiumError(wp.i18n.__('Using plugin with a development license is prohibited in production.', 'sharing-image'));
 }
 /**
  * Show revoke Premium button.
@@ -2813,16 +2801,16 @@ function showRevokeButton(access) {
     append: access
   });
   const description = [];
-  description.push(premium_('Disabling premium mode will not remove the license for this domain.', 'sharing-image'));
-  description.push(premium_('Your current key will also be saved in the plugin settings.', 'sharing-image'));
-  description.push(premium_('Use key management tool to delete the license for the site.', 'sharing-image'));
+  description.push(wp.i18n.__('Disabling premium mode will not remove the license for this domain.', 'sharing-image'));
+  description.push(wp.i18n.__('Your current key will also be saved in the plugin settings.', 'sharing-image'));
+  description.push(wp.i18n.__('Use key management tool to delete the license for the site.', 'sharing-image'));
   builders.element('p', {
     text: description.join(' '),
     append: revoke
   });
   builders.element('button', {
     classes: ['button'],
-    text: premium_('Disable Premium'),
+    text: wp.i18n.__('Disable Premium'),
     attributes: {
       type: 'submit'
     },
@@ -2852,7 +2840,7 @@ function showLicenseInfo(access, key) {
   });
   const button = builders.element('button', {
     classes: ['sharing-image-premium-show', 'button'],
-    text: premium_('Show License key'),
+    text: wp.i18n.__('Show License key'),
     attributes: {
       type: 'button'
     },
@@ -2956,10 +2944,7 @@ function createPremium(content, settings) {
  */
 
 /* global ajaxurl:true */
-
-const {
-  __: picker_
-} = wp.i18n; // Store global script object for metabox.
+ // Store global script object for metabox.
 
 let picker_params = null; // Poster HTML element.
 
@@ -2982,7 +2967,7 @@ function showPickerError(message) {
   }
 
   warning.classList.add('warning-visible');
-  warning.textContent = message || picker_('Unknown generation error', 'sharing-image');
+  warning.textContent = message || wp.i18n.__('Unknown generation error', 'sharing-image');
 }
 /**
  * Remove warning message block.
@@ -3074,7 +3059,7 @@ function generatePoster(picker) {
 function createTemplate(picker, designer, selected) {
   const fields = {};
   picker_params.templates.forEach((template, i) => {
-    fields[i] = template.title || picker_('Untitled', 'sharing-image');
+    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
   });
   const template = builders.select({
     classes: ['sharing-image-picker-template'],
@@ -3183,9 +3168,9 @@ function createDesignerAttachment(fieldset, template, values, name) {
     value: values.attachment,
     link: picker_params.links.uploads,
     labels: {
-      button: picker_('Upload background', 'sharing-image'),
-      heading: picker_('Select background image', 'sharing-image'),
-      details: picker_('Attachment', 'sharing-image')
+      button: wp.i18n.__('Upload background', 'sharing-image'),
+      heading: wp.i18n.__('Select background image', 'sharing-image'),
+      details: wp.i18n.__('Attachment', 'sharing-image')
     },
     append: fieldset
   });
@@ -3292,7 +3277,7 @@ function picker_createDesigner(picker, data) {
 function picker_createGenerateButton(picker, manager) {
   const button = builders.element('button', {
     classes: ['sharing-image-picker-generate', 'button'],
-    text: picker_('Generate', 'sharing-image'),
+    text: wp.i18n.__('Generate', 'sharing-image'),
     attributes: {
       type: 'button'
     },
@@ -3312,7 +3297,7 @@ function picker_createGenerateButton(picker, manager) {
 function picker_createDeleteButton(manager) {
   const button = builders.element('button', {
     classes: ['sharing-image-picker-delete', 'button', 'button-delete'],
-    text: picker_('Remove', 'sharing-image'),
+    text: wp.i18n.__('Remove', 'sharing-image'),
     attributes: {
       type: 'button'
     },
@@ -3416,7 +3401,7 @@ function showSizesWarning(data) {
   }
 
   if (!data.width || !data.height) {
-    showPickerError(picker_('Image sizes are not set. Regenerate the poster.', 'sharing-image'));
+    showPickerError(wp.i18n.__('Image sizes are not set. Regenerate the poster.', 'sharing-image'));
   }
 }
 /**
@@ -3509,7 +3494,7 @@ function buildPicker(widget, settings) {
       append: widget
     });
     builders.element('strong', {
-      text: picker_('Sharing Image', 'sharing-image'),
+      text: wp.i18n.__('Sharing Image', 'sharing-image'),
       append: title
     });
   }
@@ -3549,8 +3534,11 @@ function buildPicker(widget, settings) {
 
 
 function createPicker(widget, settings) {
+  if (wp.data && wp.data.select('core/editor')) {
+    gutenberg = true;
+  }
+
   buildPicker(widget, settings);
-  gutenberg = wp.data && wp.data.select('core/editor');
 
   if (gutenberg) {
     subscribeOnSaving(widget);

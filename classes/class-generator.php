@@ -303,7 +303,10 @@ class Generator {
 			$poster = new PosterEditor();
 
 			// Set color canvas options.
-			$options = array( 'color' => $template['fill'] );
+			$options = array(
+				'color'   => $template['fill'],
+				'opacity' => 0,
+			);
 
 			// Create empty poster.
 			$poster->canvas( $template['width'], $template['height'], $options );

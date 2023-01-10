@@ -5,8 +5,6 @@
 
 import Build from '../builders';
 
-const { __ } = wp.i18n;
-
 // Store global script object for metabox.
 let params = null;
 
@@ -32,7 +30,7 @@ function showPickerError( message ) {
 	}
 
 	warning.classList.add( 'warning-visible' );
-	warning.textContent = message || __( 'Unknown generation error', 'sharing-image' );
+	warning.textContent = message || wp.i18n.__( 'Unknown generation error', 'sharing-image' );
 }
 
 /**
@@ -133,7 +131,7 @@ function createTemplate( picker, designer, selected ) {
 	const fields = {};
 
 	params.templates.forEach( ( template, i ) => {
-		fields[ i ] = template.title || __( 'Untitled', 'sharing-image' );
+		fields[ i ] = template.title || wp.i18n.__( 'Untitled', 'sharing-image' );
 	} );
 
 	const template = Build.select(
@@ -247,9 +245,9 @@ function createDesignerAttachment( fieldset, template, values, name ) {
 		value: values.attachment,
 		link: params.links.uploads,
 		labels: {
-			button: __( 'Upload background', 'sharing-image' ),
-			heading: __( 'Select background image', 'sharing-image' ),
-			details: __( 'Attachment', 'sharing-image' ),
+			button: wp.i18n.__( 'Upload background', 'sharing-image' ),
+			heading: wp.i18n.__( 'Select background image', 'sharing-image' ),
+			details: wp.i18n.__( 'Attachment', 'sharing-image' ),
 		},
 		append: fieldset,
 	} );
@@ -365,7 +363,7 @@ function createDesigner( picker, data ) {
 function createGenerateButton( picker, manager ) {
 	const button = Build.element( 'button', {
 		classes: [ 'sharing-image-picker-generate', 'button' ],
-		text: __( 'Generate', 'sharing-image' ),
+		text: wp.i18n.__( 'Generate', 'sharing-image' ),
 		attributes: {
 			type: 'button',
 		},
@@ -385,7 +383,7 @@ function createGenerateButton( picker, manager ) {
 function createDeleteButton( manager ) {
 	const button = Build.element( 'button', {
 		classes: [ 'sharing-image-picker-delete', 'button', 'button-delete' ],
-		text: __( 'Remove', 'sharing-image' ),
+		text: wp.i18n.__( 'Remove', 'sharing-image' ),
 		attributes: {
 			type: 'button',
 		},
@@ -495,7 +493,7 @@ function showSizesWarning( data ) {
 	}
 
 	if ( ! data.width || ! data.height ) {
-		showPickerError( __( 'Image sizes are not set. Regenerate the poster.', 'sharing-image' ) );
+		showPickerError( wp.i18n.__( 'Image sizes are not set. Regenerate the poster.', 'sharing-image' ) );
 	}
 }
 
@@ -599,7 +597,7 @@ function buildPicker( widget, settings ) {
 		} );
 
 		Build.element( 'strong', {
-			text: __( 'Sharing Image', 'sharing-image' ),
+			text: wp.i18n.__( 'Sharing Image', 'sharing-image' ),
 			append: title,
 		} );
 	}
@@ -645,9 +643,11 @@ function buildPicker( widget, settings ) {
  * @param {Object}      settings Global settings object.
  */
 function createPicker( widget, settings ) {
-	buildPicker( widget, settings );
+	if ( wp.data && wp.data.select( 'core/editor' ) ) {
+		gutenberg = true;
+	}
 
-	gutenberg = wp.data && wp.data.select( 'core/editor' );
+	buildPicker( widget, settings );
 
 	if ( gutenberg ) {
 		subscribeOnSaving( widget );
