@@ -79,11 +79,12 @@ class Generator {
 	/**
 	 * Compose image using picker data.
 	 *
-	 * @param array $picker Picker data from metabox.
+	 * @param array $picker    Picker data from metabox.
+	 * @param int   $screen_id Post or term ID from admin screen.
 	 *
 	 * @return array|WP_Error Poster url, width and height or WP_Error on failure.
 	 */
-	public function compose( $picker ) {
+	public function compose( $picker, $screen_id ) {
 		if ( ! isset( $picker['template'] ) ) {
 			return new WP_Error( 'validate', esc_html__( 'Template id cannot be empty', 'sharing-image' ) );
 		}
@@ -103,7 +104,7 @@ class Generator {
 			$fieldset = $picker['fieldset'][ $id ];
 		}
 
-		$template = $this->prepare_template( $templates[ $id ], $fieldset );
+		$template = $this->prepare_template( $templates[ $id ], $fieldset, null, $screen_id );
 
 		if ( ! $this->check_required( $template ) ) {
 			return new WP_Error( 'generate', esc_html__( 'Wrong template settings', 'sharing-image' ) );
@@ -220,7 +221,7 @@ class Generator {
 			$fieldset['attachment'] = $thumbnail_id;
 		}
 
-		$template = $this->prepare_template( $template, $fieldset );
+		$template = $this->prepare_template( $template, $fieldset, null, $post_id );
 
 		return $template;
 	}
@@ -229,13 +230,14 @@ class Generator {
 	 * Prepare template before creating poster.
 	 * Used to fill fieldset texts and background image.
 	 *
-	 * @param array   $template List of template data.
-	 * @param array   $fieldset Optional. Fieldset data from picker.
-	 * @param integer $index    Optional. Template index from editor.
+	 * @param array   $template  List of template data.
+	 * @param array   $fieldset  Optional. Fieldset data from picker.
+	 * @param integer $index     Optional. Template index from editor.
+	 * @param integer $screen_id Optional. Post or term ID from admin screen.
 	 *
 	 * @return array List of template data.
 	 */
-	private function prepare_template( $template, $fieldset = array(), $index = null ) {
+	private function prepare_template( $template, $fieldset = array(), $index = null, $screen_id = 0 ) {
 		$layers = array();
 
 		if ( isset( $template['layers'] ) ) {
@@ -283,11 +285,12 @@ class Generator {
 		/**
 		 * Filters template before generation.
 		 *
-		 * @param array   $template List of template data.
-		 * @param array   $fieldset Fieldset data from picker.
-		 * @param integer $index    Template index from editor.
+		 * @param array   $template  List of template data.
+		 * @param array   $fieldset  Fieldset data from picker.
+		 * @param integer $index     Template index from editor.
+		 * @param integer $screen_id Post or term ID from admin screen.
 		 */
-		return apply_filters( 'sharing_image_prepare_template', $template, $fieldset, $index );
+		return apply_filters( 'sharing_image_prepare_template', $template, $fieldset, $index, $screen_id );
 	}
 
 	/**

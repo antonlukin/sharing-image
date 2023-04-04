@@ -74,7 +74,7 @@ class Widget {
 		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
 
 		// Handle actions on post save.
-		add_action( 'save_post', array( $this, 'save_metabox' ), 10, 2 );
+		add_action( 'save_post', array( $this, 'save_metabox' ), 10 );
 
 		// Add required assets and objects.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
@@ -137,7 +137,7 @@ class Widget {
 		// Get post meta for current post ID.
 		$meta = get_post_meta( $post->ID, self::WIDGET_META, true );
 
-		$this->enqueue_scripts( $this->create_script_object( $meta, 'metabox' ) );
+		$this->enqueue_scripts( $this->create_script_object( $meta, 'metabox', $post->ID ) );
 		$this->enqueue_styles();
 	}
 
@@ -168,17 +168,16 @@ class Widget {
 		// Get term meta for current term ID.
 		$meta = get_term_meta( $term_id, self::WIDGET_META, true );
 
-		$this->enqueue_scripts( $this->create_script_object( $meta, 'taxonomy' ) );
+		$this->enqueue_scripts( $this->create_script_object( $meta, 'taxonomy', $term_id ) );
 		$this->enqueue_styles();
 	}
 
 	/**
 	 * Save metabox data.
 	 *
-	 * @param int     $post_id Post ID.
-	 * @param WP_Post $post    Post object.
+	 * @param int $post_id Post ID.
 	 */
-	public function save_metabox( $post_id, $post ) {
+	public function save_metabox( $post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -296,11 +295,17 @@ class Widget {
 			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
 		}
 
+		$screen_id = 0;
+
+		if ( ! empty( $_POST['sharing_image_screen'] ) ) {
+			$screen_id = absint( wp_unslash( $_POST['sharing_image_screen'] ) );
+		}
+
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$picker = $this->sanitize_picker( wp_unslash( $_POST['sharing_image_picker'] ) );
 
 		// Compose new poster data.
-		$source = ( new Generator() )->compose( $picker );
+		$source = ( new Generator() )->compose( $picker, $screen_id );
 
 		if ( is_wp_error( $source ) ) {
 			wp_send_json_error( $source->get_error_message(), 400 );
@@ -328,7 +333,7 @@ class Widget {
 		// Get post meta for current post ID.
 		$meta = get_post_meta( $post_id, self::WIDGET_META, true );
 
-		wp_send_json_success( $this->create_script_object( $meta, 'metabox' ) );
+		wp_send_json_success( $this->create_script_object( $meta, 'metabox', $post_id ) );
 	}
 
 	/**
@@ -418,9 +423,9 @@ class Widget {
 	/**
 	 * Enqueue widget scripts.
 	 *
-	 * @param array $object Widget data object.
+	 * @param array $data Widget data object.
 	 */
-	private function enqueue_scripts( $object ) {
+	private function enqueue_scripts( $data ) {
 		wp_enqueue_media();
 
 		wp_enqueue_script(
@@ -434,7 +439,7 @@ class Widget {
 		wp_set_script_translations( 'sharing-image-settings', 'sharing-image' );
 
 		// Add widget script object.
-		wp_localize_script( 'sharing-image-widget', 'sharingImageWidget', $object );
+		wp_localize_script( 'sharing-image-widget', 'sharingImageWidget', $data );
 	}
 
 	/**
@@ -512,16 +517,18 @@ class Widget {
 	/**
 	 * Create script object to inject with widget.
 	 *
-	 * @param array  $meta    Term or Post meta data.
-	 * @param string $context Widget context. For example: metabox or taxonomy.
-
+	 * @param array  $meta      Term or Post meta data.
+	 * @param string $context   Widget context. For example: metabox or taxonomy.
+	 * @param int    $screen_id Post or taxonomy screen ID.
+	 *
 	 * @return array Filtered widget script object.
 	 */
-	private function create_script_object( $meta, $context ) {
+	private function create_script_object( $meta, $context, $screen_id ) {
 		$object = array(
 			'meta'      => $meta,
 			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
 			'context'   => $context,
+			'screen'    => $screen_id,
 
 			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),

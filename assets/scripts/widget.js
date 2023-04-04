@@ -3524,6 +3524,14 @@ function buildPicker(widget, settings) {
     },
     append: picker
   });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_screen',
+      value: picker_params.screen
+    },
+    append: picker
+  });
 }
 /**
  * Create metabox generator picker and subscribe to events.

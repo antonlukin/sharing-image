@@ -634,6 +634,15 @@ function buildPicker( widget, settings ) {
 		},
 		append: picker,
 	} );
+
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: 'sharing_image_screen',
+			value: params.screen,
+		},
+		append: picker,
+	} );
 }
 
 /**
