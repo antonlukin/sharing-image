@@ -3,7 +3,7 @@ Contributors: antonlukin
 Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
-Tested up to: 6.1
+Tested up to: 6.2
 Stable tag: 2.0.15
 Requires PHP: 5.5
 License: GPLv2 or later
