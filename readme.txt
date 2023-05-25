@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 2.0.15
+Stable tag: 2.0.16
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -30,13 +30,17 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 
 == Changelog ==
 
+= 2.0.16 =
+* Added optional $context parameter to `sharing_image_prepare_template` filter
+* Added GIF Poster image format to plugin configuration
+
 = 2.0.15 =
-* Add optional $screen_id parameter to `sharing_image_prepare_template` filter
-* Update packages
+* Added optional $screen_id parameter to `sharing_image_prepare_template` filter
+* Updated packages
 
 = 2.0.14 =
-* Fix poster background opacity on template editor screen
-* Try to fix js obfuscation for i18n functions
+* Fixed poster background opacity on template editor screen
+* Fixed js obfuscation for i18n functions
 
 = 2.0.13 =
 * Added second parameter to sharing_image_poster and sharing_image_poster_src public functions

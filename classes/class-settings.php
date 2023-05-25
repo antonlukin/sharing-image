@@ -1264,7 +1264,7 @@ class Settings {
 		if ( isset( $config['format'] ) ) {
 			$format = $config['format'];
 
-			if ( in_array( $format, array( 'jpg', 'png' ), true ) ) {
+			if ( in_array( $format, array( 'jpg', 'png', 'gif' ), true ) ) {
 				$sanitized['format'] = $config['format'];
 			}
 		}
@@ -1486,7 +1486,7 @@ class Settings {
 		$permissions = apply_filters( 'sharing_image_directory_permissions', 0755 );
 
 		// We do not pay attention to the possible error.
-		mkdir( ABSPATH . $storage, $permissions, true );
+		wp_mkdir_p( ABSPATH . $storage, $permissions, true );
 
 		return array( ABSPATH . $storage, site_url( $storage ) );
 	}
@@ -1494,13 +1494,13 @@ class Settings {
 	/**
 	 * Add message id to the back link and redirect
 	 *
-	 * @param string $return  Redirect link.
-	 * @param int    $message Settings error message id.
+	 * @param string $redirect Redirect link.
+	 * @param int    $message  Settings error message id.
 	 */
-	private function redirect_with_message( $return, $message ) {
+	private function redirect_with_message( $redirect, $message ) {
 		$return = add_query_arg( array( 'message' => $message ), $return );
 
-		wp_safe_redirect( $return );
+		wp_safe_redirect( $redirect );
 		exit;
 	}
 

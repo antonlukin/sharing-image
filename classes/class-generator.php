@@ -52,7 +52,7 @@ class Generator {
 			return false;
 		}
 
-		$template = $this->generate_template( $templates[ $id ], $post_id );
+		$template = $this->build_template( $templates[ $id ], $post_id );
 
 		if ( ! $this->check_required( $template ) ) {
 			return false;
@@ -79,12 +79,13 @@ class Generator {
 	/**
 	 * Compose image using picker data.
 	 *
-	 * @param array $picker    Picker data from metabox.
-	 * @param int   $screen_id Post or term ID from admin screen.
+	 * @param array  $picker    Picker data from metabox.
+	 * @param int    $screen_id Post or term ID from admin screen.
+	 * @param string $context   Screen ID context field. Can be settings, post or term.
 	 *
 	 * @return array|WP_Error Poster url, width and height or WP_Error on failure.
 	 */
-	public function compose( $picker, $screen_id ) {
+	public function compose( $picker, $screen_id, $context ) {
 		if ( ! isset( $picker['template'] ) ) {
 			return new WP_Error( 'validate', esc_html__( 'Template id cannot be empty', 'sharing-image' ) );
 		}
@@ -104,7 +105,7 @@ class Generator {
 			$fieldset = $picker['fieldset'][ $id ];
 		}
 
-		$template = $this->prepare_template( $templates[ $id ], $fieldset, null, $screen_id );
+		$template = $this->prepare_template( $templates[ $id ], $fieldset, null, $screen_id, $context );
 
 		if ( ! $this->check_required( $template ) ) {
 			return new WP_Error( 'generate', esc_html__( 'Wrong template settings', 'sharing-image' ) );
@@ -188,7 +189,7 @@ class Generator {
 	 *
 	 * @return array List of template data.
 	 */
-	private function generate_template( $template, $post_id ) {
+	private function build_template( $template, $post_id ) {
 		$layers = array();
 
 		if ( isset( $template['layers'] ) ) {
@@ -221,7 +222,7 @@ class Generator {
 			$fieldset['attachment'] = $thumbnail_id;
 		}
 
-		$template = $this->prepare_template( $template, $fieldset, null, $post_id );
+		$template = $this->prepare_template( $template, $fieldset, null, $post_id, 'post' );
 
 		return $template;
 	}
@@ -234,10 +235,11 @@ class Generator {
 	 * @param array   $fieldset  Optional. Fieldset data from picker.
 	 * @param integer $index     Optional. Template index from editor.
 	 * @param integer $screen_id Optional. Post or term ID from admin screen.
+	 * @param string  $context   Optional. Screen ID context field. Can be settings, post or term.
 	 *
 	 * @return array List of template data.
 	 */
-	private function prepare_template( $template, $fieldset = array(), $index = null, $screen_id = 0 ) {
+	private function prepare_template( $template, $fieldset = array(), $index = null, $screen_id = 0, $context = 'settings' ) {
 		$layers = array();
 
 		if ( isset( $template['layers'] ) ) {
@@ -289,8 +291,9 @@ class Generator {
 		 * @param array   $fieldset  Fieldset data from picker.
 		 * @param integer $index     Template index from editor.
 		 * @param integer $screen_id Post or term ID from admin screen.
+		 * @param string  $context   Screen ID context field. Can be settings, post or term.
 		 */
-		return apply_filters( 'sharing_image_prepare_template', $template, $fieldset, $index, $screen_id );
+		return apply_filters( 'sharing_image_prepare_template', $template, $fieldset, $index, $screen_id, $context );
 	}
 
 	/**

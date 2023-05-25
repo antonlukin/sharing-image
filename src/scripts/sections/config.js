@@ -149,6 +149,7 @@ function createImageOptions( options, data ) {
 				options: {
 					jpg: wp.i18n.__( 'JPEG', 'sharing-image' ),
 					png: wp.i18n.__( 'PNG', 'sharing-image' ),
+					gif: wp.i18n.__( 'GIF', 'sharing-image' ),
 				},
 				attributes: {
 					name: params.name + '[format]',

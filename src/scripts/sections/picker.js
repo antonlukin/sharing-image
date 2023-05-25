@@ -590,7 +590,7 @@ function buildPicker( widget, settings ) {
 		widget.removeChild( widget.lastChild );
 	}
 
-	if ( 'taxonomy' === params.context ) {
+	if ( 'term' === params.context ) {
 		const title = Build.element( 'div', {
 			classes: [ 'sharing-image-title' ],
 			append: widget,
@@ -640,6 +640,15 @@ function buildPicker( widget, settings ) {
 			type: 'hidden',
 			name: 'sharing_image_screen',
 			value: params.screen,
+		},
+		append: picker,
+	} );
+
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: 'sharing_image_context',
+			value: params.context,
 		},
 		append: picker,
 	} );

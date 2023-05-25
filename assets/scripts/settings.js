@@ -2425,7 +2425,8 @@ function createImageOptions(options, data) {
       classes: ['sharing-image-config-control-select'],
       options: {
         jpg: wp.i18n.__('JPEG', 'sharing-image'),
-        png: wp.i18n.__('PNG', 'sharing-image')
+        png: wp.i18n.__('PNG', 'sharing-image'),
+        gif: wp.i18n.__('GIF', 'sharing-image')
       },
       attributes: {
         name: config_params.name + '[format]'
@@ -3488,7 +3489,7 @@ function buildPicker(widget, settings) {
     widget.removeChild(widget.lastChild);
   }
 
-  if ('taxonomy' === picker_params.context) {
+  if ('term' === picker_params.context) {
     const title = builders.element('div', {
       classes: ['sharing-image-title'],
       append: widget
@@ -3529,6 +3530,14 @@ function buildPicker(widget, settings) {
       type: 'hidden',
       name: 'sharing_image_screen',
       value: picker_params.screen
+    },
+    append: picker
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_context',
+      value: picker_params.context
     },
     append: picker
   });

@@ -137,7 +137,7 @@ class Widget {
 		// Get post meta for current post ID.
 		$meta = get_post_meta( $post->ID, self::WIDGET_META, true );
 
-		$this->enqueue_scripts( $this->create_script_object( $meta, 'metabox', $post->ID ) );
+		$this->enqueue_scripts( $this->create_script_object( $meta, 'post', $post->ID ) );
 		$this->enqueue_styles();
 	}
 
@@ -168,7 +168,7 @@ class Widget {
 		// Get term meta for current term ID.
 		$meta = get_term_meta( $term_id, self::WIDGET_META, true );
 
-		$this->enqueue_scripts( $this->create_script_object( $meta, 'taxonomy', $term_id ) );
+		$this->enqueue_scripts( $this->create_script_object( $meta, 'term', $term_id ) );
 		$this->enqueue_styles();
 	}
 
@@ -301,11 +301,17 @@ class Widget {
 			$screen_id = absint( wp_unslash( $_POST['sharing_image_screen'] ) );
 		}
 
+		$context = 'post';
+
+		if ( ! empty( $_POST['sharing_image_context'] ) ) {
+			$context = sanitize_key( wp_unslash( $_POST['sharing_image_context'] ) );
+		}
+
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$picker = $this->sanitize_picker( wp_unslash( $_POST['sharing_image_picker'] ) );
 
 		// Compose new poster data.
-		$source = ( new Generator() )->compose( $picker, $screen_id );
+		$source = ( new Generator() )->compose( $picker, $screen_id, $context );
 
 		if ( is_wp_error( $source ) ) {
 			wp_send_json_error( $source->get_error_message(), 400 );
@@ -333,7 +339,7 @@ class Widget {
 		// Get post meta for current post ID.
 		$meta = get_post_meta( $post_id, self::WIDGET_META, true );
 
-		wp_send_json_success( $this->create_script_object( $meta, 'metabox', $post_id ) );
+		wp_send_json_success( $this->create_script_object( $meta, 'post', $post_id ) );
 	}
 
 	/**

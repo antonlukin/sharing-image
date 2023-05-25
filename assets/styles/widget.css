@@ -199,11 +199,11 @@ body.block-editor-page select:hover {
     padding: 10px 0 0 0;
   }
 }
-.sharing-image-widget.widget-taxonomy {
+.sharing-image-widget.widget-term {
   max-width: 95%;
   margin-bottom: 20px;
 }
-.sharing-image-widget.widget-taxonomy .sharing-image-picker {
+.sharing-image-widget.widget-term .sharing-image-picker {
   margin-top: 15px;
   padding: 10px;
   background: #fff;
@@ -211,7 +211,7 @@ body.block-editor-page select:hover {
   border-radius: 3px;
 }
 @media screen and (max-width: 782px) {
-  .sharing-image-widget.widget-taxonomy {
+  .sharing-image-widget.widget-term {
     display: block;
   }
 }
