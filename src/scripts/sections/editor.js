@@ -562,7 +562,7 @@ function createFontField( layer, name, data ) {
 	} );
 
 	Build.element( 'small', {
-		text: wp.i18n.__( 'Custom font can only be in .ttf format.' ),
+		text: wp.i18n.__( 'Custom font can only be in .ttf format.', 'sharing-image' ),
 		append: control,
 	} );
 
