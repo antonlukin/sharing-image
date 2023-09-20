@@ -1498,7 +1498,7 @@ class Settings {
 	 * @param int    $message  Settings error message id.
 	 */
 	private function redirect_with_message( $redirect, $message ) {
-		$return = add_query_arg( array( 'message' => $message ), $return );
+		$redirect = add_query_arg( array( 'message' => $message ), $redirect );
 
 		wp_safe_redirect( $redirect );
 		exit;
