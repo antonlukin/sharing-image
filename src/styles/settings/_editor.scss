@@ -184,38 +184,6 @@
         width: 100%;
       }
     }
-
-    .sharing-image-editor-control-input {
-      @include control-input;
-    }
-
-    .sharing-image-editor-control-radio {
-      @include control-radio;
-    }
-
-    .sharing-image-editor-control-select {
-      @include control-select;
-    }
-
-    .sharing-image-editor-control-checkbox {
-      @include control-checkbox;
-    }
-
-    .sharing-image-editor-control-textarea {
-      @include control-textarea;
-    }
-
-    .sharing-image-editor-control-range {
-      @include control-range;
-    }
-
-    .sharing-image-editor-control-media {
-      @include control-media;
-    }
-
-    .sharing-image-editor-control-color {
-      @include control-color;
-    }
   }
 
   .sharing-image-editor-designer {
@@ -279,8 +247,8 @@
     display: block;
     cursor: pointer;
 
-    margin-left: 0.5rem;
-    padding: 0.25rem 0 0;
+    margin-left: 8px;
+    padding: 4px 0 0;
     line-height: 1;
 
     font-size: 14px;
@@ -420,6 +388,10 @@
     @media screen and (max-width: 1279px) {
       flex: 0 0 400px;
     }
+
+    @media screen and (max-width: 1023px) {
+      flex: 0 1 640px;
+    }
   }
 
   .sharing-image-editor-viewport {
@@ -546,12 +518,50 @@
       margin: 0 8px 0 0;
     }
 
-    @media screen and (max-width: 782px) {
+    @media screen and (max-width: 1279px) {
       order: 0;
 
       width: 100%;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    @media screen and (max-width: 782px) {
+      margin-top: 10px;
       margin-bottom: 24px;
     }
+  }
+
+  .sharing-image-editor-control-input {
+    @include control-input;
+  }
+
+  .sharing-image-editor-control-radio {
+    @include control-radio;
+  }
+
+  .sharing-image-editor-control-select {
+    @include control-select;
+  }
+
+  .sharing-image-editor-control-checkbox {
+    @include control-checkbox;
+  }
+
+  .sharing-image-editor-control-textarea {
+    @include control-textarea;
+  }
+
+  .sharing-image-editor-control-range {
+    @include control-range;
+  }
+
+  .sharing-image-editor-control-media {
+    @include control-media;
+  }
+
+  .sharing-image-editor-control-color {
+    @include control-color;
   }
 
   @media screen and (max-width: 1023px) {

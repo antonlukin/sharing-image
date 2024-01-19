@@ -3,6 +3,7 @@ import createEditor from './editor.js';
 import createConfig from './config.js';
 import createPremium from './premium.js';
 import createPicker from './picker.js';
+import createTools from './tools.js';
 
 const Section = {
 	catalog: createCatalog,
@@ -10,6 +11,7 @@ const Section = {
 	config: createConfig,
 	premium: createPremium,
 	picker: createPicker,
+	tools: createTools,
 };
 
 export default Section;

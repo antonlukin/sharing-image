@@ -266,7 +266,7 @@ function showRevokeButton( access ) {
 
 	Build.element( 'button', {
 		classes: [ 'button' ],
-		text: wp.i18n.__( 'Disable Premium' ),
+		text: wp.i18n.__( 'Disable Premium', 'sharing-image' ),
 		attributes: {
 			type: 'submit',
 		},
@@ -299,7 +299,7 @@ function showLicenseInfo( access, key ) {
 
 	const button = Build.element( 'button', {
 		classes: [ 'sharing-image-premium-show', 'button' ],
-		text: wp.i18n.__( 'Show License key' ),
+		text: wp.i18n.__( 'Show License key', 'sharing-image' ),
 		attributes: {
 			type: 'button',
 		},

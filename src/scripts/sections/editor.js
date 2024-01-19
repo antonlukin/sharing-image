@@ -5,7 +5,7 @@
 
 import Build from '../builders';
 
-// Store global scriot object for settings page.
+// Store global script object for settings page.
 let params = null;
 
 // Preview element.
@@ -674,7 +674,7 @@ function createDeleteButton( footer ) {
 	const index = href.searchParams.get( 'template' );
 
 	// Set template index to delete link.
-	const link = new URL( editor.getAttribute( 'action' ) );
+	const link = new URL( params.links.action );
 
 	link.searchParams.set( 'action', 'sharing_image_delete' );
 	link.searchParams.set( 'template', index );

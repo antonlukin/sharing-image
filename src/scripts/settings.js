@@ -22,6 +22,16 @@ function initConfigTab( content, settings ) {
 }
 
 /**
+ * Init tools settings tab.
+ *
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings object.
+ */
+function initToolsTab( content, settings ) {
+	Section.tools( content, settings );
+}
+
+/**
  * Init config settings tab.
  *
  * @param {HTMLElement} content  Settings content element.
@@ -78,6 +88,11 @@ function initTemplatesTab( content, settings ) {
 	switch ( Helper.param( 'tab' ) ) {
 		case 'config':
 			initConfigTab( content, object );
+
+			break;
+
+		case 'tools':
+			initToolsTab( content, object );
 
 			break;
 

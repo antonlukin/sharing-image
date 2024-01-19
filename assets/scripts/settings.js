@@ -793,7 +793,7 @@ function createCatalog(content, settings) {
  */
 
 /* global ajaxurl:true */
- // Store global scriot object for settings page.
+ // Store global script object for settings page.
 
 let editor_params = null; // Preview element.
 
@@ -1287,7 +1287,7 @@ function createFontField(layer, name, data) {
     append: control
   });
   builders.element('small', {
-    text: wp.i18n.__('Custom font can only be in .ttf format.'),
+    text: wp.i18n.__('Custom font can only be in .ttf format.', 'sharing-image'),
     append: control
   });
 
@@ -1390,7 +1390,7 @@ function createDeleteButton(footer) {
 
   const index = href.searchParams.get('template'); // Set template index to delete link.
 
-  const link = new URL(editor.getAttribute('action'));
+  const link = new URL(editor_params.links.action);
   link.searchParams.set('action', 'sharing_image_delete');
   link.searchParams.set('template', index);
   link.searchParams.set('nonce', editor_params.nonce);
@@ -2301,7 +2301,7 @@ function createEditor(content, settings, index) {
 /**
  * Config settings tab.
  */
- // Store global scriot object for settings page.
+ // Store global script object for settings page.
 
 let config_params = null;
 /**
@@ -2545,7 +2545,7 @@ function createMetaFields(options) {
 
 
 function createConfig(content, settings) {
-  config_params = settings; // Set params name for template form fields.
+  config_params = settings; // Set params name for config form fields.
 
   config_params.name = 'sharing_image_config'; // Find config element
 
@@ -2811,7 +2811,7 @@ function showRevokeButton(access) {
   });
   builders.element('button', {
     classes: ['button'],
-    text: wp.i18n.__('Disable Premium'),
+    text: wp.i18n.__('Disable Premium', 'sharing-image'),
     attributes: {
       type: 'submit'
     },
@@ -2841,7 +2841,7 @@ function showLicenseInfo(access, key) {
   });
   const button = builders.element('button', {
     classes: ['sharing-image-premium-show', 'button'],
-    text: wp.i18n.__('Show License key'),
+    text: wp.i18n.__('Show License key', 'sharing-image'),
     attributes: {
       type: 'button'
     },
@@ -3563,7 +3563,137 @@ function createPicker(widget, settings) {
 }
 
 /* harmony default export */ const picker = (createPicker);
+;// CONCATENATED MODULE: ./src/scripts/sections/tools.js
+/**
+ * Tools settings tab.
+ */
+ // Store global script object for settings page.
+
+let tools_params = null;
+/**
+ * Create export options block.
+ *
+ * @param {HTMLElement} options Options form element.
+ */
+
+function createExportOptions(options) {
+  const control = builders.control({
+    classes: ['sharing-image-tools-control'],
+    label: wp.i18n.__('Export templates', 'sharing-image'),
+    append: options
+  });
+  const fieldset = builders.element('div', {
+    classes: ['sharing-image-tools-control-fieldset'],
+    append: control
+  }); // Set template index to delete link.
+
+  const link = new URL(tools_params.links.action);
+  link.searchParams.set('action', 'sharing_image_export');
+  link.searchParams.set('nonce', tools_params.nonce);
+  builders.element('a', {
+    classes: ['button', 'button-primary'],
+    text: wp.i18n.__('Download backup file', 'sharing-image'),
+    attributes: {
+      href: link.href
+    },
+    append: fieldset
+  });
+  builders.element('small', {
+    text: wp.i18n.__('Save a local copy of all template settings for later use.', 'sharing-image'),
+    append: fieldset
+  });
+}
+/**
+ * Create import options block.
+ *
+ * @param {HTMLElement} options Options form element.
+ */
+
+
+function createImportOptions(options) {
+  const control = builders.control({
+    classes: ['sharing-image-tools-control'],
+    label: wp.i18n.__('Import templates', 'sharing-image'),
+    append: options
+  });
+  const uploader = builders.element('form', {
+    classes: ['sharing-image-tools-control-uploader'],
+    attributes: {
+      action: tools_params.links.action,
+      method: 'POST',
+      enctype: 'multipart/form-data'
+    },
+    append: control
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'action',
+      value: 'sharing_image_import'
+    },
+    append: uploader
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_nonce',
+      value: tools_params.nonce
+    },
+    append: uploader
+  });
+  builders.element('input', {
+    classes: ['sharing-image-tools-control-file'],
+    attributes: {
+      type: 'file',
+      name: 'sharing_image_import',
+      accept: 'application/json',
+      required: 'required'
+    },
+    append: uploader
+  });
+  builders.element('button', {
+    classes: ['button', 'button-primary'],
+    attributes: {
+      type: 'submit'
+    },
+    text: wp.i18n.__('Import templates', 'sharing-image'),
+    append: uploader
+  });
+}
+/**
+ * Create templates catalog from options.
+ *
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
+ */
+
+
+function createTools(content, settings) {
+  tools_params = settings; // Find tools element
+
+  const tools = content.querySelector('.sharing-image-tools');
+
+  if (null === tools) {
+    return;
+  }
+
+  const options = builders.element('form', {
+    classes: ['sharing-image-tools-options'],
+    attributes: {
+      action: tools_params.links.action,
+      method: 'POST'
+    },
+    append: tools
+  }); // Export options.
+
+  createExportOptions(options); // Export options.
+
+  createImportOptions(options);
+}
+
+/* harmony default export */ const tools = (createTools);
 ;// CONCATENATED MODULE: ./src/scripts/sections/index.js
+
 
 
 
@@ -3574,7 +3704,8 @@ const Section = {
   editor: sections_editor,
   config: config,
   premium: sections_premium,
-  picker: picker
+  picker: picker,
+  tools: tools
 };
 /* harmony default export */ const sections = (Section);
 ;// CONCATENATED MODULE: ./src/scripts/settings.js
@@ -3600,6 +3731,17 @@ function initPremiumTab(content, settings) {
 
 function initConfigTab(content, settings) {
   sections.config(content, settings);
+}
+/**
+ * Init tools settings tab.
+ *
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings object.
+ */
+
+
+function initToolsTab(content, settings) {
+  sections.tools(content, settings);
 }
 /**
  * Init config settings tab.
@@ -3657,6 +3799,10 @@ function initTemplatesTab(content, settings) {
   switch (helpers.param('tab')) {
     case 'config':
       initConfigTab(content, object);
+      break;
+
+    case 'tools':
+      initToolsTab(content, object);
       break;
 
     case 'premium':

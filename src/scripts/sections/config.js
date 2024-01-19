@@ -4,7 +4,7 @@
 
 import Build from '../builders';
 
-// Store global scriot object for settings page.
+// Store global script object for settings page.
 let params = null;
 
 /**
@@ -278,7 +278,7 @@ function createMetaFields( options ) {
 function createConfig( content, settings ) {
 	params = settings;
 
-	// Set params name for template form fields.
+	// Set params name for config form fields.
 	params.name = 'sharing_image_config';
 
 	// Find config element

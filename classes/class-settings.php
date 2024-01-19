@@ -141,7 +141,9 @@ class Settings {
 		$actions = array(
 			'config' => 'save_settings_config',
 			'editor' => 'save_settings_template',
-			'delete' => 'delete_settings_template',
+			'delete' => 'delete_template',
+			'export' => 'export_templates',
+			'import' => 'import_templates',
 		);
 
 		foreach ( $actions as $key => $method ) {
@@ -229,14 +231,10 @@ class Settings {
 			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
 		}
 
-		$return = $this->get_tab_link( 'config' );
-
-		if ( null === $return ) {
-			$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
-		}
+		$redirect = $this->get_tab_link( 'config' );
 
 		if ( ! isset( $_POST['sharing_image_config'] ) ) {
-			$this->redirect_with_message( $return, 5 );
+			$this->redirect_with_message( $redirect, 5 );
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
@@ -245,7 +243,7 @@ class Settings {
 		$this->update_config( $config );
 
 		// Redirect with success message.
-		$this->redirect_with_message( $return, 1 );
+		$this->redirect_with_message( $redirect, 1 );
 	}
 
 	/**
@@ -258,24 +256,24 @@ class Settings {
 			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
 		}
 
-		$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
+		$redirect = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
 
 		if ( ! isset( $_POST['sharing_image_index'] ) ) {
-			$this->redirect_with_message( $return, 2 );
+			$this->redirect_with_message( $redirect, 2 );
 		}
 
 		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
 
 		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
-			$this->redirect_with_message( $return, 2 );
+			$this->redirect_with_message( $redirect, 2 );
 		}
 
 		// Skip 2nd+ templates if the Premium is not active.
 		if ( $index > 0 && ! $this->is_premium_features() ) {
-			$this->redirect_with_message( $return, 2 );
+			$this->redirect_with_message( $redirect, 2 );
 		}
 
-		$return = add_query_arg( array( 'template' => $index + 1 ), $return );
+		$redirect = add_query_arg( array( 'template' => $index + 1 ), $redirect );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
@@ -283,33 +281,110 @@ class Settings {
 		$this->update_templates( $index, $editor );
 
 		// Redirect with success message.
-		$this->redirect_with_message( $return, 1 );
+		$this->redirect_with_message( $redirect, 1 );
 	}
 
 	/**
 	 * Action to delete template from editor page.
 	 */
-	public function delete_settings_template() {
+	public function delete_template() {
 		check_admin_referer( basename( __FILE__ ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
 		}
 
-		$return = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
+		$redirect = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
 
 		if ( ! isset( $_REQUEST['template'] ) ) {
-			$this->redirect_with_message( $return, 4 );
+			$this->redirect_with_message( $redirect, 4 );
 		}
 
 		// Get index from template ID.
 		$index = absint( $_REQUEST['template'] ) - 1;
 
 		if ( ! $this->update_templates( $index ) ) {
-			$this->redirect_with_message( $return, 4 );
+			$this->redirect_with_message( $redirect, 4 );
 		}
 
-		$this->redirect_with_message( $return, 3 );
+		$this->redirect_with_message( $redirect, 3 );
+	}
+
+	/**
+	 * Action to export templates.
+	 */
+	public function export_templates() {
+		check_admin_referer( basename( __FILE__ ), 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+		}
+
+		$templates = $this->get_templates();
+
+		// Remove site-dependent posters.
+		foreach ( $templates as &$template ) {
+			unset( $template['preview'] );
+		}
+
+		$filename = 'sharing-image-export-' . time() . '.json';
+
+		status_header( 200 );
+
+		header( 'Content-Description: File Transfer' );
+		header( "Content-Disposition: attachment; filename={$filename}" );
+		header( 'Content-Type: application/json; charset=utf-8' );
+
+		echo wp_json_encode( $templates, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
+		exit;
+	}
+
+	/**
+	 * Action to import templates.
+	 */
+	public function import_templates() {
+		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+		}
+
+		if ( ! current_user_can( 'upload_files' ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to upload files.', 'sharing-image' ) );
+		}
+
+		$redirect = $this->get_tab_link( 'tools' );
+
+		if ( empty( $_FILES['sharing_image_import']['tmp_name'] ) ) {
+			$this->redirect_with_message( $redirect, 6 );
+		}
+
+		if ( ! empty( $_FILES['sharing_image_import']['error'] ) ) {
+			$this->redirect_with_message( $redirect, 6 );
+		}
+
+		$file = sanitize_text_field( $_FILES['sharing_image_import']['tmp_name'] );
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		$templates = file_get_contents( $file );
+		$templates = json_decode( $templates, true );
+
+		// Check if empty.
+		if ( empty( $templates ) || ! is_array( $templates ) ) {
+			$this->redirect_with_message( $redirect, 7 );
+		}
+
+		$index = $this->get_templates_count() + 1;
+
+		if ( ! $this->is_premium_features() && $index > 1 ) {
+			$this->redirect_with_message( $redirect, 8 );
+		}
+
+		foreach ( $templates as $cur => $template ) {
+			$this->update_templates( $index + $cur, $this->sanitize_editor( $template ) );
+		}
+
+		$this->redirect_with_message( $redirect, 9 );
 	}
 
 	/**
@@ -571,6 +646,17 @@ class Settings {
 		 * @param array $templates List of templates.
 		 */
 		return apply_filters( 'sharing_image_get_templates', $templates );
+	}
+
+	/**
+	 * Get templates count.
+	 *
+	 * @return int Count of templates.
+	 */
+	public function get_templates_count() {
+		$templates = $this->get_templates();
+
+		return count( $templates );
 	}
 
 	/**
@@ -1296,7 +1382,7 @@ class Settings {
 		if ( isset( $config['autogenerate'] ) && is_numeric( $config['autogenerate'] ) ) {
 			$autogenerate = absint( $config['autogenerate'] );
 
-			if ( count( $this->get_templates() ) > $autogenerate ) {
+			if ( $this->get_templates_count() > $autogenerate ) {
 				$sanitized['autogenerate'] = $autogenerate;
 			}
 		}
@@ -1350,6 +1436,22 @@ class Settings {
 			case 5:
 				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to save configuration settings.', 'sharing-image' ) );
 				break;
+
+			case 6:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Error uploading file. Please try again.', 'sharing-image' ) );
+				break;
+
+			case 7:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Imported file is empty.', 'sharing-image' ) );
+				break;
+
+			case 8:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'The maximum allowed limit of templates has been reached. Please upgrade to Premium.', 'sharing-image' ) );
+				break;
+
+			case 9:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Templates successfully imported.', 'sharing-image' ), 'updated' );
+				break;
 		}
 
 		settings_errors( 'sharing-image' );
@@ -1368,6 +1470,10 @@ class Settings {
 			'config'    => array(
 				'label' => __( 'Configuration', 'sharing-image' ),
 				'link'  => admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG . '&tab=config' ),
+			),
+			'tools'     => array(
+				'label' => __( 'Tools', 'sharing-image' ),
+				'link'  => admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG . '&tab=tools' ),
 			),
 			'premium'   => array(
 				'label' => __( 'Premium', 'sharing-image' ),
@@ -1443,7 +1549,7 @@ class Settings {
 	 */
 	private function get_tab_link( $tab ) {
 		if ( empty( $this->tabs[ $tab ]['link'] ) ) {
-			return null;
+			return admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
 		}
 
 		return $this->tabs[ $tab ]['link'];
