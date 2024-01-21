@@ -140,6 +140,8 @@
   font-size: smaller;
 
   &::file-selector-button {
+    cursor: pointer;
+
     line-height: 2.15384615;
     padding: 0 10px;
     min-height: 30px;

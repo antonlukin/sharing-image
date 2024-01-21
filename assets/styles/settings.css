@@ -282,6 +282,9 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-config h
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-config > * {
   margin: 24px 0;
 }
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-config ~ #setting-error-sharing-image {
+  max-width: 660px;
+}
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control {
   display: grid;
   grid-template-columns: 240px auto;
@@ -323,9 +326,6 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .
   position: relative;
   width: 100%;
   margin-bottom: 10px;
-}
-body.settings_page_sharing-image #sharing-image-settings .sharing-image-config ~ #setting-error-sharing-image {
-  max-width: 660px;
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control-input {
   display: block;
@@ -982,7 +982,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .
   overflow-x: auto;
   overflow-y: hidden;
 }
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 600px) {
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-header .sharing-image-menu {
     justify-content: flex-start;
   }
@@ -1118,6 +1118,9 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools {
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools h2 {
   margin: 12px 0;
 }
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools ~ #setting-error-sharing-image {
+  max-width: 660px;
+}
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control {
   display: grid;
   grid-template-columns: 240px auto;
@@ -1132,8 +1135,13 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .s
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control h3 {
   grid-column: 1;
-  margin: 6px 0 12px;
+  margin: 6px 0 0;
   font-size: 14px;
+}
+@media screen and (max-width: 782px) {
+  body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control h3 {
+    margin-bottom: 12px;
+  }
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control h4 {
   margin: 0;
@@ -1146,6 +1154,10 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .s
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control h3 ~ * {
     grid-column: auto;
   }
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control.control-section {
+  padding-bottom: 40px;
+  border-bottom: solid 1px #dddddd;
 }
 @media screen and (max-width: 782px) {
   body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control {
@@ -1188,6 +1200,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .s
   font-size: smaller;
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control-file::-webkit-file-upload-button {
+  cursor: pointer;
   line-height: 2.15384615;
   padding: 0 10px;
   min-height: 30px;
@@ -1199,6 +1212,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .s
   border-radius: 3px;
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control-file::file-selector-button {
+  cursor: pointer;
   line-height: 2.15384615;
   padding: 0 10px;
   min-height: 30px;
@@ -1222,4 +1236,17 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .s
     font-size: 14px;
     min-height: 40px;
   }
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control-duplicator {
+  display: flex;
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control-duplicator select {
+  flex: 1 1 100%;
+  margin-right: 10px;
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-control-duplicator button {
+  margin-bottom: 0;
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-tools .sharing-image-tools-warning {
+  margin: 6px 0 0;
 }

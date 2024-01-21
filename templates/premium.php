@@ -34,6 +34,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php esc_html_e( 'Generating posters in taxonomy archives.', 'sharing-image' ); ?>
 			</li>
 			<li>
+				<?php esc_html_e( 'Template cloning.', 'sharing-image' ); ?>
+			</li>
+			<li>
 				<?php esc_html_e( 'Priority tech support.', 'sharing-image' ); ?>
 			</li>
 			<li>

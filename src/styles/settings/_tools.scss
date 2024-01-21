@@ -7,6 +7,10 @@
     margin: 12px 0;
   }
 
+  & ~ #setting-error-sharing-image {
+    max-width: $width-narrow - 40px;
+  }
+
   .sharing-image-tools-control {
     display: grid;
     grid-template-columns: 240px auto;
@@ -25,8 +29,12 @@
     h3 {
       grid-column: 1;
 
-      margin: 6px 0 12px;
+      margin: 6px 0 0;
       font-size: 14px;
+
+      @media screen and (max-width: 782px) {
+        margin-bottom: 12px;
+      }
     }
 
     h4 {
@@ -40,6 +48,11 @@
       @media screen and (max-width: 782px) {
         grid-column: auto;
       }
+    }
+
+    &.control-section {
+      padding-bottom: 40px;
+      border-bottom: solid 1px $color-border;
     }
 
     @media screen and (max-width: 782px) {
@@ -81,5 +94,22 @@
 
   .sharing-image-tools-control-file {
     @include control-file;
+  }
+
+  .sharing-image-tools-control-duplicator {
+    display: flex;
+
+    select {
+      flex: 1 1 100%;
+      margin-right: 10px;
+    }
+
+    button {
+      margin-bottom: 0;
+    }
+  }
+
+  .sharing-image-tools-warning {
+    margin: 6px 0 0;
   }
 }

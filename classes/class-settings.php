@@ -144,6 +144,7 @@ class Settings {
 			'delete' => 'delete_template',
 			'export' => 'export_templates',
 			'import' => 'import_templates',
+			'clone'  => 'clone_template',
 		);
 
 		foreach ( $actions as $key => $method ) {
@@ -374,17 +375,60 @@ class Settings {
 			$this->redirect_with_message( $redirect, 7 );
 		}
 
-		$index = $this->get_templates_count() + 1;
+		$last = $this->get_templates_last_index();
 
 		if ( ! $this->is_premium_features() && $index > 1 ) {
 			$this->redirect_with_message( $redirect, 8 );
 		}
 
-		foreach ( $templates as $cur => $template ) {
-			$this->update_templates( $index + $cur, $this->sanitize_editor( $template ) );
+		foreach ( $templates as $template ) {
+			$this->update_templates( null, $this->sanitize_editor( $template ) );
 		}
 
 		$this->redirect_with_message( $redirect, 9 );
+	}
+
+	/**
+	 * Action to clone template.
+	 */
+	public function clone_template() {
+		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+		}
+
+		$redirect = $this->get_tab_link( 'tools' );
+
+		if ( ! isset( $_REQUEST['sharing_image_clone'] ) ) {
+			$this->redirect_with_message( $redirect, 10 );
+		}
+
+		$index = absint( $_REQUEST['sharing_image_clone'] );
+
+		// Get all templates to find by index.
+		$templates = $this->get_templates();
+
+		if ( ! isset( $templates[ $index ] ) ) {
+			$this->redirect_with_message( $redirect, 10 );
+		}
+
+		$template = $templates[ $index ];
+
+		// Remove poster if exists.
+		unset( $template['preview'] );
+
+		$prefix = esc_html__( 'Copy: ' );
+
+		if ( strpos( $template['title'], $prefix ) !== 0 ) {
+			$template['title'] = $prefix . $template['title'];
+		}
+
+		if ( ! $this->update_templates( null, $template ) ) {
+			$this->redirect_with_message( $redirect, 10 );
+		}
+
+		$this->redirect_with_message( $redirect, 11 );
 	}
 
 	/**
@@ -649,27 +693,33 @@ class Settings {
 	}
 
 	/**
-	 * Get templates count.
+	 * Get templates last index.
 	 *
-	 * @return int Count of templates.
+	 * @return int Last index of templates list.
 	 */
-	public function get_templates_count() {
+	public function get_templates_last_index() {
 		$templates = $this->get_templates();
 
-		return count( $templates );
+		return count( $templates ) - 1;
 	}
 
 	/**
-	 * Update templates using index.
+	 * Update templates by index.
 	 *
-	 * @param int   $index  Template index to update.
+	 * @param int   $index  Template index to update. Use null to add new template.
 	 * @param array $editor New template data.
+	 *
+	 * @return bool True if the value was updated, false otherwise.
 	 */
 	public function update_templates( $index, $editor = null ) {
 		// Method get_templates() is not used to save old templates during Premium switching.
 		$templates = get_option( self::OPTION_TEMPLATES, array() );
 
-		$templates[ $index ] = $editor;
+		if ( null === $index ) {
+			$templates[] = $editor;
+		} else {
+			$templates[ $index ] = $editor;
+		}
 
 		if ( null === $editor ) {
 			unset( $templates[ $index ] );
@@ -1382,7 +1432,7 @@ class Settings {
 		if ( isset( $config['autogenerate'] ) && is_numeric( $config['autogenerate'] ) ) {
 			$autogenerate = absint( $config['autogenerate'] );
 
-			if ( $this->get_templates_count() > $autogenerate ) {
+			if ( $this->get_templates_last_index() >= $autogenerate ) {
 				$sanitized['autogenerate'] = $autogenerate;
 			}
 		}
@@ -1451,6 +1501,14 @@ class Settings {
 
 			case 9:
 				add_settings_error( 'sharing-image', 'sharing-image', __( 'Templates successfully imported.', 'sharing-image' ), 'updated' );
+				break;
+
+			case 10:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to clone template.', 'sharing-image' ) );
+				break;
+
+			case 11:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Template successfully cloned.', 'sharing-image' ), 'updated' );
 				break;
 		}
 
