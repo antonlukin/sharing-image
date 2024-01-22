@@ -1059,6 +1059,10 @@ class Settings {
 	private function sanitize_editor( $editor ) {
 		$sanitized = array();
 
+		if ( ! empty( $editor['debug'] ) ) {
+			$sanitized['debug'] = 'debug';
+		}
+
 		if ( ! empty( $editor['preview'] ) ) {
 			$sanitized['preview'] = sanitize_text_field( $editor['preview'] );
 		}
@@ -1069,10 +1073,6 @@ class Settings {
 
 		if ( ! empty( $editor['attachment'] ) ) {
 			$sanitized['attachment'] = absint( $editor['attachment'] );
-		}
-
-		if ( ! empty( $editor['suspend'] ) ) {
-			$sanitized['suspend'] = 'suspend';
 		}
 
 		$sanitized['fill'] = '#000000';
@@ -1425,6 +1425,10 @@ class Settings {
 
 		if ( isset( $config['storage'] ) ) {
 			$sanitized['storage'] = sanitize_text_field( $config['storage'] );
+		}
+
+		if ( isset( $config['suspend'] ) ) {
+			$sanitized['suspend'] = 'suspend';
 		}
 
 		$sanitized['autogenerate'] = 'manual';

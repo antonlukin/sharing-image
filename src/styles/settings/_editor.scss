@@ -276,7 +276,7 @@
       content: "\f345";
     }
 
-    &:hover {
+    &:hover::after {
       color: $color-focus;
     }
 
@@ -330,11 +330,13 @@
     border-radius: 4px;
 
     h2 {
-      display: inline-flex;
+      display: flex;
       align-items: center;
 
       position: relative;
-      margin: 0 20px 10px 0;
+      width: calc(100% + 20px);
+      margin: -14px -10px 0;
+      padding: 10px;
 
       font-size: 16px;
       font-weight: 600;
@@ -356,13 +358,16 @@
       animation: 0.5s blink;
     }
 
+    &.layer-collapsed {
+      padding-bottom: 0;
+    }
+
     &.layer-collapsed > * {
       display: none;
     }
 
     &.layer-collapsed > h2 {
-      display: inline-flex;
-      margin-bottom: 0;
+      display: flex;
     }
 
     &.layer-collapsed > .sharing-image-editor-order {
@@ -507,7 +512,7 @@
     }
   }
 
-  .sharing-image-editor-suspend {
+  .sharing-image-editor-debug {
     display: flex;
     align-items: center;
     order: 2;

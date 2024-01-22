@@ -251,6 +251,10 @@ class Generator {
 				continue;
 			}
 
+			if ( 'settings' === $context && ! empty( $template['debug'] ) ) {
+				$layer['debug'] = true;
+			}
+
 			if ( empty( $layer['dynamic'] ) ) {
 				continue;
 			}
@@ -489,7 +493,21 @@ class Generator {
 	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function draw_text( $poster, $layer ) {
-		$args = $this->prepare_args( $layer, array( 'x', 'y', 'width', 'height', 'fontsize', 'color', 'lineheight', 'opacity', 'horizontal', 'vertical' ) );
+		$allowed = array(
+			'x',
+			'y',
+			'width',
+			'height',
+			'fontsize',
+			'color',
+			'lineheight',
+			'opacity',
+			'horizontal',
+			'vertical',
+			'debug',
+		);
+
+		$args = $this->prepare_args( $layer, $allowed );
 
 		// Try to set font file by name or attachment path.
 		$args['fontpath'] = $this->get_fontpath( $layer );

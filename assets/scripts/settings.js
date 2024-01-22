@@ -669,10 +669,201 @@ const Build = {
   select: builders_select
 };
 /* harmony default export */ const builders = (Build);
+;// CONCATENATED MODULE: ./src/scripts/sections/tools.js
+/**
+ * Tools settings tab.
+ */
+ // Store global script object for settings page.
+
+let params = null;
+/**
+ * Create export options block.
+ *
+ * @param {HTMLElement} tools Tools wrapper element.
+ */
+
+function createExportOptions(tools) {
+  const control = builders.control({
+    classes: ['sharing-image-tools-control'],
+    label: wp.i18n.__('Export templates', 'sharing-image'),
+    append: tools
+  });
+  const fieldset = builders.element('div', {
+    classes: ['sharing-image-tools-control-fieldset'],
+    append: control
+  }); // Set template index to delete link.
+
+  const link = new URL(params.links.action);
+  link.searchParams.set('action', 'sharing_image_export');
+  link.searchParams.set('nonce', params.nonce);
+  builders.element('a', {
+    classes: ['button', 'button-primary'],
+    text: wp.i18n.__('Download backup file', 'sharing-image'),
+    attributes: {
+      href: link.href
+    },
+    append: fieldset
+  });
+  builders.element('small', {
+    text: wp.i18n.__('Save a local copy of all template settings for later use.', 'sharing-image'),
+    append: fieldset
+  });
+}
+/**
+ * Create import options block.
+ *
+ * @param {HTMLElement} tools Tools wrapper element.
+ */
+
+
+function createImportOptions(tools) {
+  const control = builders.control({
+    classes: ['sharing-image-tools-control'],
+    label: wp.i18n.__('Import templates', 'sharing-image'),
+    append: tools
+  });
+  const uploader = builders.element('form', {
+    classes: ['sharing-image-tools-control-uploader'],
+    attributes: {
+      action: params.links.action,
+      method: 'POST',
+      enctype: 'multipart/form-data'
+    },
+    append: control
+  });
+  builders.element('input', {
+    classes: ['sharing-image-tools-control-file'],
+    attributes: {
+      type: 'file',
+      name: 'sharing_image_import',
+      accept: 'application/json',
+      required: 'required'
+    },
+    append: uploader
+  });
+  builders.element('button', {
+    classes: ['button', 'button-primary'],
+    attributes: {
+      type: 'submit'
+    },
+    text: wp.i18n.__('Import templates', 'sharing-image'),
+    append: uploader
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'action',
+      value: 'sharing_image_import'
+    },
+    append: uploader
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_nonce',
+      value: params.nonce
+    },
+    append: uploader
+  });
+}
+/**
+ * Create import options block.
+ *
+ * @param {HTMLElement} tools Tools wrapper element.
+ */
+
+
+function createCloningOptions(tools) {
+  const templates = params.templates || [];
+  const control = builders.control({
+    classes: ['sharing-image-tools-control', 'control-section'],
+    label: wp.i18n.__('Clone template', 'sharing-image'),
+    append: tools
+  });
+  const warning = builders.element('p', {
+    classes: ['sharing-image-tools-warning'],
+    text: wp.i18n.__('To initiate cloning, enable Premium and possess a minimum of 1 template.', 'sharing-image')
+  });
+  const license = params.license || {};
+
+  if (templates.length === 0 || !license.premium && !license.develop) {
+    return control.appendChild(warning);
+  }
+
+  const fields = {};
+  templates.forEach((template, i) => {
+    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
+  });
+  const cloning = builders.element('form', {
+    classes: ['sharing-image-tools-control-cloning'],
+    attributes: {
+      action: params.links.action,
+      method: 'POST'
+    },
+    append: control
+  });
+  const select = builders.select({
+    classes: ['sharing-image-tools-control-duplicator'],
+    options: fields,
+    attributes: {
+      name: 'sharing_image_clone'
+    }
+  }, cloning);
+  builders.element('button', {
+    classes: ['button', 'button-primary'],
+    attributes: {
+      type: 'submit'
+    },
+    text: wp.i18n.__('Create a copy', 'sharing-image'),
+    append: select.parentNode
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'action',
+      value: 'sharing_image_clone'
+    },
+    append: cloning
+  });
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_nonce',
+      value: params.nonce
+    },
+    append: cloning
+  });
+}
+/**
+ * Create templates catalog from options.
+ *
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
+ */
+
+
+function createTools(content, settings) {
+  params = settings; // Find tools element
+
+  const tools = content.querySelector('.sharing-image-tools');
+
+  if (null === tools) {
+    return;
+  } // Cloning options.
+
+
+  createCloningOptions(tools); // Export options.
+
+  createExportOptions(tools); // Import options.
+
+  createImportOptions(tools);
+}
+
+/* harmony default export */ const tools = (createTools);
 ;// CONCATENATED MODULE: ./src/scripts/sections/catalog.js
  // Store global scriot object for settings page.
 
-let params = null;
+let catalog_params = null;
 /**
  * Create template card in catalog.
  *
@@ -746,11 +937,11 @@ function createNewButton(catalog, index) {
     append: title
   }); // Restrict new template creation for not Premium users.
 
-  if (params.templates.length === 0) {
+  if (catalog_params.templates.length === 0) {
     return;
   }
 
-  const license = params.license || {};
+  const license = catalog_params.license || {};
 
   if (license.premium || license.develop) {
     return;
@@ -761,8 +952,8 @@ function createNewButton(catalog, index) {
     append: title
   });
 
-  if (params.links.premium) {
-    button.href = params.links.premium;
+  if (catalog_params.links.premium) {
+    button.href = catalog_params.links.premium;
   }
 }
 /**
@@ -774,7 +965,7 @@ function createNewButton(catalog, index) {
 
 
 function createCatalog(content, settings) {
-  params = settings;
+  catalog_params = settings;
   const catalog = builders.element('div', {
     classes: ['sharing-image-catalog'],
     append: content
@@ -787,6 +978,367 @@ function createCatalog(content, settings) {
 }
 
 /* harmony default export */ const catalog = (createCatalog);
+;// CONCATENATED MODULE: ./src/scripts/sections/premium.js
+/**
+ * Premium settings tab.
+ */
+
+/* global ajaxurl:true */
+ // Store global scriot object for settings page.
+
+let premium_params = null; // Premium HTML emelent.
+
+let premium = null;
+/**
+ * Parse error code from settings or AJAX response.
+ *
+ * @param {string} code  Error code from settings or AJAX response.
+ * @param {string} title Prepended error title. Optional.
+ */
+
+function parseErrorCode(code, title) {
+  const message = [];
+
+  if (undefined === title) {
+    title = wp.i18n.__('Verification failed.', 'sharing-image');
+  }
+
+  message.push(title);
+
+  switch (code) {
+    case 'LIMIT_EXCEEDED':
+      message.push(wp.i18n.__('The number of licenses for this key has been exceeded.', 'sharing-image'));
+      break;
+
+    case 'KEY_NOT_FOUND':
+      message.push(wp.i18n.__('Premium key is invalid or expired.', 'sharing-image'));
+      break;
+
+    case 'SERVER_ERROR':
+      message.push(wp.i18n.__('Unable to get a response from the verification server.', 'sharing-image'));
+      break;
+  }
+
+  return message.join(' ');
+}
+/**
+ * Show premium warning message.
+ *
+ * @param {string} message Warning message.
+ */
+
+
+function showPremiumError(message) {
+  // Try to find warning element.
+  const warning = premium.querySelector('.sharing-image-premium-warning');
+
+  if (null === warning) {
+    return;
+  }
+
+  warning.classList.add('warning-visible');
+  warning.textContent = message || wp.i18n.__('Unknown request error', 'sharing-image');
+}
+/**
+ * Remove warning message block.
+ */
+
+
+function hidePremiumError() {
+  // Try to find warning element.
+  const warning = premium.querySelector('.sharing-image-premium-warning');
+
+  if (null === warning) {
+    return;
+  }
+
+  warning.classList.remove('warning-visible');
+}
+/**
+ * Revoke Premium key.
+ *
+ * @param {HTMLElement} access Access form element.
+ */
+
+
+function revokePremium(access) {
+  access.classList.add('access-loader');
+  const request = new XMLHttpRequest();
+  request.open('POST', ajaxurl);
+  request.responseType = 'json'; // Create data bundle using form data.
+
+  const bundle = new window.FormData(access);
+  bundle.set('action', 'sharing_image_revoke');
+  hidePremiumError();
+  request.addEventListener('load', () => {
+    const response = request.response || {}; // Hide form loader class.
+
+    access.classList.remove('access-loader');
+
+    if (!response.data) {
+      return showPremiumError();
+    }
+
+    if (!response.success) {
+      return showPremiumError(response.data);
+    }
+
+    premium_params.license = response.data; // Refresh premium fields.
+
+    preparePremiumFields();
+  });
+  request.addEventListener('error', () => {
+    showPremiumError(); // Hide form loader class.
+
+    access.classList.remove('access-loader');
+  });
+  request.send(bundle);
+}
+/**
+ * Verify Premium key.
+ *
+ * @param {HTMLElement} access Access form element.
+ */
+
+
+function verifyPremium(access) {
+  access.classList.add('access-loader');
+  const request = new XMLHttpRequest();
+  request.open('POST', ajaxurl);
+  request.responseType = 'json'; // Create data bundle using form data.
+
+  const bundle = new window.FormData(access);
+  bundle.set('action', 'sharing_image_verify');
+  hidePremiumError();
+  request.addEventListener('load', () => {
+    const response = request.response || {}; // Hide form loader class.
+
+    access.classList.remove('access-loader');
+
+    if (!response.data) {
+      return showPremiumError();
+    }
+
+    if (!response.success) {
+      return showPremiumError(parseErrorCode(response.code, response.data));
+    }
+
+    premium_params.license = response.data; // Refresh premium fields.
+
+    preparePremiumFields();
+  });
+  request.addEventListener('error', () => {
+    showPremiumError(); // Hide form loader class.
+
+    access.classList.remove('access-loader');
+  });
+  request.send(bundle);
+}
+/**
+ * Show verify form if stil not premium.
+ *
+ * @param {HTMLElement} access  Access HTML element.
+ * @param {Object}      license License data.
+ */
+
+
+function showVerifyForm(access, license) {
+  if (license.error) {
+    showPremiumError(parseErrorCode(license.error));
+  }
+
+  builders.element('strong', {
+    text: wp.i18n.__('Do you already have a key? Enter it here', 'sharing-image'),
+    append: access
+  });
+  const verify = builders.element('div', {
+    classes: ['sharing-image-premium-verify'],
+    append: access
+  });
+  builders.element('input', {
+    label: wp.i18n.__('Your Premium key', 'sharing-image'),
+    attributes: {
+      type: 'text',
+      name: 'sharing_image_key',
+      value: license.key
+    },
+    append: verify
+  });
+  builders.element('button', {
+    classes: ['button'],
+    text: wp.i18n.__('Submit', 'sharing-image'),
+    attributes: {
+      type: 'submit'
+    },
+    append: verify
+  });
+  builders.element('span', {
+    classes: ['spinner'],
+    append: verify
+  });
+  access.addEventListener('submit', e => {
+    e.preventDefault();
+    verifyPremium(access);
+  });
+}
+/**
+ * Show alert for develop license mode.
+ */
+
+
+function showDevelopAlert() {
+  showPremiumError(wp.i18n.__('Using plugin with a development license is prohibited in production.', 'sharing-image'));
+}
+/**
+ * Show revoke Premium button.
+ *
+ * @param {HTMLElement} access Access HTML element.
+ */
+
+
+function showRevokeButton(access) {
+  const revoke = builders.element('div', {
+    classes: ['sharing-image-premium-revoke'],
+    append: access
+  });
+  const description = [];
+  description.push(wp.i18n.__('Disabling premium mode will not remove the license for this domain.', 'sharing-image'));
+  description.push(wp.i18n.__('Your current key will also be saved in the plugin settings.', 'sharing-image'));
+  description.push(wp.i18n.__('Use key management tool to delete the license for the site.', 'sharing-image'));
+  builders.element('p', {
+    text: description.join(' '),
+    append: revoke
+  });
+  builders.element('button', {
+    classes: ['button'],
+    text: wp.i18n.__('Disable Premium', 'sharing-image'),
+    attributes: {
+      type: 'submit'
+    },
+    append: revoke
+  });
+  builders.element('span', {
+    classes: ['spinner'],
+    append: revoke
+  });
+  access.addEventListener('submit', e => {
+    e.preventDefault();
+    revokePremium(access);
+  });
+}
+/**
+ * Show permit information.
+ *
+ * @param {HTMLElement} access Access HTML element.
+ * @param {string}      key    License key from settings.
+ */
+
+
+function showLicenseInfo(access, key) {
+  const permit = builders.element('div', {
+    classes: ['sharing-image-premium-permit'],
+    append: access
+  });
+  const button = builders.element('button', {
+    classes: ['sharing-image-premium-show', 'button'],
+    text: wp.i18n.__('Show License key', 'sharing-image'),
+    attributes: {
+      type: 'button'
+    },
+    append: permit
+  });
+  button.addEventListener('click', () => {
+    permit.classList.toggle('permit-visible');
+  });
+  builders.element('strong', {
+    text: key,
+    append: permit
+  });
+  return permit;
+}
+/**
+ * Show fields if user has the license.
+ *
+ * @param {HTMLElement} access  Access HTML element.
+ * @param {Object}      license License data.
+ */
+
+
+function showPremiumData(access, license) {
+  premium.classList.add('premium-enabled');
+
+  if (license.develop) {
+    return showDevelopAlert();
+  }
+
+  if (license.key) {
+    showLicenseInfo(access, license.key);
+  }
+
+  showRevokeButton(access);
+}
+/**
+ * Set premium fields according settings.
+ */
+
+
+function preparePremiumFields() {
+  let access = premium.querySelector('.sharing-image-premium-access');
+
+  if (null !== access) {
+    premium.removeChild(access);
+  }
+
+  access = builders.element('form', {
+    classes: ['sharing-image-premium-access'],
+    attributes: {
+      action: '',
+      method: 'POST'
+    },
+    append: premium
+  });
+  premium.classList.remove('premium-enabled');
+  builders.element('input', {
+    attributes: {
+      type: 'hidden',
+      name: 'sharing_image_nonce',
+      value: premium_params.nonce
+    },
+    append: access
+  });
+  const license = premium_params.license || {}; // Show fields if user has the license.
+
+  if (license.premium || license.develop) {
+    return showPremiumData(access, license);
+  }
+
+  return showVerifyForm(access, license);
+}
+/**
+ * Create templates catalog from options.
+ *
+ * @param {HTMLElement} content  Settings content element.
+ * @param {Object}      settings Global settings field.
+ */
+
+
+function createPremium(content, settings) {
+  premium_params = settings; // Find premium element
+
+  premium = content.querySelector('.sharing-image-premium');
+
+  if (null === premium) {
+    return;
+  }
+
+  builders.element('div', {
+    classes: ['sharing-image-premium-warning'],
+    append: premium
+  });
+  preparePremiumFields();
+}
+
+/* harmony default export */ const sections_premium = (createPremium);
 ;// CONCATENATED MODULE: ./src/scripts/sections/editor.js
 /**
  * Editor settings.
@@ -1076,6 +1628,9 @@ function createDynamicFields(layer, name, data) {
       attributes: {
         name: name + '[title]',
         value: data.title
+      },
+      dataset: {
+        context: 'title'
       },
       label: wp.i18n.__('Field name', 'sharing-image')
     }],
@@ -1444,8 +1999,8 @@ function createPreview(viewport, data) {
 }
 /**
  *
- * @param {*} designer
- * @param {*} layer
+ * @param {HTMLElement} designer
+ * @param {HTMLElement} layer
  */
 
 
@@ -1969,7 +2524,7 @@ function createLayer(designer, type, index) {
   }
 
   if (null === layer) {
-    return;
+    return null;
   }
 
   designer.insertBefore(layer, designer.firstChild); // Delete this layer button.
@@ -1979,6 +2534,7 @@ function createLayer(designer, type, index) {
   createCollapseButton(designer, layer); // Reorder layers button.
 
   createOrderLayersButton(designer, layer);
+  return layer;
 }
 /**
  * Create layers designer control.
@@ -2020,7 +2576,9 @@ function createDesigner(fieldset, data) {
   layers = layers.reverse();
   layers.forEach((layer, index) => {
     if (layer.hasOwnProperty('type')) {
-      createLayer(designer, layer.type, index++, layer);
+      const created = createLayer(designer, layer.type, index++, layer); // Collapse new layer.
+
+      created.classList.add('layer-collapsed');
     }
   });
   button.addEventListener('click', () => {
@@ -2165,35 +2723,23 @@ function createGenerateButton(manager) {
   });
 }
 /**
- * Create disable live-reloading checkbox.
+ * Create debug text checkbox.
  *
  * @param {HTMLElement} manager Manager element.
  * @param {Object}      data    Template data.
  */
 
 
-function createSuspendCheckbox(manager, data) {
-  const checkbox = builders.checkbox({
-    classes: ['sharing-image-editor-suspend'],
+function createDebugCheckbox(manager, data) {
+  builders.checkbox({
+    classes: ['sharing-image-editor-debug'],
     attributes: {
-      name: editor_params.name + '[suspend]',
-      value: 'suspend'
+      name: editor_params.name + '[debug]',
+      value: 'debug'
     },
-    label: wp.i18n.__('Disable live-reload', 'sharing-image'),
-    checked: data.suspend
+    label: wp.i18n.__('Show debug frames', 'sharing-image'),
+    checked: data.debug
   }, manager);
-
-  if (data.suspend) {
-    editor.classList.add('editor-suspend');
-  }
-
-  checkbox.addEventListener('change', () => {
-    editor.classList.remove('editor-suspend');
-
-    if (checkbox.checked) {
-      editor.classList.add('editor-suspend');
-    }
-  });
 }
 /**
  * Create template settings preview.
@@ -2219,9 +2765,9 @@ function createMonitor(data) {
   const manager = builders.element('div', {
     classes: ['sharing-image-editor-manager'],
     append: viewport
-  }); // Create live-reload manager checkbox.
+  }); // Create debug only checkbox.
 
-  createSuspendCheckbox(manager, data); // Create submit form button.
+  createDebugCheckbox(manager, data); // Create submit form button.
 
   createSubmitButton(manager); // Create template generator button.
 
@@ -2245,6 +2791,11 @@ function prepareEditor(content, index) {
     },
     append: content
   });
+
+  if (editor_params.config.suspend) {
+    form.classList.add('editor-suspend');
+  }
+
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -2503,6 +3054,24 @@ function createAutogenerateOptions(options, data, templates) {
     append: options
   });
 }
+
+function createLiveReloadOptions(options, data) {
+  builders.control({
+    classes: ['sharing-image-config-control'],
+    label: wp.i18n.__('Live-reload', 'sharing-image'),
+    fields: [{
+      group: 'checkbox',
+      classes: ['sharing-image-config-control-checkbox'],
+      attributes: {
+        name: config_params.name + '[suspend]',
+        value: 'suspend'
+      },
+      label: wp.i18n.__('Disable live-reload on the template editor screen', 'sharing-image'),
+      checked: data.suspend
+    }],
+    append: options
+  });
+}
 /**
  * Create required form meta fields.
  *
@@ -2570,1207 +3139,21 @@ function createConfig(content, settings) {
 
   createAutogenerateOptions(options, data, templates); // Uploads directory options.
 
-  createUploadsOptions(options, data); // Default poster.
+  createUploadsOptions(options, data); // Live-reload options.
 
-  createDefaultOptions(options, data); // Create required form fields
+  createLiveReloadOptions(options, data); // Default poster.
+
+  createDefaultOptions(options, data); // Create required form fields.
 
   createMetaFields(options);
 }
 
 /* harmony default export */ const config = (createConfig);
-;// CONCATENATED MODULE: ./src/scripts/sections/premium.js
-/**
- * Premium settings tab.
- */
-
-/* global ajaxurl:true */
- // Store global scriot object for settings page.
-
-let premium_params = null; // Premium HTML emelent.
-
-let premium = null;
-/**
- * Parse error code from settings or AJAX response.
- *
- * @param {string} code  Error code from settings or AJAX response.
- * @param {string} title Prepended error title. Optional.
- */
-
-function parseErrorCode(code, title) {
-  const message = [];
-
-  if (undefined === title) {
-    title = wp.i18n.__('Verification failed.', 'sharing-image');
-  }
-
-  message.push(title);
-
-  switch (code) {
-    case 'LIMIT_EXCEEDED':
-      message.push(wp.i18n.__('The number of licenses for this key has been exceeded.', 'sharing-image'));
-      break;
-
-    case 'KEY_NOT_FOUND':
-      message.push(wp.i18n.__('Premium key is invalid or expired.', 'sharing-image'));
-      break;
-
-    case 'SERVER_ERROR':
-      message.push(wp.i18n.__('Unable to get a response from the verification server.', 'sharing-image'));
-      break;
-  }
-
-  return message.join(' ');
-}
-/**
- * Show premium warning message.
- *
- * @param {string} message Warning message.
- */
-
-
-function showPremiumError(message) {
-  // Try to find warning element.
-  const warning = premium.querySelector('.sharing-image-premium-warning');
-
-  if (null === warning) {
-    return;
-  }
-
-  warning.classList.add('warning-visible');
-  warning.textContent = message || wp.i18n.__('Unknown request error', 'sharing-image');
-}
-/**
- * Remove warning message block.
- */
-
-
-function hidePremiumError() {
-  // Try to find warning element.
-  const warning = premium.querySelector('.sharing-image-premium-warning');
-
-  if (null === warning) {
-    return;
-  }
-
-  warning.classList.remove('warning-visible');
-}
-/**
- * Revoke Premium key.
- *
- * @param {HTMLElement} access Access form element.
- */
-
-
-function revokePremium(access) {
-  access.classList.add('access-loader');
-  const request = new XMLHttpRequest();
-  request.open('POST', ajaxurl);
-  request.responseType = 'json'; // Create data bundle using form data.
-
-  const bundle = new window.FormData(access);
-  bundle.set('action', 'sharing_image_revoke');
-  hidePremiumError();
-  request.addEventListener('load', () => {
-    const response = request.response || {}; // Hide form loader class.
-
-    access.classList.remove('access-loader');
-
-    if (!response.data) {
-      return showPremiumError();
-    }
-
-    if (!response.success) {
-      return showPremiumError(response.data);
-    }
-
-    premium_params.license = response.data; // Refresh premium fields.
-
-    preparePremiumFields();
-  });
-  request.addEventListener('error', () => {
-    showPremiumError(); // Hide form loader class.
-
-    access.classList.remove('access-loader');
-  });
-  request.send(bundle);
-}
-/**
- * Verify Premium key.
- *
- * @param {HTMLElement} access Access form element.
- */
-
-
-function verifyPremium(access) {
-  access.classList.add('access-loader');
-  const request = new XMLHttpRequest();
-  request.open('POST', ajaxurl);
-  request.responseType = 'json'; // Create data bundle using form data.
-
-  const bundle = new window.FormData(access);
-  bundle.set('action', 'sharing_image_verify');
-  hidePremiumError();
-  request.addEventListener('load', () => {
-    const response = request.response || {}; // Hide form loader class.
-
-    access.classList.remove('access-loader');
-
-    if (!response.data) {
-      return showPremiumError();
-    }
-
-    if (!response.success) {
-      return showPremiumError(parseErrorCode(response.code, response.data));
-    }
-
-    premium_params.license = response.data; // Refresh premium fields.
-
-    preparePremiumFields();
-  });
-  request.addEventListener('error', () => {
-    showPremiumError(); // Hide form loader class.
-
-    access.classList.remove('access-loader');
-  });
-  request.send(bundle);
-}
-/**
- * Show verify form if stil not premium.
- *
- * @param {HTMLElement} access  Access HTML element.
- * @param {Object}      license License data.
- */
-
-
-function showVerifyForm(access, license) {
-  if (license.error) {
-    showPremiumError(parseErrorCode(license.error));
-  }
-
-  builders.element('strong', {
-    text: wp.i18n.__('Do you already have a key? Enter it here', 'sharing-image'),
-    append: access
-  });
-  const verify = builders.element('div', {
-    classes: ['sharing-image-premium-verify'],
-    append: access
-  });
-  builders.element('input', {
-    label: wp.i18n.__('Your Premium key', 'sharing-image'),
-    attributes: {
-      type: 'text',
-      name: 'sharing_image_key',
-      value: license.key
-    },
-    append: verify
-  });
-  builders.element('button', {
-    classes: ['button'],
-    text: wp.i18n.__('Submit', 'sharing-image'),
-    attributes: {
-      type: 'submit'
-    },
-    append: verify
-  });
-  builders.element('span', {
-    classes: ['spinner'],
-    append: verify
-  });
-  access.addEventListener('submit', e => {
-    e.preventDefault();
-    verifyPremium(access);
-  });
-}
-/**
- * Show alert for develop license mode.
- */
-
-
-function showDevelopAlert() {
-  showPremiumError(wp.i18n.__('Using plugin with a development license is prohibited in production.', 'sharing-image'));
-}
-/**
- * Show revoke Premium button.
- *
- * @param {HTMLElement} access Access HTML element.
- */
-
-
-function showRevokeButton(access) {
-  const revoke = builders.element('div', {
-    classes: ['sharing-image-premium-revoke'],
-    append: access
-  });
-  const description = [];
-  description.push(wp.i18n.__('Disabling premium mode will not remove the license for this domain.', 'sharing-image'));
-  description.push(wp.i18n.__('Your current key will also be saved in the plugin settings.', 'sharing-image'));
-  description.push(wp.i18n.__('Use key management tool to delete the license for the site.', 'sharing-image'));
-  builders.element('p', {
-    text: description.join(' '),
-    append: revoke
-  });
-  builders.element('button', {
-    classes: ['button'],
-    text: wp.i18n.__('Disable Premium', 'sharing-image'),
-    attributes: {
-      type: 'submit'
-    },
-    append: revoke
-  });
-  builders.element('span', {
-    classes: ['spinner'],
-    append: revoke
-  });
-  access.addEventListener('submit', e => {
-    e.preventDefault();
-    revokePremium(access);
-  });
-}
-/**
- * Show permit information.
- *
- * @param {HTMLElement} access Access HTML element.
- * @param {string}      key    License key from settings.
- */
-
-
-function showLicenseInfo(access, key) {
-  const permit = builders.element('div', {
-    classes: ['sharing-image-premium-permit'],
-    append: access
-  });
-  const button = builders.element('button', {
-    classes: ['sharing-image-premium-show', 'button'],
-    text: wp.i18n.__('Show License key', 'sharing-image'),
-    attributes: {
-      type: 'button'
-    },
-    append: permit
-  });
-  button.addEventListener('click', () => {
-    permit.classList.toggle('permit-visible');
-  });
-  builders.element('strong', {
-    text: key,
-    append: permit
-  });
-  return permit;
-}
-/**
- * Show fields if user has the license.
- *
- * @param {HTMLElement} access  Access HTML element.
- * @param {Object}      license License data.
- */
-
-
-function showPremiumData(access, license) {
-  premium.classList.add('premium-enabled');
-
-  if (license.develop) {
-    return showDevelopAlert();
-  }
-
-  if (license.key) {
-    showLicenseInfo(access, license.key);
-  }
-
-  showRevokeButton(access);
-}
-/**
- * Set premium fields according settings.
- */
-
-
-function preparePremiumFields() {
-  let access = premium.querySelector('.sharing-image-premium-access');
-
-  if (null !== access) {
-    premium.removeChild(access);
-  }
-
-  access = builders.element('form', {
-    classes: ['sharing-image-premium-access'],
-    attributes: {
-      action: '',
-      method: 'POST'
-    },
-    append: premium
-  });
-  premium.classList.remove('premium-enabled');
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'sharing_image_nonce',
-      value: premium_params.nonce
-    },
-    append: access
-  });
-  const license = premium_params.license || {}; // Show fields if user has the license.
-
-  if (license.premium || license.develop) {
-    return showPremiumData(access, license);
-  }
-
-  return showVerifyForm(access, license);
-}
-/**
- * Create templates catalog from options.
- *
- * @param {HTMLElement} content  Settings content element.
- * @param {Object}      settings Global settings field.
- */
-
-
-function createPremium(content, settings) {
-  premium_params = settings; // Find premium element
-
-  premium = content.querySelector('.sharing-image-premium');
-
-  if (null === premium) {
-    return;
-  }
-
-  builders.element('div', {
-    classes: ['sharing-image-premium-warning'],
-    append: premium
-  });
-  preparePremiumFields();
-}
-
-/* harmony default export */ const sections_premium = (createPremium);
-;// CONCATENATED MODULE: ./src/scripts/sections/picker.js
-/**
- * Metabox handler.
- */
-
-/* global ajaxurl:true */
- // Store global script object for metabox.
-
-let picker_params = null; // Poster HTML element.
-
-let poster = null; // Is gutenberg editor used.
-
-let gutenberg = false;
-/**
- * Show picker warning message.
- *
- * @param {string} message Warning message.
- */
-
-function showPickerError(message) {
-  const picker = poster.parentNode; // Try to find warning element.
-
-  const warning = picker.querySelector('.sharing-image-picker-warning');
-
-  if (null === warning) {
-    return;
-  }
-
-  warning.classList.add('warning-visible');
-  warning.textContent = message || wp.i18n.__('Unknown generation error', 'sharing-image');
-}
-/**
- * Remove warning message block.
- */
-
-
-function hidePickerError() {
-  const picker = poster.parentNode; // Try to find warning element.
-
-  const warning = picker.querySelector('.sharing-image-picker-warning');
-
-  if (null === warning) {
-    return;
-  }
-
-  warning.classList.remove('warning-visible');
-}
-/**
- * Handle poster generation action.
- *
- * @param {HTMLElement} picker Picker element.
- */
-
-
-function generatePoster(picker) {
-  const request = new XMLHttpRequest();
-  request.open('POST', ajaxurl);
-  request.responseType = 'json';
-  poster.classList.add('poster-loader'); // Create data form data bundle.
-
-  const bundle = new window.FormData();
-  bundle.set('action', 'sharing_image_generate');
-  picker.querySelectorAll('[name]').forEach(field => {
-    bundle.append(field.name, field.value);
-  });
-  hidePickerError();
-  request.addEventListener('load', () => {
-    const response = request.response || {}; // Hide preview loader on request complete.
-
-    poster.classList.remove('poster-loader');
-
-    if (!response.data) {
-      return showPickerError();
-    }
-
-    if (!response.success) {
-      return showPickerError(response.data);
-    }
-
-    for (const key in response.data) {
-      // Find all poster input fields and set response data value.
-      poster.querySelectorAll('input').forEach(input => {
-        const name = picker_params.name + '[' + key + ']';
-
-        if (name === input.name) {
-          input.value = response.data[key];
-        }
-      });
-    }
-
-    let image = poster.querySelector('img');
-
-    if (null === image) {
-      image = builders.element('img', {
-        append: poster
-      });
-    }
-
-    image.src = response.data.poster; // Show the poster.
-
-    poster.classList.add('poster-visible');
-  });
-  request.addEventListener('error', () => {
-    showPickerError(); // Hide preview loader on request complete.
-
-    poster.classList.remove('poster-loader');
-  });
-  request.send(bundle);
-}
-/**
- * Create designer template selector.
- *
- * @param {HTMLElement} picker   Picker element.
- * @param {HTMLElement} designer Designer element.
- * @param {Object}      selected Seleted template.
- */
-
-
-function createTemplate(picker, designer, selected) {
-  const fields = {};
-  picker_params.templates.forEach((template, i) => {
-    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
-  });
-  const template = builders.select({
-    classes: ['sharing-image-picker-template'],
-    options: fields,
-    attributes: {
-      name: picker_params.name + '[template]'
-    },
-    selected: String(selected)
-  }, picker);
-  template.addEventListener('change', () => {
-    const fieldset = designer.childNodes;
-
-    for (let i = 0; i < fieldset.length; i++) {
-      fieldset[i].classList.remove('fieldset-visible');
-
-      if (i === parseInt(template.value)) {
-        fieldset[i].classList.add('fieldset-visible');
-      }
-    }
-  });
-  return template;
-}
-/**
- * Prefill caption fields for classic editor.
- *
- * @param {HTMLElement} textarea Caption textarea field.
- * @param {string}      preset   Preset field.
- */
-
-
-function fillClassicEditorPreset(textarea, preset) {
-  const source = document.getElementById(preset);
-
-  if (null === source) {
-    return;
-  }
-
-  const updateCaption = () => {
-    textarea.value = source.value;
-  };
-
-  source.addEventListener('change', updateCaption); // Stop textarea update after first user input.
-
-  textarea.addEventListener('change', () => {
-    source.removeEventListener('change', updateCaption);
-  });
-  updateCaption();
-}
-/**
- * Prefill caption fields for block editor.
- *
- * @param {HTMLElement} textarea Caption textarea field.
- * @param {string}      preset   Preset field.
- */
-
-
-function fillBlockEditorPreset(textarea, preset) {
-  const getAttribute = () => {
-    return wp.data.select('core/editor').getEditedPostAttribute(preset);
-  };
-
-  let attribute = getAttribute();
-  wp.data.subscribe(() => {
-    const updated = getAttribute();
-
-    if (attribute !== updated) {
-      textarea.textContent = updated;
-    }
-
-    attribute = updated;
-  });
-}
-/**
- * Try to prefill caption field.
- *
- * @param {HTMLElement} textarea Caption textarea field.
- * @param {string}      preset   Preset field.
- */
-
-
-function fillCaptionPreset(textarea, preset) {
-  if (gutenberg) {
-    return fillBlockEditorPreset(textarea, preset);
-  }
-
-  fillClassicEditorPreset(textarea, preset);
-}
-/**
- * Create designer attachment field for dynamic background.
- *
- * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object}      template Template data.
- * @param {Array}       values   Template fieldset values.
- * @param {string}      name     Field name attribute.
- */
-
-
-function createDesignerAttachment(fieldset, template, values, name) {
-  if ('dynamic' !== template.background) {
-    return;
-  }
-
-  builders.media({
-    name: name + '[attachment]',
-    classes: ['sharing-image-picker-media'],
-    value: values.attachment,
-    link: picker_params.links.uploads,
-    labels: {
-      button: wp.i18n.__('Upload background', 'sharing-image'),
-      heading: wp.i18n.__('Select background image', 'sharing-image'),
-      details: wp.i18n.__('Attachment', 'sharing-image')
-    },
-    append: fieldset
-  });
-}
-/**
- * Create designer captions for text layers.
- *
- * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object}      template Template data.
- * @param {Array}       values   Template fieldset values.
- * @param {string}      name     Field name attribute.
- */
-
-
-function createDesignerCaptions(fieldset, template, values, name) {
-  const captions = values.captions || []; // Set default layers list.
-
-  template.layers = template.layers || [];
-  template.layers.forEach((layer, n) => {
-    if ('text' !== layer.type || !layer.dynamic) {
-      return;
-    }
-
-    const textarea = builders.textarea({
-      classes: ['sharing-image-picker-caption'],
-      label: layer.title || null,
-      attributes: {
-        name: name + `[captions][${n}]`
-      }
-    }, fieldset);
-
-    if (!captions[n]) {
-      fillCaptionPreset(textarea, layer.preset);
-    }
-
-    textarea.textContent = captions[n];
-  });
-}
-/**
- * Create fields designer.
- *
- * @param {HTMLElement} picker Picker element.
- * @param {Object}      data   Picker data object.
- */
-
-
-function picker_createDesigner(picker, data) {
-  const designer = builders.element('div', {
-    classes: ['sharing-image-picker-designer']
-  });
-  let selected = data.template || 0; // Reset selected template if index undefined.
-
-  if (!picker_params.templates[selected]) {
-    selected = 0;
-  } // Create designer fields
-
-
-  picker_params.templates.forEach((template, i) => {
-    // Set default layers list.
-    template.layers = template.layers || [];
-    const fieldset = builders.element('div', {
-      classes: ['sharing-image-picker-fieldset'],
-      append: designer
-    });
-
-    if (i === parseInt(selected)) {
-      fieldset.classList.add('fieldset-visible');
-    }
-
-    let values = {};
-
-    if (data.fieldset && data.fieldset[i]) {
-      values = data.fieldset[i];
-    }
-
-    const name = picker_params.name + `[fieldset][${i}]`;
-    builders.element('input', {
-      attributes: {
-        type: 'hidden',
-        name: name
-      },
-      append: fieldset
-    }); // Create attachment field.
-
-    createDesignerAttachment(fieldset, template, values, name); // Create all caption fields.
-
-    createDesignerCaptions(fieldset, template, values, name);
-  }); // Create template selector.
-
-  if (picker_params.templates.length > 1) {
-    createTemplate(picker, designer, selected);
-  }
-
-  picker.appendChild(designer);
-}
-/**
- * Create button to generate new metabox poster.
- *
- * @param {HTMLElement} picker  Picker element.
- * @param {HTMLElement} manager Manager element.
- */
-
-
-function picker_createGenerateButton(picker, manager) {
-  const button = builders.element('button', {
-    classes: ['sharing-image-picker-generate', 'button'],
-    text: wp.i18n.__('Generate', 'sharing-image'),
-    attributes: {
-      type: 'button'
-    },
-    append: manager
-  });
-  button.addEventListener('click', () => {
-    generatePoster(picker);
-  });
-}
-/**
- * Create button to delete current metabox poster.
- *
- * @param {HTMLElement} manager Manager element.
- */
-
-
-function picker_createDeleteButton(manager) {
-  const button = builders.element('button', {
-    classes: ['sharing-image-picker-delete', 'button', 'button-delete'],
-    text: wp.i18n.__('Remove', 'sharing-image'),
-    attributes: {
-      type: 'button'
-    },
-    append: manager
-  });
-  button.addEventListener('click', () => {
-    const image = poster.querySelector('img');
-
-    if (null !== image) {
-      poster.removeChild(image);
-    }
-
-    poster.querySelectorAll('input').forEach(input => {
-      input.value = '';
-    });
-    poster.classList.remove('poster-visible');
-  });
-}
-/**
- * Create picker manager.
- *
- * @param {HTMLElement} picker Picker element.
- */
-
-
-function createManager(picker) {
-  const manager = builders.element('div', {
-    classes: ['sharing-image-picker-manager'],
-    append: picker
-  }); // Create poster generation button.
-
-  picker_createGenerateButton(picker, manager); // Create poster removing button.
-
-  picker_createDeleteButton(manager);
-  builders.element('span', {
-    classes: ['sharing-image-picker-spinner', 'spinner'],
-    append: manager
-  });
-}
-/**
- * Create poster block.
- *
- * @param {HTMLElement} picker Picker element.
- * @param {Object}      data   Picker data object.
- */
-
-
-function createPoster(picker, data) {
-  poster = builders.element('div', {
-    classes: ['sharing-image-picker-poster'],
-    append: picker
-  });
-
-  if (data.poster) {
-    builders.element('img', {
-      attributes: {
-        src: data.poster,
-        alt: ''
-      },
-      append: poster
-    });
-    poster.classList.add('poster-visible');
-  }
-
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: picker_params.name + '[poster]',
-      value: data.poster
-    },
-    append: poster
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: picker_params.name + '[width]',
-      value: data.width
-    },
-    append: poster
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: picker_params.name + '[height]',
-      value: data.height
-    },
-    append: poster
-  });
-  return poster;
-}
-/**
- * Check that the poster sizes are set or show an error message.
- *
- * @param {Object} data Picker data object.
- */
-
-
-function showSizesWarning(data) {
-  if (!data.poster) {
-    return;
-  }
-
-  if (!data.width || !data.height) {
-    showPickerError(wp.i18n.__('Image sizes are not set. Regenerate the poster.', 'sharing-image'));
-  }
-}
-/**
- * Get new config with AJAX call and reinit metabox.
- *
- * @param {HTMLElement} widget Widget element.
- */
-
-
-const rebuildPicker = widget => {
-  const request = new XMLHttpRequest();
-  request.open('POST', ajaxurl);
-  request.responseType = 'json';
-  poster.classList.add('poster-loader'); // We need post ID for this request.
-
-  const postId = wp.data.select('core/editor').getCurrentPostId(); // Create data form data bundle.
-
-  const bundle = new window.FormData();
-  bundle.set('action', 'sharing_image_rebuild');
-  bundle.set('post', postId); // Find picker child.
-
-  const picker = widget.querySelector('.sharing-image-picker');
-  picker.querySelectorAll('[name]').forEach(field => {
-    if ('sharing_image_nonce' === field.name) {
-      bundle.append(field.name, field.value);
-    }
-  });
-  hidePickerError();
-  request.addEventListener('load', () => {
-    const response = request.response || {}; // Hide preview loader on request complete.
-
-    poster.classList.remove('poster-loader');
-
-    if (!response.data) {
-      return showPickerError();
-    }
-
-    if (!response.success) {
-      return showPickerError(response.data);
-    }
-
-    buildPicker(widget, response.data);
-  });
-  request.addEventListener('error', () => {
-    showPickerError(); // Hide preview loader on request complete.
-
-    poster.classList.remove('poster-loader');
-  });
-  request.send(bundle);
-};
-/**
- * Wait Gutenberg post saving and reinit tasks list.
- *
- * @param {HTMLElement} widget Widget element.
- */
-
-
-const subscribeOnSaving = widget => {
-  let wasSavingPost = wp.data.select('core/edit-post').isSavingMetaBoxes();
-  wp.data.subscribe(() => {
-    const isSavingPost = wp.data.select('core/edit-post').isSavingMetaBoxes();
-
-    if (wasSavingPost && !isSavingPost) {
-      rebuildPicker(widget);
-    }
-
-    wasSavingPost = isSavingPost;
-  });
-};
-/**
- * Build metabox fields.
- *
- * @param {HTMLElement} widget   Widget element.
- * @param {Object}      settings Global settings object.
- */
-
-
-function buildPicker(widget, settings) {
-  picker_params = settings; // Set params name for template form fields.
-
-  picker_params.name = 'sharing_image_picker';
-
-  while (widget.firstChild) {
-    widget.removeChild(widget.lastChild);
-  }
-
-  if ('term' === picker_params.context) {
-    const title = builders.element('div', {
-      classes: ['sharing-image-title'],
-      append: widget
-    });
-    builders.element('strong', {
-      text: wp.i18n.__('Sharing Image', 'sharing-image'),
-      append: title
-    });
-  }
-
-  const picker = builders.element('div', {
-    classes: ['sharing-image-picker'],
-    append: widget
-  });
-  const data = picker_params.meta || {}; // Create poster block.
-
-  createPoster(picker, data); // Create fields designer.
-
-  picker_createDesigner(picker, data);
-  builders.element('div', {
-    classes: ['sharing-image-picker-warning'],
-    append: picker
-  }); // Show unset poster sizes warning.
-
-  showSizesWarning(data); // Create metabox manager block.
-
-  createManager(picker);
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'sharing_image_nonce',
-      value: picker_params.nonce
-    },
-    append: picker
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'sharing_image_screen',
-      value: picker_params.screen
-    },
-    append: picker
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'sharing_image_context',
-      value: picker_params.context
-    },
-    append: picker
-  });
-}
-/**
- * Create metabox generator picker and subscribe to events.
- *
- * @param {HTMLElement} widget   Widget element.
- * @param {Object}      settings Global settings object.
- */
-
-
-function createPicker(widget, settings) {
-  if (wp.data && wp.data.select('core/editor')) {
-    gutenberg = true;
-  }
-
-  buildPicker(widget, settings);
-
-  if (gutenberg) {
-    subscribeOnSaving(widget);
-  }
-}
-
-/* harmony default export */ const picker = (createPicker);
-;// CONCATENATED MODULE: ./src/scripts/sections/tools.js
-/**
- * Tools settings tab.
- */
- // Store global script object for settings page.
-
-let tools_params = null;
-/**
- * Create export options block.
- *
- * @param {HTMLElement} tools Tools wrapper element.
- */
-
-function createExportOptions(tools) {
-  const control = builders.control({
-    classes: ['sharing-image-tools-control'],
-    label: wp.i18n.__('Export templates', 'sharing-image'),
-    append: tools
-  });
-  const fieldset = builders.element('div', {
-    classes: ['sharing-image-tools-control-fieldset'],
-    append: control
-  }); // Set template index to delete link.
-
-  const link = new URL(tools_params.links.action);
-  link.searchParams.set('action', 'sharing_image_export');
-  link.searchParams.set('nonce', tools_params.nonce);
-  builders.element('a', {
-    classes: ['button', 'button-primary'],
-    text: wp.i18n.__('Download backup file', 'sharing-image'),
-    attributes: {
-      href: link.href
-    },
-    append: fieldset
-  });
-  builders.element('small', {
-    text: wp.i18n.__('Save a local copy of all template settings for later use.', 'sharing-image'),
-    append: fieldset
-  });
-}
-/**
- * Create import options block.
- *
- * @param {HTMLElement} tools Tools wrapper element.
- */
-
-
-function createImportOptions(tools) {
-  const control = builders.control({
-    classes: ['sharing-image-tools-control'],
-    label: wp.i18n.__('Import templates', 'sharing-image'),
-    append: tools
-  });
-  const uploader = builders.element('form', {
-    classes: ['sharing-image-tools-control-uploader'],
-    attributes: {
-      action: tools_params.links.action,
-      method: 'POST',
-      enctype: 'multipart/form-data'
-    },
-    append: control
-  });
-  builders.element('input', {
-    classes: ['sharing-image-tools-control-file'],
-    attributes: {
-      type: 'file',
-      name: 'sharing_image_import',
-      accept: 'application/json',
-      required: 'required'
-    },
-    append: uploader
-  });
-  builders.element('button', {
-    classes: ['button', 'button-primary'],
-    attributes: {
-      type: 'submit'
-    },
-    text: wp.i18n.__('Import templates', 'sharing-image'),
-    append: uploader
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'action',
-      value: 'sharing_image_import'
-    },
-    append: uploader
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'sharing_image_nonce',
-      value: tools_params.nonce
-    },
-    append: uploader
-  });
-}
-/**
- * Create import options block.
- *
- * @param {HTMLElement} tools Tools wrapper element.
- */
-
-
-function createCloningOptions(tools) {
-  const templates = tools_params.templates || [];
-  const control = builders.control({
-    classes: ['sharing-image-tools-control', 'control-section'],
-    label: wp.i18n.__('Clone template', 'sharing-image'),
-    append: tools
-  });
-  const warning = builders.element('p', {
-    classes: ['sharing-image-tools-warning'],
-    text: wp.i18n.__('To initiate cloning, enable Premium and possess a minimum of 1 template.', 'sharing-image')
-  });
-  const license = tools_params.license || {};
-
-  if (templates.length === 0 || !license.premium && !license.develop) {
-    return control.appendChild(warning);
-  }
-
-  const fields = {};
-  templates.forEach((template, i) => {
-    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
-  });
-  const cloning = builders.element('form', {
-    classes: ['sharing-image-tools-control-cloning'],
-    attributes: {
-      action: tools_params.links.action,
-      method: 'POST'
-    },
-    append: control
-  });
-  const select = builders.select({
-    classes: ['sharing-image-tools-control-duplicator'],
-    options: fields,
-    attributes: {
-      name: 'sharing_image_clone'
-    }
-  }, cloning);
-  builders.element('button', {
-    classes: ['button', 'button-primary'],
-    attributes: {
-      type: 'submit'
-    },
-    text: wp.i18n.__('Create a copy', 'sharing-image'),
-    append: select.parentNode
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'action',
-      value: 'sharing_image_clone'
-    },
-    append: cloning
-  });
-  builders.element('input', {
-    attributes: {
-      type: 'hidden',
-      name: 'sharing_image_nonce',
-      value: tools_params.nonce
-    },
-    append: cloning
-  });
-}
-/**
- * Create templates catalog from options.
- *
- * @param {HTMLElement} content  Settings content element.
- * @param {Object}      settings Global settings field.
- */
-
-
-function createTools(content, settings) {
-  tools_params = settings; // Find tools element
-
-  const tools = content.querySelector('.sharing-image-tools');
-
-  if (null === tools) {
-    return;
-  } // Cloning options.
-
-
-  createCloningOptions(tools); // Export options.
-
-  createExportOptions(tools); // Import options.
-
-  createImportOptions(tools);
-}
-
-/* harmony default export */ const tools = (createTools);
-;// CONCATENATED MODULE: ./src/scripts/sections/index.js
-
-
-
-
-
-
-const Section = {
-  catalog: catalog,
-  editor: sections_editor,
-  config: config,
-  premium: sections_premium,
-  picker: picker,
-  tools: tools
-};
-/* harmony default export */ const sections = (Section);
 ;// CONCATENATED MODULE: ./src/scripts/settings.js
+
+
+
+
 
 
 /**
@@ -3781,7 +3164,7 @@ const Section = {
  */
 
 function initPremiumTab(content, settings) {
-  sections.premium(content, settings);
+  sections_premium(content, settings);
 }
 /**
  * Init config settings tab.
@@ -3792,7 +3175,7 @@ function initPremiumTab(content, settings) {
 
 
 function initConfigTab(content, settings) {
-  sections.config(content, settings);
+  config(content, settings);
 }
 /**
  * Init tools settings tab.
@@ -3803,7 +3186,7 @@ function initConfigTab(content, settings) {
 
 
 function initToolsTab(content, settings) {
-  sections.tools(content, settings);
+  tools(content, settings);
 }
 /**
  * Init config settings tab.
@@ -3826,15 +3209,15 @@ function initTemplatesTab(content, settings) {
   const data = settings.templates[index]; // Create editor for existing template.
 
   if (undefined !== data) {
-    return sections.editor(content, settings, index, data);
+    return sections_editor(content, settings, index, data);
   } // Create editor for new template.
 
 
   if (settings.templates.length === index) {
-    return sections.editor(content, settings, index);
+    return sections_editor(content, settings, index);
   }
 
-  sections.catalog(content, settings);
+  catalog(content, settings);
 }
 /**
  * Init settings page handler.

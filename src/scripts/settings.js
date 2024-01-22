@@ -1,5 +1,10 @@
 import Helper from './helpers';
-import Section from './sections';
+
+import Tools from './sections/tools';
+import Catalog from './sections/catalog';
+import Premium from './sections/premium';
+import Editor from './sections/editor';
+import Config from './sections/config';
 
 /**
  * Init premium settings tab.
@@ -8,7 +13,7 @@ import Section from './sections';
  * @param {Object}      settings Global settings object.
  */
 function initPremiumTab( content, settings ) {
-	Section.premium( content, settings );
+	Premium( content, settings );
 }
 
 /**
@@ -18,7 +23,7 @@ function initPremiumTab( content, settings ) {
  * @param {Object}      settings Global settings object.
  */
 function initConfigTab( content, settings ) {
-	Section.config( content, settings );
+	Config( content, settings );
 }
 
 /**
@@ -28,7 +33,7 @@ function initConfigTab( content, settings ) {
  * @param {Object}      settings Global settings object.
  */
 function initToolsTab( content, settings ) {
-	Section.tools( content, settings );
+	Tools( content, settings );
 }
 
 /**
@@ -52,15 +57,15 @@ function initTemplatesTab( content, settings ) {
 
 	// Create editor for existing template.
 	if ( undefined !== data ) {
-		return Section.editor( content, settings, index, data );
+		return Editor( content, settings, index, data );
 	}
 
 	// Create editor for new template.
 	if ( settings.templates.length === index ) {
-		return Section.editor( content, settings, index );
+		return Editor( content, settings, index );
 	}
 
-	Section.catalog( content, settings );
+	Catalog( content, settings );
 }
 
 /**

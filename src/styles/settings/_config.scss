@@ -31,8 +31,12 @@
     h3 {
       grid-column: 1;
 
-      margin: 6px 0 12px;
+      margin: 6px 0 0;
       font-size: 14px;
+
+      @media screen and (max-width: 782px) {
+        margin-bottom: 12px;
+      }
     }
 
     h4 {
@@ -73,6 +77,10 @@
 
   .sharing-image-config-control-radio {
     @include control-radio;
+  }
+
+  .sharing-image-config-control-checkbox {
+    @include control-checkbox;
   }
 
   .sharing-image-config-control-select {

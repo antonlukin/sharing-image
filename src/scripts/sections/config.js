@@ -235,6 +235,26 @@ function createAutogenerateOptions( options, data, templates ) {
 	} );
 }
 
+function createLiveReloadOptions( options, data ) {
+	Build.control( {
+		classes: [ 'sharing-image-config-control' ],
+		label: wp.i18n.__( 'Live-reload', 'sharing-image' ),
+		fields: [
+			{
+				group: 'checkbox',
+				classes: [ 'sharing-image-config-control-checkbox' ],
+				attributes: {
+					name: params.name + '[suspend]',
+					value: 'suspend',
+				},
+				label: wp.i18n.__( 'Disable live-reload on the template editor screen', 'sharing-image' ),
+				checked: data.suspend,
+			},
+		],
+		append: options,
+	} );
+}
+
 /**
  * Create required form meta fields.
  *
@@ -309,10 +329,13 @@ function createConfig( content, settings ) {
 	// Uploads directory options.
 	createUploadsOptions( options, data );
 
+	// Live-reload options.
+	createLiveReloadOptions( options, data );
+
 	// Default poster.
 	createDefaultOptions( options, data );
 
-	// Create required form fields
+	// Create required form fields.
 	createMetaFields( options );
 }
 

@@ -322,6 +322,9 @@ function createDynamicFields( layer, name, data ) {
 					name: name + '[title]',
 					value: data.title,
 				},
+				dataset: {
+					context: 'title',
+				},
 				label: wp.i18n.__( 'Field name', 'sharing-image' ),
 			},
 		],
@@ -733,8 +736,8 @@ function createPreview( viewport, data ) {
 
 /**
  *
- * @param {*} designer
- * @param {*} layer
+ * @param {HTMLElement} designer
+ * @param {HTMLElement} layer
  */
 function createCollapseButton( designer, layer ) {
 	const label = layer.querySelector( 'h2' );
@@ -1349,7 +1352,7 @@ function createLayer( designer, type, index, data = {} ) {
 	}
 
 	if ( null === layer ) {
-		return;
+		return null;
 	}
 
 	designer.insertBefore( layer, designer.firstChild );
@@ -1362,6 +1365,8 @@ function createLayer( designer, type, index, data = {} ) {
 
 	// Reorder layers button.
 	createOrderLayersButton( designer, layer );
+
+	return layer;
 }
 
 /**
@@ -1409,7 +1414,10 @@ function createDesigner( fieldset, data ) {
 
 	layers.forEach( ( layer, index ) => {
 		if ( layer.hasOwnProperty( 'type' ) ) {
-			createLayer( designer, layer.type, index++, layer );
+			const created = createLayer( designer, layer.type, index++, layer );
+
+			// Collapse new layer.
+			created.classList.add( 'layer-collapsed' );
 		}
 	} );
 
@@ -1579,36 +1587,24 @@ function createGenerateButton( manager ) {
 }
 
 /**
- * Create disable live-reloading checkbox.
+ * Create debug text checkbox.
  *
  * @param {HTMLElement} manager Manager element.
  * @param {Object}      data    Template data.
  */
-function createSuspendCheckbox( manager, data ) {
-	const checkbox = Build.checkbox(
+function createDebugCheckbox( manager, data ) {
+	Build.checkbox(
 		{
-			classes: [ 'sharing-image-editor-suspend' ],
+			classes: [ 'sharing-image-editor-debug' ],
 			attributes: {
-				name: params.name + '[suspend]',
-				value: 'suspend',
+				name: params.name + '[debug]',
+				value: 'debug',
 			},
-			label: wp.i18n.__( 'Disable live-reload', 'sharing-image' ),
-			checked: data.suspend,
+			label: wp.i18n.__( 'Show debug frames', 'sharing-image' ),
+			checked: data.debug,
 		},
 		manager,
 	);
-
-	if ( data.suspend ) {
-		editor.classList.add( 'editor-suspend' );
-	}
-
-	checkbox.addEventListener( 'change', () => {
-		editor.classList.remove( 'editor-suspend' );
-
-		if ( checkbox.checked ) {
-			editor.classList.add( 'editor-suspend' );
-		}
-	} );
 }
 
 /**
@@ -1639,8 +1635,8 @@ function createMonitor( data ) {
 		append: viewport,
 	} );
 
-	// Create live-reload manager checkbox.
-	createSuspendCheckbox( manager, data );
+	// Create debug only checkbox.
+	createDebugCheckbox( manager, data );
 
 	// Create submit form button.
 	createSubmitButton( manager );
@@ -1666,6 +1662,10 @@ function prepareEditor( content, index ) {
 		},
 		append: content,
 	} );
+
+	if ( params.config.suspend ) {
+		form.classList.add( 'editor-suspend' );
+	}
 
 	Build.element( 'input', {
 		attributes: {

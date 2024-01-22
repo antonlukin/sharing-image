@@ -1,4 +1,4 @@
-import Section from './sections';
+import Picker from './sections/picker.js';
 
 /**
  * Init metabox handler.
@@ -21,6 +21,6 @@ import Section from './sections';
 			widget.classList.add( `widget-${ object.context }` );
 		}
 
-		Section.picker( widget, object );
+		Picker( widget, object );
 	} );
 }() );
