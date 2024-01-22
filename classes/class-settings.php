@@ -1028,17 +1028,18 @@ class Settings {
 		$basedir = str_replace( ABSPATH, '', $uploads['basedir'] );
 
 		$object = array(
-			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
-			'links'     => array(
+			'nonce'      => wp_create_nonce( basename( __FILE__ ) ),
+			'links'      => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
 				'action'  => esc_url( admin_url( 'admin-post.php' ) ),
 				'premium' => esc_url_raw( $this->get_tab_link( 'premium' ) ),
 				'storage' => path_join( $basedir, 'sharing-image' ),
 			),
-			'templates' => $this->get_templates(),
-			'config'    => $this->get_config(),
-			'license'   => $this->get_license(),
-			'fonts'     => $this->get_fonts(),
+			'templates'  => $this->get_templates(),
+			'config'     => $this->get_config(),
+			'license'    => $this->get_license(),
+			'fonts'      => $this->get_fonts(),
+			'taxonomies' => $this->get_preset_taxonomies(),
 		);
 
 		/**
@@ -1179,11 +1180,15 @@ class Settings {
 		$sanitized['preset'] = 'none';
 
 		if ( isset( $layer['preset'] ) ) {
-			$preset = array( 'title', 'excerpt' );
+			$preset = array( 'title', 'excerpt', 'taxonomy' );
 
 			if ( in_array( $layer['preset'], $preset, true ) ) {
 				$sanitized['preset'] = $layer['preset'];
 			}
+		}
+
+		if ( isset( $layer['taxonomy'] ) ) {
+			$sanitized['taxonomy'] = sanitize_key( $layer['taxonomy'] );
 		}
 
 		$sanitized['color'] = '#ffffff';
@@ -1600,6 +1605,40 @@ class Settings {
 		 * @param array List of availible poster fonts.
 		 */
 		return apply_filters( 'sharing_image_poster_fonts', $fonts );
+	}
+
+	/**
+	 * Get available taxonomies for text layer preset.
+	 *
+	 * @return array List of availible preset taxonomies.
+	 */
+	private function get_preset_taxonomies() {
+		$objects = get_taxonomies(
+			array(
+				'public'  => true,
+				'show_ui' => true,
+			),
+			'object',
+		);
+
+		$taxonomies = array();
+
+		foreach ( $objects as $key => $object ) {
+			$label = $key;
+
+			if ( ! empty( $object->label ) ) {
+				$label = $object->label;
+			}
+
+			$taxonomies[ $key ] = $label;
+		}
+
+		/**
+		 * Filter taxonomies for text layer preset.
+		 *
+		 * @param array $taxonomies List of taxonomies.
+		 */
+		return apply_filters( 'sharing_image_preset_taxonomies', $taxonomies );
 	}
 
 	/**

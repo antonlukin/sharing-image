@@ -184,6 +184,18 @@
         width: 100%;
       }
     }
+
+    &.control-pulled {
+     margin-top: -10px;
+    }
+
+    &.control-disabled {
+      opacity: 0.5;
+
+      > * {
+        pointer-events: none;
+      }
+    }
   }
 
   .sharing-image-editor-designer {
@@ -336,7 +348,7 @@
       position: relative;
       width: calc(100% + 20px);
       margin: -14px -10px 0;
-      padding: 10px;
+      padding: 14px 10px;
 
       font-size: 16px;
       font-weight: 600;

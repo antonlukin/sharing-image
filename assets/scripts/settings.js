@@ -1651,7 +1651,7 @@ function createDynamicFields(layer, name, data) {
     }],
     append: layer
   });
-  fields[fields.length] = builders.control({
+  const presets = builders.control({
     classes: ['sharing-image-editor-control', 'control-hidden'],
     label: wp.i18n.__('Preset text field', 'sharing-image'),
     fields: [{
@@ -1690,8 +1690,50 @@ function createDynamicFields(layer, name, data) {
       },
       label: wp.i18n.__('Use post excerpt text', 'sharing-image'),
       checked: data.preset || 'none'
+    }, {
+      group: 'radio',
+      classes: ['sharing-image-editor-control-radio'],
+      attributes: {
+        name: name + '[preset]',
+        value: 'taxonomy'
+      },
+      dataset: {
+        persistent: true
+      },
+      label: wp.i18n.__('Show post taxonomy terms', 'sharing-image'),
+      checked: data.preset || 'none'
     }],
     append: layer
+  });
+  fields[fields.length] = presets;
+  const taxonomy = builders.control({
+    classes: ['sharing-image-editor-control', 'control-hidden', 'control-extend', 'control-pulled'],
+    label: wp.i18n.__('Preset taxonomy', 'sharing-image'),
+    fields: [{
+      group: 'select',
+      classes: ['sharing-image-editor-control-select'],
+      options: editor_params.taxonomies,
+      attributes: {
+        name: name + '[taxonomy]'
+      },
+      selected: data.taxonomy
+    }],
+    append: layer
+  });
+  fields[fields.length] = taxonomy;
+
+  if ('taxonomy' !== data.preset) {
+    taxonomy.classList.add('control-disabled');
+  } // Show taxonomy select on preset change.
+
+
+  presets.addEventListener('change', () => {
+    const checked = presets.querySelector('input:checked').value;
+    taxonomy.classList.add('control-disabled');
+
+    if ('taxonomy' === checked) {
+      taxonomy.classList.remove('control-disabled');
+    }
   });
   fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-extend'],

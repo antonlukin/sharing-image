@@ -586,6 +586,15 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-extend > * {
   width: 100%;
 }
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-pulled {
+  margin-top: -10px;
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-disabled {
+  opacity: 0.5;
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control.control-disabled > * {
+  pointer-events: none;
+}
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-designer {
   display: block;
   position: relative;
@@ -703,7 +712,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
   position: relative;
   width: calc(100% + 20px);
   margin: -14px -10px 0;
-  padding: 10px;
+  padding: 14px 10px;
   font-size: 16px;
   font-weight: 600;
 }
