@@ -122,7 +122,7 @@ function createCloningOptions( tools ) {
 
 	const warning = Build.element( 'p', {
 		classes: [ 'sharing-image-tools-warning' ],
-		text: wp.i18n.__( 'To initiate cloning, enable Premium and possess a minimum of 1 template.', 'sharing-image' ),
+		text: wp.i18n.__( 'You need to enable Premium and create at least one template.', 'sharing-image' ),
 	} );
 
 	const license = params.license || {};

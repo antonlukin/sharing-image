@@ -86,6 +86,7 @@ class Settings {
 	 */
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_init', array( $this, 'create_demo_template' ) );
 
 		// Handle settings POST requests.
 		add_action( 'admin_init', array( $this, 'handle_post_requests' ) );
@@ -104,6 +105,35 @@ class Settings {
 
 		// Schedule Premium license verification.
 		add_action( self::EVENT_PREMIUM, array( $this, 'launch_verification_event' ), 10, 1 );
+	}
+
+	/**
+	 * Create demo template after plugin activation.
+	 */
+	public function create_demo_template() {
+		$config = $this->get_config();
+
+		if ( ! empty( $config['initialized'] ) ) {
+			return;
+		}
+
+		if ( ! file_exists( SHARING_IMAGE_DIR . 'demo/templates.json' ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions
+		$templates = file_get_contents( SHARING_IMAGE_DIR . 'demo/templates.json' );
+		$templates = json_decode( $templates, true );
+
+		if ( empty( $templates ) ) {
+			return;
+		}
+
+		foreach ( $templates as $template ) {
+			$this->update_templates( null, $this->sanitize_editor( $template ) );
+		}
+
+		$this->update_config( $config );
 	}
 
 	/**
@@ -779,6 +809,9 @@ class Settings {
 	 * @param array $config License settings config data.
 	 */
 	public function update_config( $config ) {
+		// Set this option every time on config save.
+		$config['initialized'] = 1;
+
 		/**
 		 * Filters config options before their update in database.
 		 *
