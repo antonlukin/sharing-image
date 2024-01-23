@@ -451,15 +451,26 @@ class Settings {
 			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
 		}
 
+		$generator = new Generator();
+
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
-		// Show poster using generator class.
-		$source = ( new Generator() )->show( $editor, $index );
+		// Prepare template editor.
+		$editor = $generator->prepare_template( $editor, null, $index );
 
-		if ( is_wp_error( $source ) ) {
-			wp_send_json_error( $source->get_error_message(), 400 );
+		if ( ! $generator->check_required( $editor ) ) {
+			wp_send_json_error( __( 'Wrong template settings.', 'sharing-image' ), 400 );
 		}
+
+		// Generate image and show it immediately.
+		$poster = $generator->create_poster( $editor );
+
+		if ( is_wp_error( $poster ) ) {
+			wp_send_json_error( $poster->get_error_message(), 400 );
+		}
+
+		exit; // It's ok to exit here. Just cause we show an image above.
 	}
 
 	/**
@@ -482,17 +493,28 @@ class Settings {
 			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
 		}
 
+		$generator = new Generator();
+
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
 
-		// Save poster using generator class.
-		$source = ( new Generator() )->save( $editor, $index );
+		// Prepare template editor.
+		$editor = $generator->prepare_template( $editor, null, $index );
 
-		if ( is_wp_error( $source ) ) {
-			wp_send_json_error( $source->get_error_message(), 400 );
+		if ( ! $generator->check_required( $editor ) ) {
+			wp_send_json_error( __( 'Wrong template settings.', 'sharing-image' ), 400 );
 		}
 
-		wp_send_json_success( $source );
+		list( $path, $url ) = $generator->get_upload_file();
+
+		// Generate image and save it.
+		$poster = $generator->create_poster( $editor, $path );
+
+		if ( is_wp_error( $poster ) ) {
+			wp_send_json_error( $poster->get_error_message(), 400 );
+		}
+
+		wp_send_json_success( $url );
 	}
 
 	/**
@@ -744,7 +766,7 @@ class Settings {
 		$config = get_option( self::OPTION_CONFIG, array() );
 
 		/**
-		 * Filters settigns config.
+		 * Filters settings config.
 		 *
 		 * @param array List of plugin config settings.
 		 */
