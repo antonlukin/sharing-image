@@ -2773,7 +2773,7 @@ function createGenerateButton(manager) {
 
 
 function createDebugCheckbox(manager, data) {
-  builders.checkbox({
+  const checkbox = builders.checkbox({
     classes: ['sharing-image-editor-debug'],
     attributes: {
       name: editor_params.name + '[debug]',
@@ -2782,6 +2782,9 @@ function createDebugCheckbox(manager, data) {
     label: wp.i18n.__('Show debug frames', 'sharing-image'),
     checked: data.debug
   }, manager);
+  checkbox.addEventListener('change', () => {
+    generateTemplate();
+  });
 }
 /**
  * Create template settings preview.

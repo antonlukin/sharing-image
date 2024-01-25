@@ -1642,7 +1642,7 @@ function createGenerateButton( manager ) {
  * @param {Object}      data    Template data.
  */
 function createDebugCheckbox( manager, data ) {
-	Build.checkbox(
+	const checkbox = Build.checkbox(
 		{
 			classes: [ 'sharing-image-editor-debug' ],
 			attributes: {
@@ -1654,6 +1654,10 @@ function createDebugCheckbox( manager, data ) {
 		},
 		manager,
 	);
+
+	checkbox.addEventListener( 'change', () => {
+		generateTemplate();
+	} );
 }
 
 /**
