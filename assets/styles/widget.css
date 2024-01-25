@@ -61,10 +61,10 @@ body.block-editor-page select:hover {
   box-sizing: border-box;
 }
 .sharing-image-widget .sharing-image-picker {
-  display: block;
+  display: flex;
   position: relative;
   flex: 1 1 auto;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-template {
   display: block;
@@ -126,15 +126,21 @@ body.block-editor-page select:hover {
   width: 100%;
 }
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-caption textarea {
-  height: 52px;
+  height: 55px;
   min-height: 28px;
   margin-top: 5px;
 }
+.sharing-image-widget .sharing-image-picker .sharing-image-picker-designer {
+  flex: 0 1 800px;
+}
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-poster {
-  display: none;
+  flex: 0 0 400px;
+  order: 1;
+  display: block;
   position: relative;
+  visibility: hidden;
   width: 100%;
-  margin-bottom: 12px;
+  margin-left: 20px;
   overflow: hidden;
   border-radius: 2px;
 }
@@ -150,8 +156,6 @@ body.block-editor-page select:hover {
   display: flex;
   align-items: center;
   width: 100%;
-  padding-top: 12px;
-  border-top: solid 1px #ccc;
 }
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-manager .button {
   margin-right: 12px;
@@ -178,10 +182,13 @@ body.block-editor-page select:hover {
   float: none;
   margin: 0;
 }
-.sharing-image-widget .sharing-image-picker .poster-visible ~ .sharing-image-picker-manager .sharing-image-picker-delete {
+.sharing-image-widget .sharing-image-picker.picker-visible .sharing-image-picker-designer .sharing-image-picker-delete {
   display: inline-flex;
 }
-.sharing-image-widget .sharing-image-picker .poster-loader ~ .sharing-image-picker-manager .sharing-image-picker-spinner {
+.sharing-image-widget .sharing-image-picker.picker-loader .sharing-image-picker-designer .sharing-image-picker-spinner {
+  visibility: visible;
+}
+.sharing-image-widget .sharing-image-picker.picker-visible .sharing-image-picker-poster {
   visibility: visible;
 }
 .sharing-image-widget .sharing-image-title {

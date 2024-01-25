@@ -677,9 +677,9 @@ const Build = {
 /* global ajaxurl:true */
  // Store global script object for metabox.
 
-let params = null; // Poster HTML element.
+let params = null; // Picker HTML element.
 
-let poster = null; // Is gutenberg editor used.
+let picker = null; // Is gutenberg editor used.
 
 let gutenberg = false;
 /**
@@ -689,8 +689,6 @@ let gutenberg = false;
  */
 
 function showPickerError(message) {
-  const picker = poster.parentNode; // Try to find warning element.
-
   const warning = picker.querySelector('.sharing-image-picker-warning');
 
   if (null === warning) {
@@ -706,8 +704,6 @@ function showPickerError(message) {
 
 
 function hidePickerError() {
-  const picker = poster.parentNode; // Try to find warning element.
-
   const warning = picker.querySelector('.sharing-image-picker-warning');
 
   if (null === warning) {
@@ -718,16 +714,14 @@ function hidePickerError() {
 }
 /**
  * Handle poster generation action.
- *
- * @param {HTMLElement} picker Picker element.
  */
 
 
-function generatePoster(picker) {
+function generatePoster() {
   const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
-  poster.classList.add('poster-loader'); // Create data form data bundle.
+  picker.classList.add('picker-loader'); // Create data form data bundle.
 
   const bundle = new window.FormData();
   bundle.set('action', 'sharing_image_generate');
@@ -735,10 +729,11 @@ function generatePoster(picker) {
     bundle.append(field.name, field.value);
   });
   hidePickerError();
+  const poster = picker.querySelector('.sharing-image-picker-poster');
   request.addEventListener('load', () => {
     const response = request.response || {}; // Hide preview loader on request complete.
 
-    poster.classList.remove('poster-loader');
+    picker.classList.remove('picker-loader');
 
     if (!response.data) {
       return showPickerError();
@@ -749,7 +744,6 @@ function generatePoster(picker) {
     }
 
     for (const key in response.data) {
-      // Find all poster input fields and set response data value.
       poster.querySelectorAll('input').forEach(input => {
         const name = params.name + '[' + key + ']';
 
@@ -769,25 +763,24 @@ function generatePoster(picker) {
 
     image.src = response.data.poster; // Show the poster.
 
-    poster.classList.add('poster-visible');
+    picker.classList.add('picker-visible');
   });
   request.addEventListener('error', () => {
     showPickerError(); // Hide preview loader on request complete.
 
-    poster.classList.remove('poster-loader');
+    picker.classList.remove('picker-loader');
   });
   request.send(bundle);
 }
 /**
  * Create designer template selector.
  *
- * @param {HTMLElement} picker   Picker element.
  * @param {HTMLElement} designer Designer element.
  * @param {Object}      selected Seleted template.
  */
 
 
-function createTemplate(picker, designer, selected) {
+function createTemplate(designer, selected) {
   const fields = {};
   params.templates.forEach((template, i) => {
     fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
@@ -799,9 +792,9 @@ function createTemplate(picker, designer, selected) {
       name: params.name + '[template]'
     },
     selected: String(selected)
-  }, picker);
+  }, designer);
   template.addEventListener('change', () => {
-    const fieldset = designer.childNodes;
+    const fieldset = designer.querySelectorAll('.sharing-image-picker-fieldset');
 
     for (let i = 0; i < fieldset.length; i++) {
       fieldset[i].classList.remove('fieldset-visible');
@@ -943,12 +936,11 @@ function createDesignerCaptions(fieldset, template, values, name) {
 /**
  * Create fields designer.
  *
- * @param {HTMLElement} picker Picker element.
- * @param {Object}      data   Picker data object.
+ * @param {Object} data Picker data object.
  */
 
 
-function createDesigner(picker, data) {
+function createDesigner(data) {
   const designer = builders.element('div', {
     classes: ['sharing-image-picker-designer']
   });
@@ -956,11 +948,13 @@ function createDesigner(picker, data) {
 
   if (!params.templates[selected]) {
     selected = 0;
-  } // Create designer fields
+  }
 
+  if (params.templates.length > 1) {
+    createTemplate(designer, selected);
+  }
 
   params.templates.forEach((template, i) => {
-    // Set default layers list.
     template.layers = template.layers || [];
     const fieldset = builders.element('div', {
       classes: ['sharing-image-picker-fieldset'],
@@ -984,28 +978,21 @@ function createDesigner(picker, data) {
         name: name
       },
       append: fieldset
-    }); // Create attachment field.
-
-    createDesignerAttachment(fieldset, template, values, name); // Create all caption fields.
-
+    });
+    createDesignerAttachment(fieldset, template, values, name);
     createDesignerCaptions(fieldset, template, values, name);
-  }); // Create template selector.
-
-  if (params.templates.length > 1) {
-    createTemplate(picker, designer, selected);
-  }
-
+  });
   picker.appendChild(designer);
+  return designer;
 }
 /**
  * Create button to generate new metabox poster.
  *
- * @param {HTMLElement} picker  Picker element.
  * @param {HTMLElement} manager Manager element.
  */
 
 
-function createGenerateButton(picker, manager) {
+function createGenerateButton(manager) {
   const button = builders.element('button', {
     classes: ['sharing-image-picker-generate', 'button'],
     text: wp.i18n.__('Generate', 'sharing-image'),
@@ -1015,7 +1002,7 @@ function createGenerateButton(picker, manager) {
     append: manager
   });
   button.addEventListener('click', () => {
-    generatePoster(picker);
+    generatePoster();
   });
 }
 /**
@@ -1034,6 +1021,7 @@ function createDeleteButton(manager) {
     },
     append: manager
   });
+  const poster = picker.querySelector('.sharing-image-picker-poster');
   button.addEventListener('click', () => {
     const image = poster.querySelector('img');
 
@@ -1044,24 +1032,22 @@ function createDeleteButton(manager) {
     poster.querySelectorAll('input').forEach(input => {
       input.value = '';
     });
-    poster.classList.remove('poster-visible');
+    picker.classList.remove('picker-visible');
   });
 }
 /**
  * Create picker manager.
  *
- * @param {HTMLElement} picker Picker element.
+ * @param {HTMLElement} designer Designer element.
  */
 
 
-function createManager(picker) {
+function createManager(designer) {
   const manager = builders.element('div', {
     classes: ['sharing-image-picker-manager'],
-    append: picker
-  }); // Create poster generation button.
-
-  createGenerateButton(picker, manager); // Create poster removing button.
-
+    append: designer
+  });
+  createGenerateButton(manager);
   createDeleteButton(manager);
   builders.element('span', {
     classes: ['sharing-image-picker-spinner', 'spinner'],
@@ -1071,13 +1057,12 @@ function createManager(picker) {
 /**
  * Create poster block.
  *
- * @param {HTMLElement} picker Picker element.
- * @param {Object}      data   Picker data object.
+ * @param {Object} data Picker data object.
  */
 
 
-function createPoster(picker, data) {
-  poster = builders.element('div', {
+function createPoster(data) {
+  const poster = builders.element('div', {
     classes: ['sharing-image-picker-poster'],
     append: picker
   });
@@ -1090,7 +1075,7 @@ function createPoster(picker, data) {
       },
       append: poster
     });
-    poster.classList.add('poster-visible');
+    picker.classList.add('picker-visible');
   }
 
   builders.element('input', {
@@ -1117,7 +1102,6 @@ function createPoster(picker, data) {
     },
     append: poster
   });
-  return poster;
 }
 /**
  * Check that the poster sizes are set or show an error message.
@@ -1146,15 +1130,13 @@ const rebuildPicker = widget => {
   const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
-  poster.classList.add('poster-loader'); // We need post ID for this request.
+  picker.classList.add('picker-loader'); // We need post ID for this request.
 
   const postId = wp.data.select('core/editor').getCurrentPostId(); // Create data form data bundle.
 
   const bundle = new window.FormData();
   bundle.set('action', 'sharing_image_rebuild');
-  bundle.set('post', postId); // Find picker child.
-
-  const picker = widget.querySelector('.sharing-image-picker');
+  bundle.set('post', postId);
   picker.querySelectorAll('[name]').forEach(field => {
     if ('sharing_image_nonce' === field.name) {
       bundle.append(field.name, field.value);
@@ -1164,7 +1146,7 @@ const rebuildPicker = widget => {
   request.addEventListener('load', () => {
     const response = request.response || {}; // Hide preview loader on request complete.
 
-    poster.classList.remove('poster-loader');
+    picker.classList.remove('picker-loader');
 
     if (!response.data) {
       return showPickerError();
@@ -1179,7 +1161,7 @@ const rebuildPicker = widget => {
   request.addEventListener('error', () => {
     showPickerError(); // Hide preview loader on request complete.
 
-    poster.classList.remove('poster-loader');
+    picker.classList.remove('picker-loader');
   });
   request.send(bundle);
 };
@@ -1230,23 +1212,19 @@ function buildPicker(widget, settings) {
     });
   }
 
-  const picker = builders.element('div', {
+  picker = builders.element('div', {
     classes: ['sharing-image-picker'],
     append: widget
   });
-  const data = params.meta || {}; // Create poster block.
+  const data = params.meta || {};
+  createPoster(data); // Create fields designer.
 
-  createPoster(picker, data); // Create fields designer.
-
-  createDesigner(picker, data);
+  const designer = createDesigner(data);
   builders.element('div', {
     classes: ['sharing-image-picker-warning'],
-    append: picker
-  }); // Show unset poster sizes warning.
-
-  showSizesWarning(data); // Create metabox manager block.
-
-  createManager(picker);
+    append: designer
+  });
+  createManager(designer);
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -1271,6 +1249,7 @@ function buildPicker(widget, settings) {
     },
     append: picker
   });
+  showSizesWarning(data);
 }
 /**
  * Create metabox generator picker and subscribe to events.
@@ -1292,7 +1271,7 @@ function createPicker(widget, settings) {
   }
 }
 
-/* harmony default export */ const picker = (createPicker);
+/* harmony default export */ const sections_picker = (createPicker);
 ;// CONCATENATED MODULE: ./src/scripts/widget.js
 
 /**
@@ -1314,7 +1293,7 @@ function createPicker(widget, settings) {
       widget.classList.add(`widget-${object.context}`);
     }
 
-    picker(widget, object);
+    sections_picker(widget, object);
   });
 })();
 /******/ })()

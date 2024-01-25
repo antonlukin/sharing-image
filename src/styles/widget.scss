@@ -5,6 +5,7 @@
 .sharing-image-widget {
   display: flex;
   position: relative;
+  max-width: 100%;
 
   * {
     box-sizing: border-box;
