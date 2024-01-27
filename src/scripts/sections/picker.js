@@ -376,14 +376,15 @@ function createDeleteButton( manager ) {
 		append: manager,
 	} );
 
-	const poster = picker.querySelector( '.sharing-image-picker-poster' );
-
 	button.addEventListener( 'click', () => {
-		const image = poster.querySelector( 'img' );
+		const image = picker.querySelector( '.sharing-image-picker-poster img' );
 
-		if ( null !== image ) {
-			poster.removeChild( image );
+		if ( null === image ) {
+			return;
 		}
+
+		const poster = image.parentNode;
+		poster.removeChild( image );
 
 		poster.querySelectorAll( 'input' ).forEach( ( input ) => {
 			input.value = '';
@@ -588,8 +589,6 @@ function buildPicker( widget, settings ) {
 
 	const data = params.meta || {};
 
-	createPoster( data );
-
 	// Create fields designer.
 	const designer = createDesigner( data );
 
@@ -599,6 +598,8 @@ function buildPicker( widget, settings ) {
 	} );
 
 	createManager( designer );
+
+	createPoster( data );
 
 	Build.element( 'input', {
 		attributes: {

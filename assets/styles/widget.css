@@ -56,6 +56,7 @@ body.block-editor-page select:hover {
 .sharing-image-widget {
   display: flex;
   position: relative;
+  max-width: 100%;
 }
 .sharing-image-widget * {
   box-sizing: border-box;
@@ -64,6 +65,7 @@ body.block-editor-page select:hover {
   display: flex;
   position: relative;
   flex: 1 1 auto;
+  max-width: 100%;
   margin-top: 8px;
 }
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-template {
@@ -133,6 +135,11 @@ body.block-editor-page select:hover {
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-designer {
   flex: 0 1 800px;
 }
+@media screen and (max-width: 1199px) {
+  .sharing-image-widget .sharing-image-picker .sharing-image-picker-designer {
+    flex: 1 1 100%;
+  }
+}
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-poster {
   flex: 0 0 400px;
   order: 1;
@@ -141,8 +148,6 @@ body.block-editor-page select:hover {
   visibility: hidden;
   width: 100%;
   margin-left: 20px;
-  overflow: hidden;
-  border-radius: 2px;
 }
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-poster.poster-visible {
   display: block;
@@ -151,6 +156,18 @@ body.block-editor-page select:hover {
   display: block;
   height: auto;
   max-width: 100%;
+  border-radius: 2px;
+}
+@media screen and (max-width: 1199px) {
+  .sharing-image-widget .sharing-image-picker .sharing-image-picker-poster img {
+    margin-top: 24px;
+  }
+}
+@media screen and (max-width: 1199px) {
+  .sharing-image-widget .sharing-image-picker .sharing-image-picker-poster {
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
 }
 .sharing-image-widget .sharing-image-picker .sharing-image-picker-manager {
   display: flex;
@@ -191,6 +208,12 @@ body.block-editor-page select:hover {
 .sharing-image-widget .sharing-image-picker.picker-visible .sharing-image-picker-poster {
   visibility: visible;
 }
+@media screen and (max-width: 1199px) {
+  .sharing-image-widget .sharing-image-picker {
+    flex-flow: row wrap;
+    flex: 0 1 600px;
+  }
+}
 .sharing-image-widget .sharing-image-title {
   display: block;
   position: relative;
@@ -211,11 +234,19 @@ body.block-editor-page select:hover {
   margin-bottom: 20px;
 }
 .sharing-image-widget.widget-term .sharing-image-picker {
+  flex-flow: row wrap;
   margin-top: 15px;
   padding: 10px;
   background: #fff;
   box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.125);
   border-radius: 3px;
+}
+.sharing-image-widget.widget-term .sharing-image-picker-poster {
+  flex: 1 1 100%;
+  margin-left: 0;
+}
+.sharing-image-widget.widget-term .sharing-image-picker-poster img {
+  margin-top: 24px;
 }
 @media screen and (max-width: 782px) {
   .sharing-image-widget.widget-term {

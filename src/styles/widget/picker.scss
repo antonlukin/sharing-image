@@ -3,6 +3,7 @@
   position: relative;
 
   flex: 1 1 auto;
+  max-width: 100%;
   margin-top: 8px;
 
   .sharing-image-picker-template {
@@ -90,6 +91,10 @@
 
   .sharing-image-picker-designer {
     flex: 0 1 800px;
+
+    @media screen and (max-width: 1199px) {
+      flex: 1 1 100%;
+    }
   }
 
   .sharing-image-picker-poster {
@@ -102,9 +107,6 @@
 
     width: 100%;
     margin-left: 20px;
-    overflow: hidden;
-
-    border-radius: 2px;
 
     &.poster-visible {
       display: block;
@@ -115,6 +117,17 @@
 
       height: auto;
       max-width: 100%;
+
+      border-radius: 2px;
+
+      @media screen and (max-width: 1199px) {
+        margin-top: 24px;
+      }
+    }
+
+    @media screen and (max-width: 1199px) {
+      flex: 1 1 100%;
+      margin-left: 0;
     }
   }
 
@@ -172,5 +185,10 @@
 
   &.picker-visible .sharing-image-picker-poster {
     visibility: visible;
+  }
+
+  @media screen and (max-width: 1199px) {
+    flex-flow: row wrap;
+    flex: 0 1 600px;
   }
 }

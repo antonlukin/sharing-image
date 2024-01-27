@@ -1021,14 +1021,15 @@ function createDeleteButton(manager) {
     },
     append: manager
   });
-  const poster = picker.querySelector('.sharing-image-picker-poster');
   button.addEventListener('click', () => {
-    const image = poster.querySelector('img');
+    const image = picker.querySelector('.sharing-image-picker-poster img');
 
-    if (null !== image) {
-      poster.removeChild(image);
+    if (null === image) {
+      return;
     }
 
+    const poster = image.parentNode;
+    poster.removeChild(image);
     poster.querySelectorAll('input').forEach(input => {
       input.value = '';
     });
@@ -1216,8 +1217,7 @@ function buildPicker(widget, settings) {
     classes: ['sharing-image-picker'],
     append: widget
   });
-  const data = params.meta || {};
-  createPoster(data); // Create fields designer.
+  const data = params.meta || {}; // Create fields designer.
 
   const designer = createDesigner(data);
   builders.element('div', {
@@ -1225,6 +1225,7 @@ function buildPicker(widget, settings) {
     append: designer
   });
   createManager(designer);
+  createPoster(data);
   builders.element('input', {
     attributes: {
       type: 'hidden',

@@ -18,12 +18,23 @@
     margin-bottom: 20px;
 
     .sharing-image-picker {
+      flex-flow: row wrap;
+
       margin-top: 15px;
       padding: 10px;
       background: #fff;
 
       box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.125);
       border-radius: 3px;
+    }
+
+    .sharing-image-picker-poster {
+      flex: 1 1 100%;
+      margin-left: 0;
+
+      img {
+        margin-top: 24px;
+      }
     }
 
     @media screen and (max-width: 782px) {
