@@ -467,9 +467,12 @@ function buildLayer(args) {
     args.label = '';
   }
 
-  builders_element('h2', {
+  const title = builders_element('h2', {
     text: args.label,
     append: layer
+  });
+  builders_element('span', {
+    append: title
   });
 
   if (args.hasOwnProperty('description')) {

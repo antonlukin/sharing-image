@@ -170,7 +170,7 @@ function reorderLayers( designer ) {
 			let name = field.getAttribute( 'name' );
 
 			// Try to find layer index.
-			const match = name.match( /(.+?\[layers\])\[(\d+)\](\[.+?\])$/ );
+			const match = name.match( /(.+?\[layers\])\[(\d*)\](\[.+?\])$/ );
 
 			if ( null !== match ) {
 				name = match[ 1 ] + `[${ index }]` + match[ 3 ];
@@ -323,7 +323,7 @@ function createDynamicFields( layer, name, data ) {
 					value: data.title,
 				},
 				dataset: {
-					context: 'title',
+					caption: 'title',
 				},
 				label: wp.i18n.__( 'Field name', 'sharing-image' ),
 			},
@@ -445,7 +445,7 @@ function createDynamicFields( layer, name, data ) {
 		}
 	} );
 
-	fields[ fields.length ] = Build.control( {
+	Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-extend' ],
 		help: wp.i18n.__( 'You can use non-breaking spaces to manage your string position.', 'sharing-image' ),
 		fields: [
@@ -456,6 +456,9 @@ function createDynamicFields( layer, name, data ) {
 				attributes: {
 					name: name + '[content]',
 					rows: 2,
+				},
+				dataset: {
+					caption: 'content',
 				},
 				label: wp.i18n.__( 'Content', 'sharing-image' ),
 			},
@@ -476,7 +479,40 @@ function createDynamicFields( layer, name, data ) {
 
 	checkbox.addEventListener( 'change', () => {
 		toggleClasses();
+		updateLayerCaption( layer, checkbox );
 	} );
+
+	updateLayerCaption( layer, checkbox );
+}
+
+/**
+ * Update layer caption according to text fields value.
+ *
+ * @param {HTMLElement} layer    Current layer element.
+ * @param {HTMLElement} checkbox Dynamic text checbox element.
+ */
+function updateLayerCaption( layer, checkbox ) {
+	const caption = layer.querySelector( 'h2 > span' );
+
+	if ( null === caption ) {
+		return;
+	}
+
+	const fields = {};
+
+	layer.querySelectorAll( '[data-caption]' ).forEach( ( field ) => {
+		fields[ field.dataset.caption ] = field;
+
+		field.addEventListener( 'keyup', () => {
+			caption.textContent = field.value;
+		} );
+	} );
+
+	caption.textContent = fields.content.value;
+
+	if ( checkbox.checked ) {
+		caption.textContent = fields.title.value;
+	}
 }
 
 /**
@@ -565,11 +601,6 @@ function createMoreFields( layer, name, data ) {
 		// Remove button on expand.
 		layer.removeChild( control );
 	} );
-
-	// Open more fields for existing layers.
-	if ( Object.keys( data ).length > 0 ) {
-		button.click();
-	}
 }
 
 /**
@@ -732,13 +763,21 @@ function createDeleteButton( footer ) {
 	link.searchParams.set( 'template', index );
 	link.searchParams.set( 'nonce', params.nonce );
 
-	Build.element( 'a', {
+	const button = Build.element( 'a', {
 		classes: [ 'sharing-image-editor-delete' ],
 		text: wp.i18n.__( 'Delete template', 'sharing-image' ),
 		attributes: {
 			href: link.href,
 		},
 		append: footer,
+	} );
+
+	button.addEventListener( 'click', ( e ) => {
+		const message = wp.i18n.__( 'Are you sure you want to delete this template?', 'sharing-image' );
+
+		if ( ! confirm( message ) ) { // eslint-disable-line
+			e.preventDefault();
+		}
 	} );
 }
 
@@ -887,10 +926,9 @@ function createDeleteLayerButton( designer, layer ) {
 /**
  * Create image layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template layer data.
+ * @param {Object} data Current template layer data.
  */
-function createLayerImage( index, data ) {
+function createLayerImage( data ) {
 	const description = [];
 
 	description.push(
@@ -912,7 +950,7 @@ function createLayerImage( index, data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + `[layers][${ index }]`;
+	const name = params.name + '[layers][]';
 
 	Build.element( 'input', {
 		attributes: {
@@ -987,10 +1025,9 @@ function createLayerImage( index, data ) {
 /**
  * Create text layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template data.
+ * @param {Object} data Current template data.
  */
-function createLayerText( index, data ) {
+function createLayerText( data ) {
 	const description = [];
 
 	description.push(
@@ -1011,7 +1048,7 @@ function createLayerText( index, data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + `[layers][${ index }]`;
+	const name = params.name + '[layers][]';
 
 	Build.element( 'input', {
 		attributes: {
@@ -1117,10 +1154,9 @@ function createLayerText( index, data ) {
 /**
  * Create filter layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template data.
+ * @param {Object} data Current template data.
  */
-function createLayerFilter( index, data ) {
+function createLayerFilter( data ) {
 	const description = [];
 
 	description.push(
@@ -1138,7 +1174,7 @@ function createLayerFilter( index, data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + `[layers][${ index }]`;
+	const name = params.name + '[layers][]';
 
 	Build.element( 'input', {
 		attributes: {
@@ -1249,10 +1285,9 @@ function createLayerFilter( index, data ) {
 /**
  * Create rectangle layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template data.
+ * @param {Object} data Current template data.
  */
-function createLayerRectangle( index, data ) {
+function createLayerRectangle( data ) {
 	const description = [];
 
 	description.push(
@@ -1274,7 +1309,7 @@ function createLayerRectangle( index, data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + `[layers][${ index }]`;
+	const name = params.name + '[layers][]';
 
 	Build.element( 'input', {
 		attributes: {
@@ -1379,24 +1414,23 @@ function createLayerRectangle( index, data ) {
  *
  * @param {HTMLElement} designer Designer HTML element.
  * @param {string}      type     New layer type.
- * @param {number}      index    Layer index.
  * @param {Object}      data     New layer data.
  */
-function createLayer( designer, type, index, data = {} ) {
+function createLayer( designer, type, data = {} ) {
 	let layer = null;
 
 	switch ( type ) {
 		case 'image':
-			layer = createLayerImage( index, data );
+			layer = createLayerImage( data );
 			break;
 		case 'text':
-			layer = createLayerText( index, data );
+			layer = createLayerText( data );
 			break;
 		case 'filter':
-			layer = createLayerFilter( index, data );
+			layer = createLayerFilter( data );
 			break;
 		case 'rectangle':
-			layer = createLayerRectangle( index, data );
+			layer = createLayerRectangle( data );
 			break;
 	}
 
@@ -1406,14 +1440,11 @@ function createLayer( designer, type, index, data = {} ) {
 
 	designer.insertBefore( layer, designer.firstChild );
 
-	// Delete this layer button.
 	createDeleteLayerButton( designer, layer );
-
-	// Create collapse button.
 	createCollapseButton( designer, layer );
-
-	// Reorder layers button.
 	createOrderLayersButton( designer, layer );
+
+	reorderLayers( designer );
 
 	return layer;
 }
@@ -1456,14 +1487,13 @@ function createDesigner( fieldset, data ) {
 		append: fieldset,
 	} );
 
-	// Set default layers set.
-	let layers = data.layers || [];
+	data.layers = data.layers || [];
 
-	layers = layers.reverse();
+	const layers = data.layers.reverse();
 
-	layers.forEach( ( layer, index ) => {
-		if ( layer.hasOwnProperty( 'type' ) ) {
-			const created = createLayer( designer, layer.type, index++, layer );
+	layers.forEach( ( item ) => {
+		if ( item.hasOwnProperty( 'type' ) ) {
+			const created = createLayer( designer, item.type, item );
 
 			// Collapse new layer.
 			created.classList.add( 'layer-collapsed' );

@@ -8,6 +8,7 @@
   .sharing-image-editor-fieldset {
     display: block;
     flex: 1 1 auto;
+    min-width: 0;
     margin-right: 48px;
     margin-bottom: 24px;
 
@@ -302,7 +303,7 @@
     cursor: pointer;
 
     position: absolute;
-    top: 10px;
+    top: 12px;
     right: 4px;
     padding: 4px 4px 2px;
 
@@ -334,12 +335,15 @@
 
     margin: 0 0 16px;
     padding: 14px 10px;
+    opacity: 0;
 
     background-color: #fff;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 
     border: 1px solid #ccd0d4;
     border-radius: 4px;
+
+    animation: fade-in 1s forwards;
 
     h2 {
       display: flex;
@@ -348,10 +352,23 @@
       position: relative;
       width: calc(100% + 20px);
       margin: -14px -10px 0;
-      padding: 14px 10px;
+      padding: 14px 40px 14px 10px;
 
       font-size: 16px;
       font-weight: 600;
+
+      span {
+        display: block;
+
+        width: 100%;
+        margin-left: 5px;
+
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        color: $color-gray;
+      }
     }
 
     h5 {

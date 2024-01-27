@@ -124,6 +124,14 @@ input[type=range]:disabled::-ms-track {
     transform: rotate(360deg);
   }
 }
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 body.settings_page_sharing-image #wpcontent {
   padding-left: 0;
 }
@@ -446,6 +454,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor {
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-fieldset {
   display: block;
   flex: 1 1 auto;
+  min-width: 0;
   margin-right: 48px;
   margin-bottom: 24px;
 }
@@ -675,7 +684,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
   display: block;
   cursor: pointer;
   position: absolute;
-  top: 10px;
+  top: 12px;
   right: 4px;
   padding: 4px 4px 2px;
   font-size: 16px;
@@ -701,10 +710,12 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
   position: relative;
   margin: 0 0 16px;
   padding: 14px 10px;
+  opacity: 0;
   background-color: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   border: 1px solid #ccd0d4;
   border-radius: 4px;
+  animation: fade-in 1s forwards;
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer h2 {
   display: flex;
@@ -712,9 +723,18 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
   position: relative;
   width: calc(100% + 20px);
   margin: -14px -10px 0;
-  padding: 14px 10px;
+  padding: 14px 40px 14px 10px;
   font-size: 16px;
   font-weight: 600;
+}
+body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer h2 span {
+  display: block;
+  width: 100%;
+  margin-left: 5px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #888888;
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer h5 {
   display: block;

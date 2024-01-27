@@ -529,9 +529,12 @@ function buildLayer(args) {
     args.label = '';
   }
 
-  builders_element('h2', {
+  const title = builders_element('h2', {
     text: args.label,
     append: layer
+  });
+  builders_element('span', {
+    append: title
   });
 
   if (args.hasOwnProperty('description')) {
@@ -1493,7 +1496,7 @@ function reorderLayers(designer) {
     fields.forEach(field => {
       let name = field.getAttribute('name'); // Try to find layer index.
 
-      const match = name.match(/(.+?\[layers\])\[(\d+)\](\[.+?\])$/);
+      const match = name.match(/(.+?\[layers\])\[(\d*)\](\[.+?\])$/);
 
       if (null !== match) {
         name = match[1] + `[${index}]` + match[3];
@@ -1630,7 +1633,7 @@ function createDynamicFields(layer, name, data) {
         value: data.title
       },
       dataset: {
-        context: 'title'
+        caption: 'title'
       },
       label: wp.i18n.__('Field name', 'sharing-image')
     }],
@@ -1735,7 +1738,7 @@ function createDynamicFields(layer, name, data) {
       taxonomy.classList.remove('control-disabled');
     }
   });
-  fields[fields.length] = builders.control({
+  builders.control({
     classes: ['sharing-image-editor-control', 'control-extend'],
     help: wp.i18n.__('You can use non-breaking spaces to manage your string position.', 'sharing-image'),
     fields: [{
@@ -1745,6 +1748,9 @@ function createDynamicFields(layer, name, data) {
       attributes: {
         name: name + '[content]',
         rows: 2
+      },
+      dataset: {
+        caption: 'content'
       },
       label: wp.i18n.__('Content', 'sharing-image')
     }],
@@ -1763,7 +1769,37 @@ function createDynamicFields(layer, name, data) {
 
   checkbox.addEventListener('change', () => {
     toggleClasses();
+    updateLayerCaption(layer, checkbox);
   });
+  updateLayerCaption(layer, checkbox);
+}
+/**
+ * Update layer caption according to text fields value.
+ *
+ * @param {HTMLElement} layer    Current layer element.
+ * @param {HTMLElement} checkbox Dynamic text checbox element.
+ */
+
+
+function updateLayerCaption(layer, checkbox) {
+  const caption = layer.querySelector('h2 > span');
+
+  if (null === caption) {
+    return;
+  }
+
+  const fields = {};
+  layer.querySelectorAll('[data-caption]').forEach(field => {
+    fields[field.dataset.caption] = field;
+    field.addEventListener('keyup', () => {
+      caption.textContent = field.value;
+    });
+  });
+  caption.textContent = fields.content.value;
+
+  if (checkbox.checked) {
+    caption.textContent = fields.title.value;
+  }
 }
 /**
  * Text layer more options fields manager.
@@ -1840,11 +1876,7 @@ function createMoreFields(layer, name, data) {
     }); // Remove button on expand.
 
     layer.removeChild(control);
-  }); // Open more fields for existing layers.
-
-  if (Object.keys(data).length > 0) {
-    button.click();
-  }
+  });
 }
 /**
  * Create font field in text layer.
@@ -1991,13 +2023,21 @@ function createDeleteButton(footer) {
   link.searchParams.set('action', 'sharing_image_delete');
   link.searchParams.set('template', index);
   link.searchParams.set('nonce', editor_params.nonce);
-  builders.element('a', {
+  const button = builders.element('a', {
     classes: ['sharing-image-editor-delete'],
     text: wp.i18n.__('Delete template', 'sharing-image'),
     attributes: {
       href: link.href
     },
     append: footer
+  });
+  button.addEventListener('click', e => {
+    const message = wp.i18n.__('Are you sure you want to delete this template?', 'sharing-image');
+
+    if (!confirm(message)) {
+      // eslint-disable-line
+      e.preventDefault();
+    }
   });
 }
 /**
@@ -2137,12 +2177,11 @@ function createDeleteLayerButton(designer, layer) {
 /**
  * Create image layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template layer data.
+ * @param {Object} data Current template layer data.
  */
 
 
-function createLayerImage(index, data) {
+function createLayerImage(data) {
   const description = [];
   description.push(wp.i18n.__('Use jpg, gif or png image formats.', 'sharing-image'));
   description.push(wp.i18n.__('Leave width and height fields blank to use the original image size.', 'sharing-image'));
@@ -2153,7 +2192,7 @@ function createLayerImage(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = editor_params.name + `[layers][${index}]`;
+  const name = editor_params.name + '[layers][]';
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -2218,12 +2257,11 @@ function createLayerImage(index, data) {
 /**
  * Create text layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template data.
+ * @param {Object} data Current template data.
  */
 
 
-function createLayerText(index, data) {
+function createLayerText(data) {
   const description = [];
   description.push(wp.i18n.__('Write a text to the current image.', 'sharing-image'));
   description.push(wp.i18n.__('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
@@ -2234,7 +2272,7 @@ function createLayerText(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = editor_params.name + `[layers][${index}]`;
+  const name = editor_params.name + '[layers][]';
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -2325,12 +2363,11 @@ function createLayerText(index, data) {
 /**
  * Create filter layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template data.
+ * @param {Object} data Current template data.
  */
 
 
-function createLayerFilter(index, data) {
+function createLayerFilter(data) {
   const description = [];
   description.push(wp.i18n.__('Filters are applied one after another to the entire editor image.', 'sharing-image'));
   description.push(wp.i18n.__('If you want to control their order, create multiple layers.', 'sharing-image'));
@@ -2340,7 +2377,7 @@ function createLayerFilter(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = editor_params.name + `[layers][${index}]`;
+  const name = editor_params.name + '[layers][]';
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -2433,12 +2470,11 @@ function createLayerFilter(index, data) {
 /**
  * Create rectangle layer.
  *
- * @param {number} index Current layer index.
- * @param {Object} data  Current template data.
+ * @param {Object} data Current template data.
  */
 
 
-function createLayerRectangle(index, data) {
+function createLayerRectangle(data) {
   const description = [];
   description.push(wp.i18n.__('Draw a colored rectangle on current image.', 'sharing-image'));
   description.push(wp.i18n.__('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
@@ -2449,7 +2485,7 @@ function createLayerRectangle(index, data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = editor_params.name + `[layers][${index}]`;
+  const name = editor_params.name + '[layers][]';
   builders.element('input', {
     attributes: {
       type: 'hidden',
@@ -2538,30 +2574,29 @@ function createLayerRectangle(index, data) {
  *
  * @param {HTMLElement} designer Designer HTML element.
  * @param {string}      type     New layer type.
- * @param {number}      index    Layer index.
  * @param {Object}      data     New layer data.
  */
 
 
-function createLayer(designer, type, index) {
-  let data = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+function createLayer(designer, type) {
+  let data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   let layer = null;
 
   switch (type) {
     case 'image':
-      layer = createLayerImage(index, data);
+      layer = createLayerImage(data);
       break;
 
     case 'text':
-      layer = createLayerText(index, data);
+      layer = createLayerText(data);
       break;
 
     case 'filter':
-      layer = createLayerFilter(index, data);
+      layer = createLayerFilter(data);
       break;
 
     case 'rectangle':
-      layer = createLayerRectangle(index, data);
+      layer = createLayerRectangle(data);
       break;
   }
 
@@ -2569,13 +2604,11 @@ function createLayer(designer, type, index) {
     return null;
   }
 
-  designer.insertBefore(layer, designer.firstChild); // Delete this layer button.
-
-  createDeleteLayerButton(designer, layer); // Create collapse button.
-
-  createCollapseButton(designer, layer); // Reorder layers button.
-
+  designer.insertBefore(layer, designer.firstChild);
+  createDeleteLayerButton(designer, layer);
+  createCollapseButton(designer, layer);
   createOrderLayersButton(designer, layer);
+  reorderLayers(designer);
   return layer;
 }
 /**
@@ -2612,13 +2645,12 @@ function createDesigner(fieldset, data) {
   const designer = builders.element('div', {
     classes: ['sharing-image-editor-designer'],
     append: fieldset
-  }); // Set default layers set.
-
-  let layers = data.layers || [];
-  layers = layers.reverse();
-  layers.forEach((layer, index) => {
-    if (layer.hasOwnProperty('type')) {
-      const created = createLayer(designer, layer.type, index++, layer); // Collapse new layer.
+  });
+  data.layers = data.layers || [];
+  const layers = data.layers.reverse();
+  layers.forEach(item => {
+    if (item.hasOwnProperty('type')) {
+      const created = createLayer(designer, item.type, item); // Collapse new layer.
 
       created.classList.add('layer-collapsed');
     }

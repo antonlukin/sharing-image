@@ -448,6 +448,10 @@ class Settings {
 		// Remove poster if exists.
 		unset( $template['preview'] );
 
+		if ( empty( $template['title'] ) ) {
+			$template['title'] = esc_html__( 'Untitled', 'sharing-image' );
+		}
+
 		$prefix = esc_html__( 'Copy: ' );
 
 		if ( strpos( $template['title'], $prefix ) !== 0 ) {

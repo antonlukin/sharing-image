@@ -22,9 +22,13 @@ function buildLayer( args ) {
 		args.label = '';
 	}
 
-	buildElement( 'h2', {
+	const title = buildElement( 'h2', {
 		text: args.label,
 		append: layer,
+	} );
+
+	buildElement( 'span', {
+		append: title,
 	} );
 
 	if ( args.hasOwnProperty( 'description' ) ) {
