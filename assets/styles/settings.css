@@ -413,7 +413,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-config .sharing-image-config-control-range em {
   display: block;
-  cursor: default;
+  cursor: pointer;
   position: absolute;
   right: 2px;
   top: 0;
@@ -650,8 +650,8 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-collapse {
   display: block;
   cursor: pointer;
-  margin-left: 8px;
-  padding: 4px 0 0;
+  margin-right: 8px;
+  padding: 3px 0 0;
   line-height: 1;
   font-size: 14px;
   color: #aaaaaa;
@@ -670,7 +670,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-collapse::after {
   font-family: dashicons;
-  content: "\f345";
+  content: "\f347";
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-collapse:hover::after {
   color: #787c82;
@@ -730,7 +730,6 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer h2 span {
   display: block;
   width: 100%;
-  margin-left: 5px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -761,7 +760,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
   display: block;
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer.layer-collapsed .sharing-image-editor-collapse::after {
-  content: "\f347";
+  content: "\f345";
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-layer:first-child .sharing-image-editor-order {
   display: none;
@@ -970,7 +969,7 @@ body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .
 }
 body.settings_page_sharing-image #sharing-image-settings .sharing-image-editor .sharing-image-editor-control-range em {
   display: block;
-  cursor: default;
+  cursor: pointer;
   position: absolute;
   right: 2px;
   top: 0;

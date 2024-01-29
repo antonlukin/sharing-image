@@ -173,6 +173,9 @@ function buildInput(args, parent) {
   if ('range' === input.type) {
     const counter = builders.element('em', {
       text: input.value,
+      attributes: {
+        title: wp.i18n.__('Click to change input view', 'sharing-image')
+      },
       append: field
     });
     input.addEventListener('change', () => {
@@ -180,6 +183,13 @@ function buildInput(args, parent) {
     });
     input.addEventListener('input', () => {
       counter.textContent = input.value;
+    });
+    counter.addEventListener('click', () => {
+      if ('text' === input.type) {
+        return input.type = 'range';
+      }
+
+      return input.type = 'text';
     });
   }
 
@@ -1738,7 +1748,7 @@ function createDynamicFields(layer, name, data) {
       taxonomy.classList.remove('control-disabled');
     }
   });
-  builders.control({
+  fields[fields.length] = builders.control({
     classes: ['sharing-image-editor-control', 'control-extend'],
     help: wp.i18n.__('You can use non-breaking spaces to manage your string position.', 'sharing-image'),
     fields: [{
@@ -1789,16 +1799,21 @@ function updateLayerCaption(layer, checkbox) {
   }
 
   const fields = {};
+  const prefix = ': ';
   layer.querySelectorAll('[data-caption]').forEach(field => {
     fields[field.dataset.caption] = field;
     field.addEventListener('keyup', () => {
-      caption.textContent = field.value;
+      caption.textContent = field.value ? prefix + field.value : '';
     });
   });
-  caption.textContent = fields.content.value;
+  caption.textContent = prefix + fields.content.value;
 
   if (checkbox.checked) {
-    caption.textContent = fields.title.value;
+    caption.textContent = prefix + fields.title.value;
+  }
+
+  if (caption.textContent === prefix) {
+    caption.textContent = '';
   }
 }
 /**
@@ -1876,7 +1891,11 @@ function createMoreFields(layer, name, data) {
     }); // Remove button on expand.
 
     layer.removeChild(control);
-  });
+  }); // Open more fields for existing layers.
+
+  if (Object.keys(data).length > 0) {
+    button.click();
+  }
 }
 /**
  * Create font field in text layer.
@@ -2080,13 +2099,13 @@ function createPreview(viewport, data) {
   return preview;
 }
 /**
+ * Create button to collapse layer.
  *
- * @param {HTMLElement} designer
  * @param {HTMLElement} layer
  */
 
 
-function createCollapseButton(designer, layer) {
+function createCollapseButton(layer) {
   const label = layer.querySelector('h2');
   const button = builders.element('button', {
     classes: ['sharing-image-editor-collapse'],
@@ -2094,7 +2113,7 @@ function createCollapseButton(designer, layer) {
       type: 'button',
       title: wp.i18n.__('Collapse layer', 'sharing-image')
     },
-    append: label
+    prepend: label
   });
   button.addEventListener('click', e => {
     e.preventDefault(); // Set default button title.
@@ -2604,9 +2623,12 @@ function createLayer(designer, type) {
     return null;
   }
 
-  designer.insertBefore(layer, designer.firstChild);
-  createDeleteLayerButton(designer, layer);
-  createCollapseButton(designer, layer);
+  designer.insertBefore(layer, designer.firstChild); // Button to delete layer.
+
+  createDeleteLayerButton(designer, layer); // Button to collapse layer.
+
+  createCollapseButton(layer); // Button to order layers
+
   createOrderLayersButton(designer, layer);
   reorderLayers(designer);
   return layer;

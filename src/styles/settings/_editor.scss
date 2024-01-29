@@ -260,8 +260,8 @@
     display: block;
     cursor: pointer;
 
-    margin-left: 8px;
-    padding: 4px 0 0;
+    margin-right: 8px;
+    padding: 3px 0 0;
     line-height: 1;
 
     font-size: 14px;
@@ -286,7 +286,7 @@
 
     &::after {
       font-family: dashicons;
-      content: "\f345";
+      content: "\f347";
     }
 
     &:hover::after {
@@ -361,8 +361,6 @@
         display: block;
 
         width: 100%;
-        margin-left: 5px;
-
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -404,7 +402,7 @@
     }
 
     &.layer-collapsed .sharing-image-editor-collapse::after {
-      content: '\f347';
+      content: '\f345';
     }
 
     &:first-child .sharing-image-editor-order {

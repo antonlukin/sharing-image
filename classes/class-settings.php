@@ -86,7 +86,7 @@ class Settings {
 	 */
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
-		add_action( 'admin_init', array( $this, 'create_demo_template' ) );
+		add_action( 'load-settings_page_' . self::SETTINGS_SLUG, array( $this, 'create_demo_template' ) );
 
 		// Handle settings POST requests.
 		add_action( 'admin_init', array( $this, 'handle_post_requests' ) );
@@ -113,7 +113,8 @@ class Settings {
 	public function create_demo_template() {
 		$config = $this->get_config();
 
-		if ( ! empty( $config['initialized'] ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification
+		if ( ! empty( $config['initialized'] ) && ! isset( $_REQUEST['demo-template'] ) ) {
 			return;
 		}
 
@@ -1650,12 +1651,15 @@ class Settings {
 	 */
 	private function get_fonts() {
 		$fonts = array(
-			'open-sans'    => 'Open Sans',
-			'merriweather' => 'Merriweather',
-			'roboto-slab'  => 'Roboto Slab',
-			'ubuntu'       => 'Ubuntu',
-			'rubik-bold'   => 'Rubik Bold',
-			'montserrat'   => 'Montserrat',
+			'open-sans'       => 'Open Sans',
+			'open-sans-light' => 'Open Sans Light',
+			'open-sans-bold'  => 'Open Sans Bold',
+			'merriweather'    => 'Merriweather',
+			'roboto-slab'     => 'Roboto Slab',
+			'ubuntu'          => 'Ubuntu',
+			'rubik-bold'      => 'Rubik Bold',
+			'alice'           => 'Alice',
+			'lobster'         => 'Lobster',
 		);
 
 		/**

@@ -47,6 +47,9 @@ function buildInput( args, parent ) {
 	if ( 'range' === input.type ) {
 		const counter = Build.element( 'em', {
 			text: input.value,
+			attributes: {
+				title: wp.i18n.__( 'Click to change input view', 'sharing-image' ),
+			},
 			append: field,
 		} );
 
@@ -56,6 +59,14 @@ function buildInput( args, parent ) {
 
 		input.addEventListener( 'input', () => {
 			counter.textContent = input.value;
+		} );
+
+		counter.addEventListener( 'click', () => {
+			if ( 'text' === input.type ) {
+				return input.type = 'range';
+			}
+
+			return input.type = 'text';
 		} );
 	}
 

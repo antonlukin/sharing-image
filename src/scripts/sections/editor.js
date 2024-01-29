@@ -445,7 +445,7 @@ function createDynamicFields( layer, name, data ) {
 		}
 	} );
 
-	Build.control( {
+	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-extend' ],
 		help: wp.i18n.__( 'You can use non-breaking spaces to manage your string position.', 'sharing-image' ),
 		fields: [
@@ -499,19 +499,24 @@ function updateLayerCaption( layer, checkbox ) {
 	}
 
 	const fields = {};
+	const prefix = ': ';
 
 	layer.querySelectorAll( '[data-caption]' ).forEach( ( field ) => {
 		fields[ field.dataset.caption ] = field;
 
 		field.addEventListener( 'keyup', () => {
-			caption.textContent = field.value;
+			caption.textContent = field.value ? prefix + field.value : '';
 		} );
 	} );
 
-	caption.textContent = fields.content.value;
+	caption.textContent = prefix + fields.content.value;
 
 	if ( checkbox.checked ) {
-		caption.textContent = fields.title.value;
+		caption.textContent = prefix + fields.title.value;
+	}
+
+	if ( caption.textContent === prefix ) {
+		caption.textContent = '';
 	}
 }
 
@@ -601,6 +606,11 @@ function createMoreFields( layer, name, data ) {
 		// Remove button on expand.
 		layer.removeChild( control );
 	} );
+
+	// Open more fields for existing layers.
+	if ( Object.keys( data ).length > 0 ) {
+		button.click();
+	}
 }
 
 /**
@@ -823,11 +833,11 @@ function createPreview( viewport, data ) {
 }
 
 /**
+ * Create button to collapse layer.
  *
- * @param {HTMLElement} designer
  * @param {HTMLElement} layer
  */
-function createCollapseButton( designer, layer ) {
+function createCollapseButton( layer ) {
 	const label = layer.querySelector( 'h2' );
 
 	const button = Build.element( 'button', {
@@ -836,7 +846,7 @@ function createCollapseButton( designer, layer ) {
 			type: 'button',
 			title: wp.i18n.__( 'Collapse layer', 'sharing-image' ),
 		},
-		append: label,
+		prepend: label,
 	} );
 
 	button.addEventListener( 'click', ( e ) => {
@@ -1440,8 +1450,13 @@ function createLayer( designer, type, data = {} ) {
 
 	designer.insertBefore( layer, designer.firstChild );
 
+	// Button to delete layer.
 	createDeleteLayerButton( designer, layer );
-	createCollapseButton( designer, layer );
+
+	// Button to collapse layer.
+	createCollapseButton( layer );
+
+	// Button to order layers
 	createOrderLayersButton( designer, layer );
 
 	reorderLayers( designer );
