@@ -78,6 +78,7 @@ class Widget {
 
 		// Add required assets and objects.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
 	}
 
 	/**
@@ -112,7 +113,11 @@ class Widget {
 			esc_html__( 'Sharing Image', 'sharing image' ),
 			array( $this, 'display_widget' ),
 			$this->get_metabox_post_types(),
-			'side'
+			'side',
+			'high',
+			array(
+				'__back_compat_meta_box' => true,
+			)
 		);
 	}
 
@@ -139,6 +144,23 @@ class Widget {
 
 		$this->enqueue_scripts( $this->create_script_object( $meta, 'post', $post->ID ) );
 		$this->enqueue_styles();
+	}
+
+	/**
+	 * Add Gutenberg block scripts and sryles
+	 */
+	public function enqueue_gutenberg_assets() {
+		$asset = require SHARING_IMAGE_DIR . 'assets/gutenberg/index.asset.php';
+
+		wp_register_script(
+			'sharing-image-gutenberg',
+			plugins_url( 'assets/gutenberg/index.js', SHARING_IMAGE_FILE ),
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+
+		wp_enqueue_script( 'sharing-image-gutenberg' );
 	}
 
 	/**
@@ -516,7 +538,7 @@ class Widget {
 			true
 		);
 
-		wp_set_script_translations( 'sharing-image-settings', 'sharing-image' );
+		wp_set_script_translations( 'sharing-image-widget', 'sharing-image' );
 
 		// Add widget script object.
 		wp_localize_script( 'sharing-image-widget', 'sharingImageWidget', $data );

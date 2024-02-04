@@ -11,9 +11,6 @@ let params = null;
 // Picker HTML element.
 let picker = null;
 
-// Is gutenberg editor used.
-let gutenberg = false;
-
 /**
  * Show picker warning message.
  *
@@ -154,12 +151,12 @@ function createTemplate( designer, selected ) {
 }
 
 /**
- * Prefill caption fields for classic editor.
+ * Try to prefill caption field.
  *
  * @param {HTMLElement} textarea Caption textarea field.
  * @param {string}      preset   Preset field.
  */
-function fillClassicEditorPreset( textarea, preset ) {
+function fillCaptionPreset( textarea, preset ) {
 	const source = document.getElementById( preset );
 
 	if ( null === source ) {
@@ -178,44 +175,6 @@ function fillClassicEditorPreset( textarea, preset ) {
 	} );
 
 	updateCaption();
-}
-
-/**
- * Prefill caption fields for block editor.
- *
- * @param {HTMLElement} textarea Caption textarea field.
- * @param {string}      preset   Preset field.
- */
-function fillBlockEditorPreset( textarea, preset ) {
-	const getAttribute = () => {
-		return wp.data.select( 'core/editor' ).getEditedPostAttribute( preset );
-	};
-
-	let attribute = getAttribute();
-
-	wp.data.subscribe( () => {
-		const updated = getAttribute();
-
-		if ( attribute !== updated ) {
-			textarea.textContent = updated;
-		}
-
-		attribute = updated;
-	} );
-}
-
-/**
- * Try to prefill caption field.
- *
- * @param {HTMLElement} textarea Caption textarea field.
- * @param {string}      preset   Preset field.
- */
-function fillCaptionPreset( textarea, preset ) {
-	if ( gutenberg ) {
-		return fillBlockEditorPreset( textarea, preset );
-	}
-
-	fillClassicEditorPreset( textarea, preset );
 }
 
 /**
@@ -481,80 +440,6 @@ function showSizesWarning( data ) {
 }
 
 /**
- * Get new config with AJAX call and reinit metabox.
- *
- * @param {HTMLElement} widget Widget element.
- */
-const rebuildPicker = ( widget ) => {
-	const request = new XMLHttpRequest();
-	request.open( 'POST', ajaxurl );
-	request.responseType = 'json';
-
-	picker.classList.add( 'picker-loader' );
-
-	// We need post ID for this request.
-	const postId = wp.data.select( 'core/editor' ).getCurrentPostId();
-
-	// Create data form data bundle.
-	const bundle = new window.FormData();
-	bundle.set( 'action', 'sharing_image_rebuild' );
-	bundle.set( 'post', postId );
-
-	picker.querySelectorAll( '[name]' ).forEach( ( field ) => {
-		if ( 'sharing_image_nonce' === field.name ) {
-			bundle.append( field.name, field.value );
-		}
-	} );
-
-	hidePickerError();
-
-	request.addEventListener( 'load', () => {
-		const response = request.response || {};
-
-		// Hide preview loader on request complete.
-		picker.classList.remove( 'picker-loader' );
-
-		if ( ! response.data ) {
-			return showPickerError();
-		}
-
-		if ( ! response.success ) {
-			return showPickerError( response.data );
-		}
-
-		buildPicker( widget, response.data );
-	} );
-
-	request.addEventListener( 'error', () => {
-		showPickerError();
-
-		// Hide preview loader on request complete.
-		picker.classList.remove( 'picker-loader' );
-	} );
-
-	request.send( bundle );
-};
-
-/**
- * Wait Gutenberg post saving and reinit tasks list.
- *
- * @param {HTMLElement} widget Widget element.
- */
-const subscribeOnSaving = ( widget ) => {
-	let wasSavingPost = wp.data.select( 'core/edit-post' ).isSavingMetaBoxes();
-
-	wp.data.subscribe( () => {
-		const isSavingPost = wp.data.select( 'core/edit-post' ).isSavingMetaBoxes();
-
-		if ( wasSavingPost && ! isSavingPost ) {
-			rebuildPicker( widget );
-		}
-
-		wasSavingPost = isSavingPost;
-	} );
-};
-
-/**
  * Build metabox fields.
  *
  * @param {HTMLElement} widget   Widget element.
@@ -589,6 +474,8 @@ function buildPicker( widget, settings ) {
 
 	const data = params.meta || {};
 
+	createPoster( data );
+
 	// Create fields designer.
 	const designer = createDesigner( data );
 
@@ -598,8 +485,6 @@ function buildPicker( widget, settings ) {
 	} );
 
 	createManager( designer );
-
-	createPoster( data );
 
 	Build.element( 'input', {
 		attributes: {
@@ -638,15 +523,7 @@ function buildPicker( widget, settings ) {
  * @param {Object}      settings Global settings object.
  */
 function createPicker( widget, settings ) {
-	if ( wp.data && wp.data.select( 'core/editor' ) ) {
-		gutenberg = true;
-	}
-
 	buildPicker( widget, settings );
-
-	if ( gutenberg ) {
-		subscribeOnSaving( widget );
-	}
 }
 
 export default createPicker;

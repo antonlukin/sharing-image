@@ -21,5 +21,5 @@ module.exports = {
 		semi: [ 'error', 'always' ],
 		'max-len': [ 'error', { code: 120 } ],
 	},
-	ignorePatterns: [ 'docs/*.js', 'assets/scripts/*.js' ],
+	ignorePatterns: [ 'docs/*.js', 'assets/scripts/*.js', 'assets/sidebar/*.js' ],
 };

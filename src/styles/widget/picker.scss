@@ -1,9 +1,8 @@
 .sharing-image-picker {
-  display: flex;
+  display: block;
   position: relative;
 
-  flex: 1 1 auto;
-  max-width: 100%;
+  width: 100%;
   margin-top: 8px;
 
   .sharing-image-picker-template {
@@ -90,33 +89,23 @@
   }
 
   .sharing-image-picker-designer {
-    flex: 0 1 800px;
-
-    @media screen and (max-width: 1199px) {
-      flex: 1 1 100%;
-    }
+    display: block;
+    position: relative;
   }
 
   .sharing-image-picker-poster {
-    flex: 0 0 400px;
-    order: 1;
-
     display: block;
     position: relative;
     visibility: hidden;
 
     width: 100%;
-    margin-left: 20px;
-
-    &.poster-visible {
-      display: block;
-    }
 
     img {
       display: block;
 
       height: auto;
       max-width: 100%;
+      margin-bottom: 12px;
 
       border-radius: 2px;
 
