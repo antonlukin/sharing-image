@@ -235,6 +235,12 @@ function createAutogenerateOptions( options, data, templates ) {
 	} );
 }
 
+/**
+ * Live Reload options
+ *
+ * @param {HTMLElement} options Options form element.
+ * @param {Object}      data    Config data object.
+ */
 function createLiveReloadOptions( options, data ) {
 	Build.control( {
 		classes: [ 'sharing-image-config-control' ],
@@ -249,6 +255,32 @@ function createLiveReloadOptions( options, data ) {
 				},
 				label: wp.i18n.__( 'Disable live-reload on the template editor screen', 'sharing-image' ),
 				checked: data.suspend,
+			},
+		],
+		append: options,
+	} );
+}
+
+/**
+ * Attachment options.
+ *
+ * @param {HTMLElement} options Options form element.
+ * @param {Object}      data    Config data object.
+ */
+function createAttachmentOptions( options, data ) {
+	Build.control( {
+		classes: [ 'sharing-image-config-control' ],
+		label: wp.i18n.__( 'Poster attachment', 'sharing-image' ),
+		fields: [
+			{
+				group: 'checkbox',
+				classes: [ 'sharing-image-config-control-checkbox' ],
+				attributes: {
+					name: params.name + '[attachment]',
+					value: 'attachment',
+				},
+				label: wp.i18n.__( 'Save the generated poster as an attachment in the media library', 'sharing-image' ),
+				checked: data.attachment,
 			},
 		],
 		append: options,
@@ -325,6 +357,9 @@ function createConfig( content, settings ) {
 
 	// Autogenerate poster.
 	createAutogenerateOptions( options, data, templates );
+
+	// Attachment options.
+	createAttachmentOptions( options, data );
 
 	// Uploads directory options.
 	createUploadsOptions( options, data );

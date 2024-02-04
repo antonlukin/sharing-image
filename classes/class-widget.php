@@ -347,6 +347,8 @@ class Widget {
 			wp_send_json_error( $poster->get_error_message(), 400 );
 		}
 
+		$this->save_attachment( $path, $screen_id, $context );
+
 		$source = array(
 			'poster' => $url,
 			'width'  => $template['width'],
@@ -708,5 +710,92 @@ class Widget {
 		}
 
 		return $fieldset;
+	}
+
+	/**
+	 * Save attachment to media library.
+	 *
+	 * @param string $path      Path to poster image.
+	 * @param int    $screen_id Post or taxonomy screen ID.
+	 * @param string $context   Widget context. For example: metabox or autogenerate.
+	 */
+	private function save_attachment( $path, $screen_id, $context ) {
+		$config = $this->settings->get_config();
+
+		if ( ! isset( $config['attachment'] ) ) {
+			return;
+		}
+
+		$name = implode( '-', array( 'sharing-image', $context, $screen_id ) );
+
+		// Delete attachment for this screen id if exists.
+		$this->delete_attachment( $name );
+
+		$uploads = wp_upload_dir();
+
+		// Get poster filetype.
+		$filetype = wp_check_filetype( basename( $path ), null );
+
+		$attachment = array(
+			'post'      => array(
+				'guid'           => $uploads['url'] . '/' . basename( $path ),
+				'post_mime_type' => $filetype['type'],
+				'post_name'      => $name,
+				'post_title'     => $name,
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			),
+			'parent_id' => 0,
+		);
+
+		if ( 'post' === $context ) {
+			$attachment['parent_id'] = $screen_id;
+		}
+
+		/**
+		 * Filter attachment data before insertion.
+		 *
+		 * @param string $attachment Attachment data.
+		 * @param string $path       Path to poster image.
+		 * @param string $screen_id  Post or taxonomy screen ID.
+		 * @param string $context    Widget context. For example: metabox or autogenerate.
+		 */
+		$attachment = apply_filters( 'sharing_image_attachment_data', $attachment, $path, $screen_id, $context );
+
+		if ( empty( $attachment['post'] ) ) {
+			return;
+		}
+
+		$id = wp_insert_attachment( $attachment['post'], $path, $attachment['parent_id'] );
+
+		// Get attachment metadata.
+		$metadata = wp_generate_attachment_metadata( $id, $path );
+
+		wp_update_attachment_metadata( $id, $metadata );
+	}
+
+	/**
+	 * Delete attachment by name if exists.
+	 *
+	 * @param string $name Name of attachment.
+	 *
+	 * @return bool Whether attachment deleted
+	 */
+	private function delete_attachment( $name ) {
+		$posts = get_posts(
+			array(
+				'post_type'              => 'attachment',
+				'post_name__in'          => array( $name ),
+				'update_post_term_cache' => false,
+				'update_post_meta_cache' => false,
+				'posts_per_page'         => 1,
+			)
+		);
+
+		if ( empty( $posts[0]->ID ) ) {
+			return;
+		}
+
+		return wp_delete_attachment( $posts[0]->ID, true );
 	}
 }

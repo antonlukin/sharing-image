@@ -1496,6 +1496,10 @@ class Settings {
 			$sanitized['suspend'] = 'suspend';
 		}
 
+		if ( isset( $config['attachment'] ) ) {
+			$sanitized['attachment'] = 'attachment';
+		}
+
 		$sanitized['autogenerate'] = 'manual';
 
 		if ( isset( $config['autogenerate'] ) && is_numeric( $config['autogenerate'] ) ) {
