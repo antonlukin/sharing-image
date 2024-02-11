@@ -693,9 +693,11 @@ class Settings {
 			return;
 		}
 
+		$asset = require SHARING_IMAGE_DIR . 'assets/settings/index.asset.php';
+
 		wp_enqueue_style(
 			'sharing-image-settings',
-			SHARING_IMAGE_URL . 'assets/styles/settings.css',
+			plugins_url( 'assets/settings/index.css', SHARING_IMAGE_FILE ),
 			array(),
 			SHARING_IMAGE_VERSION,
 			'all'
@@ -710,11 +712,13 @@ class Settings {
 			return;
 		}
 
+		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
+
 		wp_enqueue_script(
 			'sharing-image-settings',
-			SHARING_IMAGE_URL . 'assets/scripts/settings.js',
-			array( 'wp-i18n', 'wp-polyfill-url', 'wp-polyfill-formdata' ),
-			SHARING_IMAGE_VERSION,
+			plugins_url( 'assets/settings/index.js', SHARING_IMAGE_FILE ),
+			$asset['dependencies'],
+			$asset['version'],
 			true
 		);
 

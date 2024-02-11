@@ -1,0 +1,101 @@
+@import "../../variables";
+@import "../../controls";
+@import "../../mixins";
+
+.sharing-image-config {
+  display: block;
+
+  @include settings-screen($width-narrow);
+
+  h2 {
+    margin: 12px 0;
+  }
+
+  & > * {
+    margin: 24px 0;
+  }
+
+  & ~ #setting-error-sharing-image {
+    max-width: $width-narrow - 40px;
+  }
+
+  .sharing-image-config-control {
+    display: grid;
+    grid-template-columns: 240px auto;
+    position: relative;
+
+    width: 100%;
+    margin: 40px 0 24px;
+
+    small {
+      margin-top: 6px;
+      line-height: 1.375;
+    }
+
+    h3 {
+      grid-column: 1;
+
+      margin: 6px 0 0;
+      font-size: 14px;
+
+      @media screen and (max-width: 782px) {
+        margin-bottom: 12px;
+      }
+    }
+
+    h4 {
+      margin: 0;
+    }
+
+    h3 ~ * {
+      grid-column: 2;
+      width: 100%;
+
+      @media screen and (max-width: 782px) {
+        grid-column: auto;
+      }
+    }
+
+    &.control-extra {
+      h3 + * {
+        margin-bottom: 20px;
+      }
+    }
+
+    @media screen and (max-width: 782px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sharing-image-config-control-fieldset {
+    display: block;
+    position: relative;
+
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .sharing-image-config-control-input {
+    @include control-input;
+  }
+
+  .sharing-image-config-control-radio {
+    @include control-radio;
+  }
+
+  .sharing-image-config-control-checkbox {
+    @include control-checkbox;
+  }
+
+  .sharing-image-config-control-select {
+    @include control-select;
+  }
+
+  .sharing-image-config-control-range {
+    @include control-range;
+  }
+
+  .sharing-image-config-control-media {
+    @include control-media;
+  }
+}

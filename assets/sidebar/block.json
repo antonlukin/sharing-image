@@ -1,0 +1,9 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "title": "Sharing Image Sidebar",
+  "name": "sharing-image/sidebar",
+  "textdomain": "sharing-image",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./index.css"
+}

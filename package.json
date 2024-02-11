@@ -4,9 +4,8 @@
   "description": "Sharing Image",
   "license": "MIT",
   "scripts": {
-    "build": "gulp build && wp-scripts build --webpack-src-dir=src/gutenberg/ --webpack-copy-php --output-path=assets/gutenberg/",
-    "start": "gulp start",
-    "gutenberg": "wp-scripts start --webpack-src-dir=src/gutenberg/ --webpack-copy-php --output-path=assets/gutenberg/"
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
   },
   "prettier": {
     "printWidth": 120
@@ -20,7 +19,9 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^8.2.3",
     "babel-preset-latest": "^6.24.1",
+    "copy-webpack-plugin": "^12.0.2",
     "eslint": "^8.37.0",
+    "eslint-plugin-prettier": "5.0.0",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^8.0.0",
     "gulp-plumber": "^1.2.1",

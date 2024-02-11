@@ -513,9 +513,11 @@ class Widget {
 	 * Enqueue widget styles.
 	 */
 	private function enqueue_styles() {
+		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
+
 		wp_enqueue_style(
 			'sharing-image-widget',
-			SHARING_IMAGE_URL . 'assets/styles/widget.css',
+			plugins_url( 'assets/widget/index.css', SHARING_IMAGE_FILE ),
 			array(),
 			SHARING_IMAGE_VERSION,
 			'all'
@@ -528,16 +530,19 @@ class Widget {
 	 * @param array $data Widget data object.
 	 */
 	private function enqueue_scripts( $data ) {
+		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
+
 		wp_enqueue_media();
 
 		wp_enqueue_script(
 			'sharing-image-widget',
-			SHARING_IMAGE_URL . 'assets/scripts/widget.js',
-			array( 'wp-i18n', 'wp-polyfill-formdata' ),
-			SHARING_IMAGE_VERSION,
+			plugins_url( 'assets/widget/index.js', SHARING_IMAGE_FILE ),
+			$asset['dependencies'],
+			$asset['version'],
 			true
 		);
 
+		// Translations availible only for WP 5.0+.
 		wp_set_script_translations( 'sharing-image-widget', 'sharing-image' );
 
 		// Add widget script object.

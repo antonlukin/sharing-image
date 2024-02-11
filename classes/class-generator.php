@@ -103,7 +103,7 @@ class Generator {
 
 		if ( 'dynamic' === $template['background'] ) {
 			if ( null !== $index ) {
-				$template['image'] = sprintf( SHARING_IMAGE_DIR . 'assets/images/%d.jpg', ( $index % 12 ) + 1 );
+				$template['image'] = sprintf( SHARING_IMAGE_DIR . 'images/%d.jpg', ( $index % 12 ) + 1 );
 			}
 
 			if ( ! empty( $fieldset['attachment'] ) ) {
@@ -385,7 +385,7 @@ class Generator {
 	 */
 	private function get_fontpath( $layer, $path = '' ) {
 		if ( isset( $layer['fontname'] ) ) {
-			$path = sprintf( SHARING_IMAGE_DIR . 'assets/fonts/%s.ttf', $layer['fontname'] );
+			$path = sprintf( SHARING_IMAGE_DIR . 'fonts/%s.ttf', $layer['fontname'] );
 		}
 
 		if ( isset( $layer['fontfile'] ) ) {
