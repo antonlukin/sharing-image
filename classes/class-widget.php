@@ -150,17 +150,15 @@ class Widget {
 	 * Add Gutenberg block scripts and sryles
 	 */
 	public function enqueue_gutenberg_assets() {
-		$asset = require SHARING_IMAGE_DIR . 'assets/gutenberg/index.asset.php';
+		$asset = require SHARING_IMAGE_DIR . 'assets/sidebar/index.asset.php';
 
-		wp_register_script(
-			'sharing-image-gutenberg',
-			plugins_url( 'assets/gutenberg/index.js', SHARING_IMAGE_FILE ),
+		wp_enqueue_script(
+			'sharing-image-sidebar',
+			plugins_url( 'assets/sidebar/index.js', SHARING_IMAGE_FILE ),
 			$asset['dependencies'],
 			$asset['version'],
 			true
 		);
-
-		wp_enqueue_script( 'sharing-image-gutenberg' );
 	}
 
 	/**

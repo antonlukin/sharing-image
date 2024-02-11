@@ -4,10 +4,7 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 
 const SharingImageSidebar = () => {
 	return (
-		<PluginDocumentSettingPanel
-			name="sharing-image-setting"
-			title={ __( 'Sharing Image', 'sharimg-image' ) }
-		>
+		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharimg-image' ) }>
 			<p>Test message</p>
 		</PluginDocumentSettingPanel>
 	);
@@ -15,8 +12,6 @@ const SharingImageSidebar = () => {
 
 registerPlugin( 'sharing-image-sidebar', {
 	render: () => {
-		return (
-			<SharingImageSidebar />
-		);
+		return <SharingImageSidebar />;
 	},
 } );
