@@ -175,6 +175,20 @@ function fillCaptionPreset( textarea, preset ) {
 	updateCaption();
 }
 
+function createHiddenCaption( fieldset, name, n ) {
+	Build.input(
+		{
+			classes: [ 'sharing-image-picker-hidden' ],
+			attributes: {
+				type: 'hidden',
+				name: name + `[captions][${ n }]`,
+				value: '',
+			},
+		},
+		fieldset
+	);
+}
+
 /**
  * Create designer attachment field for dynamic background.
  *
@@ -218,7 +232,7 @@ function createDesignerCaptions( fieldset, template, values, name ) {
 
 	template.layers.forEach( ( layer, n ) => {
 		if ( 'text' !== layer.type || ! layer.dynamic ) {
-			return;
+			return createHiddenCaption( fieldset, name, n );
 		}
 
 		const textarea = Build.textarea(

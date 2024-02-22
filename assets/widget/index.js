@@ -1112,6 +1112,17 @@ function fillCaptionPreset(textarea, preset) {
   });
   updateCaption();
 }
+
+function createHiddenCaption(fieldset, name, n) {
+  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].input({
+    classes: ['sharing-image-picker-hidden'],
+    attributes: {
+      type: 'hidden',
+      name: name + `[captions][${n}]`,
+      value: ''
+    }
+  }, fieldset);
+}
 /**
  * Create designer attachment field for dynamic background.
  *
@@ -1156,7 +1167,7 @@ function createDesignerCaptions(fieldset, template, values, name) {
   template.layers = template.layers || [];
   template.layers.forEach((layer, n) => {
     if ('text' !== layer.type || !layer.dynamic) {
-      return;
+      return createHiddenCaption(fieldset, name, n);
     }
 
     const textarea = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].textarea({

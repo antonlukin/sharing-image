@@ -23,7 +23,14 @@ class Widget {
 	 *
 	 * @var string
 	 */
-	const WIDGET_META = '_sharing_image';
+	const META_SOURCE = '_sharing_image';
+
+	/**
+	 * Post meta key to store poster image fielset.
+	 *
+	 * @var string
+	 */
+	const META_FIELDSET = '_sharing_image_fieldset';
 
 	/**
 	 * The instance of Settings class.
@@ -44,22 +51,22 @@ class Widget {
 	 */
 	public function init() {
 		// Init taxonomy term widget.
-		add_action( 'admin_init', array( $this, 'init_taxonomy_widget' ) );
+		add_action( 'init', array( $this, 'init_taxonomy_widget' ) );
 
 		// Init post metabox widget.
-		add_action( 'admin_init', array( $this, 'init_metabox_widget' ) );
+		add_action( 'init', array( $this, 'init_post_widget' ) );
 
-		// Handle metabox AJAX requests.
-		add_action( 'admin_init', array( $this, 'handle_ajax_requests' ) );
+		// Handle generate poster AJAX request.
+		add_action( 'wp_ajax_sharing_image_generate', array( $this, 'generate_poster' ) );
 
 		// Try to autogenerate poster if it is needed.
 		add_action( 'wp_insert_post', array( $this, 'autogenerate_poster' ) );
 	}
 
 	/**
-	 * Init metabox on post editing page.
+	 * Init widget on post editing page.
 	 */
-	public function init_metabox_widget() {
+	public function init_post_widget() {
 		/**
 		 * Easy way to hide metabox.
 		 *
@@ -71,6 +78,61 @@ class Widget {
 			return;
 		}
 
+		$schema = array(
+			'type'       => 'object',
+			'properties' => array(
+				'poster'   => array(
+					'type' => 'string',
+				),
+				'width'    => array(
+					'type' => 'integer',
+				),
+				'height'   => array(
+					'type' => 'integer',
+				),
+				'template' => array(
+					'type' => 'integer',
+				),
+			),
+		);
+
+		register_post_meta(
+			'',
+			self::META_SOURCE,
+			array(
+				'type'              => 'object',
+				'show_in_rest'      => array(
+					'schema' => $schema,
+				),
+				'single'            => true,
+				'auth_callback'     => function () {
+					return current_user_can( 'edit_posts' );
+				},
+				'sanitize_callback' => array( $this, 'sanitize_picker' ),
+			)
+		);
+
+		register_post_meta(
+			'',
+			self::META_FIELDSET,
+			array(
+				'type'          => 'object',
+				'show_in_rest'  => array(
+					'schema' => array(
+						'type'                 => 'object',
+						'properties'           => array(),
+						'additionalProperties' => array(
+							'type' => 'string',
+						),
+					),
+				),
+				'single'        => true,
+				'auth_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
+
 		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
 
 		// Handle actions on post save.
@@ -78,7 +140,7 @@ class Widget {
 
 		// Add required assets and objects.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_gutenberg_assets' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_sidebar_assets' ) );
 	}
 
 	/**
@@ -110,7 +172,7 @@ class Widget {
 	public function add_metabox() {
 		add_meta_box(
 			'sharing-image-metabox',
-			esc_html__( 'Sharing Image', 'sharing image' ),
+			esc_html__( 'Sharing Image', 'sharing-image' ),
 			array( $this, 'display_widget' ),
 			$this->get_metabox_post_types(),
 			'side',
@@ -140,25 +202,9 @@ class Widget {
 		$post = get_post();
 
 		// Get post meta for current post ID.
-		$meta = get_post_meta( $post->ID, self::WIDGET_META, true );
+		$meta = get_post_meta( $post->ID, self::META_SOURCE, true );
 
 		$this->enqueue_scripts( $this->create_script_object( $meta, 'post', $post->ID ) );
-		$this->enqueue_styles();
-	}
-
-	/**
-	 * Add Gutenberg block scripts and sryles
-	 */
-	public function enqueue_gutenberg_assets() {
-		$asset = require SHARING_IMAGE_DIR . 'assets/sidebar/index.asset.php';
-
-		wp_enqueue_script(
-			'sharing-image-sidebar',
-			plugins_url( 'assets/sidebar/index.js', SHARING_IMAGE_FILE ),
-			$asset['dependencies'],
-			$asset['version'],
-			true
-		);
 	}
 
 	/**
@@ -186,10 +232,38 @@ class Widget {
 		// phpcs:enable WordPress.Security.NonceVerification
 
 		// Get term meta for current term ID.
-		$meta = get_term_meta( $term_id, self::WIDGET_META, true );
+		$meta = get_term_meta( $term_id, self::META_SOURCE, true );
 
 		$this->enqueue_scripts( $this->create_script_object( $meta, 'term', $term_id ) );
-		$this->enqueue_styles();
+	}
+
+	/**
+	 * Add Gutenberg block scripts and sryles.
+	 */
+	public function enqueue_sidebar_assets() {
+		$asset = require SHARING_IMAGE_DIR . 'assets/sidebar/index.asset.php';
+
+		wp_enqueue_script(
+			'sharing-image-sidebar',
+			plugins_url( 'assets/sidebar/index.js', SHARING_IMAGE_FILE ),
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+
+		// Translations availible only for WP 5.0+.
+		wp_set_script_translations( 'sharing-image-sidebar', 'sharing-image' );
+
+		$data = array(
+			'meta'      => array(
+				'source'   => self::META_SOURCE,
+				'fieldset' => self::META_FIELDSET,
+			),
+			'templates' => $this->settings->get_templates(),
+		);
+
+		// Add widget script object.
+		wp_localize_script( 'sharing-image-sidebar', 'sharingImageSidebar', $data );
 	}
 
 	/**
@@ -235,7 +309,7 @@ class Widget {
 		$meta = apply_filters( 'sharing_image_update_post_meta', $meta, $post_id );
 
 		// Update post meta.
-		update_post_meta( $post_id, self::WIDGET_META, $meta );
+		update_post_meta( $post_id, self::META_SOURCE, $meta );
 	}
 
 	/**
@@ -272,7 +346,7 @@ class Widget {
 		 */
 		$meta = apply_filters( 'sharing_image_update_term_meta', $meta, $term_id );
 
-		update_term_meta( $term_id, self::WIDGET_META, $meta );
+		update_term_meta( $term_id, self::META_SOURCE, $meta );
 	}
 
 	/**
@@ -285,24 +359,6 @@ class Widget {
 		 * Fires on widget template including.
 		 */
 		do_action( 'sharing_image_widget' );
-	}
-
-	/**
-	 * Handle widget AJAX requests.
-	 */
-	public function handle_ajax_requests() {
-		$actions = array(
-			'generate' => 'generate_poster',
-			'rebuild'  => 'rebuild_metabox',
-		);
-
-		foreach ( $actions as $key => $method ) {
-			$action = 'sharing_image_' . $key;
-
-			if ( method_exists( $this, $method ) ) {
-				add_action( 'wp_ajax_' . $action, array( $this, $method ) );
-			}
-		}
 	}
 
 	/**
@@ -379,28 +435,6 @@ class Widget {
 	}
 
 	/**
-	 * Send metabox config object to rebuild it on frontend.
-	 */
-	public function rebuild_metabox() {
-		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
-
-		if ( false === $check ) {
-			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
-		}
-
-		if ( empty( $_POST['post'] ) ) {
-			return;
-		}
-
-		$post_id = absint( $_POST['post'] );
-
-		// Get post meta for current post ID.
-		$meta = get_post_meta( $post_id, self::WIDGET_META, true );
-
-		wp_send_json_success( $this->create_script_object( $meta, 'post', $post_id ) );
-	}
-
-	/**
 	 * Try to autogenerate poster on post insert or update.
 	 *
 	 * @param integer $post_id Updated post_id.
@@ -426,7 +460,7 @@ class Widget {
 			return;
 		}
 
-		$meta = get_post_meta( $post_id, self::WIDGET_META, true );
+		$meta = get_post_meta( $post_id, self::META_SOURCE, true );
 
 		if ( empty( $meta ) ) {
 			$meta = array();
@@ -504,22 +538,7 @@ class Widget {
 		$meta['template'] = $id;
 
 		// Update post meta with new poster link.
-		update_post_meta( $post_id, self::WIDGET_META, $meta );
-	}
-
-	/**
-	 * Enqueue widget styles.
-	 */
-	private function enqueue_styles() {
-		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
-
-		wp_enqueue_style(
-			'sharing-image-widget',
-			plugins_url( 'assets/widget/index.css', SHARING_IMAGE_FILE ),
-			array(),
-			SHARING_IMAGE_VERSION,
-			'all'
-		);
+		update_post_meta( $post_id, self::META_SOURCE, $meta );
 	}
 
 	/**
@@ -540,6 +559,14 @@ class Widget {
 			true
 		);
 
+		wp_enqueue_style(
+			'sharing-image-widget',
+			plugins_url( 'assets/widget/index.css', SHARING_IMAGE_FILE ),
+			$asset['dependencies'],
+			$asset['version'],
+			'all'
+		);
+
 		// Translations availible only for WP 5.0+.
 		wp_set_script_translations( 'sharing-image-widget', 'sharing-image' );
 
@@ -554,7 +581,7 @@ class Widget {
 
 	 * @return array Sanitized picker fields.
 	 */
-	private function sanitize_picker( $picker ) {
+	public function sanitize_picker( $picker ) {
 		$sanitized = array();
 
 		if ( isset( $picker['poster'] ) ) {
@@ -673,27 +700,6 @@ class Widget {
 	}
 
 	/**
-	 * Get an array of taxonomeis where the widget is displayed.
-	 *
-	 * @return array Array of taxonomies.
-	 */
-	private function get_widget_taxonomies() {
-		$taxonomies = get_taxonomies(
-			array(
-				'public'  => true,
-				'show_ui' => true,
-			)
-		);
-
-		/**
-		 * Filter the taxonomies where we need to show the poster settings.
-		 *
-		 * @param array $taxonomies List of taxonomies to show settings.
-		 */
-		return apply_filters( 'sharing_image_widget_taxonomies', array_values( $taxonomies ) );
-	}
-
-	/**
 	 * Update template with post data for preset fields.
 	 *
 	 * @param array $template Templates data from settings page.
@@ -701,7 +707,7 @@ class Widget {
 	 *
 	 * @return array List of fields.
 	 */
-	public function compose_fields( $template, $post_id ) {
+	private function compose_fields( $template, $post_id ) {
 		$layers = array();
 
 		if ( isset( $template['layers'] ) ) {
@@ -735,6 +741,27 @@ class Widget {
 		}
 
 		return $fieldset;
+	}
+
+	/**
+	 * Get an array of taxonomeis where the widget is displayed.
+	 *
+	 * @return array Array of taxonomies.
+	 */
+	private function get_widget_taxonomies() {
+		$taxonomies = get_taxonomies(
+			array(
+				'public'  => true,
+				'show_ui' => true,
+			)
+		);
+
+		/**
+		 * Filter the taxonomies where we need to show the poster settings.
+		 *
+		 * @param array $taxonomies List of taxonomies to show settings.
+		 */
+		return apply_filters( 'sharing_image_widget_taxonomies', array_values( $taxonomies ) );
 	}
 
 	/**

@@ -5,5 +5,5 @@
 	"name": "sharing-image/sidebar",
 	"textdomain": "sharing-image",
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css"
+	"editorStyle": "file:./style.css"
 }
