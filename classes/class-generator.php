@@ -94,15 +94,15 @@ class Generator {
 				$layer['content'] = $layer['sample'];
 			}
 
-			if ( isset( $fieldset['captions'][ $i ] ) ) {
-				$layer['content'] = $fieldset['captions'][ $i ];
+			if ( isset( $fieldset[ "layer-{$index}-{$i}" ] ) ) {
+				$layer['content'] = $fieldset[ "layer-{$index}-{$i}" ];
 			}
 		}
 
 		$template['layers'] = $layers;
 
 		if ( 'dynamic' === $template['background'] ) {
-			if ( null !== $index ) {
+			if ( 'settings' === $context ) {
 				$template['image'] = sprintf( SHARING_IMAGE_DIR . 'images/%d.jpg', ( $index % 12 ) + 1 );
 			}
 

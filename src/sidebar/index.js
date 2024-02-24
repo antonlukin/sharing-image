@@ -1,9 +1,10 @@
 import { __ } from '@wordpress/i18n';
+import apiFetch from '@wordpress/api-fetch';
 import { useState, useEffect, useMemo } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { TextareaControl, SelectControl, Button, Flex } from '@wordpress/components';
+import { TextareaControl, SelectControl, Button, Flex, Spinner, Disabled } from '@wordpress/components';
 
 import TemplateFields from './template-fields';
 
@@ -35,6 +36,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	 * Local states.
 	 */
 	const [ template, setTemplate ] = useState( postMeta[ meta.source ].template || 0 );
+	const [ loading, setLoading ] = useState( false );
 
 	/**
 	 * Change Template.
@@ -55,8 +57,46 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		} );
 	};
 
+	const generateButton = async ( e ) => {
+		e.preventDefault();
+
+		if ( loading ) {
+			return;
+		}
+
+		const options = {
+			path: 'sharing-image/v1/poster/' + postId,
+			method: 'POST',
+			data: {
+				fieldset: postMeta[ meta.fieldset ],
+				template: template,
+			},
+		};
+
+		setLoading( true );
+
+		try {
+			const result = await apiFetch( options );
+
+			editPost( {
+				meta: { [ meta.source ]: { ...postMeta[ meta.source ], poster: result.data.poster } },
+			} );
+			console.log( result );
+		} catch ( error ) {}
+
+		setLoading( false );
+	};
+
 	return (
 		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharimg-image' ) }>
+			{ postMeta[ meta.source ].poster && (
+				<img
+					src={ postMeta[ meta.source ].poster }
+					alt={ __( 'Sharing Image poster', 'sharimg-image' ) }
+					style={ { marginBottom: '10px' } }
+				/>
+			) }
+
 			<SelectControl
 				value={ template }
 				options={ templates.map( ( item, index ) => ( {
@@ -66,21 +106,25 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				onChange={ changeTemplate }
 			/>
 
-			<TemplateFields
-				layers={ templates[ template ].layers || [] }
-				template={ template }
-				updateFieldset={ updateFieldset }
-				fields={ postMeta[ meta.fieldset ] }
-			/>
+			<Flex direction={ 'column' }>
+				<TemplateFields
+					layers={ templates[ template ].layers || [] }
+					template={ template }
+					updateFieldset={ updateFieldset }
+					fields={ postMeta[ meta.fieldset ] }
+				/>
+			</Flex>
 
 			<Flex justify={ 'flex-start' }>
-				<Button variant="secondary" isDestructive={ false }>
+				<Button variant="secondary" isDestructive={ false } type={ 'button' } onClick={ generateButton }>
 					{ __( 'Generate', 'sharing-image' ) }
 				</Button>
 
 				<Button variant="ternary" isDestructive={ true }>
 					{ __( 'Remove', 'sharing-image' ) }
 				</Button>
+
+				{ loading && <Spinner /> }
 			</Flex>
 		</PluginDocumentSettingPanel>
 	);

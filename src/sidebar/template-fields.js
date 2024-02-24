@@ -33,7 +33,7 @@ const TemplateFields = ( { layers, template, updateFieldset, fields } ) => {
 	 * @return {JSX.Element} Textarea control component.
 	 */
 	const displayTextField = ( layer, n ) => {
-		const key = 'text-' + template + '-' + n;
+		const key = 'layer-' + template + '-' + n;
 
 		if ( ! init && ! fields[ key ] ) {
 			fields[ key ] = presets[ layer.preset ] || '';

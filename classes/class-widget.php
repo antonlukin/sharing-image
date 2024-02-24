@@ -56,8 +56,9 @@ class Widget {
 		// Init post metabox widget.
 		add_action( 'init', array( $this, 'init_post_widget' ) );
 
-		// Handle generate poster AJAX request.
-		add_action( 'wp_ajax_sharing_image_generate', array( $this, 'generate_poster' ) );
+		// Generate poster handlers.
+		add_action( 'wp_ajax_sharing_image_generate', array( $this, 'handle_ajax_generator' ) );
+		add_action( 'rest_api_init', array( $this, 'add_generate_endpoint' ) );
 
 		// Try to autogenerate poster if it is needed.
 		add_action( 'wp_insert_post', array( $this, 'autogenerate_poster' ) );
@@ -362,9 +363,53 @@ class Widget {
 	}
 
 	/**
-	 * Generate poster by AJAX request.
+	 * TODO:
 	 */
-	public function generate_poster() {
+	public function add_generate_endpoint() {
+		register_rest_route(
+			'sharing-image/v1',
+			'/poster/(?P<id>\d+)',
+			array(
+				'methods'             => 'POST',
+				'callback'            => array( $this, 'handle_rest_generator' ),
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
+	}
+
+	/**
+	 * TODO:
+	 */
+	public function handle_rest_generator( $request ) {
+		$post_id = $request->get_param( 'id' );
+
+		if ( empty( $post_id ) ) {
+			wp_send_json_error( __( 'Empty post data.', 'sharing-image' ), 400 );
+		}
+
+		$params = $request->get_json_params();
+
+		if ( ! isset( $params['template'] ) ) {
+			wp_send_json_error( __( 'Wrong request parameters.', 'sharing-image' ), 400 );
+		}
+
+		$index = absint( $params['template'] );
+
+		if ( empty( $params['fieldset'] ) ) {
+			$params['fieldset'] = array();
+		}
+
+		$fieldset = array_map( 'sanitize_textarea_field', $params['fieldset'] );
+
+		$this->generate_poster( $fieldset, $index, $post_id, 'post' );
+	}
+
+	/**
+	 * TODO: replace here
+	 */
+	public function handle_ajax_generator() {
 		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
@@ -404,6 +449,7 @@ class Widget {
 		if ( isset( $picker['fieldset'][ $id ] ) ) {
 			$fieldset = $picker['fieldset'][ $id ];
 		}
+		print_r($fieldset); exit;
 
 		$generator = new Generator();
 
@@ -429,6 +475,45 @@ class Widget {
 			'poster' => $url,
 			'width'  => $template['width'],
 			'height' => $template['height'],
+		);
+
+		wp_send_json_success( $source );
+	}
+
+	/**
+	 * Generate poster by AJAX request.
+	 */
+	private function generate_poster( $fieldset, $index, $screen_id, $context ) {
+		$templates = $this->settings->get_templates();
+
+		if ( ! isset( $templates[ $index ] ) ) {
+			wp_send_json_error( esc_html__( 'Wrong template id', 'sharing-image' ), 400 );
+		}
+
+		$generator = new Generator();
+
+		// Prepare template editor.
+		$editor = $generator->prepare_template( $templates[ $index ], $fieldset, $index, $screen_id, $context );
+
+		if ( ! $generator->check_required( $editor ) ) {
+			wp_send_json_error( esc_html__( 'Wrong template settings', 'sharing-image' ), 400 );
+		}
+
+		list( $path, $url ) = $generator->get_upload_file();
+
+		// Generate image and save it to given path.
+		$poster = $generator->create_poster( $editor, $path );
+
+		if ( is_wp_error( $poster ) ) {
+			wp_send_json_error( $poster->get_error_message(), 400 );
+		}
+
+		$this->save_attachment( $path, $screen_id, $context );
+
+		$source = array(
+			'poster' => $url,
+			'width'  => $editor['width'],
+			'height' => $editor['height'],
 		);
 
 		wp_send_json_success( $source );

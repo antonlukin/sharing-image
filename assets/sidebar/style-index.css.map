@@ -1,0 +1,1 @@
+{"version":3,"file":"sidebar/style-index.css","mappings":";;;AAAA;EACC;AACD;;AAEA;EACC;AACD,C","sources":["webpack://sharing-image/./src/sidebar/style.scss"],"sourcesContent":[".sharing-image-image {\n\tmargin-bottom: 10px;\n}\n\n.sharing-image-fields {\n\tmargin-top: 20px;\n}"],"names":[],"sourceRoot":""}
