@@ -62,7 +62,7 @@ class Generator {
 	 *
 	 * @param array   $template  List of template data.
 	 * @param array   $fieldset  Optional. Fieldset data from picker.
-	 * @param integer $index     Optional. Template index from editor.
+	 * @param string  $index     Optional. Template index from editor.
 	 * @param integer $screen_id Optional. Post or term ID from admin screen.
 	 * @param string  $context   Optional. Screen ID context field. Can be settings, post or term.
 	 *
@@ -102,8 +102,10 @@ class Generator {
 		$template['layers'] = $layers;
 
 		if ( 'dynamic' === $template['background'] ) {
+			$key = hexdec( substr( $index, -3 ) );
+
 			if ( 'settings' === $context ) {
-				$template['image'] = sprintf( SHARING_IMAGE_DIR . 'images/%d.jpg', ( $index % 12 ) + 1 );
+				$template['image'] = sprintf( SHARING_IMAGE_DIR . 'images/%d.jpg', ( $key % 12 ) + 1 );
 			}
 
 			if ( ! empty( $fieldset['attachment'] ) ) {
@@ -122,7 +124,7 @@ class Generator {
 		 *
 		 * @param array   $template  List of template data.
 		 * @param array   $fieldset  Fieldset data from picker.
-		 * @param integer $index     Template index from editor.
+		 * @param string  $index     Template index from editor.
 		 * @param integer $screen_id Post or term ID from admin screen.
 		 * @param string  $context   Screen ID context field. Can be settings, post or term.
 		 */

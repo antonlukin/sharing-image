@@ -8,10 +8,10 @@ let params = null;
  * Create template card in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number}      index   Current card index.
  * @param {Object}      option  List of template options.
+ * @param {string}      index   Template index.
  */
-function createCard( catalog, index, option ) {
+function createCard( catalog, option, index ) {
 	const card = Build.element( 'div', {
 		classes: [ 'sharing-image-catalog-card' ],
 		append: catalog,
@@ -59,7 +59,7 @@ function createCard( catalog, index, option ) {
  * Create new template button in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number}      index   New card index.
+ * @param {string}      index   Template index.
  */
 function createNewButton( catalog, index ) {
 	const link = new URL( document.location.href );
@@ -117,13 +117,11 @@ function createCatalog( content, settings ) {
 		append: content,
 	} );
 
-	let index = 1;
+	for ( const index in settings.templates ) {
+		createCard( catalog, settings.templates[ index ], index );
+	}
 
-	settings.templates.forEach( ( template ) => {
-		createCard( catalog, index++, template );
-	} );
-
-	createNewButton( catalog, index );
+	createNewButton( catalog, settings.index );
 }
 
 export default createCatalog;

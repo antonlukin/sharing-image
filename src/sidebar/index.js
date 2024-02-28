@@ -1,10 +1,10 @@
 import { __ } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
-import { useState, useEffect, useMemo } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { TextareaControl, SelectControl, Button, Flex, Spinner, Disabled } from '@wordpress/components';
+import { TextareaControl, SelectControl, Button, Flex, Spinner } from '@wordpress/components';
 
 import TemplateFields from './template-fields';
 
@@ -87,6 +87,12 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		setLoading( false );
 	};
 
+	useEffect( () => {
+		if ( ! templates[ template ] ) {
+			setTemplate( 0 );
+		}
+	}, [ templates, template ] );
+
 	return (
 		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharimg-image' ) }>
 			{ postMeta[ meta.source ].poster && (
@@ -97,23 +103,27 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				/>
 			) }
 
-			<SelectControl
-				value={ template }
-				options={ templates.map( ( item, index ) => ( {
-					label: item.title,
-					value: index,
-				} ) ) }
-				onChange={ changeTemplate }
-			/>
-
-			<Flex direction={ 'column' }>
-				<TemplateFields
-					layers={ templates[ template ].layers || [] }
-					template={ template }
-					updateFieldset={ updateFieldset }
-					fields={ postMeta[ meta.fieldset ] }
+			{ templates.length > 1 && (
+				<SelectControl
+					value={ template }
+					options={ templates.map( ( item, index ) => ( {
+						label: item.title,
+						value: index,
+					} ) ) }
+					onChange={ changeTemplate }
 				/>
-			</Flex>
+			) }
+
+			{ templates[ template ] && (
+				<Flex direction={ 'column' }>
+					<TemplateFields
+						layers={ templates[ template ].layers || [] }
+						template={ template }
+						updateFieldset={ updateFieldset }
+						fields={ postMeta[ meta.fieldset ] }
+					/>
+				</Flex>
+			) }
 
 			<Flex justify={ 'flex-start' }>
 				<Button variant="secondary" isDestructive={ false } type={ 'button' } onClick={ generateButton }>

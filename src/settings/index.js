@@ -52,7 +52,7 @@ function initTemplatesTab( content, settings ) {
 	settings.templates = settings.templates || [];
 
 	if ( Helper.param( 'template' ) ) {
-		index = parseInt( Helper.param( 'template' ) ) - 1;
+		index = Helper.param( 'template' );
 	}
 
 	const data = settings.templates[ index ];
@@ -63,11 +63,11 @@ function initTemplatesTab( content, settings ) {
 	}
 
 	// Create editor for new template.
-	if ( settings.templates.length === index ) {
-		return Editor( content, settings, index );
+	if ( null === index ) {
+		return Catalog( content, settings );
 	}
 
-	Catalog( content, settings );
+	Editor( content, settings, index );
 }
 
 /**

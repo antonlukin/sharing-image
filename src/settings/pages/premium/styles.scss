@@ -133,7 +133,7 @@
     }
   }
 
-  & ~ #setting-error-sharing-image {
+  & + #setting-error-sharing-image {
     max-width: $width-narrow - 40px;
   }
 }

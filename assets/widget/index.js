@@ -854,13 +854,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _param_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./param.js */ "./src/helpers/param.js");
 /* harmony import */ var _attachment_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./attachment.js */ "./src/helpers/attachment.js");
 /* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./defaults.js */ "./src/helpers/defaults.js");
+/* harmony import */ var _uniqid_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uniqid.js */ "./src/helpers/uniqid.js");
+
 
 
 
 const Helper = {
   param: _param_js__WEBPACK_IMPORTED_MODULE_0__["default"],
   attachment: _attachment_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  defaults: _defaults_js__WEBPACK_IMPORTED_MODULE_2__["default"]
+  defaults: _defaults_js__WEBPACK_IMPORTED_MODULE_2__["default"],
+  uniqid: _uniqid_js__WEBPACK_IMPORTED_MODULE_3__["default"]
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Helper);
 
@@ -887,6 +890,94 @@ function getSearchParam(key) {
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getSearchParam);
+
+/***/ }),
+
+/***/ "./src/helpers/uniqid.js":
+/*!*******************************!*\
+  !*** ./src/helpers/uniqid.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.browser.js");
+
+/**
+ * Get unique param on custom alhpabeth.
+ */
+
+function getUniqueId() {
+  const nanoid = (0,nanoid__WEBPACK_IMPORTED_MODULE_0__.customAlphabet)('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 12);
+  return nanoid();
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUniqueId);
+
+/***/ }),
+
+/***/ "./node_modules/nanoid/index.browser.js":
+/*!**********************************************!*\
+  !*** ./node_modules/nanoid/index.browser.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "customAlphabet": () => (/* binding */ customAlphabet),
+/* harmony export */   "customRandom": () => (/* binding */ customRandom),
+/* harmony export */   "nanoid": () => (/* binding */ nanoid),
+/* harmony export */   "random": () => (/* binding */ random),
+/* harmony export */   "urlAlphabet": () => (/* reexport safe */ _url_alphabet_index_js__WEBPACK_IMPORTED_MODULE_0__.urlAlphabet)
+/* harmony export */ });
+/* harmony import */ var _url_alphabet_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./url-alphabet/index.js */ "./node_modules/nanoid/url-alphabet/index.js");
+
+
+let random = bytes => crypto.getRandomValues(new Uint8Array(bytes))
+let customRandom = (alphabet, defaultSize, getRandom) => {
+  let mask = (2 << (Math.log(alphabet.length - 1) / Math.LN2)) - 1
+  let step = -~((1.6 * mask * defaultSize) / alphabet.length)
+  return (size = defaultSize) => {
+    let id = ''
+    while (true) {
+      let bytes = getRandom(step)
+      let j = step
+      while (j--) {
+        id += alphabet[bytes[j] & mask] || ''
+        if (id.length === size) return id
+      }
+    }
+  }
+}
+let customAlphabet = (alphabet, size = 21) =>
+  customRandom(alphabet, size, random)
+let nanoid = (size = 21) => {
+  let id = ''
+  let bytes = crypto.getRandomValues(new Uint8Array(size))
+  while (size--) {
+    id += _url_alphabet_index_js__WEBPACK_IMPORTED_MODULE_0__.urlAlphabet[bytes[size] & 63]
+  }
+  return id
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/nanoid/url-alphabet/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/nanoid/url-alphabet/index.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "urlAlphabet": () => (/* binding */ urlAlphabet)
+/* harmony export */ });
+const urlAlphabet =
+  'useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict'
+
 
 /***/ })
 

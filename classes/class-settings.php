@@ -294,18 +294,24 @@ class Settings {
 			$this->redirect_with_message( $redirect, 2 );
 		}
 
-		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
+		$index = sanitize_key( wp_unslash( $_POST['sharing_image_index'] ) );
+
+		if ( ! $this->is_valid_unique_index( $index ) ) {
+			$this->redirect_with_message( $redirect, 2 );
+		}
 
 		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
 			$this->redirect_with_message( $redirect, 2 );
 		}
 
+		$templates = $this->get_templates();
+
 		// Skip 2nd+ templates if the Premium is not active.
-		if ( $index > 0 && ! $this->is_premium_features() ) {
-			$this->redirect_with_message( $redirect, 2 );
+		if ( ! $this->is_premium_features() && empty( $templates[ $index ] ) ) {
+			$this->redirect_with_message( $redirect, 8 );
 		}
 
-		$redirect = add_query_arg( array( 'template' => $index + 1 ), $redirect );
+		$redirect = add_query_arg( array( 'template' => $index ), $redirect );
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		$editor = $this->sanitize_editor( wp_unslash( $_POST['sharing_image_editor'] ) );
@@ -332,8 +338,7 @@ class Settings {
 			$this->redirect_with_message( $redirect, 4 );
 		}
 
-		// Get index from template ID.
-		$index = absint( $_REQUEST['template'] ) - 1;
+		$index = sanitize_key( $_REQUEST['template'] );
 
 		if ( ! $this->update_templates( $index ) ) {
 			$this->redirect_with_message( $redirect, 4 );
@@ -406,14 +411,8 @@ class Settings {
 			$this->redirect_with_message( $redirect, 7 );
 		}
 
-		$last = $this->get_templates_last_index();
-
-		if ( ! $this->is_premium_features() && $index > 1 ) {
-			$this->redirect_with_message( $redirect, 8 );
-		}
-
-		foreach ( $templates as $template ) {
-			$this->update_templates( null, $this->sanitize_editor( $template ) );
+		foreach ( $templates as $index => $template ) {
+			$this->update_templates( $index, $this->sanitize_editor( $template ) );
 		}
 
 		$this->redirect_with_message( $redirect, 9 );
@@ -435,7 +434,7 @@ class Settings {
 			$this->redirect_with_message( $redirect, 10 );
 		}
 
-		$index = absint( $_REQUEST['sharing_image_clone'] );
+		$index = sanitize_key( $_REQUEST['sharing_image_clone'] );
 
 		// Get all templates to find by index.
 		$templates = $this->get_templates();
@@ -459,7 +458,7 @@ class Settings {
 			$template['title'] = $prefix . $template['title'];
 		}
 
-		if ( ! $this->update_templates( null, $template ) ) {
+		if ( ! $this->update_templates( uniqid(), $template ) ) {
 			$this->redirect_with_message( $redirect, 10 );
 		}
 
@@ -480,7 +479,7 @@ class Settings {
 			wp_send_json_error( __( 'Poster index undefined.', 'sharing-image' ), 400 );
 		}
 
-		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
+		$index = sanitize_key( wp_unslash( $_POST['sharing_image_index'] ) );
 
 		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
 			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
@@ -522,7 +521,7 @@ class Settings {
 			wp_send_json_error( __( 'Poster index undefined.', 'sharing-image' ), 400 );
 		}
 
-		$index = absint( wp_unslash( $_POST['sharing_image_index'] ) );
+		$index = sanitize_key( wp_unslash( $_POST['sharing_image_index'] ) );
 
 		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
 			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
@@ -739,7 +738,11 @@ class Settings {
 	 * @return array List of templates.
 	 */
 	public function get_templates() {
-		$templates = get_option( self::OPTION_TEMPLATES, array() );
+		$templates = get_option( self::OPTION_TEMPLATES, null );
+
+		if ( empty( $templates ) ) {
+			$templates = array();
+		}
 
 		if ( ! $this->is_premium_features() ) {
 			$templates = array_slice( $templates, 0, 1 );
@@ -754,33 +757,31 @@ class Settings {
 	}
 
 	/**
-	 * Get templates last index.
+	 * Get templates count.
 	 *
 	 * @return int Last index of templates list.
 	 */
-	public function get_templates_last_index() {
-		$templates = $this->get_templates();
-
-		return count( $templates ) - 1;
+	public function get_templates_count() {
+		return count( $this->get_templates() );
 	}
 
 	/**
 	 * Update templates by index.
 	 *
-	 * @param int   $index  Template index to update. Use null to add new template.
-	 * @param array $editor New template data.
+	 * @param string     $index  Template index to create or update.
+	 * @param array|null $editor New template data. Use null to delete template.
 	 *
 	 * @return bool True if the value was updated, false otherwise.
 	 */
 	public function update_templates( $index, $editor = null ) {
 		// Method get_templates() is not used to save old templates during Premium switching.
-		$templates = get_option( self::OPTION_TEMPLATES, array() );
+		$templates = get_option( self::OPTION_TEMPLATES, null );
 
-		if ( null === $index ) {
-			$templates[] = $editor;
-		} else {
-			$templates[ $index ] = $editor;
+		if ( empty( $templates ) ) {
+			$templates = array();
 		}
+
+		$templates[ $index ] = $editor;
 
 		if ( null === $editor ) {
 			unset( $templates[ $index ] );
@@ -791,7 +792,7 @@ class Settings {
 		 *
 		 * @param array $templates List of reindexed templates.
 		 */
-		$templates = apply_filters( 'sharing_image_update_templates', array_values( $templates ) );
+		$templates = apply_filters( 'sharing_image_update_templates', $templates );
 
 		return update_option( self::OPTION_TEMPLATES, $templates );
 	}
@@ -1099,6 +1100,7 @@ class Settings {
 				'premium' => esc_url_raw( $this->get_tab_link( 'premium' ) ),
 				'storage' => path_join( $basedir, 'sharing-image' ),
 			),
+			'index'      => $this->create_unique_index(),
 			'templates'  => $this->get_templates(),
 			'config'     => $this->get_config(),
 			'license'    => $this->get_license(),
@@ -1176,26 +1178,26 @@ class Settings {
 		if ( isset( $editor['layers'] ) && is_array( $editor['layers'] ) ) {
 			$layers = array();
 
-			foreach ( $editor['layers'] as $layer ) {
+			foreach ( $editor['layers'] as $index => $layer ) {
 				if ( empty( $layer['type'] ) ) {
 					continue;
 				}
 
 				switch ( $layer['type'] ) {
 					case 'text':
-						$layers[] = $this->sanitize_text_layer( $layer );
+						$layers[ $index ] = $this->sanitize_text_layer( $layer );
 						break;
 
 					case 'image':
-						$layers[] = $this->sanitize_image_layer( $layer );
+						$layers[ $index ] = $this->sanitize_image_layer( $layer );
 						break;
 
 					case 'filter':
-						$layers[] = $this->sanitize_filter_layer( $layer );
+						$layers[ $index ] = $this->sanitize_filter_layer( $layer );
 						break;
 
 					case 'rectangle':
-						$layers[] = $this->sanitize_rectangle_layer( $layer );
+						$layers[ $index ] = $this->sanitize_rectangle_layer( $layer );
 						break;
 				}
 			}
@@ -1506,12 +1508,8 @@ class Settings {
 
 		$sanitized['autogenerate'] = 'manual';
 
-		if ( isset( $config['autogenerate'] ) && is_numeric( $config['autogenerate'] ) ) {
-			$autogenerate = absint( $config['autogenerate'] );
-
-			if ( $this->get_templates_last_index() >= $autogenerate ) {
-				$sanitized['autogenerate'] = $autogenerate;
-			}
+		if ( isset( $config['autogenerate'] ) ) {
+			$sanitized['autogenerate'] = sanitize_key( $config['autogenerate'] );
 		}
 
 		/**
@@ -1780,6 +1778,51 @@ class Settings {
 
 		wp_safe_redirect( $redirect );
 		exit;
+	}
+
+	/**
+	 * Create unique template index.
+	 *
+	 * @return string New template index.
+	 */
+	private function create_unique_index() {
+		$templates = $this->get_templates();
+
+		// Generate random index.
+		$index = substr( bin2hex( openssl_random_pseudo_bytes( 20 ) ), -8 );
+
+		/**
+		 * Filter template unique index.
+		 *
+		 * @param array $index     Generated template index.
+		 * @param array $templates List of templates.
+		 */
+		$index = apply_filters( 'sharing_image_unique_index', $index, $templates );
+
+		if ( array_key_exists( $index, $templates ) ) {
+			return $this->create_unique_index();
+		}
+
+		return $index;
+	}
+
+	/**
+	 * Check unique template index.
+	 *
+	 * @param string $index Unique template index to check.
+	 *
+	 * @return bool  Whether unique template index is correct.
+	 */
+	private function is_valid_unique_index( $index ) {
+		$valid = preg_match( '~^[a-z0-9]{8}$~', $index );
+
+		/**
+		 * Filter wheter given unique index matching rule.
+		 *
+		 * @param bool   $valid Valid flag.
+		 * @param string $index Template index.
+		 */
+		return apply_filters( 'sharing_image_valid_unique_index', $valid, $index );
 	}
 
 	/**

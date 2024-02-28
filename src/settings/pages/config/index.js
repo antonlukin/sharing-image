@@ -207,9 +207,9 @@ function createAutogenerateOptions( options, data, templates ) {
 	// Add the option for disabling feature.
 	fields.manual = wp.i18n.__( 'Disable auto generation', 'sharing-image' );
 
-	templates.forEach( ( template, i ) => {
-		fields[ i ] = template.title || wp.i18n.__( 'Untitled', 'sharing-image' );
-	} );
+	for ( const i in templates ) {
+		fields[ i ] = templates[ i ].title || wp.i18n.__( 'Untitled', 'sharing-image' );
+	}
 
 	let selected = data.autogenerate;
 

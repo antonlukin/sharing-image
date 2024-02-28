@@ -914,13 +914,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _param_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./param.js */ "./src/helpers/param.js");
 /* harmony import */ var _attachment_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./attachment.js */ "./src/helpers/attachment.js");
 /* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./defaults.js */ "./src/helpers/defaults.js");
+/* harmony import */ var _uniqid_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uniqid.js */ "./src/helpers/uniqid.js");
+
 
 
 
 const Helper = {
   param: _param_js__WEBPACK_IMPORTED_MODULE_0__["default"],
   attachment: _attachment_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  defaults: _defaults_js__WEBPACK_IMPORTED_MODULE_2__["default"]
+  defaults: _defaults_js__WEBPACK_IMPORTED_MODULE_2__["default"],
+  uniqid: _uniqid_js__WEBPACK_IMPORTED_MODULE_3__["default"]
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Helper);
 
@@ -950,6 +953,31 @@ function getSearchParam(key) {
 
 /***/ }),
 
+/***/ "./src/helpers/uniqid.js":
+/*!*******************************!*\
+  !*** ./src/helpers/uniqid.js ***!
+  \*******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var nanoid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nanoid */ "./node_modules/nanoid/index.browser.js");
+
+/**
+ * Get unique param on custom alhpabeth.
+ */
+
+function getUniqueId() {
+  const nanoid = (0,nanoid__WEBPACK_IMPORTED_MODULE_0__.customAlphabet)('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 12);
+  return nanoid();
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getUniqueId);
+
+/***/ }),
+
 /***/ "./src/settings/pages/catalog/index.js":
 /*!*********************************************!*\
   !*** ./src/settings/pages/catalog/index.js ***!
@@ -970,11 +998,11 @@ let params = null;
  * Create template card in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number}      index   Current card index.
  * @param {Object}      option  List of template options.
+ * @param {string}      index   Template index.
  */
 
-function createCard(catalog, index, option) {
+function createCard(catalog, option, index) {
   const card = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
     classes: ['sharing-image-catalog-card'],
     append: catalog
@@ -1017,7 +1045,7 @@ function createCard(catalog, index, option) {
  * Create new template button in catalog.
  *
  * @param {HTMLElement} catalog Catalog HTML element.
- * @param {number}      index   New card index.
+ * @param {string}      index   Template index.
  */
 
 
@@ -1072,11 +1100,12 @@ function createCatalog(content, settings) {
     classes: ['sharing-image-catalog'],
     append: content
   });
-  let index = 1;
-  settings.templates.forEach(template => {
-    createCard(catalog, index++, template);
-  });
-  createNewButton(catalog, index);
+
+  for (const index in settings.templates) {
+    createCard(catalog, settings.templates[index], index);
+  }
+
+  createNewButton(catalog, settings.index);
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (createCatalog);
@@ -1276,9 +1305,11 @@ function createAutogenerateOptions(options, data, templates) {
   const fields = {}; // Add the option for disabling feature.
 
   fields.manual = wp.i18n.__('Disable auto generation', 'sharing-image');
-  templates.forEach((template, i) => {
-    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
-  });
+
+  for (const i in templates) {
+    fields[i] = templates[i].title || wp.i18n.__('Untitled', 'sharing-image');
+  }
+
   let selected = data.autogenerate;
 
   if (typeof selected === 'undefined') {
@@ -1444,12 +1475,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../builders */ "./src/builders/index.js");
-/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/pages/editor/styles.scss");
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../helpers */ "./src/helpers/index.js");
+/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/pages/editor/styles.scss");
 /**
  * Editor settings.
  */
 
 /* global ajaxurl:true */
+
 
  // Store global script object for settings page.
 
@@ -1583,31 +1616,6 @@ function saveTemplate() {
     showTemplateError();
   });
   request.send(bundle);
-}
-/**
- * Update form fields name attributes for layers
- *
- * @param {HTMLElement} designer Layouts designer element.
- */
-
-
-function reorderLayers(designer) {
-  const layers = designer.children;
-
-  for (let index = 0; index < layers.length; index++) {
-    const fields = layers[index].querySelectorAll('[name]');
-    fields.forEach(field => {
-      let name = field.getAttribute('name'); // Try to find layer index.
-
-      const match = name.match(/(.+?\[layers\])\[(\d*)\](\[.+?\])$/);
-
-      if (null !== match) {
-        name = match[1] + `[${index}]` + match[3];
-      }
-
-      field.name = name;
-    });
-  }
 }
 /**
  * Update template background settings with custom logic.
@@ -2241,10 +2249,7 @@ function createOrderLayersButton(designer, layer) {
   button.addEventListener('click', () => {
     if (layer.previousSibling) {
       designer.insertBefore(layer, layer.previousSibling);
-    } // Update fields name attributes.
-
-
-    reorderLayers(designer);
+    }
 
     if (editor.classList.contains('editor-suspend')) {
       return;
@@ -2275,9 +2280,7 @@ function createDeleteLayerButton(designer, layer) {
     append: control
   });
   button.addEventListener('click', () => {
-    designer.removeChild(layer); // Update fields name attributes.
-
-    reorderLayers(designer);
+    designer.removeChild(layer);
 
     if (editor.classList.contains('editor-suspend')) {
       return;
@@ -2289,11 +2292,12 @@ function createDeleteLayerButton(designer, layer) {
 /**
  * Create image layer.
  *
- * @param {Object} data Current template layer data.
+ * @param {Object} data   Current template layer data.
+ * @param {string} uniqid Unique layer name id.
  */
 
 
-function createLayerImage(data) {
+function createLayerImage(data, uniqid) {
   const description = [];
   description.push(wp.i18n.__('Use jpg, gif or png image formats.', 'sharing-image'));
   description.push(wp.i18n.__('Leave width and height fields blank to use the original image size.', 'sharing-image'));
@@ -2304,7 +2308,7 @@ function createLayerImage(data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = params.name + '[layers][]';
+  const name = params.name + `[layers][${uniqid}]`;
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2369,11 +2373,12 @@ function createLayerImage(data) {
 /**
  * Create text layer.
  *
- * @param {Object} data Current template data.
+ * @param {Object} data   Current template data.
+ * @param {string} uniqid Unique layer name id.
  */
 
 
-function createLayerText(data) {
+function createLayerText(data, uniqid) {
   const description = [];
   description.push(wp.i18n.__('Write a text to the current image.', 'sharing-image'));
   description.push(wp.i18n.__('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
@@ -2384,7 +2389,7 @@ function createLayerText(data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = params.name + '[layers][]';
+  const name = params.name + `[layers][${uniqid}]`;
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2475,11 +2480,12 @@ function createLayerText(data) {
 /**
  * Create filter layer.
  *
- * @param {Object} data Current template data.
+ * @param {Object} data   Current template data.
+ * @param {string} uniqid Unique layer name id.
  */
 
 
-function createLayerFilter(data) {
+function createLayerFilter(data, uniqid) {
   const description = [];
   description.push(wp.i18n.__('Filters are applied one after another to the entire editor image.', 'sharing-image'));
   description.push(wp.i18n.__('If you want to control their order, create multiple layers.', 'sharing-image'));
@@ -2489,7 +2495,7 @@ function createLayerFilter(data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = params.name + '[layers][]';
+  const name = params.name + `[layers][${uniqid}]`;
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2582,11 +2588,12 @@ function createLayerFilter(data) {
 /**
  * Create rectangle layer.
  *
- * @param {Object} data Current template data.
+ * @param {Object} data   Current template data.
+ * @param {string} uniqid Unique layer name id.
  */
 
 
-function createLayerRectangle(data) {
+function createLayerRectangle(data, uniqid) {
   const description = [];
   description.push(wp.i18n.__('Draw a colored rectangle on current image.', 'sharing-image'));
   description.push(wp.i18n.__('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
@@ -2597,7 +2604,7 @@ function createLayerRectangle(data) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = params.name + '[layers][]';
+  const name = params.name + `[layers][${uniqid}]`;
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2691,38 +2698,38 @@ function createLayerRectangle(data) {
 
 
 function createLayer(designer, type, data = {}) {
-  let layer = null;
+  let layer = null; // Get layer id from data.
+
+  const uniqid = data.uniqid || _helpers__WEBPACK_IMPORTED_MODULE_1__["default"].uniqid();
 
   switch (type) {
-    case 'image':
-      layer = createLayerImage(data);
+    case 'text':
+      layer = createLayerText(data, uniqid);
       break;
 
-    case 'text':
-      layer = createLayerText(data);
+    case 'image':
+      layer = createLayerImage(data, uniqid);
       break;
 
     case 'filter':
-      layer = createLayerFilter(data);
+      layer = createLayerFilter(data, uniqid);
       break;
 
     case 'rectangle':
-      layer = createLayerRectangle(data);
+      layer = createLayerRectangle(data, uniqid);
       break;
+
+    default:
+      return null;
   }
 
-  if (null === layer) {
-    return null;
-  }
-
-  designer.insertBefore(layer, designer.firstChild); // Button to delete layer.
+  designer.appendChild(layer); // Button to delete layer.
 
   createDeleteLayerButton(designer, layer); // Button to collapse layer.
 
   createCollapseButton(layer); // Button to order layers
 
   createOrderLayersButton(designer, layer);
-  reorderLayers(designer);
   return layer;
 }
 /**
@@ -2756,19 +2763,6 @@ function createDesigner(fieldset, data) {
     },
     append: control
   });
-  const designer = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
-    classes: ['sharing-image-editor-designer'],
-    append: fieldset
-  });
-  data.layers = data.layers || [];
-  const layers = data.layers.reverse();
-  layers.forEach(item => {
-    if (item.hasOwnProperty('type')) {
-      const created = createLayer(designer, item.type, item); // Collapse new layer.
-
-      created.classList.add('layer-collapsed');
-    }
-  });
   button.addEventListener('click', () => {
     const select = control.querySelector('select');
 
@@ -2776,8 +2770,28 @@ function createDesigner(fieldset, data) {
       return;
     }
 
-    createLayer(designer, select.value, designer.children.length);
+    createLayer(designer, select.value);
   });
+  const designer = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
+    classes: ['sharing-image-editor-designer'],
+    append: fieldset
+  });
+  data.layers = data.layers || [];
+
+  for (const uniqid in data.layers) {
+    const item = data.layers[uniqid];
+    item.uniqid = uniqid;
+
+    if (item.hasOwnProperty('type')) {
+      const created = createLayer(designer, item.type, item);
+
+      if (!created) {
+        return;
+      }
+
+      created.classList.add('layer-collapsed');
+    }
+  }
 }
 /**
  * Create common settings on template editor screen.
@@ -2968,7 +2982,7 @@ function createMonitor(data) {
  * Create form hidden settings fields.
  *
  * @param {HTMLElement} content Settings content element.
- * @param {number}      index   Current option index.
+ * @param {string}      index   Current option index.
  */
 
 
@@ -3551,9 +3565,11 @@ function createCloningOptions(tools) {
   }
 
   const fields = {};
-  templates.forEach((template, i) => {
-    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
-  });
+
+  for (const i in templates) {
+    fields[i] = templates[i].title || wp.i18n.__('Untitled', 'sharing-image');
+  }
+
   const cloning = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('form', {
     classes: ['sharing-image-tools-control-cloning'],
     attributes: {
@@ -3620,6 +3636,69 @@ function createTools(content, settings) {
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (createTools);
+
+/***/ }),
+
+/***/ "./node_modules/nanoid/index.browser.js":
+/*!**********************************************!*\
+  !*** ./node_modules/nanoid/index.browser.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "customAlphabet": () => (/* binding */ customAlphabet),
+/* harmony export */   "customRandom": () => (/* binding */ customRandom),
+/* harmony export */   "nanoid": () => (/* binding */ nanoid),
+/* harmony export */   "random": () => (/* binding */ random),
+/* harmony export */   "urlAlphabet": () => (/* reexport safe */ _url_alphabet_index_js__WEBPACK_IMPORTED_MODULE_0__.urlAlphabet)
+/* harmony export */ });
+/* harmony import */ var _url_alphabet_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./url-alphabet/index.js */ "./node_modules/nanoid/url-alphabet/index.js");
+
+
+let random = bytes => crypto.getRandomValues(new Uint8Array(bytes))
+let customRandom = (alphabet, defaultSize, getRandom) => {
+  let mask = (2 << (Math.log(alphabet.length - 1) / Math.LN2)) - 1
+  let step = -~((1.6 * mask * defaultSize) / alphabet.length)
+  return (size = defaultSize) => {
+    let id = ''
+    while (true) {
+      let bytes = getRandom(step)
+      let j = step
+      while (j--) {
+        id += alphabet[bytes[j] & mask] || ''
+        if (id.length === size) return id
+      }
+    }
+  }
+}
+let customAlphabet = (alphabet, size = 21) =>
+  customRandom(alphabet, size, random)
+let nanoid = (size = 21) => {
+  let id = ''
+  let bytes = crypto.getRandomValues(new Uint8Array(size))
+  while (size--) {
+    id += _url_alphabet_index_js__WEBPACK_IMPORTED_MODULE_0__.urlAlphabet[bytes[size] & 63]
+  }
+  return id
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/nanoid/url-alphabet/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/nanoid/url-alphabet/index.js ***!
+  \***************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "urlAlphabet": () => (/* binding */ urlAlphabet)
+/* harmony export */ });
+const urlAlphabet =
+  'useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict'
+
 
 /***/ })
 
@@ -3747,7 +3826,7 @@ function initTemplatesTab(content, settings) {
   settings.templates = settings.templates || [];
 
   if (_helpers__WEBPACK_IMPORTED_MODULE_0__["default"].param('template')) {
-    index = parseInt(_helpers__WEBPACK_IMPORTED_MODULE_0__["default"].param('template')) - 1;
+    index = _helpers__WEBPACK_IMPORTED_MODULE_0__["default"].param('template');
   }
 
   const data = settings.templates[index]; // Create editor for existing template.
@@ -3757,11 +3836,11 @@ function initTemplatesTab(content, settings) {
   } // Create editor for new template.
 
 
-  if (settings.templates.length === index) {
-    return (0,_pages_editor__WEBPACK_IMPORTED_MODULE_4__["default"])(content, settings, index);
+  if (null === index) {
+    return (0,_pages_catalog__WEBPACK_IMPORTED_MODULE_2__["default"])(content, settings);
   }
 
-  (0,_pages_catalog__WEBPACK_IMPORTED_MODULE_2__["default"])(content, settings);
+  (0,_pages_editor__WEBPACK_IMPORTED_MODULE_4__["default"])(content, settings, index);
 }
 /**
  * Init settings page handler.

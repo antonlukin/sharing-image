@@ -134,9 +134,9 @@ function createCloningOptions( tools ) {
 
 	const fields = {};
 
-	templates.forEach( ( template, i ) => {
-		fields[ i ] = template.title || wp.i18n.__( 'Untitled', 'sharing-image' );
-	} );
+	for ( const i in templates ) {
+		fields[ i ] = templates[ i ].title || wp.i18n.__( 'Untitled', 'sharing-image' );
+	}
 
 	const cloning = Build.element( 'form', {
 		classes: [ 'sharing-image-tools-control-cloning' ],

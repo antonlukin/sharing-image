@@ -4,6 +4,7 @@
 /* global ajaxurl:true */
 
 import Build from '../../../builders';
+import Helper from '../../../helpers';
 import './styles.scss';
 
 // Store global script object for settings page.
@@ -154,32 +155,6 @@ function saveTemplate() {
 	} );
 
 	request.send( bundle );
-}
-
-/**
- * Update form fields name attributes for layers
- *
- * @param {HTMLElement} designer Layouts designer element.
- */
-function reorderLayers( designer ) {
-	const layers = designer.children;
-
-	for ( let index = 0; index < layers.length; index++ ) {
-		const fields = layers[ index ].querySelectorAll( '[name]' );
-
-		fields.forEach( ( field ) => {
-			let name = field.getAttribute( 'name' );
-
-			// Try to find layer index.
-			const match = name.match( /(.+?\[layers\])\[(\d*)\](\[.+?\])$/ );
-
-			if ( null !== match ) {
-				name = match[ 1 ] + `[${ index }]` + match[ 3 ];
-			}
-
-			field.name = name;
-		} );
-	}
 }
 
 /**
@@ -888,9 +863,6 @@ function createOrderLayersButton( designer, layer ) {
 			designer.insertBefore( layer, layer.previousSibling );
 		}
 
-		// Update fields name attributes.
-		reorderLayers( designer );
-
 		if ( editor.classList.contains( 'editor-suspend' ) ) {
 			return;
 		}
@@ -923,9 +895,6 @@ function createDeleteLayerButton( designer, layer ) {
 	button.addEventListener( 'click', () => {
 		designer.removeChild( layer );
 
-		// Update fields name attributes.
-		reorderLayers( designer );
-
 		if ( editor.classList.contains( 'editor-suspend' ) ) {
 			return;
 		}
@@ -937,9 +906,10 @@ function createDeleteLayerButton( designer, layer ) {
 /**
  * Create image layer.
  *
- * @param {Object} data Current template layer data.
+ * @param {Object} data   Current template layer data.
+ * @param {string} uniqid Unique layer name id.
  */
-function createLayerImage( data ) {
+function createLayerImage( data, uniqid ) {
 	const description = [];
 
 	description.push( wp.i18n.__( 'Use jpg, gif or png image formats.', 'sharing-image' ) );
@@ -957,7 +927,7 @@ function createLayerImage( data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + '[layers][]';
+	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1032,9 +1002,10 @@ function createLayerImage( data ) {
 /**
  * Create text layer.
  *
- * @param {Object} data Current template data.
+ * @param {Object} data   Current template data.
+ * @param {string} uniqid Unique layer name id.
  */
-function createLayerText( data ) {
+function createLayerText( data, uniqid ) {
 	const description = [];
 
 	description.push( wp.i18n.__( 'Write a text to the current image.', 'sharing-image' ) );
@@ -1053,7 +1024,7 @@ function createLayerText( data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + '[layers][]';
+	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1159,9 +1130,10 @@ function createLayerText( data ) {
 /**
  * Create filter layer.
  *
- * @param {Object} data Current template data.
+ * @param {Object} data   Current template data.
+ * @param {string} uniqid Unique layer name id.
  */
-function createLayerFilter( data ) {
+function createLayerFilter( data, uniqid ) {
 	const description = [];
 
 	description.push(
@@ -1177,7 +1149,7 @@ function createLayerFilter( data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + '[layers][]';
+	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1288,9 +1260,10 @@ function createLayerFilter( data ) {
 /**
  * Create rectangle layer.
  *
- * @param {Object} data Current template data.
+ * @param {Object} data   Current template data.
+ * @param {string} uniqid Unique layer name id.
  */
-function createLayerRectangle( data ) {
+function createLayerRectangle( data, uniqid ) {
 	const description = [];
 
 	description.push( wp.i18n.__( 'Draw a colored rectangle on current image.', 'sharing-image' ) );
@@ -1308,7 +1281,7 @@ function createLayerRectangle( data ) {
 	} );
 
 	// Form fields name for this layer.
-	const name = params.name + '[layers][]';
+	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1418,26 +1391,31 @@ function createLayerRectangle( data ) {
 function createLayer( designer, type, data = {} ) {
 	let layer = null;
 
+	// Get layer id from data.
+	const uniqid = data.uniqid || Helper.uniqid();
+
 	switch ( type ) {
-		case 'image':
-			layer = createLayerImage( data );
-			break;
 		case 'text':
-			layer = createLayerText( data );
+			layer = createLayerText( data, uniqid );
 			break;
+
+		case 'image':
+			layer = createLayerImage( data, uniqid );
+			break;
+
 		case 'filter':
-			layer = createLayerFilter( data );
+			layer = createLayerFilter( data, uniqid );
 			break;
+
 		case 'rectangle':
-			layer = createLayerRectangle( data );
+			layer = createLayerRectangle( data, uniqid );
 			break;
+
+		default:
+			return null;
 	}
 
-	if ( null === layer ) {
-		return null;
-	}
-
-	designer.insertBefore( layer, designer.firstChild );
+	designer.appendChild( layer );
 
 	// Button to delete layer.
 	createDeleteLayerButton( designer, layer );
@@ -1447,8 +1425,6 @@ function createLayer( designer, type, data = {} ) {
 
 	// Button to order layers
 	createOrderLayersButton( designer, layer );
-
-	reorderLayers( designer );
 
 	return layer;
 }
@@ -1486,24 +1462,6 @@ function createDesigner( fieldset, data ) {
 		append: control,
 	} );
 
-	const designer = Build.element( 'div', {
-		classes: [ 'sharing-image-editor-designer' ],
-		append: fieldset,
-	} );
-
-	data.layers = data.layers || [];
-
-	const layers = data.layers.reverse();
-
-	layers.forEach( ( item ) => {
-		if ( item.hasOwnProperty( 'type' ) ) {
-			const created = createLayer( designer, item.type, item );
-
-			// Collapse new layer.
-			created.classList.add( 'layer-collapsed' );
-		}
-	} );
-
 	button.addEventListener( 'click', () => {
 		const select = control.querySelector( 'select' );
 
@@ -1511,8 +1469,31 @@ function createDesigner( fieldset, data ) {
 			return;
 		}
 
-		createLayer( designer, select.value, designer.children.length );
+		createLayer( designer, select.value );
 	} );
+
+	const designer = Build.element( 'div', {
+		classes: [ 'sharing-image-editor-designer' ],
+		append: fieldset,
+	} );
+
+	data.layers = data.layers || [];
+
+	for ( const uniqid in data.layers ) {
+		const item = data.layers[ uniqid ];
+
+		item.uniqid = uniqid;
+
+		if ( item.hasOwnProperty( 'type' ) ) {
+			const created = createLayer( designer, item.type, item );
+
+			if ( ! created ) {
+				return;
+			}
+
+			created.classList.add( 'layer-collapsed' );
+		}
+	}
 }
 
 /**
@@ -1732,7 +1713,7 @@ function createMonitor( data ) {
  * Create form hidden settings fields.
  *
  * @param {HTMLElement} content Settings content element.
- * @param {number}      index   Current option index.
+ * @param {string}      index   Current option index.
  */
 function prepareEditor( content, index ) {
 	params.name = 'sharing_image_editor';
