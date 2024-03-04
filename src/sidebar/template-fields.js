@@ -28,17 +28,15 @@ const TemplateFields = ( { layers, template, updateFieldset, fields } ) => {
 	 * Display dynamic text field
 	 *
 	 * @param {Object} layer
-	 * @param {number} n
+	 * @param {string} key
 	 *
 	 * @return {JSX.Element} Textarea control component.
 	 */
-	const displayTextField = ( layer, n ) => {
-		const key = 'layer-' + template + '-' + n;
-
-		if ( ! init && ! fields[ key ] ) {
-			fields[ key ] = presets[ layer.preset ] || '';
-			setInit( true );
-		}
+	const displayTextField = ( layer, key ) => {
+		// if ( ! init && ! fields[ key ] ) {
+		// 	fields[ key ] = presets[ layer.preset ] || '';
+		// 	setInit( true );
+		// }
 
 		return (
 			<TextareaControl
@@ -50,13 +48,13 @@ const TemplateFields = ( { layers, template, updateFieldset, fields } ) => {
 		);
 	};
 
-	return layers.map( ( layer, n ) => {
-		if ( 'text' === layer.type && layer.dynamic ) {
-			return displayTextField( layer, n );
-		}
+	for ( const key in layers ) {
+		const layer = layers[ key ];
 
-		return null;
-	} );
+		if ( 'text' === layer.type && layer.dynamic ) {
+			return displayTextField( layer, key );
+		}
+	}
 };
 
 export default TemplateFields;

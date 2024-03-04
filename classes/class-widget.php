@@ -50,11 +50,9 @@ class Widget {
 	 * Init class actions and filters.
 	 */
 	public function init() {
-		// Init taxonomy term widget.
 		add_action( 'init', array( $this, 'init_taxonomy_widget' ) );
-
-		// Init post metabox widget.
 		add_action( 'init', array( $this, 'init_post_widget' ) );
+		add_action( 'init', array( $this, 'init_post_sidebar' ) );
 
 		// Generate poster handlers.
 		add_action( 'wp_ajax_sharing_image_generate', array( $this, 'handle_ajax_generator' ) );
@@ -79,6 +77,19 @@ class Widget {
 			return;
 		}
 
+		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
+
+		// Handle actions on post save.
+		add_action( 'save_post', array( $this, 'save_metabox' ), 10 );
+
+		// Add required assets and objects.
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
+	}
+
+	/**
+	 * Init post sidebar for gutenberg enabled dashboard.
+	 */
+	public function init_post_sidebar() {
 		$schema = array(
 			'type'       => 'object',
 			'properties' => array(
@@ -92,13 +103,13 @@ class Widget {
 					'type' => 'integer',
 				),
 				'template' => array(
-					'type' => 'integer',
+					'type' => 'string',
 				),
 			),
 		);
 
-		register_post_meta(
-			'',
+		register_meta(
+			'post',
 			self::META_SOURCE,
 			array(
 				'type'              => 'object',
@@ -109,16 +120,16 @@ class Widget {
 				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
-				'sanitize_callback' => array( $this, 'sanitize_picker' ),
+				'sanitize_callback' => array( $this, 'sanitize_source' ),
 			)
 		);
 
-		register_post_meta(
-			'',
+		register_meta(
+			'post',
 			self::META_FIELDSET,
 			array(
-				'type'          => 'object',
-				'show_in_rest'  => array(
+				'type'              => 'object',
+				'show_in_rest'      => array(
 					'schema' => array(
 						'type'                 => 'object',
 						'properties'           => array(),
@@ -127,20 +138,15 @@ class Widget {
 						),
 					),
 				),
-				'single'        => true,
-				'auth_callback' => function () {
+				'single'            => true,
+				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
+				'sanitize_callback' => array( $this, 'sanitize_fieldset' ),
 			)
 		);
 
-		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
-
-		// Handle actions on post save.
-		add_action( 'save_post', array( $this, 'save_metabox' ), 10 );
-
 		// Add required assets and objects.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_sidebar_assets' ) );
 	}
 
@@ -395,7 +401,7 @@ class Widget {
 			wp_send_json_error( __( 'Wrong request parameters.', 'sharing-image' ), 400 );
 		}
 
-		$index = absint( $params['template'] );
+		$index = sanitize_key( $params['template'] );
 
 		if ( empty( $params['fieldset'] ) ) {
 			$params['fieldset'] = array();
@@ -449,7 +455,6 @@ class Widget {
 		if ( isset( $picker['fieldset'][ $id ] ) ) {
 			$fieldset = $picker['fieldset'][ $id ];
 		}
-		print_r($fieldset); exit;
 
 		$generator = new Generator();
 
@@ -660,75 +665,78 @@ class Widget {
 	}
 
 	/**
-	 * Sanitize picker widget data before saving.
+	 * Sanitize widget source meta.
 	 *
-	 * @param array $picker Widget POST data.
-
-	 * @return array Sanitized picker fields.
+	 * @param array $source Source meta data.
+	 * @return array Sanitized source meta fields.
 	 */
-	public function sanitize_picker( $picker ) {
+	public function sanitize_source( $source ) {
 		$sanitized = array();
 
-		if ( isset( $picker['poster'] ) ) {
-			$sanitized['poster'] = sanitize_text_field( $picker['poster'] );
+		if ( isset( $source['poster'] ) ) {
+			$sanitized['poster'] = sanitize_text_field( $source['poster'] );
 		}
 
-		if ( ! empty( $picker['width'] ) ) {
-			$sanitized['width'] = absint( $picker['width'] );
+		if ( ! empty( $source['width'] ) ) {
+			$sanitized['width'] = absint( $source['width'] );
 		}
 
-		if ( ! empty( $picker['height'] ) ) {
-			$sanitized['height'] = absint( $picker['height'] );
+		if ( ! empty( $source['height'] ) ) {
+			$sanitized['height'] = absint( $source['height'] );
 		}
 
-		$template = 0;
+		if ( ! empty( $source['template'] ) ) {
+			$sanitized['template'] = sanitize_key( $source['template'] );
+		}
 
-		if ( isset( $picker['template'] ) ) {
-			$template = absint( $picker['template'] );
+		/**
+		 * Filters fieldset meta.
+		 *
+		 * @since 3.0
+		 * @param array $sanitized List of sanitized picker fields.
+		 * @param array $picker    List of picker fields before sanitization.
+		 */
+		return apply_filters( 'sharing_image_sanitize_source', $sanitized, $source );
+	}
 
-			if ( count( $this->settings->get_templates() ) <= $template ) {
-				$template = 0;
+	/**
+	 * Sanitize fieldset.
+	 *
+	 * @param array $fieldset Fieldset list.
+	 *
+	 * @return array Sanitized fieldset data.
+	 */
+	public function sanitize_fieldset( $fieldset ) {
+		$sanitized = array();
+
+		// Get list of templates.
+		$templates = $this->settings->get_templates();
+
+		foreach ( $templates as $template ) {
+			if ( empty( $template['layers'] ) ) {
+				continue;
 			}
-		}
 
-		$sanitized['template'] = $template;
+			foreach ( $template['layers'] as $key => $layer ) {
+				if ( ! array_key_exists( $key, $fieldset ) ) {
+					continue;
+				}
 
-		if ( isset( $picker['fieldset'] ) ) {
-			$fieldset = $picker['fieldset'];
-
-			foreach ( $fieldset as $key => $fields ) {
-				$sanitized['fieldset'][ $key ] = $this->sanitize_fieldset( $fields );
+				if ( 'text' === $layer['type'] ) {
+					$sanitized[ $key ] = sanitize_textarea_field( $fieldset[ $key ] );
+				}
 			}
 		}
 
 		/**
-		 * Filters widget picker sanitized fields.
+		 * Filters widget fieldset meta.
 		 *
-		 * @param array $sanitized List of sanitized picker fields.
-		 * @param array $picker    List of picker fields before sanitization.
+		 * @since 3.0
+		 *
+		 * @param array $sanitized Sanitized fieldset list.
+		 * @param array $fieldset  Fieldset list before sanitization.
 		 */
-		return apply_filters( 'sharing_image_sanitize_picker', $sanitized, $picker );
-	}
-
-	/**
-	 * Sanitize picker widget fieldset list.
-	 *
-	 * @param array $fields Fieldset widget list.
-	 *
-	 * @return array Sanitized fieldset data.
-	 */
-	public function sanitize_fieldset( $fields ) {
-		$sanitized = array();
-
-		if ( ! empty( $fields['captions'] ) && is_array( $fields['captions'] ) ) {
-			$sanitized['captions'] = array_map( 'sanitize_textarea_field', $fields['captions'] );
-		}
-
-		if ( ! empty( $fields['attachment'] ) ) {
-			$sanitized['attachment'] = absint( $fields['attachment'] );
-		}
-
-		return $sanitized;
+		return apply_filters( 'sharing_image_sanitize_fieldset', $sanitized, $fieldset );
 	}
 
 	/**

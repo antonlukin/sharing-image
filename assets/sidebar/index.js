@@ -55,19 +55,16 @@ const TemplateFields = ({
    * Display dynamic text field
    *
    * @param {Object} layer
-   * @param {number} n
+   * @param {string} key
    *
    * @return {JSX.Element} Textarea control component.
    */
 
-  const displayTextField = (layer, n) => {
-    const key = 'layer-' + template + '-' + n;
-
-    if (!init && !fields[key]) {
-      fields[key] = presets[layer.preset] || '';
-      setInit(true);
-    }
-
+  const displayTextField = (layer, key) => {
+    // if ( ! init && ! fields[ key ] ) {
+    // 	fields[ key ] = presets[ layer.preset ] || '';
+    // 	setInit( true );
+    // }
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
       key: key,
       label: layer.title,
@@ -76,13 +73,13 @@ const TemplateFields = ({
     });
   };
 
-  return layers.map((layer, n) => {
-    if ('text' === layer.type && layer.dynamic) {
-      return displayTextField(layer, n);
-    }
+  for (const key in layers) {
+    const layer = layers[key];
 
-    return null;
-  });
+    if ('text' === layer.type && layer.dynamic) {
+      return displayTextField(layer, key);
+    }
+  }
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TemplateFields);
@@ -156,6 +153,16 @@ module.exports = window["wp"]["element"];
 /***/ ((module) => {
 
 module.exports = window["wp"]["i18n"];
+
+/***/ }),
+
+/***/ "@wordpress/notices":
+/*!*********************************!*\
+  !*** external ["wp","notices"] ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["notices"];
 
 /***/ }),
 
@@ -260,7 +267,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_edit_post__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_6__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _template_fields__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./template-fields */ "./src/sidebar/template-fields.js");
+/* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/notices */ "@wordpress/notices");
+/* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_wordpress_notices__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _template_fields__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./template-fields */ "./src/sidebar/template-fields.js");
+
 
 
 
@@ -275,9 +285,14 @@ const SharingImageSidebar = ({
   meta,
   templates
 }) => {
+  const {
+    createErrorNotice,
+    removeNotice
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useDispatch)(_wordpress_notices__WEBPACK_IMPORTED_MODULE_8__.store);
   /**
    * Retrieve post meta.
    */
+
   const postMeta = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute('meta');
   });
@@ -302,23 +317,23 @@ const SharingImageSidebar = ({
    * Local states.
    */
 
-  const [template, setTemplate] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)(postMeta[meta.source].template || 0);
+  const [template, setTemplate] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)(postMeta[meta.source]?.template);
   const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)(false);
   /**
    * Change Template.
    *
-   * @param {number} id Template ID.
+   * @param {string} index Template ID.
    */
 
-  const changeTemplate = id => {
+  const changeTemplate = index => {
     editPost({
       meta: {
         [meta.source]: { ...postMeta[meta.source],
-          template: parseInt(id)
+          template: index
         }
       }
     });
-    setTemplate(parseInt(id));
+    setTemplate(index);
   };
 
   const updateFieldset = (key, value) => {
@@ -338,6 +353,7 @@ const SharingImageSidebar = ({
       return;
     }
 
+    removeNotice('sharing-image-generate');
     const options = {
       path: 'sharing-image/v1/poster/' + postId,
       method: 'POST',
@@ -350,43 +366,54 @@ const SharingImageSidebar = ({
 
     try {
       const result = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()(options);
+
+      if (!result.datas) {
+        throw new Error();
+      }
+
       editPost({
         meta: {
-          [meta.source]: { ...postMeta[meta.source],
-            poster: result.data.poster
+          [meta.source]: { ...result.data,
+            template: template
           }
         }
       });
-      console.log(result);
-    } catch (error) {}
+    } catch (error) {
+      createErrorNotice((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('An unexpected error occurred', 'sharing-image'), {
+        id: 'sharing-image-generate',
+        type: 'snackbar'
+      });
+    }
 
     setLoading(false);
   };
 
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
-    if (!templates[template]) {
-      setTemplate(0);
+    const [index] = Object.keys(templates);
+
+    if (!templates[template] && index) {
+      setTemplate(index);
     }
   }, [templates, template]);
   return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_edit_post__WEBPACK_IMPORTED_MODULE_6__.PluginDocumentSettingPanel, {
     name: "sharing-image-setting",
     title: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Sharing Image', 'sharimg-image')
-  }, postMeta[meta.source].poster && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
+  }, postMeta[meta.source]?.poster && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
     src: postMeta[meta.source].poster,
     alt: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Sharing Image poster', 'sharimg-image'),
     style: {
       marginBottom: '10px'
     }
-  }), templates.length > 1 && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.SelectControl, {
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.SelectControl, {
     value: template,
-    options: templates.map((item, index) => ({
-      label: item.title,
+    options: Object.keys(templates).map(index => ({
+      label: templates[index].title,
       value: index
     })),
     onChange: changeTemplate
   }), templates[template] && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Flex, {
     direction: 'column'
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_template_fields__WEBPACK_IMPORTED_MODULE_8__["default"], {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_template_fields__WEBPACK_IMPORTED_MODULE_9__["default"], {
     layers: templates[template].layers || [],
     template: template,
     updateFieldset: updateFieldset,

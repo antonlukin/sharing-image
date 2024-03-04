@@ -4,11 +4,14 @@ import { useState, useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { TextareaControl, SelectControl, Button, Flex, Spinner } from '@wordpress/components';
+import { SelectControl, Button, Flex, Spinner } from '@wordpress/components';
+import { store as noticesStore } from '@wordpress/notices';
 
 import TemplateFields from './template-fields';
 
 const SharingImageSidebar = ( { meta, templates } ) => {
+	const { createErrorNotice, removeNotice } = useDispatch( noticesStore );
+
 	/**
 	 * Retrieve post meta.
 	 */
@@ -35,20 +38,20 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	/**
 	 * Local states.
 	 */
-	const [ template, setTemplate ] = useState( postMeta[ meta.source ].template || 0 );
+	const [ template, setTemplate ] = useState( postMeta[ meta.source ]?.template );
 	const [ loading, setLoading ] = useState( false );
 
 	/**
 	 * Change Template.
 	 *
-	 * @param {number} id Template ID.
+	 * @param {string} index Template ID.
 	 */
-	const changeTemplate = ( id ) => {
+	const changeTemplate = ( index ) => {
 		editPost( {
-			meta: { [ meta.source ]: { ...postMeta[ meta.source ], template: parseInt( id ) } },
+			meta: { [ meta.source ]: { ...postMeta[ meta.source ], template: index } },
 		} );
 
-		setTemplate( parseInt( id ) );
+		setTemplate( index );
 	};
 
 	const updateFieldset = ( key, value ) => {
@@ -64,6 +67,8 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 			return;
 		}
 
+		removeNotice( 'sharing-image-generate' );
+
 		const options = {
 			path: 'sharing-image/v1/poster/' + postId,
 			method: 'POST',
@@ -78,24 +83,34 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		try {
 			const result = await apiFetch( options );
 
+			if ( ! result.datas ) {
+				throw new Error();
+			}
+
 			editPost( {
-				meta: { [ meta.source ]: { ...postMeta[ meta.source ], poster: result.data.poster } },
+				meta: { [ meta.source ]: { ...result.data, template: template } },
 			} );
-			console.log( result );
-		} catch ( error ) {}
+		} catch ( error ) {
+			createErrorNotice( __( 'An unexpected error occurred', 'sharing-image' ), {
+				id: 'sharing-image-generate',
+				type: 'snackbar',
+			} );
+		}
 
 		setLoading( false );
 	};
 
 	useEffect( () => {
-		if ( ! templates[ template ] ) {
-			setTemplate( 0 );
+		const [ index ] = Object.keys( templates );
+
+		if ( ! templates[ template ] && index ) {
+			setTemplate( index );
 		}
 	}, [ templates, template ] );
 
 	return (
 		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharimg-image' ) }>
-			{ postMeta[ meta.source ].poster && (
+			{ postMeta[ meta.source ]?.poster && (
 				<img
 					src={ postMeta[ meta.source ].poster }
 					alt={ __( 'Sharing Image poster', 'sharimg-image' ) }
@@ -103,16 +118,14 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				/>
 			) }
 
-			{ templates.length > 1 && (
-				<SelectControl
-					value={ template }
-					options={ templates.map( ( item, index ) => ( {
-						label: item.title,
-						value: index,
-					} ) ) }
-					onChange={ changeTemplate }
-				/>
-			) }
+			<SelectControl
+				value={ template }
+				options={ Object.keys( templates ).map( ( index ) => ( {
+					label: templates[ index ].title,
+					value: index,
+				} ) ) }
+				onChange={ changeTemplate }
+			/>
 
 			{ templates[ template ] && (
 				<Flex direction={ 'column' }>

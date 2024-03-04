@@ -75,7 +75,7 @@ class Generator {
 			$layers = $template['layers'];
 		}
 
-		foreach ( $layers as $i => &$layer ) {
+		foreach ( $layers as $key => &$layer ) {
 			if ( empty( $layer['type'] ) || 'text' !== $layer['type'] ) {
 				continue;
 			}
@@ -94,8 +94,8 @@ class Generator {
 				$layer['content'] = $layer['sample'];
 			}
 
-			if ( isset( $fieldset[ "layer-{$index}-{$i}" ] ) ) {
-				$layer['content'] = $fieldset[ "layer-{$index}-{$i}" ];
+			if ( isset( $fieldset[ $key ] ) ) {
+				$layer['content'] = $fieldset[ $key ];
 			}
 		}
 
