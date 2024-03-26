@@ -1148,21 +1148,6 @@ class Settings {
 			$sanitized['fill'] = sanitize_hex_color( $editor['fill'] );
 		}
 
-		$sanitized['background'] = 'blank';
-
-		if ( isset( $editor['background'] ) ) {
-			$background = array( 'dynamic', 'blank', 'permanent' );
-
-			// Set default background for permanent option without attachment.
-			if ( empty( $sanitized['attachment'] ) ) {
-				$background = array_diff( $background, array( 'permanent' ) );
-			}
-
-			if ( in_array( $editor['background'], $background, true ) ) {
-				$sanitized['background'] = $editor['background'];
-			}
-		}
-
 		$sanitized['width'] = 1200;
 
 		if ( ! empty( $editor['width'] ) ) {
@@ -1325,6 +1310,10 @@ class Settings {
 		// No need to sanitize after switch.
 		$sanitized['type'] = $layer['type'];
 
+		if ( ! empty( $layer['dynamic'] ) ) {
+			$sanitized['dynamic'] = 'dynamic';
+		}
+
 		if ( ! empty( $layer['attachment'] ) ) {
 			$sanitized['attachment'] = absint( $layer['attachment'] );
 		}
@@ -1337,6 +1326,26 @@ class Settings {
 			}
 
 			$sanitized[ $size ] = absint( $layer[ $size ] );
+		}
+
+		$sanitized['preset'] = 'none';
+
+		if ( isset( $layer['preset'] ) ) {
+			$preset = array( 'featured' ); // Possible update later.
+
+			if ( in_array( $layer['preset'], $preset, true ) ) {
+				$sanitized['preset'] = $layer['preset'];
+			}
+		}
+
+		$sanitized['resize'] = 'center';
+
+		if ( isset( $layer['resize'] ) ) {
+			$resize = array( 'center', 'top', 'bottom', 'ignore', 'crop' );
+
+			if ( in_array( $layer['resize'], $resize, true ) ) {
+				$sanitized['resize'] = $layer['resize'];
+			}
 		}
 
 		return $sanitized;

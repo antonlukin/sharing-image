@@ -210,8 +210,6 @@ class Generator {
 	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function append_layers( $poster, $layers ) {
-		$layers = array_reverse( $layers );
-
 		foreach ( $layers as $layer ) {
 			if ( empty( $layer['type'] ) ) {
 				continue;
@@ -314,7 +312,6 @@ class Generator {
 	 * @return PosterEditor PosterEditor instance.
 	 */
 	private function draw_image( $poster, $layer ) {
-		// Attachment id is required.
 		if ( ! isset( $layer['attachment'] ) ) {
 			return $poster;
 		}
@@ -327,19 +324,41 @@ class Generator {
 		// Create new editor  instance by attachment id.
 		$attachment = $image->make( get_attached_file( $layer['attachment'] ) );
 
-		if ( isset( $layer['width'], $layer['height'] ) ) {
-			return $poster->insert( $attachment->resize( $layer['width'], $layer['height'] ), $args );
+		$width = null;
+
+		if ( isset( $layer['width'] ) ) {
+			$width = $layer['width'];
 		}
 
-		if ( ! isset( $layer['width'] ) ) {
-			$layer['width'] = null;
+		$height = null;
+
+		if ( isset( $layer['height'] ) ) {
+			$height = $layer['height'];
 		}
 
-		if ( ! isset( $layer['height'] ) ) {
-			$layer['height'] = null;
+		// Reduce the image size if width or height dimensions are not specified.
+		if ( is_null( $width ) || is_null( $height ) ) {
+			return $poster->insert( $attachment->downsize( $width, $height ), $args );
 		}
 
-		return $poster->insert( $attachment->downsize( $layer['width'], $layer['height'] ), $args );
+		if ( 'top' === $layer['resize'] ) {
+			return $poster->insert( $attachment->fit( $width, $height, 'top' ), $args );
+		}
+
+		if ( 'bottom' === $layer['resize'] ) {
+			return $poster->insert( $attachment->fit( $width, $height, 'bottom' ), $args );
+		}
+
+		if ( 'ignore' === $layer['resize'] ) {
+			return $poster->insert( $attachment->resize( $width, $height ), $args );
+		}
+
+		if ( 'crop' === $layer['resize'] ) {
+			return $poster->insert( $attachment->crop( $width, $height ), $args );
+		}
+
+		// Fit center by default.
+		return $poster->insert( $attachment->fit( $width, $height ), $args );
 	}
 
 	/**

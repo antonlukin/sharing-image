@@ -158,115 +158,13 @@ function saveTemplate() {
 }
 
 /**
- * Update template background settings with custom logic.
- *
- * @param {HTMLElement} fieldset Fieldset HTML element.
- * @param {Object}      data     Current template data.
- */
-function createPermanentAttachment( fieldset, data ) {
-	data.background = data.background || null;
-
-	// Create background settings control.
-	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-reduced' ],
-		label: wp.i18n.__( 'Template background settings', 'sharing-image' ),
-		fields: [
-			{
-				group: 'radio',
-				classes: [ 'sharing-image-editor-control-radio' ],
-				attributes: {
-					name: params.name + '[background]',
-					value: 'blank',
-				},
-				label: wp.i18n.__( 'Do not use background image', 'sharing-image' ),
-				checked: data.background,
-			},
-			{
-				group: 'radio',
-				classes: [ 'sharing-image-editor-control-radio' ],
-				attributes: {
-					name: params.name + '[background]',
-					value: 'dynamic',
-				},
-				label: wp.i18n.__( 'Select for each post separately', 'sharing-image' ),
-				help: wp.i18n.__( 'Post thumbnail will be used if autogenerate', 'sharing-image' ),
-				checked: data.background,
-			},
-			{
-				group: 'radio',
-				classes: [ 'sharing-image-editor-control-radio' ],
-				attributes: {
-					name: params.name + '[background]',
-					value: 'permanent',
-				},
-				label: wp.i18n.__( 'Upload permanent background', 'sharing-image' ),
-				checked: data.background,
-			},
-		],
-		append: fieldset,
-	} );
-
-	const media = Build.media( {
-		name: params.name + '[attachment]',
-		classes: [ 'sharing-image-editor-control', 'control-media' ],
-		value: data.attachment,
-		link: params.links.uploads,
-		labels: {
-			button: wp.i18n.__( 'Upload image', 'sharing-image' ),
-			heading: wp.i18n.__( 'Select background image', 'sharing-image' ),
-			details: wp.i18n.__( 'Attachment details', 'sharing-image' ),
-		},
-		append: fieldset,
-	} );
-
-	const upload = media.querySelector( 'button' );
-	upload.disabled = true;
-
-	Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
-		label: wp.i18n.__( 'Fill color', 'sharing-image' ),
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-control-color' ],
-				attributes: {
-					name: params.name + '[fill]',
-					type: 'color',
-					value: data.fill,
-				},
-			},
-		],
-		append: fieldset,
-	} );
-
-	control.querySelectorAll( 'input' ).forEach( ( radio ) => {
-		if ( 'radio' !== radio.type ) {
-			return;
-		}
-
-		// Show upload button for checked permanent radio.
-		if ( radio.checked && 'permanent' === radio.value ) {
-			upload.disabled = false;
-		}
-
-		radio.addEventListener( 'change', () => {
-			upload.disabled = true;
-
-			if ( 'permanent' === radio.value ) {
-				upload.disabled = false;
-			}
-		} );
-	} );
-}
-
-/**
  * Text layer dynamic/static fields manager.
  *
  * @param {HTMLElement} layer Current layer element.
  * @param {string}      name  Fields name attribute prefix.
  * @param {Object}      data  Layer data object.
  */
-function createDynamicFields( layer, name, data ) {
+function createTextDynamicFields( layer, name, data ) {
 	const control = Build.control( {
 		classes: [ 'sharing-image-editor-control' ],
 		append: layer,
@@ -442,7 +340,7 @@ function createDynamicFields( layer, name, data ) {
 		append: layer,
 	} );
 
-	// Helper function to toggle contols visibility.
+	// Helper function to toggle controls visibility.
 	const toggleClasses = () => {
 		fields.forEach( ( field ) => {
 			field.classList.toggle( 'control-hidden' );
@@ -459,6 +357,229 @@ function createDynamicFields( layer, name, data ) {
 	} );
 
 	updateLayerCaption( layer, checkbox );
+}
+
+/**
+ * Image layer dynamic/static fields manager.
+ *
+ * @param {HTMLElement} layer Current layer element.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
+ */
+function createImageDynamicFields( layer, name, data ) {
+	const control = Build.control( {
+		classes: [ 'sharing-image-editor-control' ],
+		append: layer,
+	} );
+
+	const checkbox = Build.checkbox(
+		{
+			classes: [ 'sharing-image-editor-control-checkbox' ],
+			attributes: {
+				name: name + '[dynamic]',
+				value: 'dynamic',
+			},
+			label: wp.i18n.__( 'Dynamic image. Can be updated on the post editing screen.', 'sharing-image' ),
+			checked: data.dynamic,
+		},
+		control
+	);
+
+	const fields = [];
+
+	const presets = Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
+		label: wp.i18n.__( 'Preset image field', 'sharing-image' ),
+		fields: [
+			{
+				group: 'radio',
+				classes: [ 'sharing-image-editor-control-radio' ],
+				attributes: {
+					name: name + '[preset]',
+					value: 'none',
+				},
+				dataset: {
+					persistent: true,
+				},
+				label: wp.i18n.__( 'Choose in manually', 'sharing-image' ),
+				checked: data.preset || 'none',
+			},
+			{
+				group: 'radio',
+				classes: [ 'sharing-image-editor-control-radio' ],
+				attributes: {
+					name: name + '[preset]',
+					value: 'featured',
+				},
+				dataset: {
+					persistent: true,
+				},
+				label: wp.i18n.__( 'Take from featured image', 'sharing-image' ),
+				checked: data.preset || 'featured',
+			},
+		],
+		append: layer,
+	} );
+
+	fields[ fields.length ] = presets;
+
+	// Helper function to toggle controls visibility.
+	const toggleClasses = () => {
+		fields.forEach( ( field ) => {
+			field.classList.toggle( 'control-hidden' );
+		} );
+	};
+
+	if ( checkbox.checked ) {
+		toggleClasses();
+	}
+
+	checkbox.addEventListener( 'change', () => {
+		toggleClasses();
+	} );
+}
+
+/**
+ * Image layer sizes fields manager.
+ *
+ * @param {HTMLElement} layer Current layer element.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
+ */
+function createImageSizesFields( layer, name, data ) {
+	const fields = [];
+
+	const sizes = Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-sizes' ],
+		fields: [
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-control-input' ],
+				attributes: {
+					name: name + '[x]',
+					value: data.x,
+					placeholder: '10',
+				},
+				label: wp.i18n.__( 'X', 'sharing-image' ),
+			},
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-control-input' ],
+				attributes: {
+					name: name + '[y]',
+					value: data.y,
+					placeholder: '10',
+				},
+				label: wp.i18n.__( 'Y', 'sharing-image' ),
+			},
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-control-input' ],
+				attributes: {
+					name: name + '[width]',
+					value: data.width,
+				},
+				dataset: {
+					dimension: 'width',
+				},
+				label: wp.i18n.__( 'Width', 'sharing-image' ),
+			},
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-control-input' ],
+				attributes: {
+					name: name + '[height]',
+					value: data.height,
+				},
+				dataset: {
+					dimension: 'height',
+				},
+				label: wp.i18n.__( 'Height', 'sharing-image' ),
+			},
+		],
+		append: layer,
+	} );
+
+	fields[ fields.length ] = Build.control( {
+		classes: [ 'sharing-image-editor-control' ],
+		label: wp.i18n.__( 'Image resizing principle', 'sharing-image' ),
+		fields: [
+			{
+				group: 'radio',
+				classes: [ 'sharing-image-editor-control-radio' ],
+				attributes: {
+					name: name + '[resize]',
+					value: 'center',
+				},
+				label: wp.i18n.__( 'Center image while preserving aspect ratio.', 'sharing-image' ),
+				checked: data.resize || 'center',
+			},
+			{
+				group: 'radio',
+				classes: [ 'sharing-image-editor-control-radio' ],
+				attributes: {
+					name: name + '[resize]',
+					value: 'top',
+				},
+				label: wp.i18n.__( 'Top aligned image while preserving aspect ratio', 'sharing-image' ),
+				checked: data.resize || 'center',
+			},
+			{
+				group: 'radio',
+				classes: [ 'sharing-image-editor-control-radio' ],
+				attributes: {
+					name: name + '[resize]',
+					value: 'bottom',
+				},
+				label: wp.i18n.__( 'Bottom aligned image while preserving aspect ratio', 'sharing-image' ),
+				checked: data.resize || 'center',
+			},
+			{
+				group: 'radio',
+				classes: [ 'sharing-image-editor-control-radio' ],
+				attributes: {
+					name: name + '[resize]',
+					value: 'ignore',
+				},
+				label: wp.i18n.__( 'Resize ignore the aspect ratio', 'sharing-image' ),
+				checked: data.resize || 'center',
+			},
+			{
+				group: 'radio',
+				classes: [ 'sharing-image-editor-control-radio' ],
+				attributes: {
+					name: name + '[resize]',
+					value: 'crop',
+				},
+				label: wp.i18n.__( 'Center-crop the image', 'sharing-image' ),
+				checked: data.resize || 'center',
+			},
+		],
+		append: layer,
+	} );
+
+	const dimensions = sizes.querySelectorAll( '[data-dimension]' );
+
+	// Helper function to trigger events on dimension changes.
+	const toggleClasses = () => {
+		let empty = false;
+
+		dimensions.forEach( ( input ) => {
+			if ( input.value.length < 1 ) {
+				empty = true;
+			}
+		} );
+
+		fields.forEach( ( field ) => {
+			field.classList.toggle( 'control-disabled', empty );
+		} );
+	};
+
+	toggleClasses();
+
+	dimensions.forEach( ( dimension ) => {
+		dimension.addEventListener( 'keyup', toggleClasses );
+	} );
 }
 
 /**
@@ -503,7 +624,7 @@ function updateLayerCaption( layer, checkbox ) {
  * @param {string}      name  Fields name attribute prefix.
  * @param {Object}      data  Layer data object.
  */
-function createMoreFields( layer, name, data ) {
+function createTextMoreFields( layer, name, data ) {
 	const fields = [];
 
 	fields[ fields.length ] = createFontField( layer, name, data );
@@ -929,6 +1050,9 @@ function createLayerImage( data, uniqid ) {
 	// Form fields name for this layer.
 	const name = params.name + `[layers][${ uniqid }]`;
 
+	// Create static/dynamic image fields.
+	createImageDynamicFields( layer, name, data );
+
 	Build.element( 'input', {
 		attributes: {
 			type: 'hidden',
@@ -951,50 +1075,8 @@ function createLayerImage( data, uniqid ) {
 		append: layer,
 	} );
 
-	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-sizes' ],
-		fields: [
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-control-input' ],
-				attributes: {
-					name: name + '[x]',
-					value: data.x,
-					placeholder: '10',
-				},
-				label: wp.i18n.__( 'X', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-control-input' ],
-				attributes: {
-					name: name + '[y]',
-					value: data.y,
-					placeholder: '10',
-				},
-				label: wp.i18n.__( 'Y', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-control-input' ],
-				attributes: {
-					name: name + '[width]',
-					value: data.width,
-				},
-				label: wp.i18n.__( 'Width', 'sharing-image' ),
-			},
-			{
-				group: 'input',
-				classes: [ 'sharing-image-editor-control-input' ],
-				attributes: {
-					name: name + '[height]',
-					value: data.height,
-				},
-				label: wp.i18n.__( 'Height', 'sharing-image' ),
-			},
-		],
-		append: layer,
-	} );
+	// Create static/dynamic image fields.
+	createImageSizesFields( layer, name, data );
 
 	return layer;
 }
@@ -1086,10 +1168,10 @@ function createLayerText( data, uniqid ) {
 	} );
 
 	// Create static/dynamic text fields.
-	createDynamicFields( layer, name, data );
+	createTextDynamicFields( layer, name, data );
 
 	// Create more options.
-	createMoreFields( layer, name, data );
+	createTextMoreFields( layer, name, data );
 
 	Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-series' ],
@@ -1477,7 +1559,7 @@ function createDesigner( fieldset, data ) {
 		append: fieldset,
 	} );
 
-	data.layers = data.layers || [];
+	data.layers = data.layers || {};
 
 	for ( const uniqid in data.layers ) {
 		const item = data.layers[ uniqid ];
@@ -1528,8 +1610,22 @@ function createFieldset( data ) {
 		append: fieldset,
 	} );
 
-	// Create background settings with custom logic.
-	createPermanentAttachment( fieldset, data );
+	Build.control( {
+		classes: [ 'sharing-image-editor-control' ],
+		label: wp.i18n.__( 'Fill color', 'sharing-image' ),
+		fields: [
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-control-color' ],
+				attributes: {
+					name: params.name + '[fill]',
+					type: 'color',
+					value: data.fill,
+				},
+			},
+		],
+		append: fieldset,
+	} );
 
 	// Create width/height settings control.
 	Build.control( {

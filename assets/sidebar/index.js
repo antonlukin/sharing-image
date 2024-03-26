@@ -20,6 +20,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
+
 
 
 
@@ -27,7 +30,6 @@ __webpack_require__.r(__webpack_exports__);
 
 const TemplateFields = ({
   layers,
-  template,
   updateFieldset,
   fields
 }) => {
@@ -50,7 +52,15 @@ const TemplateFields = ({
    * Local states.
    */
 
-  const [init, setInit] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)({});
+
+  const changeField = (key, value) => {
+    updateFieldset(key, value); // Mark this field as manually changed by user.
+
+    setChanged({ ...changed,
+      [key]: true
+    });
+  };
   /**
    * Display dynamic text field
    *
@@ -60,26 +70,79 @@ const TemplateFields = ({
    * @return {JSX.Element} Textarea control component.
    */
 
+
   const displayTextField = (layer, key) => {
-    // if ( ! init && ! fields[ key ] ) {
-    // 	fields[ key ] = presets[ layer.preset ] || '';
-    // 	setInit( true );
-    // }
+    if (!changed[key] && layer.preset in presets) {
+      fields[key] = presets[layer.preset];
+    }
+
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
       key: key,
       label: layer.title,
-      value: fields[key] || presets[layer.preset],
-      onChange: value => updateFieldset(key, value)
+      value: fields[key],
+      onChange: value => changeField(key, value)
     });
+  }; // get meta data
+
+
+  const {
+    imageId,
+    image
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
+    const id = 0;
+    return {
+      imageId: id,
+      image: select('core').getMedia(id)
+    };
+  });
+  /**
+   * Display dynamic image field
+   *
+   * @param {Object} layer
+   * @param {string} key
+   *
+   * @return {JSX.Element} Textarea control component.
+   */
+
+  const displayImageField = (layer, key) => {
+    console.log(fields);
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUpload, {
+      onSelect: media => {
+        updateFieldset(key, media.id);
+      },
+      allowedTypes: ['image'],
+      value: fields[key],
+      render: ({
+        open
+      }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, !fields[key] && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+        variant: "secondary",
+        onClick: open
+      }, "Upload image"), fields[key] && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Button, {
+        isDestructive: true,
+        onClick: () => updateFieldset(key, 0)
+      }, "Remove image"))
+    }));
   };
 
-  for (const key in layers) {
-    const layer = layers[key];
+  const controls = [];
 
-    if ('text' === layer.type && layer.dynamic) {
-      return displayTextField(layer, key);
+  for (const key in layers) {
+    const layer = layers[key]; // if ( ! layer.dynamic ) {
+    // 	continue;
+    // }
+
+    switch (layer.type) {
+      case 'text':
+        controls.push(displayTextField(layer, key));
+        break;
+
+      case 'image':
+        controls.push(displayImageField(layer, key));
+        break;
     }
   }
+
+  return controls;
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TemplateFields);
@@ -103,6 +166,16 @@ module.exports = window["React"];
 /***/ ((module) => {
 
 module.exports = window["wp"]["apiFetch"];
+
+/***/ }),
+
+/***/ "@wordpress/block-editor":
+/*!*************************************!*\
+  !*** external ["wp","blockEditor"] ***!
+  \*************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["blockEditor"];
 
 /***/ }),
 
@@ -367,7 +440,7 @@ const SharingImageSidebar = ({
     try {
       const result = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()(options);
 
-      if (!result.datas) {
+      if (!result.data) {
         throw new Error();
       }
 
@@ -415,7 +488,6 @@ const SharingImageSidebar = ({
     direction: 'column'
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_template_fields__WEBPACK_IMPORTED_MODULE_9__["default"], {
     layers: templates[template].layers || [],
-    template: template,
     updateFieldset: updateFieldset,
     fields: postMeta[meta.fieldset]
   })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Flex, {

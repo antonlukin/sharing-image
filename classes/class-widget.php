@@ -134,7 +134,7 @@ class Widget {
 						'type'                 => 'object',
 						'properties'           => array(),
 						'additionalProperties' => array(
-							'type' => 'string',
+							'type' => array( 'string', 'integer' ),
 						),
 					),
 				),
@@ -724,6 +724,10 @@ class Widget {
 
 				if ( 'text' === $layer['type'] ) {
 					$sanitized[ $key ] = sanitize_textarea_field( $fieldset[ $key ] );
+				}
+
+				if ( 'image' === $layer['type'] ) {
+					$sanitized[ $key ] = absint( $fieldset[ $key ] );
 				}
 			}
 		}

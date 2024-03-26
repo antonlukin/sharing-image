@@ -83,7 +83,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		try {
 			const result = await apiFetch( options );
 
-			if ( ! result.datas ) {
+			if ( ! result.data ) {
 				throw new Error();
 			}
 
@@ -131,7 +131,6 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				<Flex direction={ 'column' }>
 					<TemplateFields
 						layers={ templates[ template ].layers || [] }
-						template={ template }
 						updateFieldset={ updateFieldset }
 						fields={ postMeta[ meta.fieldset ] }
 					/>
