@@ -101,24 +101,6 @@ class Generator {
 
 		$template['layers'] = $layers;
 
-		if ( 'dynamic' === $template['background'] ) {
-			$key = hexdec( substr( $index, -3 ) );
-
-			if ( 'settings' === $context ) {
-				$template['image'] = sprintf( SHARING_IMAGE_DIR . 'images/%d.jpg', ( $key % 12 ) + 1 );
-			}
-
-			if ( ! empty( $fieldset['attachment'] ) ) {
-				$template['image'] = get_attached_file( $fieldset['attachment'] );
-			}
-		}
-
-		if ( 'permanent' === $template['background'] ) {
-			if ( ! empty( $template['attachment'] ) ) {
-				$template['image'] = get_attached_file( $template['attachment'] );
-			}
-		}
-
 		/**
 		 * Filters template before generation.
 		 *

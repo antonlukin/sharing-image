@@ -89,7 +89,7 @@ function createUploadsOptions( options, data ) {
 				name: params.name + '[uploads]',
 				value: 'custom',
 			},
-			label: wp.i18n.__( 'Choose custom storage for posters', 'sharing-image' ),
+			label: wp.i18n.__( 'Select custom storage for posters', 'sharing-image' ),
 			checked: data.uploads || 'default',
 		},
 		fieldset

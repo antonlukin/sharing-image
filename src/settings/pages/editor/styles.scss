@@ -56,7 +56,7 @@
       width: 100%;
       margin-top: 6px;
 
-      font-size: 10.5px;
+      font-size: 10px;
       line-height: 1.5;
     }
 
@@ -70,7 +70,7 @@
     }
 
     &.control-media {
-      flex-flow: row nowrap;
+      flex-flow: row wrap;
       align-items: center;
 
       .button {
@@ -79,6 +79,16 @@
 
       .button:disabled~* {
         display: none;
+      }
+
+      small {
+        display: none;
+      }
+    }
+
+    &.control-help {
+      small {
+        display: block;
       }
     }
 
@@ -222,7 +232,7 @@
     background: transparent;
 
     border: none;
-    border-bottom: solid 1px;
+    border-bottom: dashed 1px;
 
     transition: border 0.25s;
 

@@ -207,7 +207,10 @@ function createTextDynamicFields( layer, name, data ) {
 
 	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-hidden' ],
-		help: wp.i18n.__( 'This field is used for example only, to see how the editor will look.', 'sharing-image' ),
+		help: wp.i18n.__(
+			'This field is for example purposes only, to preview the editors appearance.',
+			'sharing-image'
+		),
 		fields: [
 			{
 				group: 'textarea',
@@ -372,6 +375,26 @@ function createImageDynamicFields( layer, name, data ) {
 		append: layer,
 	} );
 
+	const media = Build.media( {
+		name: name + '[attachment]',
+		classes: [ 'sharing-image-editor-control', 'control-media' ],
+		value: data.attachment,
+		link: params.links.uploads,
+		labels: {
+			button: wp.i18n.__( 'Select an image', 'sharing-image' ),
+			heading: wp.i18n.__( 'Select layer image', 'sharing-image' ),
+			details: wp.i18n.__( 'Attachment details', 'sharing-image' ),
+			remove: wp.i18n.__( 'Remove image', 'sharing-image' ),
+		},
+		append: layer,
+		remove: true,
+		help: wp.i18n.__(
+			'This image is for example purposes only, to preview the editors appearance.',
+			'sharing-image'
+		),
+		mime: [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ],
+	} );
+
 	const checkbox = Build.checkbox(
 		{
 			classes: [ 'sharing-image-editor-control-checkbox' ],
@@ -401,7 +424,7 @@ function createImageDynamicFields( layer, name, data ) {
 				dataset: {
 					persistent: true,
 				},
-				label: wp.i18n.__( 'Choose in manually', 'sharing-image' ),
+				label: wp.i18n.__( 'Manual selection', 'sharing-image' ),
 				checked: data.preset || 'none',
 			},
 			{
@@ -414,7 +437,7 @@ function createImageDynamicFields( layer, name, data ) {
 				dataset: {
 					persistent: true,
 				},
-				label: wp.i18n.__( 'Take from featured image', 'sharing-image' ),
+				label: wp.i18n.__( 'Use Post Featured Image', 'sharing-image' ),
 				checked: data.preset || 'featured',
 			},
 		],
@@ -423,19 +446,65 @@ function createImageDynamicFields( layer, name, data ) {
 
 	fields[ fields.length ] = presets;
 
-	// Helper function to toggle controls visibility.
-	const toggleClasses = () => {
+	// Helper function to toggle controls visibility and labels.
+	const updateDynamic = () => {
 		fields.forEach( ( field ) => {
 			field.classList.toggle( 'control-hidden' );
 		} );
+
+		media.classList.remove( 'control-help' );
+
+		if ( checkbox.checked ) {
+			media.classList.add( 'control-help' );
+		}
 	};
 
 	if ( checkbox.checked ) {
-		toggleClasses();
+		updateDynamic();
 	}
 
 	checkbox.addEventListener( 'change', () => {
-		toggleClasses();
+		updateDynamic();
+	} );
+}
+
+/**
+ * Creating a button to populate layer dimension fields.
+ *
+ * @param {HTMLElement} layer    Current layer element.
+ * @param {HTMLElement} sizes    Sizes component.
+ * @param {Function}    callback Callaback after button click.
+ */
+function createBackgroundButton( layer, sizes, callback ) {
+	const control = Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-pulled' ],
+		append: layer,
+	} );
+
+	const button = Build.element( 'button', {
+		classes: [ 'sharing-image-editor-more' ],
+		text: wp.i18n.__( 'Utilize image as poster background', 'sharing-image' ),
+		attributes: {
+			type: 'button',
+		},
+		append: control,
+	} );
+
+	button.addEventListener( 'click', () => {
+		const fields = {};
+
+		sizes.querySelectorAll( 'input' ).forEach( ( input ) => {
+			fields[ input.dataset.dimension ] = input;
+		} );
+
+		fields.x.value = 0;
+		fields.y.value = 0;
+
+		// Set layer image size same as poster.
+		fields.width.value = Helper.dataget( editor, 'editor', 'width' );
+		fields.height.value = Helper.dataget( editor, 'editor', 'height' );
+
+		return callback();
 	} );
 }
 
@@ -458,7 +527,10 @@ function createImageSizesFields( layer, name, data ) {
 				attributes: {
 					name: name + '[x]',
 					value: data.x,
-					placeholder: '10',
+					placeholder: '0',
+				},
+				dataset: {
+					dimension: 'x',
 				},
 				label: wp.i18n.__( 'X', 'sharing-image' ),
 			},
@@ -468,7 +540,10 @@ function createImageSizesFields( layer, name, data ) {
 				attributes: {
 					name: name + '[y]',
 					value: data.y,
-					placeholder: '10',
+					placeholder: '0',
+				},
+				dataset: {
+					dimension: 'y',
 				},
 				label: wp.i18n.__( 'Y', 'sharing-image' ),
 			},
@@ -498,6 +573,14 @@ function createImageSizesFields( layer, name, data ) {
 			},
 		],
 		append: layer,
+	} );
+
+	createBackgroundButton( layer, sizes, () => {
+		// Show dimensions options.
+		toggleDimensions();
+
+		// Regenerate right after size changed.
+		generateTemplate();
 	} );
 
 	fields[ fields.length ] = Build.control( {
@@ -558,10 +641,16 @@ function createImageSizesFields( layer, name, data ) {
 		append: layer,
 	} );
 
-	const dimensions = sizes.querySelectorAll( '[data-dimension]' );
+	const dimensions = [];
+
+	sizes.querySelectorAll( 'input' ).forEach( ( input ) => {
+		if ( [ 'width', 'height' ].includes( input.dataset.dimension ) ) {
+			dimensions.push( input );
+		}
+	} );
 
 	// Helper function to trigger events on dimension changes.
-	const toggleClasses = () => {
+	const toggleDimensions = () => {
 		let empty = false;
 
 		dimensions.forEach( ( input ) => {
@@ -575,10 +664,10 @@ function createImageSizesFields( layer, name, data ) {
 		} );
 	};
 
-	toggleClasses();
+	toggleDimensions();
 
 	dimensions.forEach( ( dimension ) => {
-		dimension.addEventListener( 'keyup', toggleClasses );
+		dimension.addEventListener( 'input', toggleDimensions );
 	} );
 }
 
@@ -748,11 +837,12 @@ function createFontField( layer, name, data ) {
 			remove: wp.i18n.__( 'Remove font', 'sharing-image' ),
 		},
 		remove: true,
+		mime: [ 'font/ttf', 'font/otf' ],
 		append: control,
 	} );
 
 	Build.element( 'small', {
-		text: wp.i18n.__( 'Custom font can only be in .ttf format.', 'sharing-image' ),
+		text: wp.i18n.__( 'Custom font can only be in .ttf or .otf format.', 'sharing-image' ),
 		append: control,
 	} );
 
@@ -1050,9 +1140,6 @@ function createLayerImage( data, uniqid ) {
 	// Form fields name for this layer.
 	const name = params.name + `[layers][${ uniqid }]`;
 
-	// Create static/dynamic image fields.
-	createImageDynamicFields( layer, name, data );
-
 	Build.element( 'input', {
 		attributes: {
 			type: 'hidden',
@@ -1062,18 +1149,8 @@ function createLayerImage( data, uniqid ) {
 		append: layer,
 	} );
 
-	Build.media( {
-		name: name + '[attachment]',
-		classes: [ 'sharing-image-editor-control', 'control-media' ],
-		value: data.attachment,
-		link: params.links.uploads,
-		labels: {
-			button: wp.i18n.__( 'Upload image', 'sharing-image' ),
-			heading: wp.i18n.__( 'Select layer image', 'sharing-image' ),
-			details: wp.i18n.__( 'Attachment details', 'sharing-image' ),
-		},
-		append: layer,
-	} );
+	// Create static/dynamic image fields.
+	createImageDynamicFields( layer, name, data );
 
 	// Create static/dynamic image fields.
 	createImageSizesFields( layer, name, data );
@@ -1551,7 +1628,11 @@ function createDesigner( fieldset, data ) {
 			return;
 		}
 
-		createLayer( designer, select.value );
+		const layer = createLayer( designer, select.value );
+
+		layer.scrollIntoView( {
+			behavior: 'smooth',
+		} );
 	} );
 
 	const designer = Build.element( 'div', {
@@ -1603,6 +1684,7 @@ function createFieldset( data ) {
 				},
 				dataset: {
 					persistent: true,
+					editor: 'title',
 				},
 				label: wp.i18n.__( 'Template title', 'sharing-image' ),
 			},
@@ -1622,6 +1704,9 @@ function createFieldset( data ) {
 					type: 'color',
 					value: data.fill,
 				},
+				dataset: {
+					editor: 'fill',
+				},
 			},
 		],
 		append: fieldset,
@@ -1638,6 +1723,10 @@ function createFieldset( data ) {
 					name: params.name + '[width]',
 					value: data.width || '1200',
 					placeholder: '1200',
+					maxlength: 4,
+				},
+				dataset: {
+					editor: 'width',
 				},
 				label: wp.i18n.__( 'Editor width', 'sharing-image' ),
 			},
@@ -1648,6 +1737,10 @@ function createFieldset( data ) {
 					name: params.name + '[height]',
 					value: data.height || '630',
 					placeholder: '630',
+					maxlength: 4,
+				},
+				dataset: {
+					editor: 'height',
 				},
 				label: wp.i18n.__( 'Editor height', 'sharing-image' ),
 			},
@@ -1658,7 +1751,6 @@ function createFieldset( data ) {
 	const description = [];
 
 	description.push( wp.i18n.__( 'You can add multiple layers on your editor.', 'sharing-image' ) );
-
 	description.push( wp.i18n.__( 'Note that the stacking order of the layers is important.', 'sharing-image' ) );
 
 	description.push(

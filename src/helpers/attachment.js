@@ -1,14 +1,15 @@
 /**
  * Upload media frame.
  *
- * @param {string}   header   Frame header text.
+ * @param {Object}   options  wp.media options.
  * @param {Function} callback Callback function.
  */
-function uploadMedia( header, callback ) {
-	const frame = wp.media( {
-		title: header,
-		multiple: false,
-	} );
+function uploadMedia( options, callback ) {
+	if ( ! options.hasOwnProperty( 'multiple' ) ) {
+		options.multiple = false;
+	}
+
+	const frame = wp.media( options );
 
 	frame.on( 'select', () => {
 		const selection = frame.state().get( 'selection' ).first().toJSON();

@@ -559,6 +559,13 @@ function buildMedia(args) {
 
   if (args.hasOwnProperty('link')) {
     media.appendChild(details);
+  }
+
+  if (args.hasOwnProperty('help')) {
+    (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('small', {
+      text: args.help,
+      append: media
+    });
   } // Helper function to update attachment value.
 
 
@@ -603,7 +610,16 @@ function buildMedia(args) {
       return removeAttachment();
     }
 
-    _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].attachment(args.labels.heading, id => {
+    const options = {
+      title: args.labels.heading
+    };
+
+    if (args.hasOwnProperty('mime')) {
+      options.library = {};
+      options.library.type = args.mime;
+    }
+
+    _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].attachment(options, id => {
       setAttachment(id);
     });
   });
@@ -850,14 +866,15 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Upload media frame.
  *
- * @param {string}   header   Frame header text.
+ * @param {Object}   options  wp.media options.
  * @param {Function} callback Callback function.
  */
-function uploadMedia(header, callback) {
-  const frame = wp.media({
-    title: header,
-    multiple: false
-  });
+function uploadMedia(options, callback) {
+  if (!options.hasOwnProperty('multiple')) {
+    options.multiple = false;
+  }
+
+  const frame = wp.media(options);
   frame.on('select', () => {
     const selection = frame.state().get('selection').first().toJSON();
 
@@ -869,6 +886,35 @@ function uploadMedia(header, callback) {
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (uploadMedia);
+
+/***/ }),
+
+/***/ "./src/helpers/dataget.js":
+/*!********************************!*\
+  !*** ./src/helpers/dataget.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/**
+ * Get element by data attribute.
+ *
+ * @param {HTMLElement} node  Parent node.
+ * @param {string}      key   Data key param.
+ * @param {string}      value Data value param.
+ */
+function getElement(node, key, value) {
+  const element = node.querySelector(`[data-${key}="${value}"]`);
+
+  if (element) {
+    return element.value;
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getElement);
 
 /***/ }),
 
@@ -915,6 +961,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _attachment_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./attachment.js */ "./src/helpers/attachment.js");
 /* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./defaults.js */ "./src/helpers/defaults.js");
 /* harmony import */ var _uniqid_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uniqid.js */ "./src/helpers/uniqid.js");
+/* harmony import */ var _dataget_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./dataget.js */ "./src/helpers/dataget.js");
+
 
 
 
@@ -923,7 +971,8 @@ const Helper = {
   param: _param_js__WEBPACK_IMPORTED_MODULE_0__["default"],
   attachment: _attachment_js__WEBPACK_IMPORTED_MODULE_1__["default"],
   defaults: _defaults_js__WEBPACK_IMPORTED_MODULE_2__["default"],
-  uniqid: _uniqid_js__WEBPACK_IMPORTED_MODULE_3__["default"]
+  uniqid: _uniqid_js__WEBPACK_IMPORTED_MODULE_3__["default"],
+  dataget: _dataget_js__WEBPACK_IMPORTED_MODULE_4__["default"]
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Helper);
 
@@ -1200,7 +1249,7 @@ function createUploadsOptions(options, data) {
       name: params.name + '[uploads]',
       value: 'custom'
     },
-    label: wp.i18n.__('Choose custom storage for posters', 'sharing-image'),
+    label: wp.i18n.__('Select custom storage for posters', 'sharing-image'),
     checked: data.uploads || 'default'
   }, fieldset);
   const input = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].input({
@@ -1660,7 +1709,7 @@ function createTextDynamicFields(layer, name, data) {
   });
   fields[fields.length] = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
     classes: ['sharing-image-editor-control', 'control-extend', 'control-hidden'],
-    help: wp.i18n.__('This field is used for example only, to see how the editor will look.', 'sharing-image'),
+    help: wp.i18n.__('This field is for example purposes only, to preview the editors appearance.', 'sharing-image'),
     fields: [{
       group: 'textarea',
       classes: ['sharing-image-editor-control-textarea'],
@@ -1806,6 +1855,22 @@ function createImageDynamicFields(layer, name, data) {
     classes: ['sharing-image-editor-control'],
     append: layer
   });
+  const media = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].media({
+    name: name + '[attachment]',
+    classes: ['sharing-image-editor-control', 'control-media'],
+    value: data.attachment,
+    link: params.links.uploads,
+    labels: {
+      button: wp.i18n.__('Select an image', 'sharing-image'),
+      heading: wp.i18n.__('Select layer image', 'sharing-image'),
+      details: wp.i18n.__('Attachment details', 'sharing-image'),
+      remove: wp.i18n.__('Remove image', 'sharing-image')
+    },
+    append: layer,
+    remove: true,
+    help: wp.i18n.__('This image is for example purposes only, to preview the editors appearance.', 'sharing-image'),
+    mime: ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+  });
   const checkbox = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].checkbox({
     classes: ['sharing-image-editor-control-checkbox'],
     attributes: {
@@ -1829,7 +1894,7 @@ function createImageDynamicFields(layer, name, data) {
       dataset: {
         persistent: true
       },
-      label: wp.i18n.__('Choose in manually', 'sharing-image'),
+      label: wp.i18n.__('Manual selection', 'sharing-image'),
       checked: data.preset || 'none'
     }, {
       group: 'radio',
@@ -1841,25 +1906,65 @@ function createImageDynamicFields(layer, name, data) {
       dataset: {
         persistent: true
       },
-      label: wp.i18n.__('Take from featured image', 'sharing-image'),
+      label: wp.i18n.__('Use Post Featured Image', 'sharing-image'),
       checked: data.preset || 'featured'
     }],
     append: layer
   });
-  fields[fields.length] = presets; // Helper function to toggle controls visibility.
+  fields[fields.length] = presets; // Helper function to toggle controls visibility and labels.
 
-  const toggleClasses = () => {
+  const updateDynamic = () => {
     fields.forEach(field => {
       field.classList.toggle('control-hidden');
     });
+    media.classList.remove('control-help');
+
+    if (checkbox.checked) {
+      media.classList.add('control-help');
+    }
   };
 
   if (checkbox.checked) {
-    toggleClasses();
+    updateDynamic();
   }
 
   checkbox.addEventListener('change', () => {
-    toggleClasses();
+    updateDynamic();
+  });
+}
+/**
+ * Creating a button to populate layer dimension fields.
+ *
+ * @param {HTMLElement} layer    Current layer element.
+ * @param {HTMLElement} sizes    Sizes component.
+ * @param {Function}    callback Callaback after button click.
+ */
+
+
+function createBackgroundButton(layer, sizes, callback) {
+  const control = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
+    classes: ['sharing-image-editor-control', 'control-pulled'],
+    append: layer
+  });
+  const button = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('button', {
+    classes: ['sharing-image-editor-more'],
+    text: wp.i18n.__('Utilize image as poster background', 'sharing-image'),
+    attributes: {
+      type: 'button'
+    },
+    append: control
+  });
+  button.addEventListener('click', () => {
+    const fields = {};
+    sizes.querySelectorAll('input').forEach(input => {
+      fields[input.dataset.dimension] = input;
+    });
+    fields.x.value = 0;
+    fields.y.value = 0; // Set layer image size same as poster.
+
+    fields.width.value = _helpers__WEBPACK_IMPORTED_MODULE_1__["default"].dataget(editor, 'editor', 'width');
+    fields.height.value = _helpers__WEBPACK_IMPORTED_MODULE_1__["default"].dataget(editor, 'editor', 'height');
+    return callback();
   });
 }
 /**
@@ -1881,7 +1986,10 @@ function createImageSizesFields(layer, name, data) {
       attributes: {
         name: name + '[x]',
         value: data.x,
-        placeholder: '10'
+        placeholder: '0'
+      },
+      dataset: {
+        dimension: 'x'
       },
       label: wp.i18n.__('X', 'sharing-image')
     }, {
@@ -1890,7 +1998,10 @@ function createImageSizesFields(layer, name, data) {
       attributes: {
         name: name + '[y]',
         value: data.y,
-        placeholder: '10'
+        placeholder: '0'
+      },
+      dataset: {
+        dimension: 'y'
       },
       label: wp.i18n.__('Y', 'sharing-image')
     }, {
@@ -1917,6 +2028,12 @@ function createImageSizesFields(layer, name, data) {
       label: wp.i18n.__('Height', 'sharing-image')
     }],
     append: layer
+  });
+  createBackgroundButton(layer, sizes, () => {
+    // Show dimensions options.
+    toggleDimensions(); // Regenerate right after size changed.
+
+    generateTemplate();
   });
   fields[fields.length] = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
     classes: ['sharing-image-editor-control'],
@@ -1969,9 +2086,14 @@ function createImageSizesFields(layer, name, data) {
     }],
     append: layer
   });
-  const dimensions = sizes.querySelectorAll('[data-dimension]'); // Helper function to trigger events on dimension changes.
+  const dimensions = [];
+  sizes.querySelectorAll('input').forEach(input => {
+    if (['width', 'height'].includes(input.dataset.dimension)) {
+      dimensions.push(input);
+    }
+  }); // Helper function to trigger events on dimension changes.
 
-  const toggleClasses = () => {
+  const toggleDimensions = () => {
     let empty = false;
     dimensions.forEach(input => {
       if (input.value.length < 1) {
@@ -1983,9 +2105,9 @@ function createImageSizesFields(layer, name, data) {
     });
   };
 
-  toggleClasses();
+  toggleDimensions();
   dimensions.forEach(dimension => {
-    dimension.addEventListener('keyup', toggleClasses);
+    dimension.addEventListener('input', toggleDimensions);
   });
 }
 /**
@@ -2137,10 +2259,11 @@ function createFontField(layer, name, data) {
       remove: wp.i18n.__('Remove font', 'sharing-image')
     },
     remove: true,
+    mime: ['font/ttf', 'font/otf'],
     append: control
   });
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('small', {
-    text: wp.i18n.__('Custom font can only be in .ttf format.', 'sharing-image'),
+    text: wp.i18n.__('Custom font can only be in .ttf or .otf format.', 'sharing-image'),
     append: control
   });
 
@@ -2412,9 +2535,7 @@ function createLayerImage(data, uniqid) {
     description: description.join(' ')
   }); // Form fields name for this layer.
 
-  const name = params.name + `[layers][${uniqid}]`; // Create static/dynamic image fields.
-
-  createImageDynamicFields(layer, name, data);
+  const name = params.name + `[layers][${uniqid}]`;
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2422,19 +2543,9 @@ function createLayerImage(data, uniqid) {
       value: 'image'
     },
     append: layer
-  });
-  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].media({
-    name: name + '[attachment]',
-    classes: ['sharing-image-editor-control', 'control-media'],
-    value: data.attachment,
-    link: params.links.uploads,
-    labels: {
-      button: wp.i18n.__('Upload image', 'sharing-image'),
-      heading: wp.i18n.__('Select layer image', 'sharing-image'),
-      details: wp.i18n.__('Attachment details', 'sharing-image')
-    },
-    append: layer
   }); // Create static/dynamic image fields.
+
+  createImageDynamicFields(layer, name, data); // Create static/dynamic image fields.
 
   createImageSizesFields(layer, name, data);
   return layer;
@@ -2839,7 +2950,10 @@ function createDesigner(fieldset, data) {
       return;
     }
 
-    createLayer(designer, select.value);
+    const layer = createLayer(designer, select.value);
+    layer.scrollIntoView({
+      behavior: 'smooth'
+    });
   });
   const designer = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
     classes: ['sharing-image-editor-designer'],
@@ -2886,7 +3000,8 @@ function createFieldset(data) {
         value: data.title
       },
       dataset: {
-        persistent: true
+        persistent: true,
+        editor: 'title'
       },
       label: wp.i18n.__('Template title', 'sharing-image')
     }],
@@ -2902,6 +3017,9 @@ function createFieldset(data) {
         name: params.name + '[fill]',
         type: 'color',
         value: data.fill
+      },
+      dataset: {
+        editor: 'fill'
       }
     }],
     append: fieldset
@@ -2915,7 +3033,11 @@ function createFieldset(data) {
       attributes: {
         name: params.name + '[width]',
         value: data.width || '1200',
-        placeholder: '1200'
+        placeholder: '1200',
+        maxlength: 4
+      },
+      dataset: {
+        editor: 'width'
       },
       label: wp.i18n.__('Editor width', 'sharing-image')
     }, {
@@ -2924,7 +3046,11 @@ function createFieldset(data) {
       attributes: {
         name: params.name + '[height]',
         value: data.height || '630',
-        placeholder: '630'
+        placeholder: '630',
+        maxlength: 4
+      },
+      dataset: {
+        editor: 'height'
       },
       label: wp.i18n.__('Editor height', 'sharing-image')
     }],

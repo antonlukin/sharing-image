@@ -53,6 +53,13 @@ function buildMedia( args ) {
 		media.appendChild( details );
 	}
 
+	if ( args.hasOwnProperty( 'help' ) ) {
+		buildElement( 'small', {
+			text: args.help,
+			append: media,
+		} );
+	}
+
 	// Helper function to update attachment value.
 	const setAttachment = ( id ) => {
 		attachment.setAttribute( 'value', id );
@@ -95,7 +102,16 @@ function buildMedia( args ) {
 			return removeAttachment();
 		}
 
-		Helper.attachment( args.labels.heading, ( id ) => {
+		const options = {
+			title: args.labels.heading,
+		};
+
+		if ( args.hasOwnProperty( 'mime' ) ) {
+			options.library = {};
+			options.library.type = args.mime;
+		}
+
+		Helper.attachment( options, ( id ) => {
 			setAttachment( id );
 		} );
 	} );

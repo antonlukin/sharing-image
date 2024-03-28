@@ -499,6 +499,13 @@ function buildMedia(args) {
 
   if (args.hasOwnProperty('link')) {
     media.appendChild(details);
+  }
+
+  if (args.hasOwnProperty('help')) {
+    (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('small', {
+      text: args.help,
+      append: media
+    });
   } // Helper function to update attachment value.
 
 
@@ -543,7 +550,16 @@ function buildMedia(args) {
       return removeAttachment();
     }
 
-    _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].attachment(args.labels.heading, id => {
+    const options = {
+      title: args.labels.heading
+    };
+
+    if (args.hasOwnProperty('mime')) {
+      options.library = {};
+      options.library.type = args.mime;
+    }
+
+    _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].attachment(options, id => {
       setAttachment(id);
     });
   });
@@ -790,14 +806,15 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Upload media frame.
  *
- * @param {string}   header   Frame header text.
+ * @param {Object}   options  wp.media options.
  * @param {Function} callback Callback function.
  */
-function uploadMedia(header, callback) {
-  const frame = wp.media({
-    title: header,
-    multiple: false
-  });
+function uploadMedia(options, callback) {
+  if (!options.hasOwnProperty('multiple')) {
+    options.multiple = false;
+  }
+
+  const frame = wp.media(options);
   frame.on('select', () => {
     const selection = frame.state().get('selection').first().toJSON();
 
@@ -809,6 +826,35 @@ function uploadMedia(header, callback) {
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (uploadMedia);
+
+/***/ }),
+
+/***/ "./src/helpers/dataget.js":
+/*!********************************!*\
+  !*** ./src/helpers/dataget.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/**
+ * Get element by data attribute.
+ *
+ * @param {HTMLElement} node  Parent node.
+ * @param {string}      key   Data key param.
+ * @param {string}      value Data value param.
+ */
+function getElement(node, key, value) {
+  const element = node.querySelector(`[data-${key}="${value}"]`);
+
+  if (element) {
+    return element.value;
+  }
+}
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (getElement);
 
 /***/ }),
 
@@ -855,6 +901,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _attachment_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./attachment.js */ "./src/helpers/attachment.js");
 /* harmony import */ var _defaults_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./defaults.js */ "./src/helpers/defaults.js");
 /* harmony import */ var _uniqid_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uniqid.js */ "./src/helpers/uniqid.js");
+/* harmony import */ var _dataget_js__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./dataget.js */ "./src/helpers/dataget.js");
+
 
 
 
@@ -863,7 +911,8 @@ const Helper = {
   param: _param_js__WEBPACK_IMPORTED_MODULE_0__["default"],
   attachment: _attachment_js__WEBPACK_IMPORTED_MODULE_1__["default"],
   defaults: _defaults_js__WEBPACK_IMPORTED_MODULE_2__["default"],
-  uniqid: _uniqid_js__WEBPACK_IMPORTED_MODULE_3__["default"]
+  uniqid: _uniqid_js__WEBPACK_IMPORTED_MODULE_3__["default"],
+  dataget: _dataget_js__WEBPACK_IMPORTED_MODULE_4__["default"]
 };
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Helper);
 

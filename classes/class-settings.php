@@ -224,11 +224,11 @@ class Settings {
 			return;
 		}
 
-		// Allow True Type fonts uploading.
-		add_filter( 'wp_check_filetype_and_ext', array( $this, 'fix_ttf_mime_type' ), 10, 3 );
+		// Allow fonts uploading.
+		add_filter( 'wp_check_filetype_and_ext', array( $this, 'fix_fonts_mime_type' ), 10, 3 );
 
-		// Add new .ttf font mime type.
-		add_filter( 'upload_mimes', array( $this, 'add_ttf_mime_type' ) );
+		// Add new .ttf and .otf font mime types.
+		add_filter( 'upload_mimes', array( $this, 'add_fonts_mime_type' ) );
 	}
 
 	/**
@@ -648,7 +648,7 @@ class Settings {
 	}
 
 	/**
-	 * Fix .ttf files mime.
+	 * Fix .ttf and .otf files mime.
 	 *
 	 * @param array  $types    Values for the extension, mime type, and corrected filename.
 	 * @param string $file     Full path to the file.
@@ -656,7 +656,7 @@ class Settings {
 	 *
 	 * @return array List of file types.
 	 */
-	public function fix_ttf_mime_type( $types, $file, $filename ) {
+	public function fix_fonts_mime_type( $types, $file, $filename ) {
 		$extension = pathinfo( $filename, PATHINFO_EXTENSION );
 
 		if ( 'ttf' === $extension ) {
@@ -664,7 +664,16 @@ class Settings {
 
 			if ( current_user_can( 'manage_options' ) ) {
 				$types['ext']  = 'ttf';
-				$types['type'] = 'application/x-font-ttf';
+				$types['type'] = 'font/ttf';
+			}
+		}
+
+		if ( 'otf' === $extension ) {
+			$types['ext'] = false;
+
+			if ( current_user_can( 'manage_options' ) ) {
+				$types['ext']  = 'otf';
+				$types['type'] = 'font/otf';
 			}
 		}
 
@@ -672,14 +681,15 @@ class Settings {
 	}
 
 	/**
-	 * Add new .ttf font mime type.
+	 * Add new .ttf and .otf font mime types.
 	 *
 	 * @param array $types Allowed file types to upload.
 	 *
 	 * @return array Allowed file types to upload.
 	 */
-	public function add_ttf_mime_type( $types ) {
-		$types['ttf'] = 'application/x-font-ttf';
+	public function add_fonts_mime_type( $types ) {
+		$types['ttf'] = 'font/ttf';
+		$types['otf'] = 'font/otf';
 
 		return $types;
 	}

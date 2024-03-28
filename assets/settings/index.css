@@ -401,7 +401,7 @@
   cursor: default;
   width: 100%;
   margin-top: 6px;
-  font-size: 10.5px;
+  font-size: 10px;
   line-height: 1.5;
 }
 .sharing-image-editor .sharing-image-editor-control.control-hidden {
@@ -412,7 +412,7 @@
   max-width: 100%;
 }
 .sharing-image-editor .sharing-image-editor-control.control-media {
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   align-items: center;
 }
 .sharing-image-editor .sharing-image-editor-control.control-media .button {
@@ -420,6 +420,12 @@
 }
 .sharing-image-editor .sharing-image-editor-control.control-media .button:disabled ~ * {
   display: none;
+}
+.sharing-image-editor .sharing-image-editor-control.control-media small {
+  display: none;
+}
+.sharing-image-editor .sharing-image-editor-control.control-help small {
+  display: block;
 }
 .sharing-image-editor .sharing-image-editor-control.control-reduced {
   margin-bottom: 14px;
@@ -529,7 +535,7 @@
   color: #3582c4;
   background: transparent;
   border: none;
-  border-bottom: solid 1px;
+  border-bottom: dashed 1px;
   transition: border 0.25s;
 }
 .sharing-image-editor .sharing-image-editor-more:focus {
