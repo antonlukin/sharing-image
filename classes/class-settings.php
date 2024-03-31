@@ -1304,6 +1304,8 @@ class Settings {
 			$sanitized[ $size ] = absint( $layer[ $size ] );
 		}
 
+		$sanitized['boundary'] = $this->sanitize_boundary( $layer );
+
 		return $sanitized;
 	}
 
@@ -1357,6 +1359,8 @@ class Settings {
 				$sanitized['resize'] = $layer['resize'];
 			}
 		}
+
+		$sanitized['boundary'] = $this->sanitize_boundary( $layer );
 
 		return $sanitized;
 	}
@@ -1468,6 +1472,8 @@ class Settings {
 			$sanitized[ $size ] = absint( $layer[ $size ] );
 		}
 
+		$sanitized['boundary'] = $this->sanitize_boundary( $layer );
+
 		return $sanitized;
 	}
 
@@ -1538,6 +1544,27 @@ class Settings {
 		 * @param array $config    List of config fields before sanitization.
 		 */
 		return apply_filters( 'sharing_image_sanitize_config', $sanitized, $config );
+	}
+
+	/**
+	 * Sanitize boundary layer setting.
+	 *
+	 * @param array $layer Layer settings.
+	 *
+	 * @return string Boundary setting.
+	 */
+	private function sanitize_boundary( $layer ) {
+		$boundary = 'absolute';
+
+		if ( isset( $layer['boundary'] ) ) {
+			$valid = array( 'absolute', 'vertically', 'horizontally', 'both' );
+
+			if ( in_array( $layer['boundary'], $valid, true ) ) {
+				$boundary = $layer['boundary'];
+			}
+		}
+
+		return $boundary;
 	}
 
 	/**

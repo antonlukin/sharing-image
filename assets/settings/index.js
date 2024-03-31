@@ -2028,13 +2028,16 @@ function createImageSizesFields(layer, name, data) {
       label: wp.i18n.__('Height', 'sharing-image')
     }],
     append: layer
-  });
+  }); // Helper function to set full-size poster dimensions.
+
   createBackgroundButton(layer, sizes, () => {
     // Show dimensions options.
     toggleDimensions(); // Regenerate right after size changed.
 
     generateTemplate();
-  });
+  }); // Add boundary options.
+
+  createBoundaryOptions(layer, name, data);
   fields[fields.length] = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
     classes: ['sharing-image-editor-control'],
     label: wp.i18n.__('Image resizing principle', 'sharing-image'),
@@ -2045,7 +2048,7 @@ function createImageSizesFields(layer, name, data) {
         name: name + '[resize]',
         value: 'center'
       },
-      label: wp.i18n.__('Center image while preserving aspect ratio.', 'sharing-image'),
+      label: wp.i18n.__('Center image while preserving aspect ratio', 'sharing-image'),
       checked: data.resize || 'center'
     }, {
       group: 'radio',
@@ -2336,6 +2339,37 @@ function createRectangleOutline(layer, name, data) {
   });
 }
 /**
+ * Boundary options for multuple layers.
+ *
+ * @param {HTMLElement} layer Current layer element.
+ * @param {string}      name  Fields name attribute prefix.
+ * @param {Object}      data  Layer data object.
+ */
+
+
+function createBoundaryOptions(layer, name, data) {
+  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
+    classes: ['sharing-image-editor-control', 'control-extend', 'control-pulled'],
+    label: wp.i18n.__('Relative boundaries', 'sharing-image'),
+    fields: [{
+      group: 'select',
+      classes: ['sharing-image-editor-control-select'],
+      options: {
+        absolute: wp.i18n.__('No Relative Positioning', 'sharing-image'),
+        vertically: wp.i18n.__('Vertical Only', 'sharing-image'),
+        horizontally: wp.i18n.__('Horizontal Only', 'sharing-image'),
+        both: wp.i18n.__('Both Directions Alignment', 'sharing-image')
+      },
+      attributes: {
+        name: name + '[boundary]'
+      },
+      selected: data.boundary
+    }],
+    help: wp.i18n.__('Using offset from previous layer.', 'sharing-image'),
+    append: layer
+  });
+}
+/**
  * Create catalog button in footer.
  *
  * @param {HTMLElement} footer Footer HTML element.
@@ -2621,7 +2655,9 @@ function createLayerText(data, uniqid) {
       label: wp.i18n.__('Height', 'sharing-image')
     }],
     append: layer
-  }); // Create static/dynamic text fields.
+  }); // Add boundary options.
+
+  createBoundaryOptions(layer, name, data); // Create static/dynamic text fields.
 
   createTextDynamicFields(layer, name, data); // Create more options.
 
@@ -2847,7 +2883,9 @@ function createLayerRectangle(data, uniqid) {
       label: wp.i18n.__('Height', 'sharing-image')
     }],
     append: layer
-  });
+  }); // Add boundary options.
+
+  createBoundaryOptions(layer, name, data);
   createRectangleOutline(layer, name, data);
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
     classes: ['sharing-image-editor-control'],
