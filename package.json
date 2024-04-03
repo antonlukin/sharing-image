@@ -35,6 +35,7 @@
     "webpack-stream": "^7.0.0"
   },
   "dependencies": {
-    "nanoid": "^5.0.6"
+    "nanoid": "^5.0.6",
+    "sortablejs": "^1.15.2"
   }
 }

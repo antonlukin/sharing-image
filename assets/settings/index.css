@@ -599,10 +599,10 @@
 }
 .sharing-image-editor .sharing-image-editor-order {
   display: block;
-  cursor: pointer;
+  cursor: move;
   position: absolute;
   top: 12px;
-  right: 4px;
+  right: 8px;
   padding: 4px 4px 2px;
   font-size: 16px;
   color: #aaaaaa;
@@ -612,7 +612,7 @@
 }
 .sharing-image-editor .sharing-image-editor-order::after {
   font-family: dashicons;
-  content: "\f342";
+  content: "\f228";
 }
 .sharing-image-editor .sharing-image-editor-order:hover {
   color: #787c82;
@@ -658,11 +658,8 @@
   font-size: 13px;
   font-weight: 400;
 }
-.sharing-image-editor .sharing-image-editor-layer.layer-up {
-  animation: 0.5s raise-up;
-}
-.sharing-image-editor .sharing-image-editor-layer.layer-blink {
-  animation: 0.5s blink;
+.sharing-image-editor .sharing-image-editor-layer:first-child .control-boundary {
+  display: none;
 }
 .sharing-image-editor .sharing-image-editor-layer.layer-collapsed {
   padding-bottom: 0;
@@ -678,9 +675,6 @@
 }
 .sharing-image-editor .sharing-image-editor-layer.layer-collapsed .sharing-image-editor-collapse::after {
   content: "\f345";
-}
-.sharing-image-editor .sharing-image-editor-layer:first-child .sharing-image-editor-order {
-  display: none;
 }
 .sharing-image-editor .sharing-image-editor-monitor {
   display: block;

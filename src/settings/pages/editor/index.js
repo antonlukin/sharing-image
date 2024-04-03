@@ -3,6 +3,7 @@
  */
 /* global ajaxurl:true */
 
+import Sortable from 'sortablejs';
 import Build from '../../../builders';
 import Helper from '../../../helpers';
 import './styles.scss';
@@ -936,7 +937,7 @@ function createRectangleOutline( layer, name, data ) {
  */
 function createBoundaryOptions( layer, name, data ) {
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-pulled' ],
+		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-pulled', 'control-boundary' ],
 		label: wp.i18n.__( 'Relative boundaries', 'sharing-image' ),
 		fields: [
 			{
@@ -1096,7 +1097,7 @@ function createCollapseButton( layer ) {
  * @param {HTMLElement} layer    Current layer HTML emelemt.
  */
 function createOrderLayersButton( designer, layer ) {
-	const button = Build.element( 'button', {
+	Build.element( 'button', {
 		classes: [ 'sharing-image-editor-order' ],
 		attributes: {
 			type: 'button',
@@ -1105,16 +1106,14 @@ function createOrderLayersButton( designer, layer ) {
 		append: layer,
 	} );
 
-	button.addEventListener( 'click', () => {
-		if ( layer.previousSibling ) {
-			designer.insertBefore( layer, layer.previousSibling );
-		}
+	Sortable.create( designer, {
+		onUpdate: () => {
+			if ( editor.classList.contains( 'editor-suspend' ) ) {
+				return;
+			}
 
-		if ( editor.classList.contains( 'editor-suspend' ) ) {
-			return;
-		}
-
-		generateTemplate();
+			generateTemplate();
+		},
 	} );
 }
 
@@ -1624,7 +1623,7 @@ function createLayer( designer, type, data = {} ) {
 	// Button to collapse layer.
 	createCollapseButton( layer );
 
-	// Button to order layers
+	// Drag-n-drop button.
 	createOrderLayersButton( designer, layer );
 
 	return layer;

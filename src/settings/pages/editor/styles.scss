@@ -314,11 +314,11 @@
 
   .sharing-image-editor-order {
     display: block;
-    cursor: pointer;
+    cursor: move;
 
     position: absolute;
     top: 12px;
-    right: 4px;
+    right: 8px;
     padding: 4px 4px 2px;
 
     font-size: 16px;
@@ -331,7 +331,7 @@
 
     &::after {
       font-family: dashicons;
-      content: "\f342";
+      content: "\f228";
     }
 
     &:hover {
@@ -391,12 +391,8 @@
       font-weight: 400;
     }
 
-    &.layer-up {
-      animation: 0.5s raise-up;
-    }
-
-    &.layer-blink {
-      animation: 0.5s blink;
+    &:first-child .control-boundary {
+      display: none;
     }
 
     &.layer-collapsed {
@@ -417,10 +413,6 @@
 
     &.layer-collapsed .sharing-image-editor-collapse::after {
       content: '\f345';
-    }
-
-    &:first-child .sharing-image-editor-order {
-      display: none;
     }
   }
 
