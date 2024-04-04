@@ -1222,6 +1222,10 @@ class Settings {
 		// No need to sanitize after switch.
 		$sanitized['type'] = $layer['type'];
 
+		if ( ! empty( $layer['collapsed'] ) ) {
+			$sanitized['collapsed'] = 1;
+		}
+
 		if ( ! empty( $layer['dynamic'] ) ) {
 			$sanitized['dynamic'] = 'dynamic';
 		}
@@ -1322,6 +1326,10 @@ class Settings {
 		// No need to sanitize after switch.
 		$sanitized['type'] = $layer['type'];
 
+		if ( ! empty( $layer['collapsed'] ) ) {
+			$sanitized['collapsed'] = 1;
+		}
+
 		if ( ! empty( $layer['dynamic'] ) ) {
 			$sanitized['dynamic'] = 'dynamic';
 		}
@@ -1378,6 +1386,10 @@ class Settings {
 		// No need to sanitize after switch.
 		$sanitized['type'] = $layer['type'];
 
+		if ( ! empty( $layer['collapsed'] ) ) {
+			$sanitized['collapsed'] = 1;
+		}
+
 		if ( ! empty( $layer['grayscale'] ) ) {
 			$sanitized['grayscale'] = 'grayscale';
 		}
@@ -1431,6 +1443,10 @@ class Settings {
 
 		// No need to sanitize after switch.
 		$sanitized['type'] = $layer['type'];
+
+		if ( ! empty( $layer['collapsed'] ) ) {
+			$sanitized['collapsed'] = 1;
+		}
 
 		if ( ! empty( $layer['outline'] ) ) {
 			$sanitized['outline'] = 'outline';

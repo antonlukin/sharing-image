@@ -937,7 +937,7 @@ function createRectangleOutline( layer, name, data ) {
  */
 function createBoundaryOptions( layer, name, data ) {
 	Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-pulled', 'control-boundary' ],
+		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-pulled', 'control-upnext' ],
 		label: wp.i18n.__( 'Relative boundaries', 'sharing-image' ),
 		fields: [
 			{
@@ -1060,8 +1060,10 @@ function createPreview( viewport, data ) {
  * Create button to collapse layer.
  *
  * @param {HTMLElement} layer
+ * @param {Object}      data  Current template data.
+ * @param {string}      name  Layer name id.
  */
-function createCollapseButton( layer ) {
+function createCollapseButton( layer, data, name ) {
 	const label = layer.querySelector( 'h2' );
 
 	const button = Build.element( 'button', {
@@ -1073,20 +1075,37 @@ function createCollapseButton( layer ) {
 		prepend: label,
 	} );
 
+	let collapsed = data.collapsed === 1;
+
+	if ( collapsed ) {
+		layer.classList.add( 'layer-collapsed' );
+	}
+
+	const input = Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: name + '[collapsed]',
+			value: Number( collapsed ),
+		},
+		append: layer,
+	} );
+
 	button.addEventListener( 'click', ( e ) => {
 		e.preventDefault();
 
-		// Set default button title.
+		collapsed = ! collapsed;
+
+		// Collapse/expand layer.
+		layer.classList.toggle( 'layer-collapsed', collapsed );
+
+		// Change button title.
 		button.setAttribute( 'title', wp.i18n.__( 'Collapse layer', 'sharing-image' ) );
-
-		layer.classList.toggle( 'layer-collapsed' );
-
-		// Check if new class is collapsed.
-		const collapsed = layer.classList.contains( 'layer-collapsed' );
 
 		if ( collapsed ) {
 			button.setAttribute( 'title', wp.i18n.__( 'Expand layer', 'sharing-image' ) );
 		}
+
+		input.value = Number( collapsed );
 	} );
 }
 
@@ -1101,12 +1120,13 @@ function createOrderLayersButton( designer, layer ) {
 		classes: [ 'sharing-image-editor-order' ],
 		attributes: {
 			type: 'button',
-			title: wp.i18n.__( 'Raise higher', 'sharing-image' ),
+			title: wp.i18n.__( 'Change layer position', 'sharing-image' ),
 		},
 		append: layer,
 	} );
 
 	Sortable.create( designer, {
+		handle: '.sharing-image-editor-order',
 		onUpdate: () => {
 			if ( editor.classList.contains( 'editor-suspend' ) ) {
 				return;
@@ -1152,10 +1172,10 @@ function createDeleteLayerButton( designer, layer ) {
 /**
  * Create image layer.
  *
- * @param {Object} data   Current template layer data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template layer data.
+ * @param {string} name Layer name id.
  */
-function createLayerImage( data, uniqid ) {
+function createLayerImage( data, name ) {
 	const description = [];
 
 	description.push( wp.i18n.__( 'Use jpg, gif or png image formats.', 'sharing-image' ) );
@@ -1171,9 +1191,6 @@ function createLayerImage( data, uniqid ) {
 		label: wp.i18n.__( 'Image', 'sharing-image' ),
 		description: description.join( ' ' ),
 	} );
-
-	// Form fields name for this layer.
-	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1196,10 +1213,10 @@ function createLayerImage( data, uniqid ) {
 /**
  * Create text layer.
  *
- * @param {Object} data   Current template data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template data.
+ * @param {string} name Layer name id.
  */
-function createLayerText( data, uniqid ) {
+function createLayerText( data, name ) {
 	const description = [];
 
 	description.push( wp.i18n.__( 'Write a text to the current image.', 'sharing-image' ) );
@@ -1216,9 +1233,6 @@ function createLayerText( data, uniqid ) {
 		label: wp.i18n.__( 'Text', 'sharing-image' ),
 		description: description.join( ' ' ),
 	} );
-
-	// Form fields name for this layer.
-	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1327,10 +1341,10 @@ function createLayerText( data, uniqid ) {
 /**
  * Create filter layer.
  *
- * @param {Object} data   Current template data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template data.
+ * @param {string} name Layer name id.
  */
-function createLayerFilter( data, uniqid ) {
+function createLayerFilter( data, name ) {
 	const description = [];
 
 	description.push(
@@ -1344,9 +1358,6 @@ function createLayerFilter( data, uniqid ) {
 		label: wp.i18n.__( 'Filter', 'sharing-image' ),
 		description: description.join( ' ' ),
 	} );
-
-	// Form fields name for this layer.
-	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1457,10 +1468,10 @@ function createLayerFilter( data, uniqid ) {
 /**
  * Create rectangle layer.
  *
- * @param {Object} data   Current template data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template data.
+ * @param {string} name Layer name id.
  */
-function createLayerRectangle( data, uniqid ) {
+function createLayerRectangle( data, name ) {
 	const description = [];
 
 	description.push( wp.i18n.__( 'Draw a colored rectangle on current image.', 'sharing-image' ) );
@@ -1476,9 +1487,6 @@ function createLayerRectangle( data, uniqid ) {
 		label: wp.i18n.__( 'Rectangle', 'sharing-image' ),
 		description: description.join( ' ' ),
 	} );
-
-	// Form fields name for this layer.
-	const name = params.name + `[layers][${ uniqid }]`;
 
 	Build.element( 'input', {
 		attributes: {
@@ -1594,21 +1602,24 @@ function createLayer( designer, type, data = {} ) {
 	// Get layer id from data.
 	const uniqid = data.uniqid || Helper.uniqid();
 
+	// Form fields name for this layer.
+	const name = params.name + `[layers][${ uniqid }]`;
+
 	switch ( type ) {
 		case 'text':
-			layer = createLayerText( data, uniqid );
+			layer = createLayerText( data, name );
 			break;
 
 		case 'image':
-			layer = createLayerImage( data, uniqid );
+			layer = createLayerImage( data, name );
 			break;
 
 		case 'filter':
-			layer = createLayerFilter( data, uniqid );
+			layer = createLayerFilter( data, name );
 			break;
 
 		case 'rectangle':
-			layer = createLayerRectangle( data, uniqid );
+			layer = createLayerRectangle( data, name );
 			break;
 
 		default:
@@ -1621,7 +1632,7 @@ function createLayer( designer, type, data = {} ) {
 	createDeleteLayerButton( designer, layer );
 
 	// Button to collapse layer.
-	createCollapseButton( layer );
+	createCollapseButton( layer, data, name );
 
 	// Drag-n-drop button.
 	createOrderLayersButton( designer, layer );
@@ -1694,8 +1705,6 @@ function createDesigner( fieldset, data ) {
 			if ( ! created ) {
 				return;
 			}
-
-			created.classList.add( 'layer-collapsed' );
 		}
 	}
 }

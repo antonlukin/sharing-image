@@ -2351,7 +2351,7 @@ function createRectangleOutline(layer, name, data) {
 
 function createBoundaryOptions(layer, name, data) {
   _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
-    classes: ['sharing-image-editor-control', 'control-extend', 'control-pulled', 'control-boundary'],
+    classes: ['sharing-image-editor-control', 'control-extend', 'control-pulled', 'control-upnext'],
     label: wp.i18n.__('Relative boundaries', 'sharing-image'),
     fields: [{
       group: 'select',
@@ -2466,10 +2466,12 @@ function createPreview(viewport, data) {
  * Create button to collapse layer.
  *
  * @param {HTMLElement} layer
+ * @param {Object}      data  Current template data.
+ * @param {string}      name  Layer name id.
  */
 
 
-function createCollapseButton(layer) {
+function createCollapseButton(layer, data, name) {
   const label = layer.querySelector('h2');
   const button = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('button', {
     classes: ['sharing-image-editor-collapse'],
@@ -2479,17 +2481,33 @@ function createCollapseButton(layer) {
     },
     prepend: label
   });
+  let collapsed = data.collapsed === 1;
+
+  if (collapsed) {
+    layer.classList.add('layer-collapsed');
+  }
+
+  const input = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
+    attributes: {
+      type: 'hidden',
+      name: name + '[collapsed]',
+      value: Number(collapsed)
+    },
+    append: layer
+  });
   button.addEventListener('click', e => {
-    e.preventDefault(); // Set default button title.
+    e.preventDefault();
+    collapsed = !collapsed; // Collapse/expand layer.
+
+    layer.classList.toggle('layer-collapsed', collapsed); // Change button title.
 
     button.setAttribute('title', wp.i18n.__('Collapse layer', 'sharing-image'));
-    layer.classList.toggle('layer-collapsed'); // Check if new class is collapsed.
-
-    const collapsed = layer.classList.contains('layer-collapsed');
 
     if (collapsed) {
       button.setAttribute('title', wp.i18n.__('Expand layer', 'sharing-image'));
     }
+
+    input.value = Number(collapsed);
   });
 }
 /**
@@ -2505,11 +2523,12 @@ function createOrderLayersButton(designer, layer) {
     classes: ['sharing-image-editor-order'],
     attributes: {
       type: 'button',
-      title: wp.i18n.__('Raise higher', 'sharing-image')
+      title: wp.i18n.__('Change layer position', 'sharing-image')
     },
     append: layer
   });
   sortablejs__WEBPACK_IMPORTED_MODULE_0__["default"].create(designer, {
+    handle: '.sharing-image-editor-order',
     onUpdate: () => {
       if (editor.classList.contains('editor-suspend')) {
         return;
@@ -2553,12 +2572,12 @@ function createDeleteLayerButton(designer, layer) {
 /**
  * Create image layer.
  *
- * @param {Object} data   Current template layer data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template layer data.
+ * @param {string} name Layer name id.
  */
 
 
-function createLayerImage(data, uniqid) {
+function createLayerImage(data, name) {
   const description = [];
   description.push(wp.i18n.__('Use jpg, gif or png image formats.', 'sharing-image'));
   description.push(wp.i18n.__('Leave width and height fields blank to use the original image size.', 'sharing-image'));
@@ -2567,9 +2586,7 @@ function createLayerImage(data, uniqid) {
     classes: ['sharing-image-editor-layer', 'layer-image'],
     label: wp.i18n.__('Image', 'sharing-image'),
     description: description.join(' ')
-  }); // Form fields name for this layer.
-
-  const name = params.name + `[layers][${uniqid}]`;
+  });
   _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2587,12 +2604,12 @@ function createLayerImage(data, uniqid) {
 /**
  * Create text layer.
  *
- * @param {Object} data   Current template data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template data.
+ * @param {string} name Layer name id.
  */
 
 
-function createLayerText(data, uniqid) {
+function createLayerText(data, name) {
   const description = [];
   description.push(wp.i18n.__('Write a text to the current image.', 'sharing-image'));
   description.push(wp.i18n.__('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
@@ -2601,9 +2618,7 @@ function createLayerText(data, uniqid) {
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: wp.i18n.__('Text', 'sharing-image'),
     description: description.join(' ')
-  }); // Form fields name for this layer.
-
-  const name = params.name + `[layers][${uniqid}]`;
+  });
   _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2696,12 +2711,12 @@ function createLayerText(data, uniqid) {
 /**
  * Create filter layer.
  *
- * @param {Object} data   Current template data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template data.
+ * @param {string} name Layer name id.
  */
 
 
-function createLayerFilter(data, uniqid) {
+function createLayerFilter(data, name) {
   const description = [];
   description.push(wp.i18n.__('Filters are applied one after another to the entire editor image.', 'sharing-image'));
   description.push(wp.i18n.__('If you want to control their order, create multiple layers.', 'sharing-image'));
@@ -2709,9 +2724,7 @@ function createLayerFilter(data, uniqid) {
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: wp.i18n.__('Filter', 'sharing-image'),
     description: description.join(' ')
-  }); // Form fields name for this layer.
-
-  const name = params.name + `[layers][${uniqid}]`;
+  });
   _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2804,12 +2817,12 @@ function createLayerFilter(data, uniqid) {
 /**
  * Create rectangle layer.
  *
- * @param {Object} data   Current template data.
- * @param {string} uniqid Unique layer name id.
+ * @param {Object} data Current template data.
+ * @param {string} name Layer name id.
  */
 
 
-function createLayerRectangle(data, uniqid) {
+function createLayerRectangle(data, name) {
   const description = [];
   description.push(wp.i18n.__('Draw a colored rectangle on current image.', 'sharing-image'));
   description.push(wp.i18n.__('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
@@ -2818,9 +2831,7 @@ function createLayerRectangle(data, uniqid) {
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: wp.i18n.__('Rectangle', 'sharing-image'),
     description: description.join(' ')
-  }); // Form fields name for this layer.
-
-  const name = params.name + `[layers][${uniqid}]`;
+  });
   _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -2918,23 +2929,25 @@ function createLayerRectangle(data, uniqid) {
 function createLayer(designer, type, data = {}) {
   let layer = null; // Get layer id from data.
 
-  const uniqid = data.uniqid || _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].uniqid();
+  const uniqid = data.uniqid || _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].uniqid(); // Form fields name for this layer.
+
+  const name = params.name + `[layers][${uniqid}]`;
 
   switch (type) {
     case 'text':
-      layer = createLayerText(data, uniqid);
+      layer = createLayerText(data, name);
       break;
 
     case 'image':
-      layer = createLayerImage(data, uniqid);
+      layer = createLayerImage(data, name);
       break;
 
     case 'filter':
-      layer = createLayerFilter(data, uniqid);
+      layer = createLayerFilter(data, name);
       break;
 
     case 'rectangle':
-      layer = createLayerRectangle(data, uniqid);
+      layer = createLayerRectangle(data, name);
       break;
 
     default:
@@ -2945,7 +2958,7 @@ function createLayer(designer, type, data = {}) {
 
   createDeleteLayerButton(designer, layer); // Button to collapse layer.
 
-  createCollapseButton(layer); // Drag-n-drop button.
+  createCollapseButton(layer, data, name); // Drag-n-drop button.
 
   createOrderLayersButton(designer, layer);
   return layer;
@@ -3009,8 +3022,6 @@ function createDesigner(fieldset, data) {
       if (!created) {
         return;
       }
-
-      created.classList.add('layer-collapsed');
     }
   }
 }
