@@ -1,6 +1,7 @@
+import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
-import { Button, TextareaControl } from '@wordpress/components';
+import { Button, BaseControl, TextareaControl, Flex } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
 const TemplateFields = ( { layers, updateFieldset, fields } ) => {
@@ -32,6 +33,22 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 		setChanged( { ...changed, [ key ]: true } );
 	};
 
+	// Get image thumbnails by ID.
+	const thumbnails = useSelect(
+		( select ) => {
+			const images = {};
+
+			for ( const key in fields ) {
+				const media = select( 'core' ).getMedia( fields[ key ] );
+
+				images[ key ] = media?.media_details?.sizes?.thumbnail?.source_url || '';
+			}
+
+			return images;
+		},
+		[ fields ]
+	);
+
 	/**
 	 * Display dynamic text field
 	 *
@@ -55,16 +72,6 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 		);
 	};
 
-	// get meta data
-	const { imageId, image } = useSelect( ( select ) => {
-		const id = 0;
-
-		return {
-			imageId: id,
-			image: select( 'core' ).getMedia( id ),
-		};
-	} );
-
 	/**
 	 * Display dynamic image field
 	 *
@@ -74,31 +81,41 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 	 * @return {JSX.Element} Textarea control component.
 	 */
 	const displayImageField = ( layer, key ) => {
-		console.log( fields );
 		return (
-			<MediaUploadCheck>
-				<MediaUpload
-					onSelect={ ( media ) => {
-						updateFieldset( key, media.id );
-					} }
-					allowedTypes={ [ 'image' ] }
-					value={ fields[ key ] }
-					render={ ( { open } ) => (
-						<>
-							{ ! fields[ key ] && (
-								<Button variant="secondary" onClick={ open }>
-									Upload image
-								</Button>
-							) }
-							{ fields[ key ] && (
-								<Button isDestructive onClick={ () => updateFieldset( key, 0 ) }>
-									Remove image
-								</Button>
-							) }
-						</>
-					) }
-				/>
-			</MediaUploadCheck>
+			<BaseControl id={ null } label={ layer.title }>
+				<MediaUploadCheck>
+					<MediaUpload
+						onSelect={ ( media ) => {
+							updateFieldset( key, media.id );
+						} }
+						allowedTypes={ [ 'image' ] }
+						value={ fields[ key ] }
+						render={ ( { open } ) => (
+							<Flex justify={ 'flex-start' }>
+								{ ! Boolean( fields[ key ] ) && (
+									<Button variant="secondary" onClick={ open }>
+										{ __( 'Upload layer image', 'sharing-image' ) }
+									</Button>
+								) }
+								{ Boolean( fields[ key ] ) && (
+									<>
+										<img
+											src={ thumbnails[ key ] }
+											width={ '36' }
+											height={ '36' }
+											alt={ '' }
+											style={ { borderRadius: '2px' } }
+										/>
+										<Button variant="secondary" onClick={ () => updateFieldset( key, 0 ) }>
+											{ __( 'Remove layer image', 'sharing-image' ) }
+										</Button>
+									</>
+								) }
+							</Flex>
+						) }
+					/>
+				</MediaUploadCheck>
+			</BaseControl>
 		);
 	};
 
@@ -107,9 +124,9 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 	for ( const key in layers ) {
 		const layer = layers[ key ];
 
-		// if ( ! layer.dynamic ) {
-		// 	continue;
-		// }
+		if ( ! layer.dynamic ) {
+			continue;
+		}
 
 		switch ( layer.type ) {
 			case 'text':

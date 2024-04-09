@@ -188,7 +188,7 @@ function createTextDynamicFields( layer, name, data ) {
 
 	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-hidden' ],
-		help: wp.i18n.__( 'Displayed only in the metabox.', 'sharing-image' ),
+		help: wp.i18n.__( 'Only visible on the admin side.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'input',
@@ -1198,6 +1198,26 @@ function createLayerImage( data, name ) {
 			name: name + '[type]',
 			value: 'image',
 		},
+		append: layer,
+	} );
+
+	Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-extend' ],
+		help: wp.i18n.__( 'Only visible on the admin side.', 'sharing-image' ),
+		fields: [
+			{
+				group: 'input',
+				classes: [ 'sharing-image-editor-control-input' ],
+				attributes: {
+					name: name + '[title]',
+					value: data.title,
+				},
+				dataset: {
+					caption: 'title',
+				},
+				label: wp.i18n.__( 'Field name', 'sharing-image' ),
+			},
+		],
 		append: layer,
 	} );
 

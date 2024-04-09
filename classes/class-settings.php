@@ -1330,6 +1330,10 @@ class Settings {
 			$sanitized['collapsed'] = 1;
 		}
 
+		if ( isset( $layer['title'] ) ) {
+			$sanitized['title'] = sanitize_text_field( $layer['title'] );
+		}
+
 		if ( ! empty( $layer['dynamic'] ) ) {
 			$sanitized['dynamic'] = 'dynamic';
 		}

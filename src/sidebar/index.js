@@ -109,44 +109,42 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	}, [ templates, template ] );
 
 	return (
-		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharimg-image' ) }>
-			{ postMeta[ meta.source ]?.poster && (
-				<img
-					src={ postMeta[ meta.source ].poster }
-					alt={ __( 'Sharing Image poster', 'sharimg-image' ) }
-					style={ { marginBottom: '10px' } }
+		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharing-image' ) }>
+			<Flex direction={ 'column' } gap={ 2 }>
+				{ postMeta[ meta.source ]?.poster && (
+					<img src={ postMeta[ meta.source ].poster } alt={ __( 'Sharing Image poster', 'sharing-image' ) } />
+				) }
+
+				<SelectControl
+					value={ template }
+					options={ Object.keys( templates ).map( ( index ) => ( {
+						label: templates[ index ].title || __( 'Untitled', 'sharing-image' ),
+						value: index,
+					} ) ) }
+					onChange={ changeTemplate }
 				/>
-			) }
 
-			<SelectControl
-				value={ template }
-				options={ Object.keys( templates ).map( ( index ) => ( {
-					label: templates[ index ].title,
-					value: index,
-				} ) ) }
-				onChange={ changeTemplate }
-			/>
+				{ templates[ template ] && (
+					<Flex direction={ 'column' } gap={ 4 }>
+						<TemplateFields
+							layers={ templates[ template ].layers || [] }
+							updateFieldset={ updateFieldset }
+							fields={ postMeta[ meta.fieldset ] }
+						/>
+					</Flex>
+				) }
 
-			{ templates[ template ] && (
-				<Flex direction={ 'column' }>
-					<TemplateFields
-						layers={ templates[ template ].layers || [] }
-						updateFieldset={ updateFieldset }
-						fields={ postMeta[ meta.fieldset ] }
-					/>
+				<Flex justify={ 'flex-start' }>
+					<Button variant="secondary" isDestructive={ false } type={ 'button' } onClick={ generateButton }>
+						{ __( 'Generate', 'sharing-image' ) }
+					</Button>
+
+					<Button variant="ternary" isDestructive={ true }>
+						{ __( 'Remove', 'sharing-image' ) }
+					</Button>
+
+					{ loading && <Spinner /> }
 				</Flex>
-			) }
-
-			<Flex justify={ 'flex-start' }>
-				<Button variant="secondary" isDestructive={ false } type={ 'button' } onClick={ generateButton }>
-					{ __( 'Generate', 'sharing-image' ) }
-				</Button>
-
-				<Button variant="ternary" isDestructive={ true }>
-					{ __( 'Remove', 'sharing-image' ) }
-				</Button>
-
-				{ loading && <Spinner /> }
 			</Flex>
 		</PluginDocumentSettingPanel>
 	);
