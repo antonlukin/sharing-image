@@ -54,12 +54,23 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		setTemplate( index );
 	};
 
+	/**
+	 * Update post meta.
+	 *
+	 * @param {string} key   Fieldset key.
+	 * @param {string} value Updated fieldset value.
+	 */
 	const updateFieldset = ( key, value ) => {
 		editPost( {
 			meta: { [ meta.fieldset ]: { ...postMeta[ meta.fieldset ], [ key ]: value } },
 		} );
 	};
 
+	/**
+	 * Generate button handler.
+	 *
+	 * @param {Event} e
+	 */
 	const generateButton = async ( e ) => {
 		e.preventDefault();
 
@@ -100,6 +111,14 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		setLoading( false );
 	};
 
+	const removePoster = ( e ) => {
+		e.preventDefault();
+
+		editPost( {
+			meta: { [ meta.source ]: {} },
+		} );
+	};
+
 	useEffect( () => {
 		const [ index ] = Object.keys( templates );
 
@@ -125,7 +144,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				/>
 
 				{ templates[ template ] && (
-					<Flex direction={ 'column' } gap={ 4 }>
+					<Flex direction={ 'column' } gap={ 2 }>
 						<TemplateFields
 							layers={ templates[ template ].layers || [] }
 							updateFieldset={ updateFieldset }
@@ -135,11 +154,11 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				) }
 
 				<Flex justify={ 'flex-start' }>
-					<Button variant="secondary" isDestructive={ false } type={ 'button' } onClick={ generateButton }>
+					<Button variant="secondary" type={ 'button' } onClick={ generateButton }>
 						{ __( 'Generate', 'sharing-image' ) }
 					</Button>
 
-					<Button variant="ternary" isDestructive={ true }>
+					<Button variant="tertiary" isDestructive={ true } onClick={ removePoster }>
 						{ __( 'Remove', 'sharing-image' ) }
 					</Button>
 

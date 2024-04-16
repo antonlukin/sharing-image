@@ -76,26 +76,22 @@ class Generator {
 		}
 
 		foreach ( $layers as $key => &$layer ) {
-			if ( empty( $layer['type'] ) || 'text' !== $layer['type'] ) {
-				continue;
-			}
-
 			if ( 'settings' === $context && ! empty( $template['debug'] ) ) {
 				$layer['debug'] = true;
 			}
 
-			if ( empty( $layer['dynamic'] ) ) {
+			if ( empty( $layer['dynamic'] ) || empty( $layer['type'] ) ) {
 				continue;
 			}
 
-			$layer['content'] = null;
+			switch ( $layer['type'] ) {
+				case 'image':
+					$layer = self::prepare_image_layer( $layer, $fieldset, $key );
+					break;
 
-			if ( isset( $layer['sample'] ) ) {
-				$layer['content'] = $layer['sample'];
-			}
-
-			if ( isset( $fieldset[ $key ] ) ) {
-				$layer['content'] = $fieldset[ $key ];
+				case 'text':
+					$layer = self::prepare_text_layer( $layer, $fieldset, $key );
+					break;
 			}
 		}
 
@@ -111,6 +107,46 @@ class Generator {
 		 * @param string  $context   Screen ID context field. Can be settings, post or term.
 		 */
 		return apply_filters( 'sharing_image_prepare_template', $template, $fieldset, $index, $screen_id, $context );
+	}
+
+	/**
+	 * Prepare image layer template.
+	 *
+	 * @param array  $layer    Image layer data.
+	 * @param array  $fieldset Fieldset data from picker.
+	 * @param string $key      Layer key.
+	 *
+	 * @return array List of image layer data.
+	 */
+	private function prepare_image_layer( $layer, $fieldset, $key ) {
+		if ( ! empty( $fieldset[ $key ] ) ) {
+			$layer['attachment'] = $fieldset[ $key ];
+		}
+
+		return $layer;
+	}
+
+	/**
+	 * Prepare text layer template.
+	 *
+	 * @param array  $layer    Text layer data.
+	 * @param array  $fieldset Fieldset data from picker.
+	 * @param string $key      Layer key.
+	 *
+	 * @return array List of text layer data.
+	 */
+	private function prepare_text_layer( $layer, $fieldset, $key ) {
+		$layer['content'] = null;
+
+		if ( isset( $layer['sample'] ) ) {
+			$layer['content'] = $layer['sample'];
+		}
+
+		if ( isset( $fieldset[ $key ] ) ) {
+			$layer['content'] = $fieldset[ $key ];
+		}
+
+		return $layer;
 	}
 
 	/**
@@ -133,11 +169,6 @@ class Generator {
 
 			// Create empty poster.
 			$poster->canvas( $template['width'], $template['height'], $options );
-
-			// Recreate poster with image if exists.
-			if ( ! empty( $template['image'] ) ) {
-				$poster->make( $template['image'] )->fit( $template['width'], $template['height'] );
-			}
 
 			if ( ! empty( $template['layers'] ) ) {
 				$poster = $this->append_layers( $poster, $template['layers'] );

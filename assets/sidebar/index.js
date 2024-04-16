@@ -2,6 +2,82 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./node_modules/@wordpress/icons/build-module/icon/index.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/@wordpress/icons/build-module/icon/index.js ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_0__);
+/**
+ * WordPress dependencies
+ */
+
+
+/** @typedef {{icon: JSX.Element, size?: number} & import('@wordpress/primitives').SVGProps} IconProps */
+
+/**
+ * Return an SVG icon.
+ *
+ * @param {IconProps}                                 props icon is the SVG component to render
+ *                                                          size is a number specifiying the icon size in pixels
+ *                                                          Other props will be passed to wrapped SVG component
+ * @param {import('react').ForwardedRef<HTMLElement>} ref   The forwarded ref to the SVG element.
+ *
+ * @return {JSX.Element}  Icon component
+ */
+function Icon({
+  icon,
+  size = 24,
+  ...props
+}, ref) {
+  return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.cloneElement)(icon, {
+    width: size,
+    height: size,
+    ...props,
+    ref
+  });
+}
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ((0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(Icon));
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
+/***/ "./node_modules/@wordpress/icons/build-module/library/image.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/@wordpress/icons/build-module/library/image.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_primitives__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/primitives */ "@wordpress/primitives");
+/* harmony import */ var _wordpress_primitives__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_1__);
+
+/**
+ * WordPress dependencies
+ */
+
+const image = (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_1__.SVG, {
+  viewBox: "0 0 24 24",
+  xmlns: "http://www.w3.org/2000/svg"
+}, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_primitives__WEBPACK_IMPORTED_MODULE_1__.Path, {
+  d: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 4.5h14c.3 0 .5.2.5.5v8.4l-3-2.9c-.3-.3-.8-.3-1 0L11.9 14 9 12c-.3-.2-.6-.2-.8 0l-3.6 2.6V5c-.1-.3.1-.5.4-.5zm14 15H5c-.3 0-.5-.2-.5-.5v-2.4l4.1-3 3 1.9c.3.2.7.2.9-.1L16 12l3.5 3.4V19c0 .3-.2.5-.5.5z"
+}));
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (image);
+//# sourceMappingURL=image.js.map
+
+/***/ }),
+
 /***/ "./src/sidebar/template-fields.js":
 /*!****************************************!*\
   !*** ./src/sidebar/template-fields.js ***!
@@ -24,6 +100,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/image.js");
+
 
 
 
@@ -52,10 +131,23 @@ const TemplateFields = ({
     return select('core/editor').getEditedPostAttribute('excerpt');
   });
   /**
-   * Local states.
+   *
+   */
+
+  presets.thumbnail = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
+    return select('core/editor').getEditedPostAttribute('featured_media');
+  });
+  /**
+   * Local changed states.
    */
 
   const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)({});
+  /**
+   * Save changed state on field update.
+   *
+   * @param {string} key
+   * @param {string} value
+   */
 
   const changeField = (key, value) => {
     updateFieldset(key, value); // Mark this field as manually changed by user.
@@ -70,12 +162,57 @@ const TemplateFields = ({
     const images = {};
 
     for (const key in fields) {
+      const layer = layers[key]; // Skip not dynamic image layers.
+
+      if (!layer?.dynamic || layer?.type !== 'image') {
+        continue;
+      }
+
       const media = select('core').getMedia(fields[key]);
-      images[key] = media?.media_details?.sizes?.thumbnail?.source_url || '';
+      images[key] = media?.media_details?.sizes?.thumbnail?.source_url;
+
+      if (!images[key]) {
+        images[key] = media?.source_url;
+      }
     }
 
     return images;
   }, [fields]);
+  /**
+   * Helper method for image field rendering.
+   *
+   * @param {string}   key  Fieldset key.
+   * @param {Function} open MediaUpload open function.
+   */
+
+  const renderImageButton = (key, open) => {
+    const styles = {
+      borderRadius: '2px',
+      objectFit: 'cover',
+      width: '36px',
+      height: '36px'
+    };
+
+    if (fields[key]) {
+      return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, thumbnails[key] && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
+        src: thumbnails[key],
+        alt: '',
+        style: styles
+      }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
+        variant: "link",
+        onClick: () => changeField(key, 0)
+      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Remove image', 'sharing-image')));
+    }
+
+    styles.opacity = '0.5';
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"],
+      style: styles
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
+      variant: "link",
+      onClick: open
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Set layer image', 'sharing-image')));
+  };
   /**
    * Display dynamic text field
    *
@@ -84,6 +221,7 @@ const TemplateFields = ({
    *
    * @return {JSX.Element} Textarea control component.
    */
+
 
   const displayTextField = (layer, key) => {
     if (!changed[key] && layer.preset in presets) {
@@ -108,34 +246,33 @@ const TemplateFields = ({
 
 
   const displayImageField = (layer, key) => {
+    const styles = {
+      border: 'solid 1px #ccc',
+      padding: '4px',
+      borderRadius: '4px'
+    };
+
+    if (!changed[key]) {
+      // TODO:
+      // changeField( key, presets.thumbnail );
+      fields[key] = presets.thumbnail;
+    }
+
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.BaseControl, {
       id: null,
       label: layer.title
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUpload, {
       onSelect: media => {
-        updateFieldset(key, media.id);
+        changeField(key, media.id);
       },
       allowedTypes: ['image'],
       value: fields[key],
       render: ({
         open
       }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Flex, {
-        justify: 'flex-start'
-      }, !Boolean(fields[key]) && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
-        variant: "secondary",
-        onClick: open
-      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Upload layer image', 'sharing-image')), Boolean(fields[key]) && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
-        src: thumbnails[key],
-        width: '36',
-        height: '36',
-        alt: '',
-        style: {
-          borderRadius: '2px'
-        }
-      }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
-        variant: "secondary",
-        onClick: () => updateFieldset(key, 0)
-      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Remove layer image', 'sharing-image'))))
+        justify: 'flex-start',
+        style: styles
+      }, renderImageButton(key, open))
     })));
   };
 
@@ -263,6 +400,16 @@ module.exports = window["wp"]["notices"];
 /***/ ((module) => {
 
 module.exports = window["wp"]["plugins"];
+
+/***/ }),
+
+/***/ "@wordpress/primitives":
+/*!************************************!*\
+  !*** external ["wp","primitives"] ***!
+  \************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["primitives"];
 
 /***/ })
 
@@ -425,6 +572,13 @@ const SharingImageSidebar = ({
     });
     setTemplate(index);
   };
+  /**
+   * Update post meta.
+   *
+   * @param {string} key   Fieldset key.
+   * @param {string} value Updated fieldset value.
+   */
+
 
   const updateFieldset = (key, value) => {
     editPost({
@@ -435,6 +589,12 @@ const SharingImageSidebar = ({
       }
     });
   };
+  /**
+   * Generate button handler.
+   *
+   * @param {Event} e
+   */
+
 
   const generateButton = async e => {
     e.preventDefault();
@@ -478,6 +638,15 @@ const SharingImageSidebar = ({
     setLoading(false);
   };
 
+  const removePoster = e => {
+    e.preventDefault();
+    editPost({
+      meta: {
+        [meta.source]: {}
+      }
+    });
+  };
+
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     const [index] = Object.keys(templates);
 
@@ -503,7 +672,7 @@ const SharingImageSidebar = ({
     onChange: changeTemplate
   }), templates[template] && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Flex, {
     direction: 'column',
-    gap: 4
+    gap: 2
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_template_fields__WEBPACK_IMPORTED_MODULE_9__["default"], {
     layers: templates[template].layers || [],
     updateFieldset: updateFieldset,
@@ -512,12 +681,12 @@ const SharingImageSidebar = ({
     justify: 'flex-start'
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
     variant: "secondary",
-    isDestructive: false,
     type: 'button',
     onClick: generateButton
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Generate', 'sharing-image')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
-    variant: "ternary",
-    isDestructive: true
+    variant: "tertiary",
+    isDestructive: true,
+    onClick: removePoster
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Remove', 'sharing-image')), loading && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Spinner, null))));
 };
 
