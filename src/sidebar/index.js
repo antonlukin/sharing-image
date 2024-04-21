@@ -26,10 +26,6 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		return select( 'core/editor' ).getCurrentPostId();
 	} );
 
-	const featuredId = useSelect( ( select ) => {
-		return select( 'core/editor' ).getEditedPostAttribute( 'featured_media' );
-	} );
-
 	/**
 	 * Dispatchers.
 	 */

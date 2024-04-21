@@ -100,8 +100,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
 /* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/image.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/image.js");
+/* harmony import */ var _thumbnail_field__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./thumbnail-field */ "./src/sidebar/thumbnail-field.js");
+
 
 
 
@@ -134,7 +136,7 @@ const TemplateFields = ({
    *
    */
 
-  presets.thumbnail = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
+  presets.featured = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute('featured_media');
   });
   /**
@@ -145,68 +147,64 @@ const TemplateFields = ({
   /**
    * Save changed state on field update.
    *
-   * @param {string} key
+   * @param {string} name
    * @param {string} value
    */
 
-  const changeField = (key, value) => {
-    updateFieldset(key, value); // Mark this field as manually changed by user.
+  const changeField = (name, value) => {
+    updateFieldset(name, value); // Mark this field as manually changed by user.
 
     setChanged({ ...changed,
-      [key]: true
+      [name]: true
     });
-  }; // Get image thumbnails by ID.
+  }; // // Get image thumbnails by ID.
+  // const thumbnails = useSelect(
+  // 	( select ) => {
+  // 		const images = {};
+  // 		for ( const name in fields ) {
+  // 			const layer = layers[ name ];
+  // 			// Skip not dynamic image layers.
+  // 			if ( ! layer?.dynamic || layer?.type !== 'image' ) {
+  // 				continue;
+  // 			}
+  // 			const media = select( 'core' ).getMedia( fields[ name ] );
+  // 			console.log( media );
+  // 			images[ name ] = media?.media_details?.sizes?.thumbnail?.source_url;
+  // 			if ( ! images[ name ] ) {
+  // 				images[ name ] = media?.source_url;
+  // 			}
+  // 		}
+  // 		return images;
+  // 	},
+  // 	[ fields ]
+  // );
 
-
-  const thumbnails = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
-    const images = {};
-
-    for (const key in fields) {
-      const layer = layers[key]; // Skip not dynamic image layers.
-
-      if (!layer?.dynamic || layer?.type !== 'image') {
-        continue;
-      }
-
-      const media = select('core').getMedia(fields[key]);
-      images[key] = media?.media_details?.sizes?.thumbnail?.source_url;
-
-      if (!images[key]) {
-        images[key] = media?.source_url;
-      }
-    }
-
-    return images;
-  }, [fields]);
   /**
    * Helper method for image field rendering.
    *
-   * @param {string}   key  Fieldset key.
+   * @param {string}   name Fieldset name.
    * @param {Function} open MediaUpload open function.
    */
 
-  const renderImageButton = (key, open) => {
+
+  const renderImageButton = (name, open) => {
     const styles = {
       borderRadius: '2px',
       objectFit: 'cover',
       width: '36px',
       height: '36px'
-    };
+    }; // if ( fields[ name ] ) {
 
-    if (fields[key]) {
-      return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, thumbnails[key] && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
-        src: thumbnails[key],
-        alt: '',
-        style: styles
-      }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
-        variant: "link",
-        onClick: () => changeField(key, 0)
-      }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Remove image', 'sharing-image')));
-    }
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      fields: fields,
+      open: open,
+      changeField: changeField,
+      name: name
+    }); // }
 
     styles.opacity = '0.5';
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {
-      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"],
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {
+      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__["default"],
       style: styles
     }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
       variant: "link",
@@ -217,45 +215,43 @@ const TemplateFields = ({
    * Display dynamic text field
    *
    * @param {Object} layer
-   * @param {string} key
+   * @param {string} name
    *
    * @return {JSX.Element} Textarea control component.
    */
 
 
-  const displayTextField = (layer, key) => {
-    if (!changed[key] && layer.preset in presets) {
-      fields[key] = presets[layer.preset];
+  const displayTextField = (layer, name) => {
+    if (!changed[name] && layer.preset in presets) {
+      fields[name] = presets[layer.preset];
     }
 
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextareaControl, {
-      key: key,
+      name: name,
       label: layer.title,
-      value: fields[key],
-      onChange: value => changeField(key, value)
+      value: fields[name],
+      onChange: value => changeField(name, value)
     });
   };
   /**
    * Display dynamic image field
    *
    * @param {Object} layer
-   * @param {string} key
+   * @param {string} name
    *
    * @return {JSX.Element} Textarea control component.
    */
 
 
-  const displayImageField = (layer, key) => {
+  const displayImageField = (layer, name) => {
     const styles = {
       border: 'solid 1px #ccc',
       padding: '4px',
       borderRadius: '4px'
     };
 
-    if (!changed[key]) {
-      // TODO:
-      // changeField( key, presets.thumbnail );
-      fields[key] = presets.thumbnail;
+    if (!changed[name] && layer.preset in presets) {
+      fields[name] = presets[layer.preset];
     }
 
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.BaseControl, {
@@ -263,23 +259,28 @@ const TemplateFields = ({
       label: layer.title
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUpload, {
       onSelect: media => {
-        changeField(key, media.id);
+        changeField(name, media.id);
       },
       allowedTypes: ['image'],
-      value: fields[key],
+      value: fields[name],
       render: ({
         open
       }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Flex, {
         justify: 'flex-start',
         style: styles
-      }, renderImageButton(key, open))
+      }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_6__["default"], {
+        fields: fields,
+        open: open,
+        changeField: changeField,
+        name: name
+      }))
     })));
   };
 
   const controls = [];
 
-  for (const key in layers) {
-    const layer = layers[key];
+  for (const name in layers) {
+    const layer = layers[name];
 
     if (!layer.dynamic) {
       continue;
@@ -287,11 +288,11 @@ const TemplateFields = ({
 
     switch (layer.type) {
       case 'text':
-        controls.push(displayTextField(layer, key));
+        controls.push(displayTextField(layer, name));
         break;
 
       case 'image':
-        controls.push(displayImageField(layer, key));
+        controls.push(displayImageField(layer, name));
         break;
     }
   }
@@ -300,6 +301,84 @@ const TemplateFields = ({
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TemplateFields);
+
+/***/ }),
+
+/***/ "./src/sidebar/thumbnail-field.js":
+/*!****************************************!*\
+  !*** ./src/sidebar/thumbnail-field.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/image.js");
+
+
+
+
+
+
+const ThumbnailField = ({
+  fields,
+  changeField,
+  open,
+  name
+}) => {
+  const styles = {
+    borderRadius: '2px',
+    objectFit: 'cover',
+    width: '36px',
+    height: '36px'
+  };
+  const thumbnail = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
+    const media = select('core').getMedia(fields[name]);
+    let url = media?.media_details?.sizes?.thumbnail?.source_url;
+
+    if (!url) {
+      url = media?.source_url;
+    }
+
+    return url;
+  }, [fields]);
+
+  const removeImage = () => {
+    changeField(name, 0);
+  };
+
+  if (fields[name]) {
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, thumbnail && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
+      src: thumbnail,
+      alt: '',
+      style: styles
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+      variant: "link",
+      onClick: removeImage
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Remove image', 'sharing-image')));
+  }
+
+  styles.opacity = '0.5';
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_5__["default"],
+    style: styles
+  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+    variant: "link",
+    onClick: open
+  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Set layer image', 'sharing-image')));
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailField);
 
 /***/ }),
 
@@ -539,9 +618,6 @@ const SharingImageSidebar = ({
 
   const postId = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
     return select('core/editor').getCurrentPostId();
-  });
-  const featuredId = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_4__.useSelect)(select => {
-    return select('core/editor').getEditedPostAttribute('featured_media');
   });
   /**
    * Dispatchers.

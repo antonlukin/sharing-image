@@ -76,11 +76,7 @@ class Generator {
 		}
 
 		foreach ( $layers as $key => &$layer ) {
-			if ( 'settings' === $context && ! empty( $template['debug'] ) ) {
-				$layer['debug'] = true;
-			}
-
-			if ( empty( $layer['dynamic'] ) || empty( $layer['type'] ) ) {
+			if ( empty( $layer['type'] ) || empty( $layer['dynamic'] ) ) {
 				continue;
 			}
 
@@ -92,6 +88,10 @@ class Generator {
 				case 'text':
 					$layer = self::prepare_text_layer( $layer, $fieldset, $key );
 					break;
+			}
+
+			if ( 'settings' === $context && ! empty( $template['debug'] ) ) {
+				$layer['debug'] = true;
 			}
 		}
 
@@ -119,6 +119,8 @@ class Generator {
 	 * @return array List of image layer data.
 	 */
 	private function prepare_image_layer( $layer, $fieldset, $key ) {
+		unset( $layer['attachment'] );
+
 		if ( ! empty( $fieldset[ $key ] ) ) {
 			$layer['attachment'] = $fieldset[ $key ];
 		}
