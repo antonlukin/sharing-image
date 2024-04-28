@@ -24,7 +24,6 @@ function createDefaultOptions( options, data ) {
 	Build.media( {
 		name: params.name + '[default]',
 		classes: [ 'sharing-image-config-control-media' ],
-		label: wp.i18n.__( 'Default poster', 'sharing-image' ),
 		value: data.default,
 		link: params.links.uploads,
 		labels: {

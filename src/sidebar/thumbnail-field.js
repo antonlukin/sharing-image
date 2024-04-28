@@ -10,6 +10,7 @@ const ThumbnailField = ( { fields, changeField, open, name } ) => {
 		( select ) => {
 			const media = select( 'core' ).getMedia( fields[ name ] );
 
+			// Try to get thumnail first.
 			let url = media?.media_details?.sizes?.thumbnail?.source_url;
 
 			if ( ! url ) {

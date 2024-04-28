@@ -470,6 +470,16 @@ function buildMedia(args) {
 
   if (args.hasOwnProperty('prepend')) {
     args.prepend.insertBefore(media, args.prepend.firstChild);
+  }
+
+  if (args.hasOwnProperty('label')) {
+    const label = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('h4', {
+      text: args.label
+    });
+
+    if (null !== args.label) {
+      media.appendChild(label);
+    }
   } // Labels are required.
 
 
@@ -1099,17 +1109,17 @@ __webpack_require__.r(__webpack_exports__);
 
  // Store global script object for metabox.
 
-let params = null; // Picker HTML element.
+let params = null; // Widget HTML element.
 
-let picker = null;
+let widget = null;
 /**
- * Show picker warning message.
+ * Show widget warning message.
  *
  * @param {string} message Warning message.
  */
 
-function showPickerError(message) {
-  const warning = picker.querySelector('.sharing-image-picker-warning');
+function showWidgetError(message) {
+  const warning = widget.querySelector('.sharing-image-widget-warning');
 
   if (null === warning) {
     return;
@@ -1123,8 +1133,8 @@ function showPickerError(message) {
  */
 
 
-function hidePickerError() {
-  const warning = picker.querySelector('.sharing-image-picker-warning');
+function hideWidgetError() {
+  const warning = widget.querySelector('.sharing-image-widget-warning');
 
   if (null === warning) {
     return;
@@ -1141,31 +1151,31 @@ function generatePoster() {
   const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
-  picker.classList.add('picker-loader'); // Create data form data bundle.
+  widget.classList.add('widget-loader'); // Create data form data bundle.
 
   const bundle = new window.FormData();
   bundle.set('action', 'sharing_image_generate');
-  picker.querySelectorAll('[name]').forEach(field => {
+  widget.querySelectorAll('[name]').forEach(field => {
     bundle.append(field.name, field.value);
   });
-  hidePickerError();
-  const poster = picker.querySelector('.sharing-image-picker-poster');
+  hideWidgetError();
+  const poster = widget.querySelector('.sharing-image-widget-poster');
   request.addEventListener('load', () => {
     const response = request.response || {}; // Hide preview loader on request complete.
 
-    picker.classList.remove('picker-loader');
+    widget.classList.remove('widget-loader');
 
     if (!response.data) {
-      return showPickerError();
+      return showWidgetError();
     }
 
     if (!response.success) {
-      return showPickerError(response.data);
+      return showWidgetError(response.data);
     }
 
     for (const key in response.data) {
       poster.querySelectorAll('input').forEach(input => {
-        const name = params.name + '[' + key + ']';
+        const name = params.name.source + '[' + key + ']';
 
         if (name === input.name) {
           input.value = response.data[key];
@@ -1183,12 +1193,12 @@ function generatePoster() {
 
     image.src = response.data.poster; // Show the poster.
 
-    picker.classList.add('picker-visible');
+    widget.classList.add('widget-visible');
   });
   request.addEventListener('error', () => {
-    showPickerError(); // Hide preview loader on request complete.
+    showWidgetError(); // Hide preview loader on request complete.
 
-    picker.classList.remove('picker-loader');
+    widget.classList.remove('widget-loader');
   });
   request.send(bundle);
 }
@@ -1200,27 +1210,30 @@ function generatePoster() {
  */
 
 
-function createTemplate(designer, selected) {
+function createTemplateSelector(designer, selected) {
   const fields = {};
-  params.templates.forEach((template, i) => {
-    fields[i] = template.title || wp.i18n.__('Untitled', 'sharing-image');
-  });
+
+  for (const key in params.templates) {
+    fields[key] = params.templates[key]?.title || wp.i18n.__('Untitled', 'sharing-image');
+  }
+
   const template = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].select({
-    classes: ['sharing-image-picker-template'],
+    classes: ['sharing-image-widget-template'],
     options: fields,
     attributes: {
-      name: params.name + '[template]'
+      name: params.name.source + '[template]'
     },
     selected: String(selected)
   }, designer);
   template.addEventListener('change', () => {
-    const fieldset = designer.querySelectorAll('.sharing-image-picker-fieldset');
+    const fieldset = designer.querySelectorAll('.sharing-image-widget-fieldset');
 
     for (let i = 0; i < fieldset.length; i++) {
-      fieldset[i].classList.remove('fieldset-visible');
+      const item = fieldset[i];
+      item.classList.remove('fieldset-visible');
 
-      if (i === parseInt(template.value)) {
-        fieldset[i].classList.add('fieldset-visible');
+      if (item.dataset.index === template.value) {
+        item.classList.add('fieldset-visible');
       }
     }
   });
@@ -1241,140 +1254,135 @@ function fillCaptionPreset(textarea, preset) {
     return;
   }
 
+  if (textarea.value && source.value !== textarea.value) {
+    return;
+  }
+
   const updateCaption = () => {
     textarea.value = source.value;
   };
 
-  source.addEventListener('change', updateCaption); // Stop textarea update after first user input.
+  source.addEventListener('input', updateCaption); // Stop textarea update after first user input.
 
-  textarea.addEventListener('change', () => {
-    source.removeEventListener('change', updateCaption);
+  textarea.addEventListener('input', () => {
+    source.removeEventListener('input', updateCaption);
   });
   updateCaption();
 }
-
-function createHiddenCaption(fieldset, name, n) {
-  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].input({
-    classes: ['sharing-image-picker-hidden'],
-    attributes: {
-      type: 'hidden',
-      name: name + `[captions][${n}]`,
-      value: ''
-    }
-  }, fieldset);
-}
 /**
- * Create designer attachment field for dynamic background.
+ * Create designer image layer.
  *
  * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object}      template Template data.
+ * @param {Object}      layer    Layer data.
+ * @param {string}      key      Layer key.
  * @param {Array}       values   Template fieldset values.
- * @param {string}      name     Field name attribute.
  */
 
 
-function createDesignerAttachment(fieldset, template, values, name) {
-  if ('dynamic' !== template.background) {
-    return;
-  }
-
+function createLayerImage(fieldset, layer, key, values) {
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].media({
-    name: name + '[attachment]',
-    classes: ['sharing-image-picker-media'],
-    value: values.attachment,
+    name: params.name.fieldset + `[${key}]`,
+    classes: ['sharing-image-widget-image'],
+    label: layer.title || null,
+    value: values[key] || '',
     link: params.links.uploads,
     labels: {
-      button: wp.i18n.__('Upload background', 'sharing-image'),
-      heading: wp.i18n.__('Select background image', 'sharing-image'),
+      button: wp.i18n.__('Set layer image', 'sharing-image'),
+      heading: wp.i18n.__('Select image', 'sharing-image'),
       details: wp.i18n.__('Attachment', 'sharing-image')
     },
+    mime: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
     append: fieldset
   });
 }
 /**
- * Create designer captions for text layers.
+ * Create designer text layer.
  *
  * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object}      template Template data.
+ * @param {Object}      layer    Layer data.
+ * @param {string}      key      Layer key.
  * @param {Array}       values   Template fieldset values.
- * @param {string}      name     Field name attribute.
  */
 
 
-function createDesignerCaptions(fieldset, template, values, name) {
-  const captions = values.captions || []; // Set default layers list.
-
-  template.layers = template.layers || [];
-  template.layers.forEach((layer, n) => {
-    if ('text' !== layer.type || !layer.dynamic) {
-      return createHiddenCaption(fieldset, name, n);
+function createLayerText(fieldset, layer, key, values) {
+  const textarea = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].textarea({
+    classes: ['sharing-image-widget-text'],
+    label: layer.title || null,
+    attributes: {
+      name: params.name.fieldset + `[${key}]`
     }
+  }, fieldset);
+  textarea.value = values[key] || ''; // Preset title.
 
-    const textarea = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].textarea({
-      classes: ['sharing-image-picker-caption'],
-      label: layer.title || null,
-      attributes: {
-        name: name + `[captions][${n}]`
-      }
-    }, fieldset);
+  if (layer.preset === 'title') {
+    fillCaptionPreset(textarea, 'title');
+  } // Preset excerpt.
 
-    if (!captions[n]) {
-      fillCaptionPreset(textarea, layer.preset);
-    }
 
-    textarea.textContent = captions[n];
-  });
+  if (layer.preset === 'excerpt') {
+    fillCaptionPreset(textarea, 'excerpt');
+  }
 }
 /**
  * Create fields designer.
  *
- * @param {Object} data Picker data object.
+ * @param {Object} data Widget data object.
  */
 
 
 function createDesigner(data) {
+  if (Object.keys(params.templates).length < 1) {
+    return;
+  }
+
   const designer = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
-    classes: ['sharing-image-picker-designer']
+    classes: ['sharing-image-widget-designer']
   });
-  let selected = data.template || 0; // Reset selected template if index undefined.
+  let selected = data.source.template || null; // Reset selected template if index undefined.
 
   if (!params.templates[selected]) {
-    selected = 0;
+    selected = Object.keys(params.templates)[0];
   }
 
-  if (params.templates.length > 1) {
-    createTemplate(designer, selected);
-  }
+  createTemplateSelector(designer, selected);
 
-  params.templates.forEach((template, i) => {
-    template.layers = template.layers || [];
+  for (const index in params.templates) {
+    const template = params.templates[index];
     const fieldset = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
-      classes: ['sharing-image-picker-fieldset'],
+      classes: ['sharing-image-widget-fieldset'],
+      dataset: {
+        index: index
+      },
       append: designer
     });
 
-    if (i === parseInt(selected)) {
+    if (index === selected) {
       fieldset.classList.add('fieldset-visible');
     }
 
-    let values = {};
+    const layers = template.layers || {};
 
-    if (data.fieldset && data.fieldset[i]) {
-      values = data.fieldset[i];
+    for (const key in layers) {
+      const layer = layers[key];
+
+      if (!layer.dynamic) {
+        continue;
+      }
+
+      switch (layer.type) {
+        case 'text':
+          createLayerText(fieldset, layer, key, data.fieldset);
+          break;
+
+        case 'image':
+          createLayerImage(fieldset, layer, key, data.fieldset);
+          break;
+      }
     }
+  }
 
-    const name = params.name + `[fieldset][${i}]`;
-    _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
-      attributes: {
-        type: 'hidden',
-        name: name
-      },
-      append: fieldset
-    });
-    createDesignerAttachment(fieldset, template, values, name);
-    createDesignerCaptions(fieldset, template, values, name);
-  });
-  picker.appendChild(designer);
+  widget.appendChild(designer);
   return designer;
 }
 /**
@@ -1386,7 +1394,7 @@ function createDesigner(data) {
 
 function createGenerateButton(manager) {
   const button = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('button', {
-    classes: ['sharing-image-picker-generate', 'button'],
+    classes: ['sharing-image-widget-generate', 'button'],
     text: wp.i18n.__('Generate', 'sharing-image'),
     attributes: {
       type: 'button'
@@ -1406,7 +1414,7 @@ function createGenerateButton(manager) {
 
 function createDeleteButton(manager) {
   const button = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('button', {
-    classes: ['sharing-image-picker-delete', 'button', 'button-delete'],
+    classes: ['sharing-image-widget-delete', 'button', 'button-delete'],
     text: wp.i18n.__('Remove', 'sharing-image'),
     attributes: {
       type: 'button'
@@ -1414,7 +1422,7 @@ function createDeleteButton(manager) {
     append: manager
   });
   button.addEventListener('click', () => {
-    const image = picker.querySelector('.sharing-image-picker-poster img');
+    const image = widget.querySelector('.sharing-image-widget-poster img');
 
     if (null === image) {
       return;
@@ -1425,11 +1433,11 @@ function createDeleteButton(manager) {
     poster.querySelectorAll('input').forEach(input => {
       input.value = '';
     });
-    picker.classList.remove('picker-visible');
+    widget.classList.remove('widget-visible');
   });
 }
 /**
- * Create picker manager.
+ * Create widget manager.
  *
  * @param {HTMLElement} designer Designer element.
  */
@@ -1437,61 +1445,61 @@ function createDeleteButton(manager) {
 
 function createManager(designer) {
   const manager = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
-    classes: ['sharing-image-picker-manager'],
+    classes: ['sharing-image-widget-manager'],
     append: designer
   });
   createGenerateButton(manager);
   createDeleteButton(manager);
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('span', {
-    classes: ['sharing-image-picker-spinner', 'spinner'],
+    classes: ['sharing-image-widget-spinner', 'spinner'],
     append: manager
   });
 }
 /**
  * Create poster block.
  *
- * @param {Object} data Picker data object.
+ * @param {Object} data Widget data object.
  */
 
 
 function createPoster(data) {
   const poster = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
-    classes: ['sharing-image-picker-poster'],
-    append: picker
+    classes: ['sharing-image-widget-poster'],
+    append: widget
   });
 
-  if (data.poster) {
+  if (data.source.poster) {
     _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('img', {
       attributes: {
-        src: data.poster,
+        src: data.source.poster,
         alt: ''
       },
       append: poster
     });
-    picker.classList.add('picker-visible');
+    widget.classList.add('widget-visible');
   }
 
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
-      name: params.name + '[poster]',
-      value: data.poster
+      name: params.name.source + '[poster]',
+      value: data.source.poster || ''
     },
     append: poster
   });
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
-      name: params.name + '[width]',
-      value: data.width
+      name: params.name.source + '[width]',
+      value: data.source.width
     },
     append: poster
   });
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
-      name: params.name + '[height]',
-      value: data.height
+      name: params.name.source + '[height]',
+      value: data.source.height
     },
     append: poster
   });
@@ -1499,7 +1507,7 @@ function createPoster(data) {
 /**
  * Check that the poster sizes are set or show an error message.
  *
- * @param {Object} data Picker data object.
+ * @param {Object} data Widget data object.
  */
 
 
@@ -1509,36 +1517,29 @@ function showSizesWarning(data) {
   }
 
   if (!data.width || !data.height) {
-    showPickerError(wp.i18n.__('Image sizes are not set. Regenerate the poster.', 'sharing-image'));
+    showWidgetError(wp.i18n.__('Image sizes are not set. Regenerate the poster.', 'sharing-image'));
   }
 }
 /**
  * Build metabox fields.
- *
- * @param {HTMLElement} widget   Widget element.
- * @param {Object}      settings Global settings object.
  */
 
 
-function buildPicker(widget, settings) {
-  params = settings; // Set params name for template form fields.
-
-  params.name = 'sharing_image_picker';
-
+function buildWidget() {
   while (widget.firstChild) {
     widget.removeChild(widget.lastChild);
   }
 
-  picker = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
-    classes: ['sharing-image-picker'],
-    append: widget
-  });
+  if (params.context) {
+    widget.classList.add(`widget-${params.context}`);
+  }
+
   const data = params.meta || {};
   createPoster(data); // Create fields designer.
 
   const designer = createDesigner(data);
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('div', {
-    classes: ['sharing-image-picker-warning'],
+    classes: ['sharing-image-widget-warning'],
     append: designer
   });
   createManager(designer);
@@ -1548,7 +1549,7 @@ function buildPicker(widget, settings) {
       name: 'sharing_image_nonce',
       value: params.nonce
     },
-    append: picker
+    append: widget
   });
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
@@ -1556,7 +1557,7 @@ function buildPicker(widget, settings) {
       name: 'sharing_image_screen',
       value: params.screen
     },
-    append: picker
+    append: widget
   });
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
@@ -1564,7 +1565,7 @@ function buildPicker(widget, settings) {
       name: 'sharing_image_context',
       value: params.context
     },
-    append: picker
+    append: widget
   });
   showSizesWarning(data);
 }
@@ -1578,18 +1579,15 @@ function buildPicker(widget, settings) {
     return;
   }
 
-  const object = window.sharingImageWidget || {}; // Set default templates empty list.
+  params = window.sharingImageWidget || {}; // Find only single Sharing Image widget on page.
 
-  object.templates = object.templates || []; // Find metabox element.
+  widget = document.querySelector('.sharing-image-widget');
 
-  const widgets = document.querySelectorAll('.sharing-image-widget');
-  widgets.forEach(widget => {
-    if (object.context) {
-      widget.classList.add(`widget-${object.context}`);
-    }
+  if (!widget) {
+    return;
+  }
 
-    buildPicker(widget, object);
-  });
+  buildWidget(widget);
 })();
 })();
 

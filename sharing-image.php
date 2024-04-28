@@ -70,3 +70,26 @@ if ( ! function_exists( 'sharing_image_plugin' ) ) {
 }
 
 add_action( 'plugins_loaded', 'sharing_image_plugin' );
+
+
+add_action( 'init', 'test_register_taxonomy' );
+function test_register_taxonomy() {
+	register_taxonomy(
+		'special',
+		'post',
+		array(
+			'labels'            => array(
+				'name'          => esc_html__( 'Special', 'knife-theme' ),
+				'singular_name' => esc_html__( 'Special', 'knife-theme' ),
+				'menu_name'     => esc_html__( 'Special', 'knife-theme' ),
+			),
+			'public'            => true,
+			'hierarchical'      => true,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'show_in_nav_menus' => true,
+			'query_var'         => true,
+			'show_in_rest' => true,
+		)
+	);
+}

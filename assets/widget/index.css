@@ -2,97 +2,73 @@
   !*** css ./node_modules/@wordpress/scripts/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/@wordpress/scripts/node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/@wordpress/scripts/node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/widget/styles.scss ***!
   \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 .sharing-image-widget {
-  display: flex;
+  display: block;
   position: relative;
   max-width: 100%;
+  margin-top: 12px;
 }
 .sharing-image-widget * {
   box-sizing: border-box;
 }
-.sharing-image-widget .sharing-image-picker {
-  display: block;
-  position: relative;
-  width: 100%;
-  margin-top: 8px;
-}
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-template {
+.sharing-image-widget .sharing-image-widget-template {
   display: block;
   width: 100%;
   margin-bottom: 12px;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-template select {
+.sharing-image-widget .sharing-image-widget-template select {
   display: block;
   width: 100%;
   max-width: 100%;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-fieldset {
+.sharing-image-widget .sharing-image-widget-fieldset {
   display: none;
   position: relative;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-fieldset.fieldset-visible {
+.sharing-image-widget .sharing-image-widget-fieldset.fieldset-visible {
   display: block;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-media {
+.sharing-image-widget .sharing-image-widget-image {
   display: flex;
   flex-flow: row wrap;
   align-items: center;
   margin-bottom: 12px;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-media .button {
+.sharing-image-widget .sharing-image-widget-image h4 {
+  display: block;
+  width: 100%;
+  margin: 0 0 5px;
+}
+.sharing-image-widget .sharing-image-widget-image .button {
   margin-right: 14px;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-featured {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  padding: 0;
-  font-size: 18px;
-  color: #8c8f94;
-  background: 0;
-  border: none;
-  transition: color 0.25s;
-}
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-featured::after {
-  font-family: dashicons;
-  content: "\f128";
-}
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-featured:hover {
-  color: #2271b1;
-}
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-featured.featured-seleted {
-  color: #2271b1;
-}
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-caption {
+.sharing-image-widget .sharing-image-widget-text {
   display: block;
   width: 100%;
   margin-bottom: 12px;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-caption h4 {
+.sharing-image-widget .sharing-image-widget-text h4 {
   margin: 0;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-caption > * {
+.sharing-image-widget .sharing-image-widget-text > * {
   display: block;
   width: 100%;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-caption textarea {
+.sharing-image-widget .sharing-image-widget-text textarea {
   height: 55px;
   min-height: 28px;
   margin-top: 5px;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-hidden {
-  display: none;
-}
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-designer {
+.sharing-image-widget .sharing-image-widget-designer {
   display: block;
   position: relative;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-poster {
+.sharing-image-widget .sharing-image-widget-poster {
   display: block;
   position: relative;
   visibility: hidden;
   width: 100%;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-poster img {
+.sharing-image-widget .sharing-image-widget-poster img {
   display: block;
   height: auto;
   max-width: 100%;
@@ -100,55 +76,53 @@
   border-radius: 2px;
 }
 @media screen and (max-width: 1199px) {
-  .sharing-image-widget .sharing-image-picker .sharing-image-picker-poster {
+  .sharing-image-widget .sharing-image-widget-poster {
     flex: 1 1 100%;
     margin-left: 0;
   }
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-manager {
+.sharing-image-widget .sharing-image-widget-manager {
   display: flex;
   align-items: center;
   width: 100%;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-manager .button {
+.sharing-image-widget .sharing-image-widget-manager .button {
   margin-right: 12px;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-warning {
+.sharing-image-widget .sharing-image-widget-warning {
   display: none;
   position: relative;
   margin: 0 0 12px;
   color: #b32d2e;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-warning.warning-visible {
+.sharing-image-widget .sharing-image-widget-warning.warning-visible {
   display: block;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-delete {
+.sharing-image-widget .sharing-image-widget-delete {
   display: none;
   cursor: pointer;
   color: #b32d2e;
   border-color: #b32d2e;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-delete:hover {
+.sharing-image-widget .sharing-image-widget-delete:hover {
   color: #710d0d;
 }
-.sharing-image-widget .sharing-image-picker .sharing-image-picker-spinner {
+.sharing-image-widget .sharing-image-widget-spinner {
   float: none;
   margin: 0;
 }
-.sharing-image-widget .sharing-image-picker.picker-visible .sharing-image-picker-designer .sharing-image-picker-delete {
+.sharing-image-widget.widget-visible .sharing-image-widget-designer .sharing-image-widget-delete {
   display: inline-flex;
 }
-.sharing-image-widget .sharing-image-picker.picker-loader .sharing-image-picker-designer .sharing-image-picker-spinner {
+.sharing-image-widget.widget-loader .sharing-image-widget-designer .sharing-image-widget-spinner {
   visibility: visible;
 }
-.sharing-image-widget .sharing-image-picker.picker-visible .sharing-image-picker-poster {
+.sharing-image-widget.widget-visible .sharing-image-widget-poster {
   visibility: visible;
 }
 .sharing-image-widget.widget-term {
   margin-top: 20px;
-  max-width: 95%;
-}
-.sharing-image-widget.widget-term .sharing-image-picker {
+  margin-right: 5%;
   margin-left: 220px;
   padding: 10px;
   background: #fff;
@@ -156,16 +130,13 @@
   border-radius: 3px;
 }
 @media (max-width: 782px) {
-  .sharing-image-widget.widget-term .sharing-image-picker {
-    margin-left: 0;
-  }
-}
-@media (max-width: 782px) {
   .sharing-image-widget.widget-term {
     max-width: 100%;
+    margin: 20px 0 0;
   }
 }
 .sharing-image-widget.widget-post {
+  width: 100%;
   max-width: 480px;
 }
 

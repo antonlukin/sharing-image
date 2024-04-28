@@ -530,6 +530,16 @@ function buildMedia(args) {
 
   if (args.hasOwnProperty('prepend')) {
     args.prepend.insertBefore(media, args.prepend.firstChild);
+  }
+
+  if (args.hasOwnProperty('label')) {
+    const label = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('h4', {
+      text: args.label
+    });
+
+    if (null !== args.label) {
+      media.appendChild(label);
+    }
   } // Labels are required.
 
 
@@ -1196,7 +1206,6 @@ function createDefaultOptions(options, data) {
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].media({
     name: params.name + '[default]',
     classes: ['sharing-image-config-control-media'],
-    label: wp.i18n.__('Default poster', 'sharing-image'),
     value: data.default,
     link: params.links.uploads,
     labels: {

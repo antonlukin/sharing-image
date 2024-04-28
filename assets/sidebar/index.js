@@ -90,21 +90,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
-/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
-/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/image.js");
-/* harmony import */ var _thumbnail_field__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./thumbnail-field */ "./src/sidebar/thumbnail-field.js");
-
-
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _thumbnail_field__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./thumbnail-field */ "./src/sidebar/thumbnail-field.js");
 
 
 
@@ -122,28 +116,29 @@ const TemplateFields = ({
    * Retrieve post title.
    */
 
-  presets.title = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
+  presets.title = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute('title');
   });
   /**
    * Retrieve post excerpt.
    */
 
-  presets.excerpt = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
+  presets.excerpt = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute('excerpt');
   });
   /**
-   *
+   * Featured thumbnail.
    */
 
-  presets.featured = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => {
+  presets.featured = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute('featured_media');
   });
   /**
    * Local changed states.
    */
 
-  const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)({});
+  const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)({});
+  const [loaded, setLoaded] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
   /**
    * Save changed state on field update.
    *
@@ -157,60 +152,22 @@ const TemplateFields = ({
     setChanged({ ...changed,
       [name]: true
     });
-  }; // // Get image thumbnails by ID.
-  // const thumbnails = useSelect(
-  // 	( select ) => {
-  // 		const images = {};
-  // 		for ( const name in fields ) {
-  // 			const layer = layers[ name ];
-  // 			// Skip not dynamic image layers.
-  // 			if ( ! layer?.dynamic || layer?.type !== 'image' ) {
-  // 				continue;
-  // 			}
-  // 			const media = select( 'core' ).getMedia( fields[ name ] );
-  // 			console.log( media );
-  // 			images[ name ] = media?.media_details?.sizes?.thumbnail?.source_url;
-  // 			if ( ! images[ name ] ) {
-  // 				images[ name ] = media?.source_url;
-  // 			}
-  // 		}
-  // 		return images;
-  // 	},
-  // 	[ fields ]
-  // );
-
-  /**
-   * Helper method for image field rendering.
-   *
-   * @param {string}   name Fieldset name.
-   * @param {Function} open MediaUpload open function.
-   */
-
-
-  const renderImageButton = (name, open) => {
-    const styles = {
-      borderRadius: '2px',
-      objectFit: 'cover',
-      width: '36px',
-      height: '36px'
-    }; // if ( fields[ name ] ) {
-
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_6__["default"], {
-      fields: fields,
-      open: open,
-      changeField: changeField,
-      name: name
-    }); // }
-
-    styles.opacity = '0.5';
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"], {
-      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_8__["default"],
-      style: styles
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
-      variant: "link",
-      onClick: open
-    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Set layer image', 'sharing-image')));
   };
+
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    for (const key in layers) {
+      const layer = layers[key];
+
+      if (fields[key] && fields[key] !== presets[layer.preset]) {
+        setChanged({ ...changed,
+          [key]: true
+        });
+      }
+    }
+
+    setLoaded(true);
+  }, []); // eslint-disable-line
+
   /**
    * Display dynamic text field
    *
@@ -220,13 +177,12 @@ const TemplateFields = ({
    * @return {JSX.Element} Textarea control component.
    */
 
-
   const displayTextField = (layer, name) => {
     if (!changed[name] && layer.preset in presets) {
       fields[name] = presets[layer.preset];
     }
 
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.TextareaControl, {
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
       name: name,
       label: layer.title,
       value: fields[name],
@@ -254,10 +210,10 @@ const TemplateFields = ({
       fields[name] = presets[layer.preset];
     }
 
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.BaseControl, {
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.BaseControl, {
       id: null,
       label: layer.title
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUpload, {
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUpload, {
       onSelect: media => {
         changeField(name, media.id);
       },
@@ -265,10 +221,10 @@ const TemplateFields = ({
       value: fields[name],
       render: ({
         open
-      }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Flex, {
+      }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Flex, {
         justify: 'flex-start',
         style: styles
-      }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_5__["default"], {
         fields: fields,
         open: open,
         changeField: changeField,
@@ -277,27 +233,33 @@ const TemplateFields = ({
     })));
   };
 
-  const controls = [];
+  const composeControls = () => {
+    const controls = [];
 
-  for (const name in layers) {
-    const layer = layers[name];
+    for (const key in layers) {
+      const layer = layers[key];
 
-    if (!layer.dynamic) {
-      continue;
+      if (!layer.dynamic) {
+        continue;
+      }
+
+      switch (layer.type) {
+        case 'text':
+          controls.push(displayTextField(layer, key));
+          break;
+
+        case 'image':
+          controls.push(displayImageField(layer, key));
+          break;
+      }
     }
 
-    switch (layer.type) {
-      case 'text':
-        controls.push(displayTextField(layer, name));
-        break;
+    return controls;
+  };
 
-      case 'image':
-        controls.push(displayImageField(layer, name));
-        break;
-    }
+  if (loaded) {
+    return composeControls();
   }
-
-  return controls;
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TemplateFields);
@@ -343,7 +305,8 @@ const ThumbnailField = ({
     height: '36px'
   };
   const thumbnail = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
-    const media = select('core').getMedia(fields[name]);
+    const media = select('core').getMedia(fields[name]); // Try to get thumnail first.
+
     let url = media?.media_details?.sizes?.thumbnail?.source_url;
 
     if (!url) {

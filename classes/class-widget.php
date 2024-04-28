@@ -63,30 +63,6 @@ class Widget {
 	}
 
 	/**
-	 * Init widget on post editing page.
-	 */
-	public function init_post_widget() {
-		/**
-		 * Easy way to hide metabox.
-		 *
-		 * @param bool $hide_metabox Set true to hide metabox.
-		 */
-		$hide_metabox = apply_filters( 'sharing_image_hide_metabox', false );
-
-		if ( $hide_metabox ) {
-			return;
-		}
-
-		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
-
-		// Handle actions on post save.
-		add_action( 'save_post', array( $this, 'save_metabox' ), 10 );
-
-		// Add required assets and objects.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
-	}
-
-	/**
 	 * Init post sidebar for gutenberg enabled dashboard.
 	 */
 	public function init_post_sidebar() {
@@ -151,6 +127,30 @@ class Widget {
 	}
 
 	/**
+	 * Init widget on post editing page.
+	 */
+	public function init_post_widget() {
+		/**
+		 * Easy way to hide metabox.
+		 *
+		 * @param bool $hide_metabox Set true to hide metabox.
+		 */
+		$hide_metabox = apply_filters( 'sharing_image_hide_metabox', false );
+
+		if ( $hide_metabox ) {
+			return;
+		}
+
+		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
+
+		// Handle actions on post save.
+		add_action( 'save_post', array( $this, 'save_post_widget' ), 10 );
+
+		// Add required assets and objects.
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
+	}
+
+	/**
 	 * Init widget on taxonomy term editing page.
 	 */
 	public function init_taxonomy_widget() {
@@ -166,7 +166,7 @@ class Widget {
 			add_action( $taxonomy . '_edit_form', array( $this, 'display_widget' ), 10, 2 );
 
 			// Save taxonomy term meta.
-			add_action( 'edited_' . $taxonomy, array( $this, 'save_taxonomy' ) );
+			add_action( 'edited_' . $taxonomy, array( $this, 'save_taxonomy_widget' ) );
 
 			// Enqueue term assets.
 			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_taxonomy_assets' ) );
@@ -209,9 +209,34 @@ class Widget {
 		$post = get_post();
 
 		// Get post meta for current post ID.
-		$meta = get_post_meta( $post->ID, self::META_SOURCE, true );
+		$data = array(
+			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
+			'context'   => 'post',
+			'screen'    => $post->ID,
 
-		$this->enqueue_scripts( $this->create_script_object( $meta, 'post', $post->ID ) );
+			'name'      => array(
+				'source'   => self::META_SOURCE,
+				'fieldset' => self::META_FIELDSET,
+			),
+
+			'meta'      => array(
+				'source'   => get_post_meta( $post->ID, self::META_SOURCE, true ),
+				'fieldset' => get_post_meta( $post->ID, self::META_FIELDSET, true ),
+			),
+
+			'links'     => array(
+				'uploads' => esc_url( admin_url( 'upload.php' ) ),
+			),
+
+			'templates' => $this->settings->get_templates(),
+		);
+
+		/**
+		 * Filter widget script object.
+		 *
+		 * @param array $object Array of widget script object.
+		 */
+		$this->enqueue_scripts( $data );
 	}
 
 	/**
@@ -238,14 +263,41 @@ class Widget {
 		$term_id = absint( $_REQUEST['tag_ID'] );
 		// phpcs:enable WordPress.Security.NonceVerification
 
-		// Get term meta for current term ID.
-		$meta = get_term_meta( $term_id, self::META_SOURCE, true );
+		// Get post meta for current post ID.
+		$data = array(
+			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
+			'context'   => 'term',
+			'screen'    => $term_id,
 
-		$this->enqueue_scripts( $this->create_script_object( $meta, 'term', $term_id ) );
+			'name'      => array(
+				'source'   => self::META_SOURCE,
+				'fieldset' => self::META_FIELDSET,
+			),
+
+			'meta'      => array(
+				'source'   => get_term_meta( $term_id, self::META_SOURCE, true ),
+				'fieldset' => get_term_meta( $term_id, self::META_FIELDSET, true ),
+			),
+
+			'links'     => array(
+				'uploads' => esc_url( admin_url( 'upload.php' ) ),
+			),
+
+			'templates' => $this->settings->get_templates(),
+		);
+
+		/**
+		 * Filter widget script object.
+		 *
+		 * @param array $object Array of widget script object.
+		 */
+		$this->enqueue_scripts( $data );
 	}
 
 	/**
 	 * Add Gutenberg block scripts and sryles.
+	 *
+	 * @since 3.0
 	 */
 	public function enqueue_sidebar_assets() {
 		$asset = require SHARING_IMAGE_DIR . 'assets/sidebar/index.asset.php';
@@ -278,7 +330,7 @@ class Widget {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	public function save_metabox( $post_id ) {
+	public function save_post_widget( $post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -300,23 +352,19 @@ class Widget {
 			return;
 		}
 
-		if ( ! isset( $_POST['sharing_image_picker'] ) ) {
-			return;
+		if ( isset( $_POST[ self::META_SOURCE ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$meta = $this->sanitize_source( wp_unslash( $_POST[ self::META_SOURCE ] ) );
+
+			update_post_meta( $post_id, self::META_SOURCE, $meta );
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$meta = $this->sanitize_picker( wp_unslash( $_POST['sharing_image_picker'] ) );
+		if ( isset( $_POST[ self::META_FIELDSET ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$meta = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
 
-		/**
-		 * Filters updated post meta.
-		 *
-		 * @param string $meta    Updated post meta.
-		 * @param string $post_id Post ID.
-		 */
-		$meta = apply_filters( 'sharing_image_update_post_meta', $meta, $post_id );
-
-		// Update post meta.
-		update_post_meta( $post_id, self::META_SOURCE, $meta );
+			update_post_meta( $post_id, self::META_FIELDSET, $meta );
+		}
 	}
 
 	/**
@@ -324,7 +372,11 @@ class Widget {
 	 *
 	 * @param int $term_id Term ID.
 	 */
-	public function save_taxonomy( $term_id ) {
+	public function save_taxonomy_widget( $term_id ) {
+		if ( ! current_user_can( 'edit_term', $term_id ) ) {
+			return;
+		}
+
 		if ( ! isset( $_POST['sharing_image_nonce'] ) ) {
 			return;
 		}
@@ -334,26 +386,19 @@ class Widget {
 			return;
 		}
 
-		if ( ! current_user_can( 'edit_term', $term_id ) ) {
-			return;
+		if ( isset( $_POST[ self::META_SOURCE ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$meta = $this->sanitize_source( wp_unslash( $_POST[ self::META_SOURCE ] ) );
+
+			update_term_meta( $term_id, self::META_SOURCE, $meta );
 		}
 
-		if ( ! isset( $_POST['sharing_image_picker'] ) ) {
-			return;
+		if ( isset( $_POST[ self::META_FIELDSET ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$meta = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
+
+			update_term_meta( $term_id, self::META_FIELDSET, $meta );
 		}
-
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$meta = $this->sanitize_picker( wp_unslash( $_POST['sharing_image_picker'] ) );
-
-		/**
-		 * Filters term meta on update.
-		 *
-		 * @param string $meta    Updated term meta.
-		 * @param string $term_id Term ID.
-		 */
-		$meta = apply_filters( 'sharing_image_update_term_meta', $meta, $term_id );
-
-		update_term_meta( $term_id, self::META_SOURCE, $meta );
 	}
 
 	/**
@@ -369,7 +414,7 @@ class Widget {
 	}
 
 	/**
-	 * TODO:
+	 * Create new endpoint for generate button in Gutenberg sidebar.
 	 */
 	public function add_generate_endpoint() {
 		register_rest_route(
@@ -386,7 +431,9 @@ class Widget {
 	}
 
 	/**
-	 * TODO:
+	 * Handle generate button in Gutenberg sidebar.
+	 *
+	 * @param WP_REST_Request $request Request params.
 	 */
 	public function handle_rest_generator( $request ) {
 		$post_id = $request->get_param( 'id' );
@@ -407,19 +454,23 @@ class Widget {
 			$params['fieldset'] = array();
 		}
 
-		$fieldset = array_map( 'sanitize_textarea_field', $params['fieldset'] );
+		$fieldset = $this->sanitize_fieldset( $params['fieldset'] );
 
 		$this->generate_poster( $fieldset, $index, $post_id, 'post' );
 	}
 
 	/**
-	 * TODO: replace here
+	 * Handle generate button on Classic Editor and taxonomy widget.
 	 */
 	public function handle_ajax_generator() {
 		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
 			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+		}
+
+		if ( empty( $_POST[ self::META_SOURCE ]['template'] ) ) {
+			wp_send_json_error( __( 'Template id cannot be empty.', 'sharing-image' ), 400 );
 		}
 
 		$screen_id = 0;
@@ -434,59 +485,31 @@ class Widget {
 			$context = sanitize_key( wp_unslash( $_POST['sharing_image_context'] ) );
 		}
 
-		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		$picker = $this->sanitize_picker( wp_unslash( $_POST['sharing_image_picker'] ) );
-
-		if ( ! isset( $picker['template'] ) ) {
-			wp_send_json_error( esc_html__( 'Template id cannot be empty', 'sharing-image' ), 400 );
-		}
-
-		$id = absint( $picker['template'] );
-
-		// Get templates list from settings.
-		$templates = $this->settings->get_templates();
-
-		if ( ! isset( $templates[ $id ] ) ) {
-			wp_send_json_error( esc_html__( 'Wrong template id', 'sharing-image' ), 400 );
+		if ( empty( $_POST[ self::META_SOURCE ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$fieldset = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
 		}
 
 		$fieldset = array();
 
-		if ( isset( $picker['fieldset'][ $id ] ) ) {
-			$fieldset = $picker['fieldset'][ $id ];
+		if ( ! empty( $_POST[ self::META_FIELDSET ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$fieldset = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
 		}
 
-		$generator = new Generator();
+		$index = sanitize_key( $_POST[ self::META_SOURCE ]['template'] );
 
-		// Prepare template editor.
-		$template = $generator->prepare_template( $templates[ $id ], $fieldset, null, $screen_id, $context );
-
-		if ( ! $generator->check_required( $template ) ) {
-			wp_send_json_error( esc_html__( 'Wrong template settings', 'sharing-image' ), 400 );
-		}
-
-		list( $path, $url ) = $generator->get_upload_file();
-
-		// Generate image and save it to given path.
-		$poster = $generator->create_poster( $template, $path );
-
-		if ( is_wp_error( $poster ) ) {
-			wp_send_json_error( $poster->get_error_message(), 400 );
-		}
-
-		$this->save_attachment( $path, $screen_id, $context );
-
-		$source = array(
-			'poster' => $url,
-			'width'  => $template['width'],
-			'height' => $template['height'],
-		);
-
-		wp_send_json_success( $source );
+		$this->generate_poster( $fieldset, $index, $screen_id, $context );
 	}
 
 	/**
 	 * Generate poster by AJAX request.
+	 * Used in widget and sidebar.
+	 *
+	 * @param array   $fieldset  Fieldset data from widget.
+	 * @param integer $index     Template index from editor.
+	 * @param integer $screen_id Post or term ID from admin screen.
+	 * @param string  $context   Screen ID context field. Can be settings, post or term.
 	 */
 	private function generate_poster( $fieldset, $index, $screen_id, $context ) {
 		$templates = $this->settings->get_templates();
@@ -660,6 +683,13 @@ class Widget {
 		// Translations availible only for WP 5.0+.
 		wp_set_script_translations( 'sharing-image-widget', 'sharing-image' );
 
+		/**
+		 * Filter widget script object.
+		 *
+		 * @param array $object Array of widget script object.
+		 */
+		$data = apply_filters( 'sharing_image_widget_object', $data );
+
 		// Add widget script object.
 		wp_localize_script( 'sharing-image-widget', 'sharingImageWidget', $data );
 	}
@@ -693,8 +723,9 @@ class Widget {
 		 * Filters fieldset meta.
 		 *
 		 * @since 3.0
-		 * @param array $sanitized List of sanitized picker fields.
-		 * @param array $picker    List of picker fields before sanitization.
+		 *
+		 * @param array $sanitized List of sanitized fields.
+		 * @param array $source    List of fields before sanitization.
 		 */
 		return apply_filters( 'sharing_image_sanitize_source', $sanitized, $source );
 	}
@@ -754,10 +785,14 @@ class Widget {
 	 */
 	private function create_script_object( $meta, $context, $screen_id ) {
 		$object = array(
-			'meta'      => $meta,
 			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
 			'context'   => $context,
 			'screen'    => $screen_id,
+
+			'meta'      => array(
+				'source'   => self::META_SOURCE,
+				'fieldset' => self::META_FIELDSET,
+			),
 
 			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),

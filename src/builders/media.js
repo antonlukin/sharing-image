@@ -21,6 +21,16 @@ function buildMedia( args ) {
 		args.prepend.insertBefore( media, args.prepend.firstChild );
 	}
 
+	if ( args.hasOwnProperty( 'label' ) ) {
+		const label = buildElement( 'h4', {
+			text: args.label,
+		} );
+
+		if ( null !== args.label ) {
+			media.appendChild( label );
+		}
+	}
+
 	// Labels are required.
 	args.labels = args.labels || {};
 

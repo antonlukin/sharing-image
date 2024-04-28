@@ -61,7 +61,7 @@ class Generator {
 	 * Used to fill fieldset texts and background image.
 	 *
 	 * @param array   $template  List of template data.
-	 * @param array   $fieldset  Optional. Fieldset data from picker.
+	 * @param array   $fieldset  Optional. Fieldset data from widget.
 	 * @param string  $index     Optional. Template index from editor.
 	 * @param integer $screen_id Optional. Post or term ID from admin screen.
 	 * @param string  $context   Optional. Screen ID context field. Can be settings, post or term.
@@ -101,7 +101,7 @@ class Generator {
 		 * Filters template before generation.
 		 *
 		 * @param array   $template  List of template data.
-		 * @param array   $fieldset  Fieldset data from picker.
+		 * @param array   $fieldset  Fieldset data from widget or sidebars.
 		 * @param string  $index     Template index from editor.
 		 * @param integer $screen_id Post or term ID from admin screen.
 		 * @param string  $context   Screen ID context field. Can be settings, post or term.
@@ -113,7 +113,7 @@ class Generator {
 	 * Prepare image layer template.
 	 *
 	 * @param array  $layer    Image layer data.
-	 * @param array  $fieldset Fieldset data from picker.
+	 * @param array  $fieldset Fieldset data from widget or sidebar.
 	 * @param string $key      Layer key.
 	 *
 	 * @return array List of image layer data.
@@ -132,7 +132,7 @@ class Generator {
 	 * Prepare text layer template.
 	 *
 	 * @param array  $layer    Text layer data.
-	 * @param array  $fieldset Fieldset data from picker.
+	 * @param array  $fieldset Fieldset data from widget or sidebar.
 	 * @param string $key      Layer key.
 	 *
 	 * @return array List of text layer data.

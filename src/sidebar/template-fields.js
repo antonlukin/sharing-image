@@ -1,9 +1,7 @@
-import { __ } from '@wordpress/i18n';
 import { useSelect } from '@wordpress/data';
-import { useState } from '@wordpress/element';
-import { Button, BaseControl, TextareaControl, Flex } from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
+import { BaseControl, TextareaControl, Flex } from '@wordpress/components';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { Icon, image } from '@wordpress/icons';
 
 import ThumbnailField from './thumbnail-field';
 
@@ -25,7 +23,7 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 	} );
 
 	/**
-	 *
+	 * Featured thumbnail.
 	 */
 	presets.featured = useSelect( ( select ) => {
 		return select( 'core/editor' ).getEditedPostAttribute( 'featured_media' );
@@ -35,6 +33,7 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 	 * Local changed states.
 	 */
 	const [ changed, setChanged ] = useState( {} );
+	const [ loaded, setLoaded ] = useState( false );
 
 	/**
 	 * Save changed state on field update.
@@ -49,59 +48,17 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 		setChanged( { ...changed, [ name ]: true } );
 	};
 
-	// // Get image thumbnails by ID.
-	// const thumbnails = useSelect(
-	// 	( select ) => {
-	// 		const images = {};
+	useEffect( () => {
+		for ( const key in layers ) {
+			const layer = layers[ key ];
 
-	// 		for ( const name in fields ) {
-	// 			const layer = layers[ name ];
+			if ( fields[ key ] && fields[ key ] !== presets[ layer.preset ] ) {
+				setChanged( { ...changed, [ key ]: true } );
+			}
+		}
 
-	// 			// Skip not dynamic image layers.
-	// 			if ( ! layer?.dynamic || layer?.type !== 'image' ) {
-	// 				continue;
-	// 			}
-
-	// 			const media = select( 'core' ).getMedia( fields[ name ] );
-	// 			console.log( media );
-
-	// 			images[ name ] = media?.media_details?.sizes?.thumbnail?.source_url;
-
-	// 			if ( ! images[ name ] ) {
-	// 				images[ name ] = media?.source_url;
-	// 			}
-	// 		}
-
-	// 		return images;
-	// 	},
-	// 	[ fields ]
-	// );
-
-	/**
-	 * Helper method for image field rendering.
-	 *
-	 * @param {string}   name Fieldset name.
-	 * @param {Function} open MediaUpload open function.
-	 */
-	const renderImageButton = ( name, open ) => {
-		const styles = { borderRadius: '2px', objectFit: 'cover', width: '36px', height: '36px' };
-
-		// if ( fields[ name ] ) {
-		return <ThumbnailField fields={ fields } open={ open } changeField={ changeField } name={ name } />;
-		// }
-
-		styles.opacity = '0.5';
-
-		return (
-			<>
-				<Icon icon={ image } style={ styles } />
-
-				<Button variant="link" onClick={ open }>
-					{ __( 'Set layer image', 'sharing-image' ) }
-				</Button>
-			</>
-		);
-	};
+		setLoaded( true );
+	}, []); // eslint-disable-line
 
 	/**
 	 * Display dynamic text field
@@ -166,27 +123,33 @@ const TemplateFields = ( { layers, updateFieldset, fields } ) => {
 		);
 	};
 
-	const controls = [];
+	const composeControls = () => {
+		const controls = [];
 
-	for ( const name in layers ) {
-		const layer = layers[ name ];
+		for ( const key in layers ) {
+			const layer = layers[ key ];
 
-		if ( ! layer.dynamic ) {
-			continue;
+			if ( ! layer.dynamic ) {
+				continue;
+			}
+
+			switch ( layer.type ) {
+				case 'text':
+					controls.push( displayTextField( layer, key ) );
+					break;
+
+				case 'image':
+					controls.push( displayImageField( layer, key ) );
+					break;
+			}
 		}
 
-		switch ( layer.type ) {
-			case 'text':
-				controls.push( displayTextField( layer, name ) );
-				break;
+		return controls;
+	};
 
-			case 'image':
-				controls.push( displayImageField( layer, name ) );
-				break;
-		}
+	if ( loaded ) {
+		return composeControls();
 	}
-
-	return controls;
 };
 
 export default TemplateFields;
