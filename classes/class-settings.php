@@ -704,6 +704,8 @@ class Settings {
 
 		$asset = require SHARING_IMAGE_DIR . 'assets/settings/index.asset.php';
 
+		wp_enqueue_media();
+
 		wp_enqueue_style(
 			'sharing-image-settings',
 			plugins_url( 'assets/settings/index.css', SHARING_IMAGE_FILE ),

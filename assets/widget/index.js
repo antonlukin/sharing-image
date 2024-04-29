@@ -454,10 +454,44 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /**
+ * Display image by it ID in figure tag.
+ *
+ * @param {HTMLElement} media Media element.
+ * @param {number}      value Image attachment value.
+ */
+
+function displayImage(media, value) {
+  let figure = media.querySelector('figure');
+
+  if (figure) {
+    media.removeChild(figure);
+  }
+
+  if (!value && !wp.media) {
+    return;
+  }
+
+  figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure');
+  console.log(media.querySelector('h4'));
+
+  if (media.querySelector('h4')) {
+    media.insertBefore(figure, figure.nextSibling);
+  }
+
+  const image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
+    append: figure
+  });
+  const frame = wp.media.attachment(value).fetch();
+  frame.then(data => {
+    image.src = data.sizes?.thumbnail?.url || data.url;
+  });
+}
+/**
  * Helper to create media block.
  *
  * @param {Object} args List of media options.
  */
+
 
 function buildMedia(args) {
   const media = (0,_control__WEBPACK_IMPORTED_MODULE_1__["default"])({
@@ -536,6 +570,10 @@ function buildMedia(args) {
       upload.textContent = args.labels.remove;
     }
 
+    if (args.image) {
+      displayImage(media, id);
+    }
+
     details.classList.remove('hidden');
   }; // Helper function to remove attachment value.
 
@@ -547,6 +585,11 @@ function buildMedia(args) {
     })); // Set default button title.
 
     upload.textContent = args.labels.button;
+
+    if (args.image) {
+      displayImage(media, 0);
+    }
+
     details.classList.add('hidden');
   }; // Update fields if this layer has attachment.
 
@@ -822,6 +865,10 @@ __webpack_require__.r(__webpack_exports__);
 function uploadMedia(options, callback) {
   if (!options.hasOwnProperty('multiple')) {
     options.multiple = false;
+  }
+
+  if (!wp.media) {
+    return;
   }
 
   const frame = wp.media(options);
@@ -1240,14 +1287,14 @@ function createTemplateSelector(designer, selected) {
   return template;
 }
 /**
- * Try to prefill caption field.
+ * Try to prefill text layer field.
  *
  * @param {HTMLElement} textarea Caption textarea field.
  * @param {string}      preset   Preset field.
  */
 
 
-function fillCaptionPreset(textarea, preset) {
+function fillTextLayerPreset(textarea, preset) {
   const source = document.getElementById(preset);
 
   if (null === source) {
@@ -1269,30 +1316,11 @@ function fillCaptionPreset(textarea, preset) {
   });
   updateCaption();
 }
-/**
- * Create designer image layer.
- *
- * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object}      layer    Layer data.
- * @param {string}      key      Layer key.
- * @param {Array}       values   Template fieldset values.
- */
 
-
-function createLayerImage(fieldset, layer, key, values) {
-  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].media({
-    name: params.name.fieldset + `[${key}]`,
-    classes: ['sharing-image-widget-image'],
-    label: layer.title || null,
-    value: values[key] || '',
-    link: params.links.uploads,
-    labels: {
-      button: wp.i18n.__('Set layer image', 'sharing-image'),
-      heading: wp.i18n.__('Select image', 'sharing-image'),
-      details: wp.i18n.__('Attachment', 'sharing-image')
-    },
-    mime: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
-    append: fieldset
+function fillImageLayerPreset(media) {
+  const frame = wp.media.featuredImage.frame();
+  frame.on('select', () => {
+    console.log(frame.state().get('selection').first().toJSON());
   });
 }
 /**
@@ -1316,12 +1344,44 @@ function createLayerText(fieldset, layer, key, values) {
   textarea.value = values[key] || ''; // Preset title.
 
   if (layer.preset === 'title') {
-    fillCaptionPreset(textarea, 'title');
+    fillTextLayerPreset(textarea, 'title');
   } // Preset excerpt.
 
 
   if (layer.preset === 'excerpt') {
-    fillCaptionPreset(textarea, 'excerpt');
+    fillTextLayerPreset(textarea, 'excerpt');
+  }
+}
+/**
+ * Create designer image layer.
+ *
+ * @param {HTMLElement} fieldset Fieldset element.
+ * @param {Object}      layer    Layer data.
+ * @param {string}      key      Layer key.
+ * @param {Array}       values   Template fieldset values.
+ */
+
+
+function createLayerImage(fieldset, layer, key, values) {
+  const media = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].media({
+    name: params.name.fieldset + `[${key}]`,
+    classes: ['sharing-image-widget-image'],
+    label: layer.title || null,
+    value: values[key] || '',
+    labels: {
+      button: wp.i18n.__('Set layer image', 'sharing-image'),
+      heading: wp.i18n.__('Select image', 'sharing-image'),
+      details: wp.i18n.__('Attachment', 'sharing-image'),
+      remove: wp.i18n.__('Remove image', 'sharing-image')
+    },
+    mime: ['image/png', 'image/jpeg', 'image/gif', 'image/webp'],
+    image: true,
+    remove: true,
+    append: fieldset
+  }); // Preset title.
+
+  if (layer.preset === 'featured') {
+    fillImageLayerPreset(media);
   }
 }
 /**

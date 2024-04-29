@@ -150,12 +150,12 @@ function createTemplateSelector( designer, selected ) {
 }
 
 /**
- * Try to prefill caption field.
+ * Try to prefill text layer field.
  *
  * @param {HTMLElement} textarea Caption textarea field.
  * @param {string}      preset   Preset field.
  */
-function fillCaptionPreset( textarea, preset ) {
+function fillTextLayerPreset( textarea, preset ) {
 	const source = document.getElementById( preset );
 
 	if ( null === source ) {
@@ -180,28 +180,11 @@ function fillCaptionPreset( textarea, preset ) {
 	updateCaption();
 }
 
-/**
- * Create designer image layer.
- *
- * @param {HTMLElement} fieldset Fieldset element.
- * @param {Object}      layer    Layer data.
- * @param {string}      key      Layer key.
- * @param {Array}       values   Template fieldset values.
- */
-function createLayerImage( fieldset, layer, key, values ) {
-	Build.media( {
-		name: params.name.fieldset + `[${ key }]`,
-		classes: [ 'sharing-image-widget-image' ],
-		label: layer.title || null,
-		value: values[ key ] || '',
-		link: params.links.uploads,
-		labels: {
-			button: wp.i18n.__( 'Set layer image', 'sharing-image' ),
-			heading: wp.i18n.__( 'Select image', 'sharing-image' ),
-			details: wp.i18n.__( 'Attachment', 'sharing-image' ),
-		},
-		mime: [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ],
-		append: fieldset,
+function fillImageLayerPreset( media ) {
+	const frame = wp.media.featuredImage.frame();
+
+	frame.on( 'select', () => {
+		console.log( frame.state().get( 'selection' ).first().toJSON() );
 	} );
 }
 
@@ -229,12 +212,44 @@ function createLayerText( fieldset, layer, key, values ) {
 
 	// Preset title.
 	if ( layer.preset === 'title' ) {
-		fillCaptionPreset( textarea, 'title' );
+		fillTextLayerPreset( textarea, 'title' );
 	}
 
 	// Preset excerpt.
 	if ( layer.preset === 'excerpt' ) {
-		fillCaptionPreset( textarea, 'excerpt' );
+		fillTextLayerPreset( textarea, 'excerpt' );
+	}
+}
+
+/**
+ * Create designer image layer.
+ *
+ * @param {HTMLElement} fieldset Fieldset element.
+ * @param {Object}      layer    Layer data.
+ * @param {string}      key      Layer key.
+ * @param {Array}       values   Template fieldset values.
+ */
+function createLayerImage( fieldset, layer, key, values ) {
+	const media = Build.media( {
+		name: params.name.fieldset + `[${ key }]`,
+		classes: [ 'sharing-image-widget-image' ],
+		label: layer.title || null,
+		value: values[ key ] || '',
+		labels: {
+			button: wp.i18n.__( 'Set layer image', 'sharing-image' ),
+			heading: wp.i18n.__( 'Select image', 'sharing-image' ),
+			details: wp.i18n.__( 'Attachment', 'sharing-image' ),
+			remove: wp.i18n.__( 'Remove image', 'sharing-image' ),
+		},
+		mime: [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ],
+		image: true,
+		remove: true,
+		append: fieldset,
+	} );
+
+	// Preset title.
+	if ( layer.preset === 'featured' ) {
+		fillImageLayerPreset( media );
 	}
 }
 

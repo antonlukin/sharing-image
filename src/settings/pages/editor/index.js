@@ -371,29 +371,9 @@ function createTextDynamicFields( layer, name, data ) {
  * @param {Object}      data  Layer data object.
  */
 function createImageDynamicFields( layer, name, data ) {
-	const control = Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+	const dynamic = Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-gapped' ],
 		append: layer,
-	} );
-
-	const media = Build.media( {
-		name: name + '[attachment]',
-		classes: [ 'sharing-image-editor-control', 'control-media' ],
-		value: data.attachment,
-		link: params.links.uploads,
-		labels: {
-			button: wp.i18n.__( 'Select an image', 'sharing-image' ),
-			heading: wp.i18n.__( 'Select layer image', 'sharing-image' ),
-			details: wp.i18n.__( 'Attachment details', 'sharing-image' ),
-			remove: wp.i18n.__( 'Remove image', 'sharing-image' ),
-		},
-		append: layer,
-		remove: true,
-		help: wp.i18n.__(
-			'This image is for example purposes only, to preview the editors appearance.',
-			'sharing-image'
-		),
-		mime: [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ],
 	} );
 
 	const checkbox = Build.checkbox(
@@ -406,8 +386,29 @@ function createImageDynamicFields( layer, name, data ) {
 			label: wp.i18n.__( 'Dynamic image. Can be updated on the post editing screen.', 'sharing-image' ),
 			checked: data.dynamic,
 		},
-		control
+		dynamic
 	);
+
+	Build.media( {
+		name: name + '[attachment]',
+		classes: [ 'sharing-image-editor-control-media' ],
+		value: data.attachment,
+		link: params.links.uploads,
+		labels: {
+			button: wp.i18n.__( 'Select an image', 'sharing-image' ),
+			heading: wp.i18n.__( 'Select layer image', 'sharing-image' ),
+			details: wp.i18n.__( 'Attachment details', 'sharing-image' ),
+			remove: wp.i18n.__( 'Remove image', 'sharing-image' ),
+		},
+		append: dynamic,
+		image: true,
+		remove: true,
+		help: wp.i18n.__(
+			'This image is for example purposes only, to preview the editors appearance.',
+			'sharing-image'
+		),
+		mime: [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ],
+	} );
 
 	const fields = [];
 
@@ -453,14 +454,14 @@ function createImageDynamicFields( layer, name, data ) {
 			field.classList.toggle( 'control-hidden' );
 		} );
 
-		media.classList.remove( 'control-help' );
+		dynamic.classList.add( 'control-unhelp' );
 
 		if ( checkbox.checked ) {
-			media.classList.add( 'control-help' );
+			dynamic.classList.remove( 'control-unhelp' );
 		}
 	};
 
-	if ( checkbox.checked ) {
+	if ( ! checkbox.checked ) {
 		updateDynamic();
 	}
 

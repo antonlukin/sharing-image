@@ -4,6 +4,40 @@ import buildControl from './control';
 import Helper from '../helpers';
 
 /**
+ * Display image by it ID in figure tag.
+ *
+ * @param {HTMLElement} media Media element.
+ * @param {number}      value Image attachment value.
+ */
+function displayImage( media, value ) {
+	let figure = media.querySelector( 'figure' );
+
+	if ( figure ) {
+		media.removeChild( figure );
+	}
+
+	if ( ! value && ! wp.media ) {
+		return;
+	}
+
+	// figure = buildElement( 'figure' );
+
+	// console.log( media.querySelector( 'h4' ) );
+
+	// if ( media.querySelector( 'h4' ) ) {
+	// 	media.insertBefore( figure, figure.nextSibling );
+	// }
+
+	const image = buildElement( 'img', { append: figure } );
+
+	const frame = wp.media.attachment( value ).fetch();
+
+	frame.then( ( data ) => {
+		image.src = data.sizes?.thumbnail?.url || data.url;
+	} );
+}
+
+/**
  * Helper to create media block.
  *
  * @param {Object} args List of media options.
@@ -88,6 +122,10 @@ function buildMedia( args ) {
 			upload.textContent = args.labels.remove;
 		}
 
+		if ( args.image ) {
+			displayImage( media, id );
+		}
+
 		details.classList.remove( 'hidden' );
 	};
 
@@ -98,6 +136,10 @@ function buildMedia( args ) {
 
 		// Set default button title.
 		upload.textContent = args.labels.button;
+
+		if ( args.image ) {
+			displayImage( media, 0 );
+		}
 
 		details.classList.add( 'hidden' );
 	};

@@ -69,26 +69,9 @@
       max-width: 100%;
     }
 
-    &.control-media {
-      flex-flow: row wrap;
-      align-items: center;
-
-      .button {
-        margin-right: 14px;
-      }
-
-      .button:disabled~* {
-        display: none;
-      }
-
+    &.control-unhelp {
       small {
         display: none;
-      }
-    }
-
-    &.control-help {
-      small {
-        display: block;
       }
     }
 
@@ -209,6 +192,12 @@
 
       > * {
         pointer-events: none;
+      }
+    }
+
+    &.control-gapped {
+      > :first-child {
+        margin-bottom: 20px;
       }
     }
   }

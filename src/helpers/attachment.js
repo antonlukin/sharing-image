@@ -9,6 +9,10 @@ function uploadMedia( options, callback ) {
 		options.multiple = false;
 	}
 
+	if ( ! wp.media ) {
+		return;
+	}
+
 	const frame = wp.media( options );
 
 	frame.on( 'select', () => {

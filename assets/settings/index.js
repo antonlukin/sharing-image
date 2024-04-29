@@ -514,10 +514,44 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /**
+ * Display image by it ID in figure tag.
+ *
+ * @param {HTMLElement} media Media element.
+ * @param {number}      value Image attachment value.
+ */
+
+function displayImage(media, value) {
+  let figure = media.querySelector('figure');
+
+  if (figure) {
+    media.removeChild(figure);
+  }
+
+  if (!value && !wp.media) {
+    return;
+  }
+
+  figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure');
+  console.log(media.querySelector('h4'));
+
+  if (media.querySelector('h4')) {
+    media.insertBefore(figure, figure.nextSibling);
+  }
+
+  const image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
+    append: figure
+  });
+  const frame = wp.media.attachment(value).fetch();
+  frame.then(data => {
+    image.src = data.sizes?.thumbnail?.url || data.url;
+  });
+}
+/**
  * Helper to create media block.
  *
  * @param {Object} args List of media options.
  */
+
 
 function buildMedia(args) {
   const media = (0,_control__WEBPACK_IMPORTED_MODULE_1__["default"])({
@@ -596,6 +630,10 @@ function buildMedia(args) {
       upload.textContent = args.labels.remove;
     }
 
+    if (args.image) {
+      displayImage(media, id);
+    }
+
     details.classList.remove('hidden');
   }; // Helper function to remove attachment value.
 
@@ -607,6 +645,11 @@ function buildMedia(args) {
     })); // Set default button title.
 
     upload.textContent = args.labels.button;
+
+    if (args.image) {
+      displayImage(media, 0);
+    }
+
     details.classList.add('hidden');
   }; // Update fields if this layer has attachment.
 
@@ -882,6 +925,10 @@ __webpack_require__.r(__webpack_exports__);
 function uploadMedia(options, callback) {
   if (!options.hasOwnProperty('multiple')) {
     options.multiple = false;
+  }
+
+  if (!wp.media) {
+    return;
   }
 
   const frame = wp.media(options);
@@ -1862,25 +1909,9 @@ function createTextDynamicFields(layer, name, data) {
 
 
 function createImageDynamicFields(layer, name, data) {
-  const control = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
-    classes: ['sharing-image-editor-control'],
+  const dynamic = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
+    classes: ['sharing-image-editor-control', 'control-gapped'],
     append: layer
-  });
-  const media = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].media({
-    name: name + '[attachment]',
-    classes: ['sharing-image-editor-control', 'control-media'],
-    value: data.attachment,
-    link: params.links.uploads,
-    labels: {
-      button: wp.i18n.__('Select an image', 'sharing-image'),
-      heading: wp.i18n.__('Select layer image', 'sharing-image'),
-      details: wp.i18n.__('Attachment details', 'sharing-image'),
-      remove: wp.i18n.__('Remove image', 'sharing-image')
-    },
-    append: layer,
-    remove: true,
-    help: wp.i18n.__('This image is for example purposes only, to preview the editors appearance.', 'sharing-image'),
-    mime: ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
   });
   const checkbox = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].checkbox({
     classes: ['sharing-image-editor-control-checkbox'],
@@ -1890,7 +1921,24 @@ function createImageDynamicFields(layer, name, data) {
     },
     label: wp.i18n.__('Dynamic image. Can be updated on the post editing screen.', 'sharing-image'),
     checked: data.dynamic
-  }, control);
+  }, dynamic);
+  _builders__WEBPACK_IMPORTED_MODULE_1__["default"].media({
+    name: name + '[attachment]',
+    classes: ['sharing-image-editor-control-media'],
+    value: data.attachment,
+    link: params.links.uploads,
+    labels: {
+      button: wp.i18n.__('Select an image', 'sharing-image'),
+      heading: wp.i18n.__('Select layer image', 'sharing-image'),
+      details: wp.i18n.__('Attachment details', 'sharing-image'),
+      remove: wp.i18n.__('Remove image', 'sharing-image')
+    },
+    append: dynamic,
+    image: true,
+    remove: true,
+    help: wp.i18n.__('This image is for example purposes only, to preview the editors appearance.', 'sharing-image'),
+    mime: ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+  });
   const fields = [];
   const presets = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
     classes: ['sharing-image-editor-control', 'control-hidden'],
@@ -1928,14 +1976,14 @@ function createImageDynamicFields(layer, name, data) {
     fields.forEach(field => {
       field.classList.toggle('control-hidden');
     });
-    media.classList.remove('control-help');
+    dynamic.classList.add('control-unhelp');
 
     if (checkbox.checked) {
-      media.classList.add('control-help');
+      dynamic.classList.remove('control-unhelp');
     }
   };
 
-  if (checkbox.checked) {
+  if (!checkbox.checked) {
     updateDynamic();
   }
 
