@@ -50,9 +50,9 @@ class Widget {
 	 * Init class actions and filters.
 	 */
 	public function init() {
-		add_action( 'init', array( $this, 'init_taxonomy_widget' ) );
 		add_action( 'init', array( $this, 'init_post_widget' ) );
 		add_action( 'init', array( $this, 'init_post_sidebar' ) );
+		add_action( 'init', array( $this, 'init_taxonomy_widget' ) );
 
 		// Generate poster handlers.
 		add_action( 'wp_ajax_sharing_image_generate', array( $this, 'handle_ajax_generator' ) );

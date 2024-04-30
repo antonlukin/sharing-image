@@ -194,7 +194,7 @@ __webpack_require__.r(__webpack_exports__);
  * @param {string} tag  Element tagname.
  * @param {Object} args List of element options.
  */
-function buildElement(tag, args) {
+function buildElement(tag, args = {}) {
   const element = document.createElement(tag); // Set class list
 
   if (args.hasOwnProperty('classes')) {
@@ -471,17 +471,18 @@ function displayImage(media, value) {
     return;
   }
 
-  figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure');
-  console.log(media.querySelector('h4'));
+  const frame = wp.media.attachment(value).fetch();
+  figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure', {
+    prepend: media
+  });
 
   if (media.querySelector('h4')) {
-    media.insertBefore(figure, figure.nextSibling);
+    media.insertBefore(figure, media.querySelector('h4').nextSibling);
   }
 
   const image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
     append: figure
   });
-  const frame = wp.media.attachment(value).fetch();
   frame.then(data => {
     image.src = data.sizes?.thumbnail?.url || data.url;
   });
@@ -525,7 +526,7 @@ function buildMedia(args) {
     },
     append: media
   });
-  const upload = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('button', {
+  const button = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('button', {
     classes: ['button'],
     text: args.labels.button,
     attributes: {
@@ -567,7 +568,7 @@ function buildMedia(args) {
     }
 
     if (args.remove) {
-      upload.textContent = args.labels.remove;
+      button.textContent = args.labels.remove;
     }
 
     if (args.image) {
@@ -584,21 +585,26 @@ function buildMedia(args) {
       bubbles: true
     })); // Set default button title.
 
-    upload.textContent = args.labels.button;
+    button.textContent = args.labels.button;
 
     if (args.image) {
       displayImage(media, 0);
     }
 
     details.classList.add('hidden');
-  }; // Update fields if this layer has attachment.
+  };
+
+  if (args.image) {
+    displayImage(media, 0);
+  } // Update fields if this layer has attachment.
 
 
   if (args.value) {
     setAttachment(args.value);
-  }
+  } // Handle upload button.
 
-  upload.addEventListener('click', () => {
+
+  button.addEventListener('click', () => {
     if (args.remove && attachment.value) {
       return removeAttachment();
     }
@@ -615,6 +621,16 @@ function buildMedia(args) {
     _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].attachment(options, id => {
       setAttachment(id);
     });
+  }); // Create custom event to set attachment.
+
+  media.addEventListener('set_attachment', e => {
+    if (e.detail) {
+      setAttachment(e.detail);
+    }
+  }); // Create custom event to remove attachment.
+
+  media.addEventListener('remove_attachment', () => {
+    removeAttachment();
   });
   return media;
 }
@@ -1289,12 +1305,12 @@ function createTemplateSelector(designer, selected) {
 /**
  * Try to prefill text layer field.
  *
- * @param {HTMLElement} textarea Caption textarea field.
+ * @param {HTMLElement} textarea Textarea field.
  * @param {string}      preset   Preset field.
  */
 
 
-function fillTextLayerPreset(textarea, preset) {
+function presetTextLayer(textarea, preset) {
   const source = document.getElementById(preset);
 
   if (null === source) {
@@ -1316,12 +1332,88 @@ function fillTextLayerPreset(textarea, preset) {
   });
   updateCaption();
 }
+/**
+ * Try to prefill text layer field with categories.
+ *
+ * @param {HTMLElement} textarea Textarea field.
+ */
 
-function fillImageLayerPreset(media) {
-  const frame = wp.media.featuredImage.frame();
-  frame.on('select', () => {
-    console.log(frame.state().get('selection').first().toJSON());
+
+function presetTextLayerCategories(textarea) {
+  const metabox = document.getElementById('categorychecklist');
+
+  if (!metabox) {
+    return;
+  } // Helper function to get checked categories.
+
+
+  const updateField = () => {
+    const content = [];
+    metabox.querySelectorAll('input:checked').forEach(el => {
+      if (el.parentNode?.textContent) {
+        content.push(el.parentNode.textContent.trim());
+      }
+    });
+    textarea.value = content.join(', ');
+  };
+
+  metabox.addEventListener('change', () => {
+    updateField();
   });
+  updateField();
+}
+/**
+ * Try to prefill text layer field with tags.
+ *
+ * @param {HTMLElement} textarea Textarea field.
+ */
+
+
+function presetTextLayerTags(textarea) {
+  const metabox = document.getElementById('tagsdiv-post_tag');
+
+  if (!metabox) {
+    return;
+  } // Helper function to get checked categories.
+
+
+  const updateField = () => {};
+
+  metabox.addEventListener('click', () => {});
+  updateField();
+}
+/**
+ * Try to prefill image layer field.
+ *
+ * @param {HTMLElement} media Media element.
+ */
+
+
+function presetImageLayer(media) {
+  const frame = wp.media?.featuredImage?.frame();
+
+  if (frame) {
+    frame.on('select', () => {
+      const selection = frame.state().get('selection').first().toJSON();
+
+      if (selection.id) {
+        media.dispatchEvent(new CustomEvent('set_attachment', {
+          detail: selection.id
+        }));
+      }
+    });
+  } // Find featured image metabox.
+
+
+  const metabox = document.getElementById('postimagediv');
+
+  if (metabox) {
+    metabox.addEventListener('click', e => {
+      if (e.target.id === 'remove-post-thumbnail') {
+        media.dispatchEvent(new CustomEvent('remove_attachment'));
+      }
+    });
+  }
 }
 /**
  * Create designer text layer.
@@ -1344,12 +1436,22 @@ function createLayerText(fieldset, layer, key, values) {
   textarea.value = values[key] || ''; // Preset title.
 
   if (layer.preset === 'title') {
-    fillTextLayerPreset(textarea, 'title');
+    presetTextLayer(textarea, 'title');
   } // Preset excerpt.
 
 
   if (layer.preset === 'excerpt') {
-    fillTextLayerPreset(textarea, 'excerpt');
+    presetTextLayer(textarea, 'excerpt');
+  } // Preset categories.
+
+
+  if (layer.preset === 'categories') {
+    presetTextLayerCategories(textarea);
+  } // Preset tags.
+
+
+  if (layer.preset === 'tags') {
+    presetTextLayerTags(textarea);
   }
 }
 /**
@@ -1381,7 +1483,7 @@ function createLayerImage(fieldset, layer, key, values) {
   }); // Preset title.
 
   if (layer.preset === 'featured') {
-    fillImageLayerPreset(media);
+    presetImageLayer(media);
   }
 }
 /**

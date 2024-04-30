@@ -152,10 +152,10 @@ function createTemplateSelector( designer, selected ) {
 /**
  * Try to prefill text layer field.
  *
- * @param {HTMLElement} textarea Caption textarea field.
+ * @param {HTMLElement} textarea Textarea field.
  * @param {string}      preset   Preset field.
  */
-function fillTextLayerPreset( textarea, preset ) {
+function presetTextLayer( textarea, preset ) {
 	const source = document.getElementById( preset );
 
 	if ( null === source ) {
@@ -180,12 +180,89 @@ function fillTextLayerPreset( textarea, preset ) {
 	updateCaption();
 }
 
-function fillImageLayerPreset( media ) {
-	const frame = wp.media.featuredImage.frame();
+/**
+ * Try to prefill text layer field with categories.
+ *
+ * @param {HTMLElement} textarea Textarea field.
+ */
+function presetTextLayerCategories( textarea ) {
+	const metabox = document.getElementById( 'categorychecklist' );
 
-	frame.on( 'select', () => {
-		console.log( frame.state().get( 'selection' ).first().toJSON() );
+	if ( ! metabox ) {
+		return;
+	}
+
+	// Helper function to get checked categories.
+	const updateField = () => {
+		const content = [];
+
+		metabox.querySelectorAll( 'input:checked' ).forEach( ( el ) => {
+			if ( el.parentNode?.textContent ) {
+				content.push( el.parentNode.textContent.trim() );
+			}
+		} );
+
+		textarea.value = content.join( ', ' );
+	};
+
+	metabox.addEventListener( 'change', () => {
+		updateField();
 	} );
+
+	updateField();
+}
+
+/**
+ * Try to prefill text layer field with tags.
+ *
+ * @param {HTMLElement} textarea Textarea field.
+ */
+function presetTextLayerTags( textarea ) {
+	const metabox = document.getElementById( 'tagsdiv-post_tag' );
+
+	if ( ! metabox ) {
+		return;
+	}
+
+	// Helper function to get checked categories.
+	const updateField = () => {
+
+	};
+
+	metabox.addEventListener( 'click', () => {
+	} );
+
+	updateField();
+}
+
+/**
+ * Try to prefill image layer field.
+ *
+ * @param {HTMLElement} media Media element.
+ */
+function presetImageLayer( media ) {
+	const frame = wp.media?.featuredImage?.frame();
+
+	if ( frame ) {
+		frame.on( 'select', () => {
+			const selection = frame.state().get( 'selection' ).first().toJSON();
+
+			if ( selection.id ) {
+				media.dispatchEvent( new CustomEvent( 'set_attachment', { detail: selection.id } ) );
+			}
+		} );
+	}
+
+	// Find featured image metabox.
+	const metabox = document.getElementById( 'postimagediv' );
+
+	if ( metabox ) {
+		metabox.addEventListener( 'click', ( e ) => {
+			if ( e.target.id === 'remove-post-thumbnail' ) {
+				media.dispatchEvent( new CustomEvent( 'remove_attachment' ) );
+			}
+		} );
+	}
 }
 
 /**
@@ -212,12 +289,22 @@ function createLayerText( fieldset, layer, key, values ) {
 
 	// Preset title.
 	if ( layer.preset === 'title' ) {
-		fillTextLayerPreset( textarea, 'title' );
+		presetTextLayer( textarea, 'title' );
 	}
 
 	// Preset excerpt.
 	if ( layer.preset === 'excerpt' ) {
-		fillTextLayerPreset( textarea, 'excerpt' );
+		presetTextLayer( textarea, 'excerpt' );
+	}
+
+	// Preset categories.
+	if ( layer.preset === 'categories' ) {
+		presetTextLayerCategories( textarea );
+	}
+
+	// Preset tags.
+	if ( layer.preset === 'tags' ) {
+		presetTextLayerTags( textarea );
 	}
 }
 
@@ -249,7 +336,7 @@ function createLayerImage( fieldset, layer, key, values ) {
 
 	// Preset title.
 	if ( layer.preset === 'featured' ) {
-		fillImageLayerPreset( media );
+		presetImageLayer( media );
 	}
 }
 

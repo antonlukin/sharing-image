@@ -82,7 +82,7 @@ class Generator {
 
 			switch ( $layer['type'] ) {
 				case 'image':
-					$layer = self::prepare_image_layer( $layer, $fieldset, $key );
+					$layer = self::prepare_image_layer( $layer, $fieldset, $key, $context );
 					break;
 
 				case 'text':
@@ -115,11 +115,14 @@ class Generator {
 	 * @param array  $layer    Image layer data.
 	 * @param array  $fieldset Fieldset data from widget or sidebar.
 	 * @param string $key      Layer key.
+	 * @param string $context  Screen ID context field. Can be settings, post or term.
 	 *
 	 * @return array List of image layer data.
 	 */
-	private function prepare_image_layer( $layer, $fieldset, $key ) {
-		unset( $layer['attachment'] );
+	private function prepare_image_layer( $layer, $fieldset, $key, $context ) {
+		if ( 'settings' !== $context ) {
+			unset( $layer['attachment'] );
+		}
 
 		if ( ! empty( $fieldset[ $key ] ) ) {
 			$layer['attachment'] = $fieldset[ $key ];
@@ -389,6 +392,13 @@ class Generator {
 
 		// Try to set font file by name or attachment path.
 		$args['fontpath'] = $this->get_fontpath( $layer );
+
+		$boundary = array(
+			'x'      => $args['x'],
+			'y'      => $args['y'],
+			'width'  => 0,
+			'height' => 0,
+		);
 
 		if ( ! empty( $layer['content'] ) ) {
 			$poster->text( $layer['content'], $args, $boundary );

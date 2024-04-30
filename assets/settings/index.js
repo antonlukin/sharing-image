@@ -254,7 +254,7 @@ __webpack_require__.r(__webpack_exports__);
  * @param {string} tag  Element tagname.
  * @param {Object} args List of element options.
  */
-function buildElement(tag, args) {
+function buildElement(tag, args = {}) {
   const element = document.createElement(tag); // Set class list
 
   if (args.hasOwnProperty('classes')) {
@@ -531,17 +531,18 @@ function displayImage(media, value) {
     return;
   }
 
-  figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure');
-  console.log(media.querySelector('h4'));
+  const frame = wp.media.attachment(value).fetch();
+  figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure', {
+    prepend: media
+  });
 
   if (media.querySelector('h4')) {
-    media.insertBefore(figure, figure.nextSibling);
+    media.insertBefore(figure, media.querySelector('h4').nextSibling);
   }
 
   const image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
     append: figure
   });
-  const frame = wp.media.attachment(value).fetch();
   frame.then(data => {
     image.src = data.sizes?.thumbnail?.url || data.url;
   });
@@ -585,7 +586,7 @@ function buildMedia(args) {
     },
     append: media
   });
-  const upload = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('button', {
+  const button = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('button', {
     classes: ['button'],
     text: args.labels.button,
     attributes: {
@@ -627,7 +628,7 @@ function buildMedia(args) {
     }
 
     if (args.remove) {
-      upload.textContent = args.labels.remove;
+      button.textContent = args.labels.remove;
     }
 
     if (args.image) {
@@ -644,21 +645,26 @@ function buildMedia(args) {
       bubbles: true
     })); // Set default button title.
 
-    upload.textContent = args.labels.button;
+    button.textContent = args.labels.button;
 
     if (args.image) {
       displayImage(media, 0);
     }
 
     details.classList.add('hidden');
-  }; // Update fields if this layer has attachment.
+  };
+
+  if (args.image) {
+    displayImage(media, 0);
+  } // Update fields if this layer has attachment.
 
 
   if (args.value) {
     setAttachment(args.value);
-  }
+  } // Handle upload button.
 
-  upload.addEventListener('click', () => {
+
+  button.addEventListener('click', () => {
     if (args.remove && attachment.value) {
       return removeAttachment();
     }
@@ -675,6 +681,16 @@ function buildMedia(args) {
     _helpers__WEBPACK_IMPORTED_MODULE_2__["default"].attachment(options, id => {
       setAttachment(id);
     });
+  }); // Create custom event to set attachment.
+
+  media.addEventListener('set_attachment', e => {
+    if (e.detail) {
+      setAttachment(e.detail);
+    }
+  }); // Create custom event to remove attachment.
+
+  media.addEventListener('remove_attachment', () => {
+    removeAttachment();
   });
   return media;
 }
@@ -1824,46 +1840,29 @@ function createTextDynamicFields(layer, name, data) {
       classes: ['sharing-image-editor-control-radio'],
       attributes: {
         name: name + '[preset]',
-        value: 'taxonomy'
+        value: 'categories'
       },
       dataset: {
         persistent: true
       },
-      label: wp.i18n.__('Show post taxonomy terms', 'sharing-image'),
+      label: wp.i18n.__('Use post categories', 'sharing-image'),
+      checked: data.preset || 'none'
+    }, {
+      group: 'radio',
+      classes: ['sharing-image-editor-control-radio'],
+      attributes: {
+        name: name + '[preset]',
+        value: 'tags'
+      },
+      dataset: {
+        persistent: true
+      },
+      label: wp.i18n.__('Use post tags', 'sharing-image'),
       checked: data.preset || 'none'
     }],
     append: layer
   });
   fields[fields.length] = presets;
-  const taxonomy = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
-    classes: ['sharing-image-editor-control', 'control-hidden', 'control-extend', 'control-pulled'],
-    label: wp.i18n.__('Preset taxonomy', 'sharing-image'),
-    fields: [{
-      group: 'select',
-      classes: ['sharing-image-editor-control-select'],
-      options: params.taxonomies,
-      attributes: {
-        name: name + '[taxonomy]'
-      },
-      selected: data.taxonomy
-    }],
-    append: layer
-  });
-  fields[fields.length] = taxonomy;
-
-  if ('taxonomy' !== data.preset) {
-    taxonomy.classList.add('control-disabled');
-  } // Show taxonomy select on preset change.
-
-
-  presets.addEventListener('change', () => {
-    const checked = presets.querySelector('input:checked').value;
-    taxonomy.classList.add('control-disabled');
-
-    if ('taxonomy' === checked) {
-      taxonomy.classList.remove('control-disabled');
-    }
-  });
   fields[fields.length] = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
     classes: ['sharing-image-editor-control', 'control-extend'],
     help: wp.i18n.__('You can use non-breaking spaces to manage your string position.', 'sharing-image'),

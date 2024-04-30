@@ -20,17 +20,15 @@ function displayImage( media, value ) {
 		return;
 	}
 
-	// figure = buildElement( 'figure' );
+	const frame = wp.media.attachment( value ).fetch();
 
-	// console.log( media.querySelector( 'h4' ) );
+	figure = buildElement( 'figure', { prepend: media } );
 
-	// if ( media.querySelector( 'h4' ) ) {
-	// 	media.insertBefore( figure, figure.nextSibling );
-	// }
+	if ( media.querySelector( 'h4' ) ) {
+		media.insertBefore( figure, media.querySelector( 'h4' ).nextSibling );
+	}
 
 	const image = buildElement( 'img', { append: figure } );
-
-	const frame = wp.media.attachment( value ).fetch();
 
 	frame.then( ( data ) => {
 		image.src = data.sizes?.thumbnail?.url || data.url;
@@ -76,7 +74,7 @@ function buildMedia( args ) {
 		append: media,
 	} );
 
-	const upload = buildElement( 'button', {
+	const button = buildElement( 'button', {
 		classes: [ 'button' ],
 		text: args.labels.button,
 		attributes: {
@@ -119,7 +117,7 @@ function buildMedia( args ) {
 		}
 
 		if ( args.remove ) {
-			upload.textContent = args.labels.remove;
+			button.textContent = args.labels.remove;
 		}
 
 		if ( args.image ) {
@@ -135,7 +133,7 @@ function buildMedia( args ) {
 		attachment.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 
 		// Set default button title.
-		upload.textContent = args.labels.button;
+		button.textContent = args.labels.button;
 
 		if ( args.image ) {
 			displayImage( media, 0 );
@@ -144,12 +142,17 @@ function buildMedia( args ) {
 		details.classList.add( 'hidden' );
 	};
 
+	if ( args.image ) {
+		displayImage( media, 0 );
+	}
+
 	// Update fields if this layer has attachment.
 	if ( args.value ) {
 		setAttachment( args.value );
 	}
 
-	upload.addEventListener( 'click', () => {
+	// Handle upload button.
+	button.addEventListener( 'click', () => {
 		if ( args.remove && attachment.value ) {
 			return removeAttachment();
 		}
@@ -166,6 +169,18 @@ function buildMedia( args ) {
 		Helper.attachment( options, ( id ) => {
 			setAttachment( id );
 		} );
+	} );
+
+	// Create custom event to set attachment.
+	media.addEventListener( 'set_attachment', ( e ) => {
+		if ( e.detail ) {
+			setAttachment( e.detail );
+		}
+	} );
+
+	// Create custom event to remove attachment.
+	media.addEventListener( 'remove_attachment', () => {
+		removeAttachment();
 	} );
 
 	return media;

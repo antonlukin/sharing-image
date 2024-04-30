@@ -1150,10 +1150,6 @@ class Settings {
 			$sanitized['title'] = sanitize_text_field( $editor['title'] );
 		}
 
-		if ( ! empty( $editor['attachment'] ) ) {
-			$sanitized['attachment'] = absint( $editor['attachment'] );
-		}
-
 		$sanitized['fill'] = '#000000';
 
 		if ( ! empty( $editor['fill'] ) ) {
@@ -1247,15 +1243,11 @@ class Settings {
 		$sanitized['preset'] = 'none';
 
 		if ( isset( $layer['preset'] ) ) {
-			$preset = array( 'title', 'excerpt', 'taxonomy' );
+			$preset = array( 'title', 'excerpt', 'categories', 'tags' );
 
 			if ( in_array( $layer['preset'], $preset, true ) ) {
 				$sanitized['preset'] = $layer['preset'];
 			}
-		}
-
-		if ( isset( $layer['taxonomy'] ) ) {
-			$sanitized['taxonomy'] = sanitize_key( $layer['taxonomy'] );
 		}
 
 		$sanitized['color'] = '#ffffff';

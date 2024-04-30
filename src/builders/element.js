@@ -4,7 +4,7 @@
  * @param {string} tag  Element tagname.
  * @param {Object} args List of element options.
  */
-function buildElement( tag, args ) {
+function buildElement( tag, args = {} ) {
 	const element = document.createElement( tag );
 
 	// Set class list
