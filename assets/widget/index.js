@@ -1344,8 +1344,9 @@ function presetTextLayerCategories(textarea) {
 
   if (!metabox) {
     return;
-  } // Helper function to get checked categories.
+  }
 
+  const separator = params.separator || ', '; // Helper function to get checked categories.
 
   const updateField = () => {
     const content = [];
@@ -1354,7 +1355,7 @@ function presetTextLayerCategories(textarea) {
         content.push(el.parentNode.textContent.trim());
       }
     });
-    textarea.value = content.join(', ');
+    textarea.value = content.join(separator);
   };
 
   metabox.addEventListener('change', () => {
@@ -1370,16 +1371,29 @@ function presetTextLayerCategories(textarea) {
 
 
 function presetTextLayerTags(textarea) {
-  const metabox = document.getElementById('tagsdiv-post_tag');
+  const checklist = document.querySelector('#post_tag .tagchecklist');
 
-  if (!metabox) {
+  if (!checklist || !MutationObserver) {
     return;
-  } // Helper function to get checked categories.
+  }
 
+  const separator = params.separator || ', '; // Update textarea field.
 
-  const updateField = () => {};
+  const updateField = () => {
+    const tags = document.getElementById('tax-input-post_tag');
 
-  metabox.addEventListener('click', () => {});
+    if (!tags) {
+      return;
+    }
+
+    const content = tags.value.split(',');
+    textarea.value = content.join(separator);
+  };
+
+  const observer = new MutationObserver(updateField);
+  observer.observe(checklist, {
+    childList: true
+  });
   updateField();
 }
 /**

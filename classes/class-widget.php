@@ -209,26 +209,11 @@ class Widget {
 		$post = get_post();
 
 		// Get post meta for current post ID.
-		$data = array(
-			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
-			'context'   => 'post',
-			'screen'    => $post->ID,
+		$data = $this->create_script_object( 'post', $post->ID );
 
-			'name'      => array(
-				'source'   => self::META_SOURCE,
-				'fieldset' => self::META_FIELDSET,
-			),
-
-			'meta'      => array(
-				'source'   => get_post_meta( $post->ID, self::META_SOURCE, true ),
-				'fieldset' => get_post_meta( $post->ID, self::META_FIELDSET, true ),
-			),
-
-			'links'     => array(
-				'uploads' => esc_url( admin_url( 'upload.php' ) ),
-			),
-
-			'templates' => $this->settings->get_templates(),
+		$data['meta'] = array(
+			'source'   => get_post_meta( $post->ID, self::META_SOURCE, true ),
+			'fieldset' => get_post_meta( $post->ID, self::META_FIELDSET, true ),
 		);
 
 		/**
@@ -263,27 +248,11 @@ class Widget {
 		$term_id = absint( $_REQUEST['tag_ID'] );
 		// phpcs:enable WordPress.Security.NonceVerification
 
-		// Get post meta for current post ID.
-		$data = array(
-			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
-			'context'   => 'term',
-			'screen'    => $term_id,
+		$data = $this->create_script_object( 'term', $term_id );
 
-			'name'      => array(
-				'source'   => self::META_SOURCE,
-				'fieldset' => self::META_FIELDSET,
-			),
-
-			'meta'      => array(
-				'source'   => get_term_meta( $term_id, self::META_SOURCE, true ),
-				'fieldset' => get_term_meta( $term_id, self::META_FIELDSET, true ),
-			),
-
-			'links'     => array(
-				'uploads' => esc_url( admin_url( 'upload.php' ) ),
-			),
-
-			'templates' => $this->settings->get_templates(),
+		$data['meta'] = array(
+			'source'   => get_term_meta( $term_id, self::META_SOURCE, true ),
+			'fieldset' => get_term_meta( $term_id, self::META_FIELDSET, true ),
 		);
 
 		/**
@@ -318,6 +287,7 @@ class Widget {
 				'source'   => self::META_SOURCE,
 				'fieldset' => self::META_FIELDSET,
 			),
+			'separator' => ', ',
 			'templates' => $this->settings->get_templates(),
 		);
 
@@ -655,46 +625,6 @@ class Widget {
 	}
 
 	/**
-	 * Enqueue widget scripts.
-	 *
-	 * @param array $data Widget data object.
-	 */
-	private function enqueue_scripts( $data ) {
-		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
-
-		wp_enqueue_media();
-
-		wp_enqueue_script(
-			'sharing-image-widget',
-			plugins_url( 'assets/widget/index.js', SHARING_IMAGE_FILE ),
-			$asset['dependencies'],
-			$asset['version'],
-			true
-		);
-
-		wp_enqueue_style(
-			'sharing-image-widget',
-			plugins_url( 'assets/widget/index.css', SHARING_IMAGE_FILE ),
-			$asset['dependencies'],
-			$asset['version'],
-			'all'
-		);
-
-		// Translations availible only for WP 5.0+.
-		wp_set_script_translations( 'sharing-image-widget', 'sharing-image' );
-
-		/**
-		 * Filter widget script object.
-		 *
-		 * @param array $object Array of widget script object.
-		 */
-		$data = apply_filters( 'sharing_image_widget_object', $data );
-
-		// Add widget script object.
-		wp_localize_script( 'sharing-image-widget', 'sharingImageWidget', $data );
-	}
-
-	/**
 	 * Sanitize widget source meta.
 	 *
 	 * @param array $source Source meta data.
@@ -777,27 +707,25 @@ class Widget {
 	/**
 	 * Create script object to inject with widget.
 	 *
-	 * @param array  $meta      Term or Post meta data.
 	 * @param string $context   Widget context. For example: metabox or taxonomy.
 	 * @param int    $screen_id Post or taxonomy screen ID.
 	 *
 	 * @return array Filtered widget script object.
 	 */
-	private function create_script_object( $meta, $context, $screen_id ) {
+	private function create_script_object( $context, $screen_id ) {
 		$object = array(
 			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
 			'context'   => $context,
 			'screen'    => $screen_id,
+			'separator' => ', ',
 
-			'meta'      => array(
+			'name'      => array(
 				'source'   => self::META_SOURCE,
 				'fieldset' => self::META_FIELDSET,
 			),
-
 			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
 			),
-
 			'templates' => $this->settings->get_templates(),
 		);
 
@@ -807,6 +735,46 @@ class Widget {
 		 * @param array $object Array of widget script object.
 		 */
 		return apply_filters( 'sharing_image_widget_object', $object );
+	}
+
+	/**
+	 * Enqueue widget scripts.
+	 *
+	 * @param array $data Widget data object.
+	 */
+	private function enqueue_scripts( $data ) {
+		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
+
+		wp_enqueue_media();
+
+		wp_enqueue_script(
+			'sharing-image-widget',
+			plugins_url( 'assets/widget/index.js', SHARING_IMAGE_FILE ),
+			$asset['dependencies'],
+			$asset['version'],
+			true
+		);
+
+		wp_enqueue_style(
+			'sharing-image-widget',
+			plugins_url( 'assets/widget/index.css', SHARING_IMAGE_FILE ),
+			$asset['dependencies'],
+			$asset['version'],
+			'all'
+		);
+
+		// Translations availible only for WP 5.0+.
+		wp_set_script_translations( 'sharing-image-widget', 'sharing-image' );
+
+		/**
+		 * Filter widget script object.
+		 *
+		 * @param array $object Array of widget script object.
+		 */
+		$data = apply_filters( 'sharing_image_widget_object', $data );
+
+		// Add widget script object.
+		wp_localize_script( 'sharing-image-widget', 'sharingImageWidget', $data );
 	}
 
 	/**
