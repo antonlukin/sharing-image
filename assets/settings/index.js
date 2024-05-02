@@ -1940,7 +1940,7 @@ function createImageDynamicFields(layer, name, data) {
   });
   const fields = [];
   const presets = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
-    classes: ['sharing-image-editor-control', 'control-hidden'],
+    classes: ['sharing-image-editor-control'],
     label: wp.i18n.__('Preset image field', 'sharing-image'),
     fields: [{
       group: 'radio',

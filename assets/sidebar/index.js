@@ -108,8 +108,8 @@ __webpack_require__.r(__webpack_exports__);
 
 const TemplateFields = ({
   layers,
-  updateFieldset,
-  fields
+  fieldset,
+  setFieldset
 }) => {
   const presets = {};
   /**
@@ -127,11 +127,45 @@ const TemplateFields = ({
     return select('core/editor').getEditedPostAttribute('excerpt');
   });
   /**
-   * Featured thumbnail.
+   * Get preset Featured thumbnail.
    */
 
   presets.featured = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute('featured_media');
+  });
+  /**
+   * Get preset categories.
+   */
+
+  presets.categories = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
+    const list = []; // Get checked categories ids.
+
+    const categories = select('core/editor').getEditedPostAttribute('categories');
+    categories.forEach(id => {
+      const category = select('core').getEntityRecord('taxonomy', 'category', id);
+
+      if (category) {
+        list.push(category.name);
+      }
+    });
+    return list.join(', ');
+  });
+  /**
+   * Get preset tags.
+   */
+
+  presets.tags = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
+    const list = []; // Get checked categories ids.
+
+    const tags = select('core/editor').getEditedPostAttribute('tags');
+    tags.forEach(id => {
+      const tag = select('core').getEntityRecord('taxonomy', 'post_tag', id);
+
+      if (tag) {
+        list.push(tag.name);
+      }
+    });
+    return list.join(', ');
   });
   /**
    * Local changed states.
@@ -146,30 +180,39 @@ const TemplateFields = ({
    * @param {string} value
    */
 
-  const changeField = (name, value) => {
-    updateFieldset(name, value); // Mark this field as manually changed by user.
+  const changeFieldset = (name, value) => {
+    setFieldset({ ...fieldset,
+      [name]: value
+    }); // Mark this field as manually changed by user.
 
     setChanged({ ...changed,
       [name]: true
     });
   };
+  /**
+   * Prepare changed object on first load.
+   */
+
 
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    const updated = { ...changed
+    };
+
     for (const key in layers) {
       const layer = layers[key];
 
-      if (fields[key] && fields[key] !== presets[layer.preset]) {
-        setChanged({ ...changed,
-          [key]: true
-        });
+      if (fieldset[key] && fieldset[key] !== presets[layer.preset]) {
+        updated[key] = true;
       }
     }
+
+    setChanged(updated); // Show template fields.
 
     setLoaded(true);
   }, []); // eslint-disable-line
 
   /**
-   * Display dynamic text field
+   * Display dynamic text field.
    *
    * @param {Object} layer
    * @param {string} name
@@ -178,19 +221,20 @@ const TemplateFields = ({
    */
 
   const displayTextField = (layer, name) => {
-    if (!changed[name] && layer.preset in presets) {
-      fields[name] = presets[layer.preset];
-    }
+    let field = fieldset[name]; // if ( ! changed[ name ] && layer.preset in presets ) {
+    // 	field = presets[ layer.preset ];
+    // }
 
+    console.log('rerender');
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
       name: name,
       label: layer.title,
-      value: fields[name],
-      onChange: value => changeField(name, value)
+      value: field,
+      onChange: value => changeFieldset(name, value)
     });
   };
   /**
-   * Display dynamic image field
+   * Display dynamic image field.
    *
    * @param {Object} layer
    * @param {string} name
@@ -200,34 +244,33 @@ const TemplateFields = ({
 
 
   const displayImageField = (layer, name) => {
+    if (!changed[name] && layer.preset in presets) {
+      fieldset[name] = presets[layer.preset];
+    }
+
     const styles = {
       border: 'solid 1px #ccc',
       padding: '4px',
       borderRadius: '4px'
     };
-
-    if (!changed[name] && layer.preset in presets) {
-      fields[name] = presets[layer.preset];
-    }
-
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.BaseControl, {
       id: null,
       label: layer.title
     }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUpload, {
       onSelect: media => {
-        changeField(name, media.id);
+        changeFieldset(name, media.id);
       },
       allowedTypes: ['image'],
-      value: fields[name],
+      value: fieldset[name],
       render: ({
         open
       }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Flex, {
         justify: 'flex-start',
         style: styles
       }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        fields: fields,
+        fieldset: fieldset,
         open: open,
-        changeField: changeField,
+        changeFieldset: changeFieldset,
         name: name
       }))
     })));
@@ -293,8 +336,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ThumbnailField = ({
-  fields,
-  changeField,
+  fieldset,
+  changeFieldset,
   open,
   name
 }) => {
@@ -305,7 +348,7 @@ const ThumbnailField = ({
     height: '36px'
   };
   const thumbnail = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
-    const media = select('core').getMedia(fields[name]); // Try to get thumnail first.
+    const media = select('core').getMedia(fieldset[name]); // Try to get thumnail first.
 
     let url = media?.media_details?.sizes?.thumbnail?.source_url;
 
@@ -314,13 +357,13 @@ const ThumbnailField = ({
     }
 
     return url;
-  }, [fields]);
+  }, [fieldset]);
 
   const removeImage = () => {
-    changeField(name, 0);
+    changeFieldset(name, 0);
   };
 
-  if (fields[name]) {
+  if (fieldset[name]) {
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, thumbnail && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
       src: thumbnail,
       alt: '',
@@ -594,6 +637,7 @@ const SharingImageSidebar = ({
    */
 
   const [template, setTemplate] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)(postMeta[meta.source]?.template);
+  const [fieldset, setFieldset] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)(postMeta[meta.fieldset]);
   const [loading, setLoading] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useState)(false);
   /**
    * Change Template.
@@ -610,23 +654,6 @@ const SharingImageSidebar = ({
       }
     });
     setTemplate(index);
-  };
-  /**
-   * Update post meta.
-   *
-   * @param {string} key   Fieldset key.
-   * @param {string} value Updated fieldset value.
-   */
-
-
-  const updateFieldset = (key, value) => {
-    editPost({
-      meta: {
-        [meta.fieldset]: { ...postMeta[meta.fieldset],
-          [key]: value
-        }
-      }
-    });
   };
   /**
    * Generate button handler.
@@ -676,6 +703,12 @@ const SharingImageSidebar = ({
 
     setLoading(false);
   };
+  /**
+   * Remove poster handler button.
+   *
+   * @param {Event} e
+   */
+
 
   const removePoster = e => {
     e.preventDefault();
@@ -685,6 +718,21 @@ const SharingImageSidebar = ({
       }
     });
   };
+  /**
+   * Update post meta on fieldset changes.
+   */
+
+
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
+    editPost({
+      meta: {
+        [meta.fieldset]: fieldset
+      }
+    });
+  }, [fieldset, meta, editPost]);
+  /**
+   * Set template.
+   */
 
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_3__.useEffect)(() => {
     const [index] = Object.keys(templates);
@@ -714,8 +762,8 @@ const SharingImageSidebar = ({
     gap: 2
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_template_fields__WEBPACK_IMPORTED_MODULE_9__["default"], {
     layers: templates[template].layers || [],
-    updateFieldset: updateFieldset,
-    fields: postMeta[meta.fieldset]
+    fieldset: fieldset,
+    setFieldset: setFieldset
   })), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Flex, {
     justify: 'flex-start'
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {

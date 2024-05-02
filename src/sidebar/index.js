@@ -35,6 +35,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	 * Local states.
 	 */
 	const [ template, setTemplate ] = useState( postMeta[ meta.source ]?.template );
+	const [ fieldset, setFieldset ] = useState( postMeta[ meta.fieldset ] );
 	const [ loading, setLoading ] = useState( false );
 
 	/**
@@ -48,18 +49,6 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		} );
 
 		setTemplate( index );
-	};
-
-	/**
-	 * Update post meta.
-	 *
-	 * @param {string} key   Fieldset key.
-	 * @param {string} value Updated fieldset value.
-	 */
-	const updateFieldset = ( key, value ) => {
-		editPost( {
-			meta: { [ meta.fieldset ]: { ...postMeta[ meta.fieldset ], [ key ]: value } },
-		} );
 	};
 
 	/**
@@ -107,6 +96,11 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		setLoading( false );
 	};
 
+	/**
+	 * Remove poster handler button.
+	 *
+	 * @param {Event} e
+	 */
 	const removePoster = ( e ) => {
 		e.preventDefault();
 
@@ -115,6 +109,18 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		} );
 	};
 
+	/**
+	 * Update post meta on fieldset changes.
+	 */
+	useEffect( () => {
+		editPost( {
+			meta: { [ meta.fieldset ]: fieldset },
+		} );
+	}, [ fieldset, meta, editPost ] );
+
+	/**
+	 * Set template.
+	 */
 	useEffect( () => {
 		const [ index ] = Object.keys( templates );
 
@@ -143,8 +149,8 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 					<Flex direction={ 'column' } gap={ 2 }>
 						<TemplateFields
 							layers={ templates[ template ].layers || [] }
-							updateFieldset={ updateFieldset }
-							fields={ postMeta[ meta.fieldset ] }
+							fieldset={ fieldset }
+							setFieldset={ setFieldset }
 						/>
 					</Flex>
 				) }

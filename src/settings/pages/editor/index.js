@@ -392,7 +392,7 @@ function createImageDynamicFields( layer, name, data ) {
 	const fields = [];
 
 	const presets = Build.control( {
-		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
+		classes: [ 'sharing-image-editor-control' ],
 		label: wp.i18n.__( 'Preset image field', 'sharing-image' ),
 		fields: [
 			{

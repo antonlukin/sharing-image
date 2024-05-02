@@ -86,7 +86,7 @@ class Generator {
 					break;
 
 				case 'text':
-					$layer = self::prepare_text_layer( $layer, $fieldset, $key );
+					$layer = self::prepare_text_layer( $layer, $fieldset, $key, $context );
 					break;
 			}
 
@@ -137,13 +137,14 @@ class Generator {
 	 * @param array  $layer    Text layer data.
 	 * @param array  $fieldset Fieldset data from widget or sidebar.
 	 * @param string $key      Layer key.
+	 * @param string $context  Screen ID context field. Can be settings, post or term.
 	 *
 	 * @return array List of text layer data.
 	 */
-	private function prepare_text_layer( $layer, $fieldset, $key ) {
+	private function prepare_text_layer( $layer, $fieldset, $key, $context ) {
 		$layer['content'] = null;
 
-		if ( isset( $layer['sample'] ) ) {
+		if ( isset( $layer['sample'] ) && 'settings' === $context ) {
 			$layer['content'] = $layer['sample'];
 		}
 

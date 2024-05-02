@@ -3,12 +3,12 @@ import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { Icon, image } from '@wordpress/icons';
 
-const ThumbnailField = ( { fields, changeField, open, name } ) => {
+const ThumbnailField = ( { fieldset, changeFieldset, open, name } ) => {
 	const styles = { borderRadius: '2px', objectFit: 'cover', width: '36px', height: '36px' };
 
 	const thumbnail = useSelect(
 		( select ) => {
-			const media = select( 'core' ).getMedia( fields[ name ] );
+			const media = select( 'core' ).getMedia( fieldset[ name ] );
 
 			// Try to get thumnail first.
 			let url = media?.media_details?.sizes?.thumbnail?.source_url;
@@ -19,14 +19,14 @@ const ThumbnailField = ( { fields, changeField, open, name } ) => {
 
 			return url;
 		},
-		[ fields ]
+		[ fieldset ]
 	);
 
 	const removeImage = () => {
-		changeField( name, 0 );
+		changeFieldset( name, 0 );
 	};
 
-	if ( fields[ name ] ) {
+	if ( fieldset[ name ] ) {
 		return (
 			<>
 				{ thumbnail && <img src={ thumbnail } alt={ '' } style={ styles } /> }
