@@ -2779,6 +2779,14 @@ function createLayerText(data, name) {
     }],
     append: layer
   });
+  _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
+    attributes: {
+      type: 'hidden',
+      name: name + '[separator]',
+      value: ', '
+    },
+    append: layer
+  });
   return layer;
 }
 /**

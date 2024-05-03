@@ -19,7 +19,7 @@ const PresetTaxonomy = ( { name, layer, fieldset, setFieldset, attribute, entity
 			}
 		} );
 
-		return list.join( ', ' );
+		return list.join( layer.separator || ', ' );
 	} );
 
 	/**

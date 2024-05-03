@@ -193,7 +193,7 @@ const PresetTaxonomy = ({
         list.push(category.name);
       }
     });
-    return list.join(', ');
+    return list.join(layer.separator || ', ');
   });
   /**
    * Update fieldset and set current component status as changed.

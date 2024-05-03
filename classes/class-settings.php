@@ -1240,6 +1240,10 @@ class Settings {
 			$sanitized['sample'] = sanitize_textarea_field( $layer['sample'] );
 		}
 
+		if ( isset( $layer['separator'] ) ) {
+			$sanitized['separator'] = preg_replace( '#[^\s,]#', '', $layer['separator'] );
+		}
+
 		$sanitized['preset'] = 'none';
 
 		if ( isset( $layer['preset'] ) ) {

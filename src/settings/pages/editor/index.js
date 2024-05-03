@@ -1335,6 +1335,15 @@ function createLayerText( data, name ) {
 		append: layer,
 	} );
 
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: name + '[separator]',
+			value: ', ',
+		},
+		append: layer,
+	} );
+
 	return layer;
 }
 
