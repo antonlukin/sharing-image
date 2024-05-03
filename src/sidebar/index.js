@@ -69,7 +69,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 			path: 'sharing-image/v1/poster/' + postId,
 			method: 'POST',
 			data: {
-				fieldset: postMeta[ meta.fieldset ],
+				fieldset: fieldset,
 				template: template,
 			},
 		};
@@ -116,7 +116,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		editPost( {
 			meta: { [ meta.fieldset ]: fieldset },
 		} );
-	}, [ fieldset, meta, editPost ] );
+	}, [ fieldset ] ); // eslint-disable-line
 
 	/**
 	 * Set template.

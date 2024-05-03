@@ -78,9 +78,81 @@ const image = (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_pr
 
 /***/ }),
 
-/***/ "./src/sidebar/template-fields.js":
+/***/ "./src/sidebar/preset-field.js":
+/*!*************************************!*\
+  !*** ./src/sidebar/preset-field.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+
+const PresetField = ({
+  name,
+  layer,
+  fieldset,
+  setFieldset,
+  attribute
+}) => {
+  const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  const preset = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
+    return select('core/editor').getEditedPostAttribute(attribute);
+  });
+  /**
+   * Update fieldset and set current component status as changed.
+   *
+   * @param {string} value
+   */
+
+  const changeFieldset = value => {
+    setFieldset({ ...fieldset,
+      [name]: value
+    }); // Mark this field as manually changed by user.
+
+    setChanged(true);
+  };
+  /**
+   * Update fieldset on presets change.
+   */
+
+
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    if (!changed) {
+      setFieldset({ ...fieldset,
+        [name]: preset
+      });
+    }
+  }, [preset]); // eslint-disable-line
+
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
+    name: name,
+    label: layer.title,
+    value: fieldset[name],
+    onChange: value => changeFieldset(value)
+  });
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PresetField);
+
+/***/ }),
+
+/***/ "./src/sidebar/preset-taxonomy.js":
 /*!****************************************!*\
-  !*** ./src/sidebar/template-fields.js ***!
+  !*** ./src/sidebar/preset-taxonomy.js ***!
   \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -96,10 +168,88 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
-/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _thumbnail_field__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./thumbnail-field */ "./src/sidebar/thumbnail-field.js");
 
+
+
+
+
+const PresetTaxonomy = ({
+  name,
+  layer,
+  fieldset,
+  setFieldset,
+  attribute,
+  entity
+}) => {
+  const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  const preset = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
+    const list = []; // Get checked categories ids.
+
+    const checked = select('core/editor').getEditedPostAttribute(attribute);
+    checked.forEach(id => {
+      const category = select('core').getEntityRecord('taxonomy', entity, id);
+
+      if (category) {
+        list.push(category.name);
+      }
+    });
+    return list.join(', ');
+  });
+  /**
+   * Update fieldset and set current component status as changed.
+   *
+   * @param {string} value
+   */
+
+  const changeFieldset = value => {
+    setFieldset({ ...fieldset,
+      [name]: value
+    }); // Mark this field as manually changed by user.
+
+    setChanged(true);
+  };
+  /**
+   * Update fieldset on presets change.
+   */
+
+
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    if (!changed) {
+      setFieldset({ ...fieldset,
+        [name]: preset
+      });
+    }
+  }, [preset]); // eslint-disable-line
+
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
+    name: name,
+    label: layer.title,
+    value: fieldset[name],
+    onChange: value => changeFieldset(value)
+  });
+};
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PresetTaxonomy);
+
+/***/ }),
+
+/***/ "./src/sidebar/template-fields.js":
+/*!****************************************!*\
+  !*** ./src/sidebar/template-fields.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _preset_field__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./preset-field */ "./src/sidebar/preset-field.js");
+/* harmony import */ var _preset_taxonomy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./preset-taxonomy */ "./src/sidebar/preset-taxonomy.js");
+/* harmony import */ var _thumbnail_field__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./thumbnail-field */ "./src/sidebar/thumbnail-field.js");
 
 
 
@@ -111,106 +261,6 @@ const TemplateFields = ({
   fieldset,
   setFieldset
 }) => {
-  const presets = {};
-  /**
-   * Retrieve post title.
-   */
-
-  presets.title = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
-    return select('core/editor').getEditedPostAttribute('title');
-  });
-  /**
-   * Retrieve post excerpt.
-   */
-
-  presets.excerpt = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
-    return select('core/editor').getEditedPostAttribute('excerpt');
-  });
-  /**
-   * Get preset Featured thumbnail.
-   */
-
-  presets.featured = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
-    return select('core/editor').getEditedPostAttribute('featured_media');
-  });
-  /**
-   * Get preset categories.
-   */
-
-  presets.categories = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
-    const list = []; // Get checked categories ids.
-
-    const categories = select('core/editor').getEditedPostAttribute('categories');
-    categories.forEach(id => {
-      const category = select('core').getEntityRecord('taxonomy', 'category', id);
-
-      if (category) {
-        list.push(category.name);
-      }
-    });
-    return list.join(', ');
-  });
-  /**
-   * Get preset tags.
-   */
-
-  presets.tags = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
-    const list = []; // Get checked categories ids.
-
-    const tags = select('core/editor').getEditedPostAttribute('tags');
-    tags.forEach(id => {
-      const tag = select('core').getEntityRecord('taxonomy', 'post_tag', id);
-
-      if (tag) {
-        list.push(tag.name);
-      }
-    });
-    return list.join(', ');
-  });
-  /**
-   * Local changed states.
-   */
-
-  const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)({});
-  const [loaded, setLoaded] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
-  /**
-   * Save changed state on field update.
-   *
-   * @param {string} name
-   * @param {string} value
-   */
-
-  const changeFieldset = (name, value) => {
-    setFieldset({ ...fieldset,
-      [name]: value
-    }); // Mark this field as manually changed by user.
-
-    setChanged({ ...changed,
-      [name]: true
-    });
-  };
-  /**
-   * Prepare changed object on first load.
-   */
-
-
-  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
-    const updated = { ...changed
-    };
-
-    for (const key in layers) {
-      const layer = layers[key];
-
-      if (fieldset[key] && fieldset[key] !== presets[layer.preset]) {
-        updated[key] = true;
-      }
-    }
-
-    setChanged(updated); // Show template fields.
-
-    setLoaded(true);
-  }, []); // eslint-disable-line
-
   /**
    * Display dynamic text field.
    *
@@ -219,18 +269,45 @@ const TemplateFields = ({
    *
    * @return {JSX.Element} Textarea control component.
    */
-
   const displayTextField = (layer, name) => {
-    let field = fieldset[name]; // if ( ! changed[ name ] && layer.preset in presets ) {
-    // 	field = presets[ layer.preset ];
-    // }
+    const props = {
+      name,
+      layer,
+      fieldset,
+      setFieldset
+    };
 
-    console.log('rerender');
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.TextareaControl, {
+    switch (layer.preset) {
+      case 'title':
+        return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_preset_field__WEBPACK_IMPORTED_MODULE_2__["default"], { ...props,
+          attribute: 'title'
+        });
+
+      case 'excerpt':
+        return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_preset_field__WEBPACK_IMPORTED_MODULE_2__["default"], { ...props,
+          attribute: 'excerpt'
+        });
+
+      case 'categories':
+        return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_preset_taxonomy__WEBPACK_IMPORTED_MODULE_3__["default"], { ...props,
+          attribute: 'categories',
+          entity: 'category'
+        });
+
+      case 'tags':
+        return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_preset_taxonomy__WEBPACK_IMPORTED_MODULE_3__["default"], { ...props,
+          attribute: 'post_tags',
+          entity: 'tag'
+        });
+    }
+
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.TextareaControl, {
       name: name,
       label: layer.title,
-      value: field,
-      onChange: value => changeFieldset(name, value)
+      defaultValue: fieldset[name],
+      onChange: value => setFieldset({ ...fieldset,
+        [name]: value
+      })
     });
   };
   /**
@@ -244,35 +321,25 @@ const TemplateFields = ({
 
 
   const displayImageField = (layer, name) => {
-    if (!changed[name] && layer.preset in presets) {
-      fieldset[name] = presets[layer.preset];
-    }
+    const props = {
+      name,
+      layer,
+      fieldset,
+      setFieldset
+    }; // Thumbnail field custom styles.
 
     const styles = {
       border: 'solid 1px #ccc',
       padding: '4px',
       borderRadius: '4px'
     };
-    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.BaseControl, {
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.BaseControl, {
       id: null,
       label: layer.title
-    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_4__.MediaUpload, {
-      onSelect: media => {
-        changeFieldset(name, media.id);
-      },
-      allowedTypes: ['image'],
-      value: fieldset[name],
-      render: ({
-        open
-      }) => (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_3__.Flex, {
-        justify: 'flex-start',
-        style: styles
-      }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_5__["default"], {
-        fieldset: fieldset,
-        open: open,
-        changeFieldset: changeFieldset,
-        name: name
-      }))
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Flex, {
+      justify: 'flex-start',
+      style: styles
+    }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_thumbnail_field__WEBPACK_IMPORTED_MODULE_4__["default"], { ...props
     })));
   };
 
@@ -300,9 +367,7 @@ const TemplateFields = ({
     return controls;
   };
 
-  if (loaded) {
-    return composeControls();
-  }
+  return composeControls();
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (TemplateFields);
@@ -323,12 +388,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
 /* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
-/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
-/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/image.js");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/icon/index.js");
+/* harmony import */ var _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @wordpress/icons */ "./node_modules/@wordpress/icons/build-module/library/image.js");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/block-editor */ "@wordpress/block-editor");
+/* harmony import */ var _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__);
+
+
 
 
 
@@ -336,17 +407,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ThumbnailField = ({
+  name,
+  layer,
   fieldset,
-  changeFieldset,
-  open,
-  name
+  setFieldset
 }) => {
-  const styles = {
-    borderRadius: '2px',
-    objectFit: 'cover',
-    width: '36px',
-    height: '36px'
-  };
+  const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  const preset = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
+    return select('core/editor').getEditedPostAttribute('featured_media');
+  });
   const thumbnail = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
     const media = select('core').getMedia(fieldset[name]); // Try to get thumnail first.
 
@@ -358,30 +427,96 @@ const ThumbnailField = ({
 
     return url;
   }, [fieldset]);
+  /**
+   * Update fieldset and set current component status as changed.
+   *
+   * @param {string} value
+   */
+
+  const changeFieldset = value => {
+    setFieldset({ ...fieldset,
+      [name]: value
+    }); // Mark this field as manually changed by user.
+
+    setChanged(true);
+  };
+  /**
+   * Update fieldset on presets change.
+   */
+
+
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useEffect)(() => {
+    if (!changed && layer.preset === 'featured') {
+      setFieldset({ ...fieldset,
+        [name]: preset
+      });
+    }
+  }, [preset]); // eslint-disable-line
+
+  /**
+   * Function to remove layer image.
+   */
 
   const removeImage = () => {
-    changeFieldset(name, 0);
+    setFieldset({ ...fieldset,
+      [name]: 0
+    });
   };
 
-  if (fieldset[name]) {
+  const displayThumbnailIcon = (open, styles) => {
+    return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_6__["default"], {
+      icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_7__["default"],
+      style: { ...styles,
+        opacity: '0.5'
+      }
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
+      variant: "link",
+      onClick: open
+    }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Set layer image', 'sharing-image')));
+  };
+
+  const displayThumbnailImage = styles => {
     return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, thumbnail && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)("img", {
       src: thumbnail,
       alt: '',
       style: styles
-    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+    }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Button, {
       variant: "link",
       onClick: removeImage
     }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Remove image', 'sharing-image')));
-  }
+  };
+  /**
+   * Display thumbnail ot icon according to fieldset data.
+   *
+   * @param {Function} open
+   */
 
-  styles.opacity = '0.5';
-  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(react__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_icons__WEBPACK_IMPORTED_MODULE_4__["default"], {
-    icon: _wordpress_icons__WEBPACK_IMPORTED_MODULE_5__["default"],
-    style: styles
-  }), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
-    variant: "link",
-    onClick: open
-  }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Set layer image', 'sharing-image')));
+
+  const displayThumbnail = ({
+    open
+  }) => {
+    const styles = {
+      borderRadius: '2px',
+      objectFit: 'cover',
+      width: '36px',
+      height: '36px'
+    };
+
+    if (fieldset[name]) {
+      return displayThumbnailImage(styles);
+    }
+
+    return displayThumbnailIcon(open, styles);
+  };
+
+  return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUploadCheck, null, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_5__.MediaUpload, {
+    onSelect: media => {
+      changeFieldset(media.id);
+    },
+    allowedTypes: ['image'],
+    value: fieldset[name],
+    render: displayThumbnail
+  }));
 };
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ThumbnailField);
@@ -674,7 +809,7 @@ const SharingImageSidebar = ({
       path: 'sharing-image/v1/poster/' + postId,
       method: 'POST',
       data: {
-        fieldset: postMeta[meta.fieldset],
+        fieldset: fieldset,
         template: template
       }
     };
@@ -729,7 +864,8 @@ const SharingImageSidebar = ({
         [meta.fieldset]: fieldset
       }
     });
-  }, [fieldset, meta, editPost]);
+  }, [fieldset]); // eslint-disable-line
+
   /**
    * Set template.
    */

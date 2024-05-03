@@ -1,10 +1,16 @@
 import { __ } from '@wordpress/i18n';
-import { Button } from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
-import { Icon, image } from '@wordpress/icons';
+import { Button } from '@wordpress/components';
+import { Icon, image as imageIcon } from '@wordpress/icons';
+import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
-const ThumbnailField = ( { fieldset, changeFieldset, open, name } ) => {
-	const styles = { borderRadius: '2px', objectFit: 'cover', width: '36px', height: '36px' };
+const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
+	const [ changed, setChanged ] = useState( false );
+
+	const preset = useSelect( ( select ) => {
+		return select( 'core/editor' ).getEditedPostAttribute( 'featured_media' );
+	} );
 
 	const thumbnail = useSelect(
 		( select ) => {
@@ -22,11 +28,47 @@ const ThumbnailField = ( { fieldset, changeFieldset, open, name } ) => {
 		[ fieldset ]
 	);
 
-	const removeImage = () => {
-		changeFieldset( name, 0 );
+	/**
+	 * Update fieldset and set current component status as changed.
+	 *
+	 * @param {string} value
+	 */
+	const changeFieldset = ( value ) => {
+		setFieldset( { ...fieldset, [ name ]: value } );
+
+		// Mark this field as manually changed by user.
+		setChanged( true );
 	};
 
-	if ( fieldset[ name ] ) {
+	/**
+	 * Update fieldset on presets change.
+	 */
+	useEffect( () => {
+		if ( ! changed && layer.preset === 'featured' ) {
+			setFieldset( { ...fieldset, [ name ]: preset } );
+		}
+	}, [ preset ] ); // eslint-disable-line
+
+	/**
+	 * Function to remove layer image.
+	 */
+	const removeImage = () => {
+		setFieldset( { ...fieldset, [ name ]: 0 } );
+	};
+
+	const displayThumbnailIcon = ( open, styles ) => {
+		return (
+			<>
+				<Icon icon={ imageIcon } style={ { ...styles, opacity: '0.5' } } />
+
+				<Button variant="link" onClick={ open }>
+					{ __( 'Set layer image', 'sharing-image' ) }
+				</Button>
+			</>
+		);
+	};
+
+	const displayThumbnailImage = ( styles ) => {
 		return (
 			<>
 				{ thumbnail && <img src={ thumbnail } alt={ '' } style={ styles } /> }
@@ -36,18 +78,34 @@ const ThumbnailField = ( { fieldset, changeFieldset, open, name } ) => {
 				</Button>
 			</>
 		);
-	}
+	};
 
-	styles.opacity = '0.5';
+	/**
+	 * Display thumbnail ot icon according to fieldset data.
+	 *
+	 * @param {Function} open
+	 */
+	const displayThumbnail = ( { open } ) => {
+		const styles = { borderRadius: '2px', objectFit: 'cover', width: '36px', height: '36px' };
+
+		if ( fieldset[ name ] ) {
+			return displayThumbnailImage( styles );
+		}
+
+		return displayThumbnailIcon( open, styles );
+	};
 
 	return (
-		<>
-			<Icon icon={ image } style={ styles } />
-
-			<Button variant="link" onClick={ open }>
-				{ __( 'Set layer image', 'sharing-image' ) }
-			</Button>
-		</>
+		<MediaUploadCheck>
+			<MediaUpload
+				onSelect={ ( media ) => {
+					changeFieldset( media.id );
+				} }
+				allowedTypes={ [ 'image' ] }
+				value={ fieldset[ name ] }
+				render={ displayThumbnail }
+			/>
+		</MediaUploadCheck>
 	);
 };
 
