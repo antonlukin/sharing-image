@@ -8,6 +8,8 @@
 
 namespace Sharing_Image;
 
+use WP_Error;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	die;
 }
@@ -59,7 +61,7 @@ class Widget {
 		add_action( 'rest_api_init', array( $this, 'add_generate_endpoint' ) );
 
 		// Try to autogenerate poster if it is needed.
-		add_action( 'wp_insert_post', array( $this, 'autogenerate_poster' ) );
+		add_action( 'wp_after_insert_post', array( $this, 'autogenerate_poster' ) );
 	}
 
 	/**
@@ -401,233 +403,10 @@ class Widget {
 	}
 
 	/**
-	 * Handle generate button in Gutenberg sidebar.
-	 *
-	 * @param WP_REST_Request $request Request params.
-	 */
-	public function handle_rest_generator( $request ) {
-		$post_id = $request->get_param( 'id' );
-
-		if ( empty( $post_id ) ) {
-			wp_send_json_error( __( 'Empty post data.', 'sharing-image' ), 400 );
-		}
-
-		$params = $request->get_json_params();
-
-		if ( ! isset( $params['template'] ) ) {
-			wp_send_json_error( __( 'Wrong request parameters.', 'sharing-image' ), 400 );
-		}
-
-		$index = sanitize_key( $params['template'] );
-
-		if ( empty( $params['fieldset'] ) ) {
-			$params['fieldset'] = array();
-		}
-
-		$fieldset = $this->sanitize_fieldset( $params['fieldset'] );
-
-		$this->generate_poster( $fieldset, $index, $post_id, 'post' );
-	}
-
-	/**
-	 * Handle generate button on Classic Editor and taxonomy widget.
-	 */
-	public function handle_ajax_generator() {
-		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
-
-		if ( false === $check ) {
-			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
-		}
-
-		if ( empty( $_POST[ self::META_SOURCE ]['template'] ) ) {
-			wp_send_json_error( __( 'Template id cannot be empty.', 'sharing-image' ), 400 );
-		}
-
-		$screen_id = 0;
-
-		if ( ! empty( $_POST['sharing_image_screen'] ) ) {
-			$screen_id = absint( wp_unslash( $_POST['sharing_image_screen'] ) );
-		}
-
-		$context = 'post';
-
-		if ( ! empty( $_POST['sharing_image_context'] ) ) {
-			$context = sanitize_key( wp_unslash( $_POST['sharing_image_context'] ) );
-		}
-
-		if ( empty( $_POST[ self::META_SOURCE ] ) ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			$fieldset = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
-		}
-
-		$fieldset = array();
-
-		if ( ! empty( $_POST[ self::META_FIELDSET ] ) ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			$fieldset = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
-		}
-
-		$index = sanitize_key( $_POST[ self::META_SOURCE ]['template'] );
-
-		$this->generate_poster( $fieldset, $index, $screen_id, $context );
-	}
-
-	/**
-	 * Generate poster by AJAX request.
-	 * Used in widget and sidebar.
-	 *
-	 * @param array   $fieldset  Fieldset data from widget.
-	 * @param integer $index     Template index from editor.
-	 * @param integer $screen_id Post or term ID from admin screen.
-	 * @param string  $context   Screen ID context field. Can be settings, post or term.
-	 */
-	private function generate_poster( $fieldset, $index, $screen_id, $context ) {
-		$templates = $this->settings->get_templates();
-
-		if ( ! isset( $templates[ $index ] ) ) {
-			wp_send_json_error( esc_html__( 'Wrong template id', 'sharing-image' ), 400 );
-		}
-
-		$generator = new Generator();
-
-		// Prepare template editor.
-		$editor = $generator->prepare_template( $templates[ $index ], $fieldset, $index, $screen_id, $context );
-
-		if ( ! $generator->check_required( $editor ) ) {
-			wp_send_json_error( esc_html__( 'Wrong template settings', 'sharing-image' ), 400 );
-		}
-
-		list( $path, $url ) = $generator->get_upload_file();
-
-		// Generate image and save it to given path.
-		$poster = $generator->create_poster( $editor, $path );
-
-		if ( is_wp_error( $poster ) ) {
-			wp_send_json_error( $poster->get_error_message(), 400 );
-		}
-
-		$this->save_attachment( $path, $screen_id, $context );
-
-		$source = array(
-			'poster' => $url,
-			'width'  => $editor['width'],
-			'height' => $editor['height'],
-		);
-
-		wp_send_json_success( $source );
-	}
-
-	/**
-	 * Try to autogenerate poster on post insert or update.
-	 *
-	 * @param integer $post_id Updated post_id.
-	 */
-	public function autogenerate_poster( $post_id ) {
-		/**
-		 * Easy way disable autogeneration.
-		 *
-		 * @since 2.0.12
-		 *
-		 * @param bool $disable_autogeneration Set true to disable autogeneration.
-		 * @param int  $post_id Post ID.
-		 */
-		$disable_autogeneration = apply_filters( 'sharing_image_disable_autogeneration', false, $post_id );
-
-		if ( $disable_autogeneration ) {
-			return;
-		}
-
-		$status = get_post_status( $post_id );
-
-		if ( 'auto-draft' === $status ) {
-			return;
-		}
-
-		$meta = get_post_meta( $post_id, self::META_SOURCE, true );
-
-		if ( empty( $meta ) ) {
-			$meta = array();
-		}
-
-		if ( ! empty( $meta['poster'] ) ) {
-			return;
-		}
-
-		$config = $this->settings->get_config();
-
-		if ( ! isset( $config['autogenerate'] ) ) {
-			return;
-		}
-
-		if ( 'manual' === $config['autogenerate'] ) {
-			return;
-		}
-
-		$generator = new Generator();
-
-		// Autogenerate poster id.
-		$id = absint( $config['autogenerate'] );
-
-		// Get templates list from settings.
-		$templates = $this->settings->get_templates();
-
-		if ( ! isset( $templates[ $id ] ) ) {
-			return;
-		}
-
-		$template = $templates[ $id ];
-
-		// Compose predefined template fields.
-		$fieldset = $this->compose_fields( $template, $post_id );
-
-		// Prepare template editor.
-		$template = $generator->prepare_template( $template, $fieldset, null, $post_id, 'post' );
-
-		if ( ! $generator->check_required( $template ) ) {
-			return;
-		}
-
-		list( $path, $url ) = $generator->get_upload_file();
-
-		// Generate image and save it.
-		$poster = $generator->create_poster( $template, $path );
-
-		if ( is_wp_error( $poster ) ) {
-			return;
-		}
-
-		$source = array(
-			'poster' => $url,
-			'width'  => $template['width'],
-			'height' => $template['height'],
-		);
-
-		/**
-		 * Filters autogenerated poster data.
-		 *
-		 * @since 2.0.11
-		 *
-		 * @param array|false $poster  Poster image, width and height data or false if undefined.
-		 * @param integer     $post_id Post ID.
-		 */
-		$source = apply_filters( 'sharing_image_autogenerated_poster', $source, $post_id );
-
-		if ( empty( $source ) ) {
-			return;
-		}
-
-		$meta = wp_parse_args( $source, $meta );
-
-		$meta['template'] = $id;
-
-		// Update post meta with new poster link.
-		update_post_meta( $post_id, self::META_SOURCE, $meta );
-	}
-
-	/**
 	 * Sanitize widget source meta.
 	 *
 	 * @param array $source Source meta data.
+	 *
 	 * @return array Sanitized source meta fields.
 	 */
 	public function sanitize_source( $source ) {
@@ -702,6 +481,207 @@ class Widget {
 		 * @param array $fieldset  Fieldset list before sanitization.
 		 */
 		return apply_filters( 'sharing_image_sanitize_fieldset', $sanitized, $fieldset );
+	}
+
+	/**
+	 * Handle generate button in Gutenberg sidebar.
+	 *
+	 * @param WP_REST_Request $request Request params.
+	 */
+	public function handle_rest_generator( $request ) {
+		$post_id = $request->get_param( 'id' );
+
+		if ( empty( $post_id ) ) {
+			wp_send_json_error( __( 'Empty post data.', 'sharing-image' ), 400 );
+		}
+
+		$params = $request->get_json_params();
+
+		if ( ! isset( $params['template'] ) ) {
+			wp_send_json_error( __( 'Wrong request parameters.', 'sharing-image' ), 400 );
+		}
+
+		$index = sanitize_key( $params['template'] );
+
+		if ( empty( $params['fieldset'] ) ) {
+			$params['fieldset'] = array();
+		}
+
+		$fieldset = $this->sanitize_fieldset( $params['fieldset'] );
+
+		$result = $this->generate_poster( $fieldset, $index, $post_id, 'post' );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( esc_html__( 'Wrong template id', 'sharing-image' ), 400 );
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Handle generate button on Classic Editor and taxonomy widget.
+	 */
+	public function handle_ajax_generator() {
+		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
+
+		if ( false === $check ) {
+			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+		}
+
+		if ( empty( $_POST[ self::META_SOURCE ]['template'] ) ) {
+			wp_send_json_error( __( 'Template id cannot be empty.', 'sharing-image' ), 400 );
+		}
+
+		$index = sanitize_key( $_POST[ self::META_SOURCE ]['template'] );
+
+		$screen_id = 0;
+
+		if ( ! empty( $_POST['sharing_image_screen'] ) ) {
+			$screen_id = absint( wp_unslash( $_POST['sharing_image_screen'] ) );
+		}
+
+		$context = 'post';
+
+		if ( ! empty( $_POST['sharing_image_context'] ) ) {
+			$context = sanitize_key( wp_unslash( $_POST['sharing_image_context'] ) );
+		}
+
+		$fieldset = array();
+
+		if ( ! empty( $_POST[ self::META_FIELDSET ] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$fieldset = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
+		}
+
+		$result = $this->generate_poster( $fieldset, $index, $screen_id, $context );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error( $result->get_error_messages(), $result->get_error_data() );
+		}
+
+		wp_send_json_success( $result );
+	}
+
+	/**
+	 * Try to autogenerate poster on post insert or update.
+	 *
+	 * @param integer $post_id Updated post_id.
+	 */
+	public function autogenerate_poster( $post_id ) {
+		/**
+		 * Easy way disable autogeneration.
+		 *
+		 * @since 2.0.12
+		 *
+		 * @param bool $disable_autogeneration Set true to disable autogeneration.
+		 * @param int  $post_id Post ID.
+		 */
+		$disabled_autogeneration = apply_filters( 'sharing_image_disable_autogeneration', false, $post_id );
+
+		if ( $disabled_autogeneration ) {
+			return;
+		}
+
+		$status = get_post_status( $post_id );
+
+		if ( 'auto-draft' === $status ) {
+			return;
+		}
+
+		$config = $this->settings->get_config();
+
+		if ( ! isset( $config['autogenerate'] ) ) {
+			return;
+		}
+
+		$index = sanitize_key( $config['autogenerate'] );
+
+		if ( 'manual' === $index ) {
+			return;
+		}
+
+		$fieldset = $this->compose_fields( $index, $post_id );
+
+		/**
+		 * Filters fieldset before autogeneration.
+		 *
+		 * @since 3.0.0
+		 *
+		 * @param array   $fieldset Prepared fieldset data.
+		 * @param string  $index    Template index.
+		 * @param integer $post_id  Post ID.
+		 */
+		$fieldset = apply_filters( 'sharing_image_autogenerated_fieldset', $fieldset, $index, $post_id );
+
+		if ( empty( $fieldset ) ) {
+			$fieldset = array();
+		}
+
+		$result = $this->generate_poster( $fieldset, $index, $post_id, 'post' );
+
+		/**
+		 * Filters autogenerated poster data.
+		 *
+		 * @since 2.0.11
+		 *
+		 * @param array|WP_Erorr $result  Poster image, width and height data or WP_Error if undefined.
+		 * @param integer        $post_id Post ID.
+		 */
+		$result = apply_filters( 'sharing_image_autogenerated_poster', $result, $post_id );
+
+		if ( is_wp_error( $result ) ) {
+			return;
+		}
+
+		$result['template'] = $index;
+
+		update_post_meta( $post_id, self::META_SOURCE, $result );
+		update_post_meta( $post_id, self::META_FIELDSET, $fieldset );
+	}
+
+	/**
+	 * Generate poster by AJAX request.
+	 * Used in widget and sidebar.
+	 *
+	 * @param array   $fieldset  Fieldset data from widget.
+	 * @param integer $index     Template index from editor.
+	 * @param integer $screen_id Post or term ID from admin screen.
+	 * @param string  $context   Screen ID context field. Can be settings, post or term.
+	 */
+	private function generate_poster( $fieldset, $index, $screen_id, $context ) {
+		$templates = $this->settings->get_templates();
+
+		if ( ! isset( $templates[ $index ] ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Wrong template id', 'sharing-image' ), 400 );
+		}
+
+		$generator = new Generator();
+
+		// Prepare template editor.
+		$editor = $generator->prepare_template( $templates[ $index ], $fieldset, $index, $screen_id, $context );
+
+		if ( ! $generator->check_required( $editor ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Wrong template settings', 'sharing-image' ), 400 );
+		}
+
+		list( $path, $url ) = $generator->get_upload_file();
+
+		// Generate image and save it to given path.
+		$poster = $generator->create_poster( $editor, $path );
+
+		if ( is_wp_error( $poster ) ) {
+			return new WP_Error( 'generate', $poster->get_error_message(), 400 );
+		}
+
+		$this->save_attachment( $path, $screen_id, $context );
+
+		$source = array(
+			'poster' => $url,
+			'width'  => $editor['width'],
+			'height' => $editor['height'],
+		);
+
+		return $source;
 	}
 
 	/**
@@ -802,45 +782,114 @@ class Widget {
 	/**
 	 * Update template with post data for preset fields.
 	 *
-	 * @param array $template Templates data from settings page.
-	 * @param int   $post_id  Post id.
+	 * @param string $index    Template index.
+	 * @param int    $post_id  Post id.
+	 * @param array  $fieldset Optional. Prepared fieldset to modify.
 	 *
-	 * @return array List of fields.
+	 * @return array List of prepared fields.
 	 */
-	private function compose_fields( $template, $post_id ) {
-		$layers = array();
+	private function compose_fields( $index, $post_id, $fieldset = array() ) {
+		$templates = $this->settings->get_templates();
 
-		if ( isset( $template['layers'] ) ) {
-			$layers = $template['layers'];
+		if ( ! isset( $templates[ $index ] ) ) {
+			return $fieldset;
 		}
 
-		$fieldset = array();
+		$template = $templates[ $index ];
 
-		foreach ( $layers as $i => $layer ) {
-			if ( empty( $layer['type'] ) || 'text' !== $layer['type'] ) {
+		if ( ! isset( $template['layers'] ) ) {
+			return $fieldset;
+		}
+
+		$layers = $template['layers'];
+
+		foreach ( $layers as $key => $layer ) {
+			$field = null;
+
+			if ( empty( $layer['type'] ) ) {
 				continue;
 			}
 
-			if ( empty( $layer['dynamic'] ) || empty( $layer['preset'] ) ) {
-				continue;
+			if ( 'text' === $layer['type'] ) {
+				$field = $this->compose_text_presets( $layer, $post_id );
 			}
 
-			if ( 'title' === $layer['preset'] ) {
-				$fieldset['captions'][ $i ] = get_the_title( $post_id );
+			if ( 'image' === $layer['type'] ) {
+				$field = $this->compose_image_presets( $layer, $post_id );
 			}
 
-			if ( 'excerpt' === $layer['preset'] ) {
-				$fieldset['captions'][ $i ] = get_the_excerpt( $post_id );
+			if ( ! empty( $field ) ) {
+				$fieldset[ $key ] = $field;
 			}
-		}
-
-		$thumbnail_id = get_post_thumbnail_id( $post_id );
-
-		if ( ! empty( $thumbnail_id ) ) {
-			$fieldset['attachment'] = $thumbnail_id;
 		}
 
 		return $fieldset;
+	}
+
+	/**
+	 * Compose preset fields for text layers.
+	 *
+	 * @param string $layer    List of layer options.
+	 * @param int    $post_id  Post id.
+	 *
+	 * @return array List of prepared fieldset for text layer.
+	 */
+	private function compose_text_presets( $layer, $post_id ) {
+		if ( empty( $layer['preset'] ) || empty( $layer['dynamic'] ) ) {
+			return null;
+		}
+
+		$separator = ', ';
+
+		if ( ! empty( $layer['separator'] ) ) {
+			$separator = $layer['separator'];
+		}
+
+		if ( 'title' === $layer['preset'] ) {
+			return get_the_title( $post_id );
+		}
+
+		if ( 'excerpt' === $layer['preset'] ) {
+			return get_the_excerpt( $post_id );
+		}
+
+		if ( 'categories' === $layer['preset'] ) {
+			$categories = get_the_category( $post_id );
+
+			if ( $categories ) {
+				return implode( $separator, wp_list_pluck( $categories, 'name' ) );
+			}
+		}
+
+		if ( 'tags' === $layer['preset'] ) {
+			$tags = get_the_category( $post_id );
+
+			if ( $tags ) {
+				return implode( $separator, wp_list_pluck( $tags, 'name' ) );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Compose preset fields for image layers.
+	 *
+	 * @param string $layer    List of layer options.
+	 * @param int    $post_id  Post id.
+	 *
+	 * @return array List of prepared fieldset for image layer.
+	 */
+	private function compose_image_presets( $layer, $post_id ) {
+		if ( empty( $layer['preset'] ) || empty( $layer['dynamic'] ) ) {
+			return null;
+		}
+
+		if ( 'featured' === $layer['preset'] ) {
+			return absint( get_post_thumbnail_id( $post_id ) );
+		}
+
+		return null;
 	}
 
 	/**

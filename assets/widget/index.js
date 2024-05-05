@@ -1427,6 +1427,13 @@ function presetImageLayer(media) {
         media.dispatchEvent(new CustomEvent('remove_attachment'));
       }
     });
+    const thumbnail = metabox.querySelector('#_thumbnail_id');
+
+    if (thumbnail) {
+      media.dispatchEvent(new CustomEvent('set_attachment', {
+        detail: thumbnail.value
+      }));
+    }
   }
 }
 /**

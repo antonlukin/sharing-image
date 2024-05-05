@@ -385,27 +385,45 @@ class Generator {
 			'debug',
 		);
 
-		// Update layer position using boundary.
 		$layer = $this->update_layer_position( $layer, $boundary );
-
-		// Prepare common layer args.
-		$args = $this->prepare_args( $layer, $allowed );
+		$args  = $this->prepare_args( $layer, $allowed );
 
 		// Try to set font file by name or attachment path.
 		$args['fontpath'] = $this->get_fontpath( $layer );
 
-		$boundary = array(
-			'x'      => $args['x'],
-			'y'      => $args['y'],
-			'width'  => 0,
-			'height' => 0,
-		);
+		$boundary = $this->set_empty_boundary( $args );
 
 		if ( ! empty( $layer['content'] ) ) {
 			$poster->text( $layer['content'], $args, $boundary );
 		}
 
 		return $poster;
+	}
+
+	/**
+	 * Set empty boundary list to reset boundary for empty layers.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param array $args List of common layer args.
+	 */
+	private function set_empty_boundary( $args ) {
+		$boundary = array(
+			'x'      => 0,
+			'y'      => 0,
+			'width'  => 0,
+			'height' => 0,
+		);
+
+		if ( isset( $args['x'] ) ) {
+			$boundary['x'] = $args['x'];
+		}
+
+		if ( isset( $args['y'] ) ) {
+			$boundary['y'] = $args['y'];
+		}
+
+		return $boundary;
 	}
 
 	/**
