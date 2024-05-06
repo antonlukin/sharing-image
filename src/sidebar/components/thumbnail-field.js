@@ -8,6 +8,9 @@ import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
 	const [ changed, setChanged ] = useState( false );
 
+	/**
+	 * Subscribe on featured media updates.
+	 */
 	const preset = useSelect( ( select ) => {
 		return select( 'core/editor' ).getEditedPostAttribute( 'featured_media' );
 	} );

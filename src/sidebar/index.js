@@ -7,7 +7,7 @@ import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
 import { SelectControl, Button, Flex, Spinner } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 
-import TemplateFields from './template-fields';
+import TemplateFields from './components/template-fields';
 
 const SharingImageSidebar = ( { meta, templates } ) => {
 	const { createErrorNotice, removeNotice } = useDispatch( noticesStore );
@@ -52,13 +52,9 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	};
 
 	/**
-	 * Generate button handler.
-	 *
-	 * @param {Event} e
+	 * Send REST API request to generate new poster.
 	 */
-	const generateButton = async ( e ) => {
-		e.preventDefault();
-
+	const generatePoster = async () => {
 		if ( loading ) {
 			return;
 		}
@@ -79,12 +75,12 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		try {
 			const result = await apiFetch( options );
 
-			if ( ! result.data ) {
+			if ( ! result ) {
 				throw new Error();
 			}
 
 			editPost( {
-				meta: { [ meta.source ]: { ...result.data, template: template } },
+				meta: { [ meta.source ]: { ...result, template: template } },
 			} );
 		} catch ( error ) {
 			createErrorNotice( __( 'An unexpected error occurred', 'sharing-image' ), {
@@ -98,12 +94,8 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 
 	/**
 	 * Remove poster handler button.
-	 *
-	 * @param {Event} e
 	 */
-	const removePoster = ( e ) => {
-		e.preventDefault();
-
+	const removePoster = () => {
 		editPost( {
 			meta: { [ meta.source ]: {} },
 		} );
@@ -156,11 +148,11 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				) }
 
 				<Flex justify={ 'flex-start' }>
-					<Button variant="secondary" type={ 'button' } onClick={ generateButton }>
+					<Button variant="secondary" type={ 'button' } onClick={ () => generatePoster() }>
 						{ __( 'Generate', 'sharing-image' ) }
 					</Button>
 
-					<Button variant="tertiary" isDestructive={ true } onClick={ removePoster }>
+					<Button variant="tertiary" isDestructive={ true } onClick={ () => removePoster() }>
 						{ __( 'Remove', 'sharing-image' ) }
 					</Button>
 
@@ -184,7 +176,7 @@ registerPlugin( 'sharing-image-sidebar', {
 		const params = window.sharingImageSidebar || {};
 
 		if ( checkMeta( params ) ) {
-			return <SharingImageSidebar meta={ params.meta } templates={ params.templates } />;
+			return <SharingImageSidebar { ...params } />;
 		}
 	},
 } );

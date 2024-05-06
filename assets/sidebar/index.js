@@ -78,10 +78,10 @@ const image = (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_pr
 
 /***/ }),
 
-/***/ "./src/sidebar/preset-field.js":
-/*!*************************************!*\
-  !*** ./src/sidebar/preset-field.js ***!
-  \*************************************/
+/***/ "./src/sidebar/components/preset-field.js":
+/*!************************************************!*\
+  !*** ./src/sidebar/components/preset-field.js ***!
+  \************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -109,6 +109,10 @@ const PresetField = ({
   attribute
 }) => {
   const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  /**
+   * Subscribe on field updates.
+   */
+
   const preset = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute(attribute);
   });
@@ -150,10 +154,10 @@ const PresetField = ({
 
 /***/ }),
 
-/***/ "./src/sidebar/preset-taxonomy.js":
-/*!****************************************!*\
-  !*** ./src/sidebar/preset-taxonomy.js ***!
-  \****************************************/
+/***/ "./src/sidebar/components/preset-taxonomy.js":
+/*!***************************************************!*\
+  !*** ./src/sidebar/components/preset-taxonomy.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -182,6 +186,10 @@ const PresetTaxonomy = ({
   entity
 }) => {
   const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  /**
+   * Subscribe on taxonomy updates.
+   */
+
   const preset = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.useSelect)(select => {
     const list = []; // Get checked categories ids.
 
@@ -233,10 +241,10 @@ const PresetTaxonomy = ({
 
 /***/ }),
 
-/***/ "./src/sidebar/template-fields.js":
-/*!****************************************!*\
-  !*** ./src/sidebar/template-fields.js ***!
-  \****************************************/
+/***/ "./src/sidebar/components/template-fields.js":
+/*!***************************************************!*\
+  !*** ./src/sidebar/components/template-fields.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -247,9 +255,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _preset_field__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./preset-field */ "./src/sidebar/preset-field.js");
-/* harmony import */ var _preset_taxonomy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./preset-taxonomy */ "./src/sidebar/preset-taxonomy.js");
-/* harmony import */ var _thumbnail_field__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./thumbnail-field */ "./src/sidebar/thumbnail-field.js");
+/* harmony import */ var _preset_field__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./preset-field */ "./src/sidebar/components/preset-field.js");
+/* harmony import */ var _preset_taxonomy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./preset-taxonomy */ "./src/sidebar/components/preset-taxonomy.js");
+/* harmony import */ var _thumbnail_field__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./thumbnail-field */ "./src/sidebar/components/thumbnail-field.js");
 
 
 
@@ -374,10 +382,10 @@ const TemplateFields = ({
 
 /***/ }),
 
-/***/ "./src/sidebar/thumbnail-field.js":
-/*!****************************************!*\
-  !*** ./src/sidebar/thumbnail-field.js ***!
-  \****************************************/
+/***/ "./src/sidebar/components/thumbnail-field.js":
+/*!***************************************************!*\
+  !*** ./src/sidebar/components/thumbnail-field.js ***!
+  \***************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -413,6 +421,10 @@ const ThumbnailField = ({
   setFieldset
 }) => {
   const [changed, setChanged] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_2__.useState)(false);
+  /**
+   * Subscribe on featured media updates.
+   */
+
   const preset = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useSelect)(select => {
     return select('core/editor').getEditedPostAttribute('featured_media');
   });
@@ -726,7 +738,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__);
 /* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @wordpress/notices */ "@wordpress/notices");
 /* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_wordpress_notices__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _template_fields__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./template-fields */ "./src/sidebar/template-fields.js");
+/* harmony import */ var _components_template_fields__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/template-fields */ "./src/sidebar/components/template-fields.js");
 
 
 
@@ -791,15 +803,11 @@ const SharingImageSidebar = ({
     setTemplate(index);
   };
   /**
-   * Generate button handler.
-   *
-   * @param {Event} e
+   * Send REST API request to generate new poster.
    */
 
 
-  const generateButton = async e => {
-    e.preventDefault();
-
+  const generatePoster = async () => {
     if (loading) {
       return;
     }
@@ -818,13 +826,13 @@ const SharingImageSidebar = ({
     try {
       const result = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()(options);
 
-      if (!result.data) {
+      if (!result) {
         throw new Error();
       }
 
       editPost({
         meta: {
-          [meta.source]: { ...result.data,
+          [meta.source]: { ...result,
             template: template
           }
         }
@@ -840,13 +848,10 @@ const SharingImageSidebar = ({
   };
   /**
    * Remove poster handler button.
-   *
-   * @param {Event} e
    */
 
 
-  const removePoster = e => {
-    e.preventDefault();
+  const removePoster = () => {
     editPost({
       meta: {
         [meta.source]: {}
@@ -896,7 +901,7 @@ const SharingImageSidebar = ({
   }), templates[template] && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Flex, {
     direction: 'column',
     gap: 2
-  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_template_fields__WEBPACK_IMPORTED_MODULE_9__["default"], {
+  }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_components_template_fields__WEBPACK_IMPORTED_MODULE_9__["default"], {
     layers: templates[template].layers || [],
     fieldset: fieldset,
     setFieldset: setFieldset
@@ -905,11 +910,11 @@ const SharingImageSidebar = ({
   }, (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
     variant: "secondary",
     type: 'button',
-    onClick: generateButton
+    onClick: () => generatePoster()
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Generate', 'sharing-image')), (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Button, {
     variant: "tertiary",
     isDestructive: true,
-    onClick: removePoster
+    onClick: () => removePoster()
   }, (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_1__.__)('Remove', 'sharing-image')), loading && (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_7__.Spinner, null))));
 };
 
@@ -926,9 +931,7 @@ const checkMeta = params => {
     const params = window.sharingImageSidebar || {};
 
     if (checkMeta(params)) {
-      return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(SharingImageSidebar, {
-        meta: params.meta,
-        templates: params.templates
+      return (0,react__WEBPACK_IMPORTED_MODULE_0__.createElement)(SharingImageSidebar, { ...params
       });
     }
   }

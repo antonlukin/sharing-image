@@ -5,6 +5,9 @@ import { TextareaControl } from '@wordpress/components';
 const PresetTaxonomy = ( { name, layer, fieldset, setFieldset, attribute, entity } ) => {
 	const [ changed, setChanged ] = useState( false );
 
+	/**
+	 * Subscribe on taxonomy updates.
+	 */
 	const preset = useSelect( ( select ) => {
 		const list = [];
 

@@ -5,6 +5,9 @@ import { TextareaControl } from '@wordpress/components';
 const PresetField = ( { name, layer, fieldset, setFieldset, attribute } ) => {
 	const [ changed, setChanged ] = useState( false );
 
+	/**
+	 * Subscribe on field updates.
+	 */
 	const preset = useSelect( ( select ) => {
 		return select( 'core/editor' ).getEditedPostAttribute( attribute );
 	} );

@@ -289,7 +289,6 @@ class Widget {
 				'source'   => self::META_SOURCE,
 				'fieldset' => self::META_FIELDSET,
 			),
-			'separator' => ', ',
 			'templates' => $this->settings->get_templates(),
 		);
 
@@ -697,7 +696,6 @@ class Widget {
 			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
 			'context'   => $context,
 			'screen'    => $screen_id,
-			'separator' => ', ',
 
 			'name'      => array(
 				'source'   => self::META_SOURCE,
