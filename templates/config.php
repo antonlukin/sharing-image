@@ -27,7 +27,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'<a href="%s" target="_blank" rel="noopener">%s</a>',
 					esc_attr( 'https://wpset.org/sharing-image/' ),
 					esc_html__( 'website', 'sharing-image' )
-				),
+				)
 			);
 			?>
 
@@ -41,7 +41,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'<a href="%s" target="_blank" rel="noopener">%s</a>',
 					esc_attr( 'https://wordpress.org/support/plugin/sharing-image/' ),
 					esc_html__( 'support forum', 'sharing-image' )
-				),
+				)
 			);
 			?>
 

@@ -4,7 +4,7 @@
  * Description:       Create sharing image for Facebook, VK.com, Telegram and other social networks
  * Version:           3.0.0
  * Requires at least: 5.3
- * Requires PHP:      5.5
+ * Requires PHP:      5.6
  * Plugin URI:        https://wpset.org/sharing-image/
  * Author:            Anton Lukin
  * Author URI:        https://wpset.org/

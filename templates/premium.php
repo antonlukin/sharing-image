@@ -79,7 +79,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 				sprintf(
 					'<a href="mailto:%1$s">%1$s</a>',
 					esc_attr( 'support@wpset.org' )
-				),
+				)
 			);
 			?>
 
@@ -94,7 +94,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 					'<a href="%s" target="_blank" rel="noopener">%s</a>',
 					esc_attr( 'https://wpset.org/sharing-image/licenses/' ),
 					esc_html__( 'tool', 'sharing-image' )
-				),
+				)
 			);
 			?>
 		</p>
