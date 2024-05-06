@@ -203,7 +203,7 @@ class Meta {
 			$post_id = $post->ID;
 		}
 
-		$meta = get_post_meta( $post_id, Widget::META_IMAGE, true );
+		$meta = get_post_meta( $post_id, Widget::META_SOURCE, true );
 
 		/**
 		 * Filters singular template poster data.
@@ -231,7 +231,7 @@ class Meta {
 		}
 
 		// Get term meta using Widget meta name const.
-		$meta = get_term_meta( $term_id, Widget::META_IMAGE, true );
+		$meta = get_term_meta( $term_id, Widget::META_SOURCE, true );
 
 		/**
 		 * Filters taxonomy template poster data.
