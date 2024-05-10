@@ -826,13 +826,13 @@ const SharingImageSidebar = ({
     try {
       const result = await _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()(options);
 
-      if (!result) {
+      if (!result.data) {
         throw new Error();
       }
 
       editPost({
         meta: {
-          [meta.source]: { ...result,
+          [meta.source]: { ...result.data,
             template: template
           }
         }

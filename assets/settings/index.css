@@ -982,8 +982,8 @@
     grid-column: auto;
   }
 }
-.sharing-image-config .sharing-image-config-control.control-extra h3 + * {
-  margin-bottom: 20px;
+.sharing-image-config .sharing-image-config-control.control-extra h3 + * + * {
+  margin-top: 20px;
 }
 @media screen and (max-width: 782px) {
   .sharing-image-config .sharing-image-config-control {
@@ -995,6 +995,21 @@
   position: relative;
   width: 100%;
   margin-bottom: 10px;
+}
+.sharing-image-config .sharing-image-config-control-fieldset a {
+  display: block;
+  margin-top: 10px;
+}
+.sharing-image-config .sharing-image-config-control-list {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+.sharing-image-config .sharing-image-config-control-list li {
+  margin-top: 10px;
 }
 .sharing-image-config .sharing-image-config-control-input {
   display: block;
@@ -1268,16 +1283,15 @@ input[type=range]:disabled::-ms-track {
   }
 }
 
-#setting-error-sharing-image {
-  display: block;
-  order: -1;
+.notice {
   width: 1060px;
   max-width: 100%;
-  margin: 20px 0 0;
-  font-weight: 600;
-  border-top: 1px solid #dddddd;
-  border-bottom: 1px solid #dddddd;
-  border-radius: 3px;
+  margin: 20px auto;
+}
+@media screen and (max-width: 782px) {
+  .notice {
+    margin: 10px auto;
+  }
 }
 
 #sharing-image-settings {

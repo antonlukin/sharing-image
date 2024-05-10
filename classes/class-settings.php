@@ -75,6 +75,13 @@ class Settings {
 	private $tabs = array();
 
 	/**
+	 * Store list of plugin snippets.
+	 *
+	 * @var array
+	 */
+	private $snippets = array();
+
+	/**
 	 * Settings constructor.
 	 */
 	public function __construct() {
@@ -87,6 +94,9 @@ class Settings {
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
 		add_action( 'load-settings_page_' . self::SETTINGS_SLUG, array( $this, 'create_demo_template' ) );
+
+		// Init snippets list.
+		add_action( 'init', array( $this, 'init_snippets' ) );
 
 		// Handle settings POST requests.
 		add_action( 'admin_init', array( $this, 'handle_post_requests' ) );
@@ -115,11 +125,11 @@ class Settings {
 
 		// phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! empty( $config['initialized'] ) && ! isset( $_REQUEST['demo-template'] ) ) {
-			return;
+			return null;
 		}
 
 		if ( ! file_exists( SHARING_IMAGE_DIR . 'demo/templates.json' ) ) {
-			return;
+			return null;
 		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions
@@ -127,11 +137,31 @@ class Settings {
 		$templates = json_decode( $templates, true );
 
 		if ( empty( $templates ) ) {
-			return;
+			return null;
 		}
 
+		$generator = new Generator();
+
 		foreach ( $templates as $template ) {
-			$this->update_templates( null, $this->sanitize_editor( $template ) );
+			$index  = $this->create_unique_index();
+			$editor = $this->sanitize_editor( $template );
+
+			// Prepare template editor.
+			$editor = $generator->prepare_template( $editor, null, $index );
+
+			if ( ! $generator->check_required( $editor ) ) {
+				continue;
+			}
+
+			list( $path, $url ) = $generator->get_upload_file();
+
+			$poster = $generator->create_poster( $editor, $path );
+
+			if ( ! is_wp_error( $poster ) ) {
+				$editor['preview'] = $url;
+			}
+
+			$this->update_templates( $index, $editor );
 		}
 
 		$this->update_config( $config );
@@ -149,7 +179,7 @@ class Settings {
 		$hide_settings = apply_filters( 'sharing_image_hide_settings', false );
 
 		if ( $hide_settings ) {
-			return;
+			return null;
 		}
 
 		add_options_page(
@@ -221,7 +251,7 @@ class Settings {
 		$disable_fonts = apply_filters( 'sharing_image_disable_custom_fonts', false );
 
 		if ( $disable_fonts ) {
-			return;
+			return null;
 		}
 
 		// Allow fonts uploading.
@@ -636,7 +666,7 @@ class Settings {
 	 */
 	public function display_settings() {
 		if ( ! $this->is_settings_screen() ) {
-			return;
+			return null;
 		}
 
 		include_once SHARING_IMAGE_DIR . 'templates/settings.php';
@@ -699,7 +729,7 @@ class Settings {
 	 */
 	public function enqueue_styles() {
 		if ( ! $this->is_settings_screen() ) {
-			return;
+			return null;
 		}
 
 		$asset = require SHARING_IMAGE_DIR . 'assets/settings/index.asset.php';
@@ -720,7 +750,7 @@ class Settings {
 	 */
 	public function enqueue_scripts() {
 		if ( ! $this->is_settings_screen() ) {
-			return;
+			return null;
 		}
 
 		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
@@ -766,6 +796,56 @@ class Settings {
 		 * @param array $templates List of templates.
 		 */
 		return apply_filters( 'sharing_image_get_templates', $templates );
+	}
+
+	/**
+	 * Init plugin snippets.
+	 */
+	public function init_snippets() {
+		$list = array(
+			'Sharing_Image\Snippets\YoastSeo' => SHARING_IMAGE_DIR . 'snippets/class-yoastseo.php',
+		);
+
+		/**
+		 * Filter 3rd party plugin snippets list.
+		 *
+		 * @param array $snippets A key-value array with class name key and path to the file as value.
+		 */
+		$list = apply_filters( 'sharing_image_snippets', $list );
+
+		foreach ( $list as $plugin_class => $path ) {
+			include_once $path;
+
+			if ( ! class_exists( $plugin_class ) ) {
+				continue;
+			}
+
+			if ( ! $plugin_class::is_activated() ) {
+				continue;
+			}
+
+			if ( $this->is_active_snippets() ) {
+				$plugin_class::init_filters();
+			}
+
+			$this->snippets[] = $plugin_class::get_name();
+		}
+	}
+
+	/**
+	 * Get list of snippets plugins names and links.
+	 *
+	 * @return array List of snippets.
+	 */
+	public function get_snippets() {
+		/**
+		 * Filters list of plugin snippets names.
+		 *
+		 * @since 3.0.0
+		 *
+		 * @param array $namess List of snippets names.
+		 */
+		return apply_filters( 'sharing_image_get_snippets', $this->snippets );
 	}
 
 	/**
@@ -1045,13 +1125,13 @@ class Settings {
 		$response = wp_remote_post( self::REMOTE_LICENSES, $args );
 
 		if ( is_wp_error( $response ) ) {
-			return;
+			return null;
 		}
 
 		$answer = json_decode( $response['body'], true );
 
 		if ( ! isset( $answer['success'] ) ) {
-			return;
+			return null;
 		}
 
 		if ( true === $answer['success'] ) {
@@ -1068,12 +1148,27 @@ class Settings {
 	/**
 	 * Check if Premium features availible.
 	 *
-	 * @return bool Whether premium featured enabled.
+	 * @return bool Whether premium features are enabled.
 	 */
 	public function is_premium_features() {
 		$license = $this->get_license();
 
 		if ( ! empty( $license['premium'] ) || ! empty( $license['develop'] ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if plugin snippets is active.
+	 *
+	 * @return bool Whether plugin snippets are enabled.
+	 */
+	public function is_active_snippets() {
+		$config = $this->get_config();
+
+		if ( ! empty( $config['meta'] ) && 'snippets' === $config['meta'] ) {
 			return true;
 		}
 
@@ -1087,7 +1182,7 @@ class Settings {
 	 */
 	public function schedule_verification( $args = array() ) {
 		if ( wp_next_scheduled( self::EVENT_PREMIUM, $args ) ) {
-			return;
+			return null;
 		}
 
 		wp_schedule_event( time() + DAY_IN_SECONDS / 2, 'twicedaily', self::EVENT_PREMIUM, $args );
@@ -1114,6 +1209,7 @@ class Settings {
 			),
 			'index'      => $this->create_unique_index(),
 			'templates'  => $this->get_templates(),
+			'snippets'   => $this->get_snippets(),
 			'config'     => $this->get_config(),
 			'license'    => $this->get_license(),
 			'fonts'      => $this->get_fonts(),
@@ -1171,26 +1267,26 @@ class Settings {
 		if ( isset( $editor['layers'] ) && is_array( $editor['layers'] ) ) {
 			$layers = array();
 
-			foreach ( $editor['layers'] as $index => $layer ) {
+			foreach ( $editor['layers'] as $key => $layer ) {
 				if ( empty( $layer['type'] ) ) {
 					continue;
 				}
 
 				switch ( $layer['type'] ) {
 					case 'text':
-						$layers[ $index ] = $this->sanitize_text_layer( $layer );
+						$layers[ $key ] = $this->sanitize_text_layer( $layer );
 						break;
 
 					case 'image':
-						$layers[ $index ] = $this->sanitize_image_layer( $layer );
+						$layers[ $key ] = $this->sanitize_image_layer( $layer );
 						break;
 
 					case 'filter':
-						$layers[ $index ] = $this->sanitize_filter_layer( $layer );
+						$layers[ $key ] = $this->sanitize_filter_layer( $layer );
 						break;
 
 					case 'rectangle':
-						$layers[ $index ] = $this->sanitize_rectangle_layer( $layer );
+						$layers[ $key ] = $this->sanitize_rectangle_layer( $layer );
 						break;
 				}
 			}
@@ -1303,7 +1399,7 @@ class Settings {
 				continue;
 			}
 
-			$sanitized[ $size ] = absint( $layer[ $size ] );
+			$sanitized[ $size ] = intval( $layer[ $size ] );
 		}
 
 		$sanitized['boundary'] = $this->sanitize_boundary( $layer );
@@ -1347,7 +1443,7 @@ class Settings {
 				continue;
 			}
 
-			$sanitized[ $size ] = absint( $layer[ $size ] );
+			$sanitized[ $size ] = intval( $layer[ $size ] );
 		}
 
 		$sanitized['preset'] = 'none';
@@ -1487,7 +1583,7 @@ class Settings {
 				continue;
 			}
 
-			$sanitized[ $size ] = absint( $layer[ $size ] );
+			$sanitized[ $size ] = intval( $layer[ $size ] );
 		}
 
 		$sanitized['boundary'] = $this->sanitize_boundary( $layer );
@@ -1592,7 +1688,7 @@ class Settings {
 		$tab = $this->get_current_tab();
 
 		if ( null === $tab ) {
-			return;
+			return null;
 		}
 
 		include_once SHARING_IMAGE_DIR . "templates/{$tab}.php";

@@ -51,13 +51,13 @@ class Meta {
 		$hide_meta = apply_filters( 'sharing_image_hide_meta', false );
 
 		if ( $hide_meta ) {
-			return;
+			return null;
 		}
 
 		$poster = $this->get_poster_src();
 
 		if ( false === $poster ) {
-			return;
+			return null;
 		}
 
 		list( $image, $width, $height ) = $poster;
@@ -87,7 +87,7 @@ class Meta {
 		$hide_twitter_meta = apply_filters( 'sharing_image_hide_twitter_meta', false );
 
 		if ( $hide_twitter_meta ) {
-			return;
+			return null;
 		}
 
 		print(

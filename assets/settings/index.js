@@ -1287,6 +1287,7 @@ function createDefaultOptions(options, data) {
     text: description.join(' '),
     append: control
   });
+  return control;
 }
 /**
  * Create uploads directory option.
@@ -1354,6 +1355,7 @@ function createUploadsOptions(options, data) {
       }
     });
   });
+  return control;
 }
 /**
  * Create format and quality poster options.
@@ -1412,6 +1414,7 @@ function createImageOptions(options, data) {
       quality.disabled = false;
     }
   });
+  return control;
 }
 /**
  * Create autogenerate poster options.
@@ -1437,7 +1440,7 @@ function createAutogenerateOptions(options, data, templates) {
     selected = 'manual';
   }
 
-  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
+  const control = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
     classes: ['sharing-image-config-control'],
     label: wp.i18n.__('Auto generate poster', 'sharing-image'),
     help: wp.i18n.__('This template will be applied automatically on post save.', 'sharing-image'),
@@ -1452,6 +1455,63 @@ function createAutogenerateOptions(options, data, templates) {
     }],
     append: options
   });
+  return control;
+}
+/**
+ * Create header meta options.
+ *
+ * @param {HTMLElement} options Options form element.
+ * @param {Object}      data    Config data object.
+ */
+
+
+function createMetaOptions(options, data) {
+  const control = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
+    classes: ['sharing-image-config-control', 'control-extra'],
+    label: wp.i18n.__('Header Meta Tags', 'sharing-image'),
+    fields: [{
+      group: 'select',
+      classes: ['sharing-image-config-control-select'],
+      options: {
+        snippets: wp.i18n.__('Display and adapt Meta Tags to other plugins', 'sharing-image'),
+        enable: wp.i18n.__('Always display plugin Meta Tags', 'sharing-image'),
+        disable: wp.i18n.__('Disable plugin Meta Tags', 'sharing-image')
+      },
+      attributes: {
+        name: params.name + '[meta]'
+      },
+      selected: data.meta || 'snippets'
+    }],
+    append: options
+  });
+
+  if (params.snippets.length === 0) {
+    return control;
+  }
+
+  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('h4', {
+    text: wp.i18n.__('Detected SEO plugins', 'sharing-image'),
+    append: control
+  });
+  const list = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('ul', {
+    classes: ['sharing-image-config-control-list'],
+    append: control
+  });
+  params.snippets.forEach(snippet => {
+    const item = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('li', {
+      append: list
+    });
+    _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('a', {
+      attributes: {
+        href: snippet.link,
+        target: '_blank',
+        rel: 'noopener'
+      },
+      text: snippet.title,
+      append: item
+    });
+  });
+  return control;
 }
 /**
  * Live Reload options
@@ -1462,7 +1522,7 @@ function createAutogenerateOptions(options, data, templates) {
 
 
 function createLiveReloadOptions(options, data) {
-  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
+  const control = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
     classes: ['sharing-image-config-control'],
     label: wp.i18n.__('Live-reload', 'sharing-image'),
     fields: [{
@@ -1477,6 +1537,7 @@ function createLiveReloadOptions(options, data) {
     }],
     append: options
   });
+  return control;
 }
 /**
  * Attachment options.
@@ -1487,7 +1548,7 @@ function createLiveReloadOptions(options, data) {
 
 
 function createAttachmentOptions(options, data) {
-  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
+  const control = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
     classes: ['sharing-image-config-control'],
     label: wp.i18n.__('Poster attachment', 'sharing-image'),
     fields: [{
@@ -1502,6 +1563,7 @@ function createAttachmentOptions(options, data) {
     }],
     append: options
   });
+  return control;
 }
 /**
  * Create required form meta fields.
@@ -1568,7 +1630,9 @@ function createConfig(content, settings) {
 
   createImageOptions(options, data); // Autogenerate poster.
 
-  createAutogenerateOptions(options, data, templates); // Attachment options.
+  createAutogenerateOptions(options, data, templates); // Header meta options.
+
+  createMetaOptions(options, data); // Attachment options.
 
   createAttachmentOptions(options, data); // Uploads directory options.
 
@@ -2638,6 +2702,7 @@ function createLayerImage(data, name) {
   description.push(wp.i18n.__('Use jpg, gif or png image formats.', 'sharing-image'));
   description.push(wp.i18n.__('Leave width and height fields blank to use the original image size.', 'sharing-image'));
   description.push(wp.i18n.__('Sizes are calculated proportionally if not filled.', 'sharing-image'));
+  description.push(wp.i18n.__('You can use negative position and dimensions.', 'sharing-image'));
   const layer = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].layer({
     classes: ['sharing-image-editor-layer', 'layer-image'],
     label: wp.i18n.__('Image', 'sharing-image'),
@@ -2687,6 +2752,7 @@ function createLayerText(data, name) {
   description.push(wp.i18n.__('Write a text to the current image.', 'sharing-image'));
   description.push(wp.i18n.__('If the font does not fit within your limits, its size will decrease.', 'sharing-image'));
   description.push(wp.i18n.__('Avoid using large font sizes for long text – this affects performance.', 'sharing-image'));
+  description.push(wp.i18n.__('You can use negative position and dimensions.', 'sharing-image'));
   const layer = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: wp.i18n.__('Text', 'sharing-image'),
@@ -2908,6 +2974,7 @@ function createLayerRectangle(data, name) {
   description.push(wp.i18n.__('Draw a colored rectangle on current image.', 'sharing-image'));
   description.push(wp.i18n.__('You can get filled or outlined figure with custom color and opacity.', 'sharing-image'));
   description.push(wp.i18n.__('Use small height to draw the line.', 'sharing-image'));
+  description.push(wp.i18n.__('You can use negative position and dimensions.', 'sharing-image'));
   const layer = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].layer({
     classes: ['sharing-image-editor-layer', 'layer-text'],
     label: wp.i18n.__('Rectangle', 'sharing-image'),
@@ -3189,7 +3256,7 @@ function createFieldset(data) {
   const description = [];
   description.push(wp.i18n.__('You can add multiple layers on your editor.', 'sharing-image'));
   description.push(wp.i18n.__('Note that the stacking order of the layers is important.', 'sharing-image'));
-  description.push(wp.i18n.__('You can change the order using the arrows in the corner of each box.', 'sharing-image'));
+  description.push(wp.i18n.__('You can change the order using the icon in the corner of each box.', 'sharing-image'));
   _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
     classes: ['sharing-image-editor-control', 'control-reduced'],
     label: wp.i18n.__('Add layers', 'sharing-image'),

@@ -14,19 +14,14 @@
   }
 }
 
-#setting-error-sharing-image {
-  display: block;
-  order: -1;
-
+.notice {
   width: $width-settings - 40px;
   max-width: 100%;
+  margin: 20px auto;
 
-  margin: 20px 0 0;
-  font-weight: 600;
-
-  border-top: 1px solid $color-border;
-  border-bottom: 1px solid $color-border;
-  border-radius: 3px;
+  @media screen and (max-width: 782px) {
+    margin: 10px auto;
+  }
 }
 
 #sharing-image-settings {

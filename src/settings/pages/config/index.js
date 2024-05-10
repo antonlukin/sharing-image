@@ -48,6 +48,8 @@ function createDefaultOptions( options, data ) {
 		text: description.join( ' ' ),
 		append: control,
 	} );
+
+	return control;
 }
 
 /**
@@ -129,6 +131,8 @@ function createUploadsOptions( options, data ) {
 			}
 		} );
 	} );
+
+	return control;
 }
 
 /**
@@ -191,6 +195,8 @@ function createImageOptions( options, data ) {
 			quality.disabled = false;
 		}
 	} );
+
+	return control;
 }
 
 /**
@@ -216,7 +222,7 @@ function createAutogenerateOptions( options, data, templates ) {
 		selected = 'manual';
 	}
 
-	Build.control( {
+	const control = Build.control( {
 		classes: [ 'sharing-image-config-control' ],
 		label: wp.i18n.__( 'Auto generate poster', 'sharing-image' ),
 		help: wp.i18n.__( 'This template will be applied automatically on post save.', 'sharing-image' ),
@@ -233,6 +239,69 @@ function createAutogenerateOptions( options, data, templates ) {
 		],
 		append: options,
 	} );
+
+	return control;
+}
+
+/**
+ * Create header meta options.
+ *
+ * @param {HTMLElement} options Options form element.
+ * @param {Object}      data    Config data object.
+ */
+function createMetaOptions( options, data ) {
+	const control = Build.control( {
+		classes: [ 'sharing-image-config-control', 'control-extra' ],
+		label: wp.i18n.__( 'Header Meta Tags', 'sharing-image' ),
+		fields: [
+			{
+				group: 'select',
+				classes: [ 'sharing-image-config-control-select' ],
+				options: {
+					snippets: wp.i18n.__( 'Display and adapt Meta Tags to other plugins', 'sharing-image' ),
+					enable: wp.i18n.__( 'Always display plugin Meta Tags', 'sharing-image' ),
+					disable: wp.i18n.__( 'Disable plugin Meta Tags', 'sharing-image' ),
+				},
+				attributes: {
+					name: params.name + '[meta]',
+				},
+				selected: data.meta || 'snippets',
+			},
+		],
+		append: options,
+	} );
+
+	if ( params.snippets.length === 0 ) {
+		return control;
+	}
+
+	Build.element( 'h4', {
+		text: wp.i18n.__( 'Detected SEO plugins', 'sharing-image' ),
+		append: control,
+	} );
+
+	const list = Build.element( 'ul', {
+		classes: [ 'sharing-image-config-control-list' ],
+		append: control,
+	} );
+
+	params.snippets.forEach( ( snippet ) => {
+		const item = Build.element( 'li', {
+			append: list,
+		} );
+
+		Build.element( 'a', {
+			attributes: {
+				href: snippet.link,
+				target: '_blank',
+				rel: 'noopener',
+			},
+			text: snippet.title,
+			append: item,
+		} );
+	} );
+
+	return control;
 }
 
 /**
@@ -242,7 +311,7 @@ function createAutogenerateOptions( options, data, templates ) {
  * @param {Object}      data    Config data object.
  */
 function createLiveReloadOptions( options, data ) {
-	Build.control( {
+	const control = Build.control( {
 		classes: [ 'sharing-image-config-control' ],
 		label: wp.i18n.__( 'Live-reload', 'sharing-image' ),
 		fields: [
@@ -259,6 +328,8 @@ function createLiveReloadOptions( options, data ) {
 		],
 		append: options,
 	} );
+
+	return control;
 }
 
 /**
@@ -268,7 +339,7 @@ function createLiveReloadOptions( options, data ) {
  * @param {Object}      data    Config data object.
  */
 function createAttachmentOptions( options, data ) {
-	Build.control( {
+	const control = Build.control( {
 		classes: [ 'sharing-image-config-control' ],
 		label: wp.i18n.__( 'Poster attachment', 'sharing-image' ),
 		fields: [
@@ -285,6 +356,8 @@ function createAttachmentOptions( options, data ) {
 		],
 		append: options,
 	} );
+
+	return control;
 }
 
 /**
@@ -357,6 +430,9 @@ function createConfig( content, settings ) {
 
 	// Autogenerate poster.
 	createAutogenerateOptions( options, data, templates );
+
+	// Header meta options.
+	createMetaOptions( options, data );
 
 	// Attachment options.
 	createAttachmentOptions( options, data );

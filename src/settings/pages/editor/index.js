@@ -1165,6 +1165,7 @@ function createLayerImage( data, name ) {
 	);
 
 	description.push( wp.i18n.__( 'Sizes are calculated proportionally if not filled.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'You can use negative position and dimensions.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-image' ],
@@ -1227,6 +1228,8 @@ function createLayerText( data, name ) {
 	description.push(
 		wp.i18n.__( 'Avoid using large font sizes for long text – this affects performance.', 'sharing-image' )
 	);
+
+	description.push( wp.i18n.__( 'You can use negative position and dimensions.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-text' ],
@@ -1490,6 +1493,7 @@ function createLayerRectangle( data, name ) {
 	);
 
 	description.push( wp.i18n.__( 'Use small height to draw the line.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'You can use negative position and dimensions.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-text' ],
@@ -1813,7 +1817,7 @@ function createFieldset( data ) {
 	description.push( wp.i18n.__( 'Note that the stacking order of the layers is important.', 'sharing-image' ) );
 
 	description.push(
-		wp.i18n.__( 'You can change the order using the arrows in the corner of each box.', 'sharing-image' )
+		wp.i18n.__( 'You can change the order using the icon in the corner of each box.', 'sharing-image' )
 	);
 
 	Build.control( {

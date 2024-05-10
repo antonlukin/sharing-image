@@ -1,6 +1,6 @@
 <?php
 /**
- * Templates plugin functions
+ * Templates plugin functions.
  *
  * @package sharing-image
  * @author  Anton Lukin

@@ -57,8 +57,8 @@
     }
 
     &.control-extra {
-      h3 + * {
-        margin-bottom: 20px;
+      h3 + * + * {
+        margin-top: 20px;
       }
     }
 
@@ -73,6 +73,25 @@
 
     width: 100%;
     margin-bottom: 10px;
+
+    a {
+      display: block;
+      margin-top: 10px;
+    }
+  }
+
+  .sharing-image-config-control-list {
+    display: block;
+    position: relative;
+
+    width: 100%;
+    margin: 0;
+    padding-left: 20px;
+    list-style-type: disc;
+
+    li {
+      margin-top: 10px;
+    }
   }
 
   .sharing-image-config-control-input {

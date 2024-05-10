@@ -75,12 +75,12 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		try {
 			const result = await apiFetch( options );
 
-			if ( ! result ) {
+			if ( ! result.data ) {
 				throw new Error();
 			}
 
 			editPost( {
-				meta: { [ meta.source ]: { ...result, template: template } },
+				meta: { [ meta.source ]: { ...result.data, template: template } },
 			} );
 		} catch ( error ) {
 			createErrorNotice( __( 'An unexpected error occurred', 'sharing-image' ), {

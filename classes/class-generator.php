@@ -110,52 +110,6 @@ class Generator {
 	}
 
 	/**
-	 * Prepare image layer template.
-	 *
-	 * @param array  $layer    Image layer data.
-	 * @param array  $fieldset Fieldset data from widget or sidebar.
-	 * @param string $key      Layer key.
-	 * @param string $context  Screen ID context field. Can be settings, post or term.
-	 *
-	 * @return array List of image layer data.
-	 */
-	private function prepare_image_layer( $layer, $fieldset, $key, $context ) {
-		if ( 'settings' !== $context ) {
-			unset( $layer['attachment'] );
-		}
-
-		if ( ! empty( $fieldset[ $key ] ) ) {
-			$layer['attachment'] = $fieldset[ $key ];
-		}
-
-		return $layer;
-	}
-
-	/**
-	 * Prepare text layer template.
-	 *
-	 * @param array  $layer    Text layer data.
-	 * @param array  $fieldset Fieldset data from widget or sidebar.
-	 * @param string $key      Layer key.
-	 * @param string $context  Screen ID context field. Can be settings, post or term.
-	 *
-	 * @return array List of text layer data.
-	 */
-	private function prepare_text_layer( $layer, $fieldset, $key, $context ) {
-		$layer['content'] = null;
-
-		if ( isset( $layer['sample'] ) && 'settings' === $context ) {
-			$layer['content'] = $layer['sample'];
-		}
-
-		if ( isset( $fieldset[ $key ] ) ) {
-			$layer['content'] = $fieldset[ $key ];
-		}
-
-		return $layer;
-	}
-
-	/**
 	 * Create poster using template data.
 	 *
 	 * @param array  $template List of template options.
@@ -259,6 +213,52 @@ class Generator {
 	}
 
 	/**
+	 * Prepare image layer template.
+	 *
+	 * @param array  $layer    Image layer data.
+	 * @param array  $fieldset Fieldset data from widget or sidebar.
+	 * @param string $key      Layer key.
+	 * @param string $context  Screen ID context field. Can be settings, post or term.
+	 *
+	 * @return array List of image layer data.
+	 */
+	private function prepare_image_layer( $layer, $fieldset, $key, $context ) {
+		if ( 'settings' !== $context ) {
+			unset( $layer['attachment'] );
+		}
+
+		if ( ! empty( $fieldset[ $key ] ) ) {
+			$layer['attachment'] = $fieldset[ $key ];
+		}
+
+		return $layer;
+	}
+
+	/**
+	 * Prepare text layer template.
+	 *
+	 * @param array  $layer    Text layer data.
+	 * @param array  $fieldset Fieldset data from widget or sidebar.
+	 * @param string $key      Layer key.
+	 * @param string $context  Screen ID context field. Can be settings, post or term.
+	 *
+	 * @return array List of text layer data.
+	 */
+	private function prepare_text_layer( $layer, $fieldset, $key, $context ) {
+		$layer['content'] = null;
+
+		if ( isset( $layer['sample'] ) && 'settings' === $context ) {
+			$layer['content'] = $layer['sample'];
+		}
+
+		if ( isset( $fieldset[ $key ] ) ) {
+			$layer['content'] = $fieldset[ $key ];
+		}
+
+		return $layer;
+	}
+
+	/**
 	 * Draw filter layer
 	 *
 	 * @param PosterEditor $poster Instance of PosterEditor class.
@@ -319,8 +319,9 @@ class Generator {
 			$layer['height'] = 0;
 		}
 
-		// Update layer position using boundary.
+		// Update layer position and dimensions.
 		$layer = $this->update_layer_position( $layer, $boundary );
+		$layer = $this->update_layer_dimensions( $layer, $poster );
 
 		// Draw rectangle.
 		$poster->rectangle( $layer['x'], $layer['y'], $layer['width'], $layer['height'], $args );
@@ -349,8 +350,9 @@ class Generator {
 
 		$image = new PosterEditor();
 
-		// Update layer position using boundary.
+		// Update layer position and dimensions.
 		$layer = $this->update_layer_position( $layer, $boundary );
+		$layer = $this->update_layer_dimensions( $layer, $poster );
 
 		// Prepare common layer args.
 		$args = $this->prepare_args( $layer, array( 'x', 'y' ) );
@@ -385,8 +387,12 @@ class Generator {
 			'debug',
 		);
 
+		// Update layer position and dimensions.
 		$layer = $this->update_layer_position( $layer, $boundary );
-		$args  = $this->prepare_args( $layer, $allowed );
+		$layer = $this->update_layer_dimensions( $layer, $poster );
+
+		// Prepare common layer args.
+		$args = $this->prepare_args( $layer, $allowed );
 
 		// Try to set font file by name or attachment path.
 		$args['fontpath'] = $this->get_fontpath( $layer );
@@ -503,6 +509,8 @@ class Generator {
 	 *
 	 * @param array $layer    List of layer options.
 	 * @param array $boundary List of previous layer boundaries.
+	 *
+	 * @return array List of layer settings.
 	 */
 	private function update_layer_position( $layer, $boundary ) {
 		if ( 'absolute' === $layer['boundary'] ) {
@@ -531,6 +539,30 @@ class Generator {
 			default:
 				$layer['x'] = $x;
 				$layer['y'] = $y;
+		}
+
+		return $layer;
+	}
+
+	/**
+	 * Update layer sizes for negative dimensions.
+	 *
+	 * @param array        $layer List of layer options.
+	 * @param PosterEditor $poster Instance of PosterEditor class.
+	 *
+	 * @return array List of layer settings.
+	 */
+	private function update_layer_dimensions( $layer, $poster ) {
+		$width = absint( $poster->width() );
+
+		if ( $layer['width'] < 0 ) {
+			$layer['width'] = $width + $layer['width'] - $layer['x'];
+		}
+
+		$height = absint( $poster->height() );
+
+		if ( $layer['height'] < 0 ) {
+			$layer['height'] = $height + $layer['height'] - $layer['y'];
 		}
 
 		return $layer;

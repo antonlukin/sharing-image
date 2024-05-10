@@ -25,6 +25,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</nav>
 	</div>
 
+	<hr class="wp-header-end">
+
 	<div class="sharing-image-content">
 		<?php
 			$this->show_settings_section();
