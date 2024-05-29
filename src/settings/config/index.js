@@ -2,7 +2,7 @@
  * Config settings tab.
  */
 
-import Build from '../../../builders';
+import Build from '../../builders';
 import './styles.scss';
 
 // Store global script object for settings page.
@@ -258,9 +258,9 @@ function createMetaOptions( options, data ) {
 				group: 'select',
 				classes: [ 'sharing-image-config-control-select' ],
 				options: {
-					snippets: wp.i18n.__( 'Display and adapt Meta Tags to other plugins', 'sharing-image' ),
-					enable: wp.i18n.__( 'Always display plugin Meta Tags', 'sharing-image' ),
-					disable: wp.i18n.__( 'Disable plugin Meta Tags', 'sharing-image' ),
+					snippets: wp.i18n.__( 'Display Meta Tags considering SEO plugins', 'sharing-image' ),
+					enable: wp.i18n.__( 'Always display Meta Tags on all pages', 'sharing-image' ),
+					disable: wp.i18n.__( 'Disable Sharing Image Meta Tags', 'sharing-image' ),
 				},
 				attributes: {
 					name: params.name + '[meta]',

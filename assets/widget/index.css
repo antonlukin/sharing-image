@@ -49,7 +49,7 @@
   overflow: hidden;
   border-radius: 2px;
 }
-.sharing-image-widget .sharing-image-widget-image figure::after {
+.sharing-image-widget .sharing-image-widget-image figure::before {
   content: "\f128";
   display: block;
   font-size: 2rem;
@@ -60,11 +60,12 @@
 .sharing-image-widget .sharing-image-widget-image figure img {
   display: block;
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   width: 100%;
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
+  background-color: #ffffff;
 }
 .sharing-image-widget .sharing-image-widget-image .button {
   margin-right: 14px;
@@ -139,6 +140,21 @@
   float: none;
   margin: 0;
 }
+.sharing-image-widget .sharing-image-widget-method {
+  cursor: help;
+  display: none;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 1rem;
+  line-height: 1;
+  font-family: dashicons;
+  opacity: 0.375;
+  color: #ffffff;
+}
+.sharing-image-widget .sharing-image-widget-method::after {
+  content: "\f313";
+}
 .sharing-image-widget.widget-visible .sharing-image-widget-designer .sharing-image-widget-delete {
   display: inline-flex;
 }
@@ -148,8 +164,11 @@
 .sharing-image-widget.widget-visible .sharing-image-widget-poster {
   visibility: visible;
 }
+.sharing-image-widget.widget-auto .sharing-image-widget-method {
+  display: block;
+}
 .sharing-image-widget.widget-term {
-  margin-top: 20px;
+  margin: 20px 0;
   margin-right: 5%;
   margin-left: 220px;
   padding: 10px;

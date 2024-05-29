@@ -64,7 +64,7 @@ function generatePoster() {
 		const response = request.response || {};
 
 		// Hide preview loader on request complete.
-		widget.classList.remove( 'widget-loader' );
+		widget.classList.remove( 'widget-loader', 'widget-auto' );
 
 		if ( ! response.data ) {
 			return showWidgetError();
@@ -93,6 +93,10 @@ function generatePoster() {
 		}
 
 		image.src = response.data.poster;
+
+		if ( 'auto' === response.data.method ) {
+			widget.classList.add( 'widget-auto' );
+		}
 
 		// Show the poster.
 		widget.classList.add( 'widget-visible' );
@@ -269,16 +273,18 @@ function presetImageLayer( media ) {
 	const metabox = document.getElementById( 'postimagediv' );
 
 	if ( metabox ) {
+		const thumbnail = metabox.querySelector( '#_thumbnail_id' );
+
 		metabox.addEventListener( 'click', ( e ) => {
 			if ( e.target.id === 'remove-post-thumbnail' ) {
 				media.dispatchEvent( new CustomEvent( 'remove_attachment' ) );
 			}
 		} );
 
-		const thumbnail = metabox.querySelector( '#_thumbnail_id' );
+		const attachment = parseInt( thumbnail.value );
 
-		if ( thumbnail ) {
-			media.dispatchEvent( new CustomEvent( 'set_attachment', { detail: thumbnail.value } ) );
+		if ( attachment > 0 ) {
+			media.dispatchEvent( new CustomEvent( 'set_attachment', { detail: attachment } ) );
 		}
 	}
 }
@@ -506,6 +512,18 @@ function createPoster( data ) {
 		append: widget,
 	} );
 
+	Build.element( 'span', {
+		classes: [ 'sharing-image-widget-method' ],
+		attributes: {
+			title: wp.i18n.__( 'Poster was generated automatically and will update on post saving.', 'sharing-image' ),
+		},
+		append: poster,
+	} );
+
+	if ( 'auto' === data.source.method ) {
+		widget.classList.add( 'widget-auto' );
+	}
+
 	if ( data.source.poster ) {
 		Build.element( 'img', {
 			attributes: {
@@ -541,6 +559,15 @@ function createPoster( data ) {
 			type: 'hidden',
 			name: params.name.source + '[height]',
 			value: data.source.height,
+		},
+		append: poster,
+	} );
+
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: params.name.source + '[method]',
+			value: data.source.method,
 		},
 		append: poster,
 	} );

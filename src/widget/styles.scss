@@ -1,3 +1,6 @@
+@import "../includes/variables";
+@import "../includes/mixins";
+
 .sharing-image-widget {
   display: block;
   position: relative;
@@ -55,7 +58,7 @@
 
       border-radius: 2px;
 
-      &::after {
+      &::before {
         content: "\f128";
 
         display: block;
@@ -69,12 +72,14 @@
       img {
         display: block;
         position: absolute;
-        z-index: 2;
+        z-index: 3;
 
         width: 100%;
         height: 100%;
 
         object-fit: cover;
+
+        background-color: $color-white;
       }
     }
 
@@ -172,6 +177,27 @@
     margin: 0;
   }
 
+  .sharing-image-widget-method {
+    cursor: help;
+    display: none;
+
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+
+    font-size: 1rem;
+    line-height: 1;
+
+    font-family: dashicons;
+    opacity: 0.375;
+
+    color: $color-white;
+
+    &::after {
+      content: "\f313";
+    }
+  }
+
   &.widget-visible .sharing-image-widget-designer {
     .sharing-image-widget-delete {
       display: inline-flex;
@@ -188,8 +214,12 @@
     visibility: visible;
   }
 
+  &.widget-auto .sharing-image-widget-method {
+    display: block;
+  }
+
   &.widget-term {
-    margin-top: 20px;
+    margin: 20px 0;
     margin-right: 5%;
     margin-left: 220px;
     padding: 10px;

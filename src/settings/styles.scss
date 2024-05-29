@@ -1,6 +1,6 @@
-@import "variables";
-@import "polyfills";
-@import "animations";
+@import "../includes/variables";
+@import "../includes/polyfills";
+@import "../includes/animations";
 
 #wpcontent {
   padding-left: 0 !important;

@@ -2,7 +2,7 @@
  * Tools settings tab.
  */
 
-import Build from '../../../builders';
+import Build from '../../builders';
 import './styles.scss';
 
 // Store global script object for settings page.

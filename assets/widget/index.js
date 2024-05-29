@@ -467,11 +467,10 @@ function displayImage(media, value) {
     media.removeChild(figure);
   }
 
-  if (!value && !wp.media) {
+  if (!wp.media) {
     return;
   }
 
-  const frame = wp.media.attachment(value).fetch();
   figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure', {
     prepend: media
   });
@@ -480,9 +479,20 @@ function displayImage(media, value) {
     media.insertBefore(figure, media.querySelector('h4').nextSibling);
   }
 
-  const image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
+  if (!value) {
+    return;
+  }
+
+  let image = figure.querySelector('img');
+
+  if (image) {
+    figure.removeChild(image);
+  }
+
+  image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
     append: figure
   });
+  const frame = wp.media.attachment(value).fetch();
   frame.then(data => {
     image.src = data.sizes?.thumbnail?.url || data.url;
   });
@@ -1226,7 +1236,7 @@ function generatePoster() {
   request.addEventListener('load', () => {
     const response = request.response || {}; // Hide preview loader on request complete.
 
-    widget.classList.remove('widget-loader');
+    widget.classList.remove('widget-loader', 'widget-auto');
 
     if (!response.data) {
       return showWidgetError();
@@ -1254,7 +1264,12 @@ function generatePoster() {
       });
     }
 
-    image.src = response.data.poster; // Show the poster.
+    image.src = response.data.poster;
+
+    if ('auto' === response.data.method) {
+      widget.classList.add('widget-auto');
+    } // Show the poster.
+
 
     widget.classList.add('widget-visible');
   });
@@ -1422,16 +1437,17 @@ function presetImageLayer(media) {
   const metabox = document.getElementById('postimagediv');
 
   if (metabox) {
+    const thumbnail = metabox.querySelector('#_thumbnail_id');
     metabox.addEventListener('click', e => {
       if (e.target.id === 'remove-post-thumbnail') {
         media.dispatchEvent(new CustomEvent('remove_attachment'));
       }
     });
-    const thumbnail = metabox.querySelector('#_thumbnail_id');
+    const attachment = parseInt(thumbnail.value);
 
-    if (thumbnail) {
+    if (attachment > 0) {
       media.dispatchEvent(new CustomEvent('set_attachment', {
-        detail: thumbnail.value
+        detail: attachment
       }));
     }
   }
@@ -1650,6 +1666,17 @@ function createPoster(data) {
     classes: ['sharing-image-widget-poster'],
     append: widget
   });
+  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('span', {
+    classes: ['sharing-image-widget-method'],
+    attributes: {
+      title: wp.i18n.__('Poster was generated automatically and will update on post saving.', 'sharing-image')
+    },
+    append: poster
+  });
+
+  if ('auto' === data.source.method) {
+    widget.classList.add('widget-auto');
+  }
 
   if (data.source.poster) {
     _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('img', {
@@ -1683,6 +1710,14 @@ function createPoster(data) {
       type: 'hidden',
       name: params.name.source + '[height]',
       value: data.source.height
+    },
+    append: poster
+  });
+  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
+    attributes: {
+      type: 'hidden',
+      name: params.name.source + '[method]',
+      value: data.source.method
     },
     append: poster
   });

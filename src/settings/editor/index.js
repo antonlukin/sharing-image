@@ -4,8 +4,8 @@
 /* global ajaxurl:true */
 
 import Sortable from 'sortablejs';
-import Build from '../../../builders';
-import Helper from '../../../helpers';
+import Build from '../../builders';
+import Helper from '../../helpers';
 import './styles.scss';
 
 // Store global script object for settings page.

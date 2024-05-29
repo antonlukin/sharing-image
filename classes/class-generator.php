@@ -60,11 +60,11 @@ class Generator {
 	 * Prepare template before creating poster.
 	 * Used to fill fieldset texts and background image.
 	 *
-	 * @param array   $template  List of template data.
-	 * @param array   $fieldset  Optional. Fieldset data from widget.
-	 * @param string  $index     Optional. Template index from editor.
-	 * @param integer $screen_id Optional. Post or term ID from admin screen.
-	 * @param string  $context   Optional. Screen ID context field. Can be settings, post or term.
+	 * @param array  $template  List of template data.
+	 * @param array  $fieldset  Optional. Fieldset data from widget.
+	 * @param string $index     Optional. Template index from editor.
+	 * @param int    $screen_id Optional. Post or term ID from admin screen.
+	 * @param string $context   Optional. Screen ID context field. Can be settings, post or term.
 	 *
 	 * @return array List of template data.
 	 */
@@ -76,6 +76,10 @@ class Generator {
 		}
 
 		foreach ( $layers as $key => &$layer ) {
+			if ( 'settings' === $context && ! empty( $template['debug'] ) ) {
+				$layer['debug'] = true;
+			}
+
 			if ( empty( $layer['type'] ) || empty( $layer['dynamic'] ) ) {
 				continue;
 			}
@@ -89,10 +93,6 @@ class Generator {
 					$layer = self::prepare_text_layer( $layer, $fieldset, $key, $context );
 					break;
 			}
-
-			if ( 'settings' === $context && ! empty( $template['debug'] ) ) {
-				$layer['debug'] = true;
-			}
 		}
 
 		$template['layers'] = $layers;
@@ -100,11 +100,11 @@ class Generator {
 		/**
 		 * Filters template before generation.
 		 *
-		 * @param array   $template  List of template data.
-		 * @param array   $fieldset  Fieldset data from widget or sidebars.
-		 * @param string  $index     Template index from editor.
-		 * @param integer $screen_id Post or term ID from admin screen.
-		 * @param string  $context   Screen ID context field. Can be settings, post or term.
+		 * @param array  $template  List of template data.
+		 * @param array  $fieldset  Fieldset data from widget or sidebars.
+		 * @param string $index     Template index from editor.
+		 * @param int    $screen_id Post or term ID from admin screen.
+		 * @param string $context   Screen ID context field. Can be settings, post or term.
 		 */
 		return apply_filters( 'sharing_image_prepare_template', $template, $fieldset, $index, $screen_id, $context );
 	}

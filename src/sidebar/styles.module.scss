@@ -1,0 +1,24 @@
+.methodAuto {
+  cursor: help;
+
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: white;
+  opacity: 0.375;
+}
+
+.thumbnailImage {
+  border-radius: 2px;
+  object-fit: cover;
+  width: 36px;
+  height: 36px;
+}
+
+.thumbnailIcon {
+  border-radius: 2px;
+  object-fit: cover;
+  width: 36px;
+  height: 36px;
+  opacity: 0.5;
+}

@@ -5,6 +5,8 @@ import { Button } from '@wordpress/components';
 import { Icon, image as imageIcon } from '@wordpress/icons';
 import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
+import styles from '../styles.module.scss';
+
 const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
 	const [ changed, setChanged ] = useState( false );
 
@@ -59,10 +61,10 @@ const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
 		setFieldset( { ...fieldset, [ name ]: 0 } );
 	};
 
-	const displayThumbnailIcon = ( open, styles ) => {
+	const displayThumbnailIcon = ( open ) => {
 		return (
 			<>
-				<Icon icon={ imageIcon } style={ { ...styles, opacity: '0.5' } } />
+				<Icon icon={ imageIcon } className={ styles.thumbnailIcon } />
 
 				<Button variant="link" onClick={ open }>
 					{ __( 'Set layer image', 'sharing-image' ) }
@@ -71,10 +73,10 @@ const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
 		);
 	};
 
-	const displayThumbnailImage = ( styles ) => {
+	const displayThumbnailImage = () => {
 		return (
 			<>
-				{ thumbnail && <img src={ thumbnail } alt={ '' } style={ styles } /> }
+				{ thumbnail && <img src={ thumbnail } alt={ '' } className={ styles.thumbnailImage } /> }
 
 				<Button variant="link" onClick={ removeImage }>
 					{ __( 'Remove image', 'sharing-image' ) }
@@ -89,13 +91,11 @@ const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
 	 * @param {Function} open
 	 */
 	const displayThumbnail = ( { open } ) => {
-		const styles = { borderRadius: '2px', objectFit: 'cover', width: '36px', height: '36px' };
-
 		if ( fieldset[ name ] ) {
-			return displayThumbnailImage( styles );
+			return displayThumbnailImage();
 		}
 
-		return displayThumbnailIcon( open, styles );
+		return displayThumbnailIcon( open );
 	};
 
 	return (

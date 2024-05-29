@@ -1,10 +1,10 @@
 import Helper from '../helpers';
 
-import Tools from './pages/tools';
-import Catalog from './pages/catalog';
-import Premium from './pages/premium';
-import Editor from './pages/editor';
-import Config from './pages/config';
+import Tools from './tools';
+import Catalog from './catalog';
+import Premium from './premium';
+import Editor from './editor';
+import Config from './config';
 
 import './styles.scss';
 

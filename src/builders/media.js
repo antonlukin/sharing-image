@@ -16,11 +16,9 @@ function displayImage( media, value ) {
 		media.removeChild( figure );
 	}
 
-	if ( ! value && ! wp.media ) {
+	if ( ! wp.media ) {
 		return;
 	}
-
-	const frame = wp.media.attachment( value ).fetch();
 
 	figure = buildElement( 'figure', { prepend: media } );
 
@@ -28,8 +26,19 @@ function displayImage( media, value ) {
 		media.insertBefore( figure, media.querySelector( 'h4' ).nextSibling );
 	}
 
-	const image = buildElement( 'img', { append: figure } );
+	if ( ! value ) {
+		return;
+	}
 
+	let image = figure.querySelector( 'img' );
+
+	if ( image ) {
+		figure.removeChild( image );
+	}
+
+	image = buildElement( 'img', { append: figure } );
+
+	const frame = wp.media.attachment( value ).fetch();
 	frame.then( ( data ) => {
 		image.src = data.sizes?.thumbnail?.url || data.url;
 	} );

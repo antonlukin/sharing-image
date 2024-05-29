@@ -4,10 +4,11 @@ import { useState, useEffect } from '@wordpress/element';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { SelectControl, Button, Flex, Spinner } from '@wordpress/components';
+import { SelectControl, Button, Flex, Spinner, Dashicon } from '@wordpress/components';
 import { store as noticesStore } from '@wordpress/notices';
 
 import TemplateFields from './components/template-fields';
+import styles from './styles.module.scss';
 
 const SharingImageSidebar = ( { meta, templates } ) => {
 	const { createErrorNotice, removeNotice } = useDispatch( noticesStore );
@@ -102,6 +103,15 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	};
 
 	/**
+	 * Display icon for auto generated poster.
+	 */
+	const displayMethodAutoIcon = () => {
+		const title = __( 'Poster was generated automatically and will update on post saving.', 'sharing-image' );
+
+		return <Dashicon icon="awards" className={ styles.methodAuto } title={ title } />;
+	};
+
+	/**
 	 * Update post meta on fieldset changes.
 	 */
 	useEffect( () => {
@@ -123,10 +133,12 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 
 	return (
 		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharing-image' ) }>
-			<Flex direction={ 'column' } gap={ 2 }>
+			<Flex direction={ 'column' } gap={ 2 } style={ { position: 'relative' } }>
 				{ postMeta[ meta.source ]?.poster && (
 					<img src={ postMeta[ meta.source ].poster } alt={ __( 'Sharing Image poster', 'sharing-image' ) } />
 				) }
+
+				{ postMeta[ meta.source ]?.method === 'auto' && displayMethodAutoIcon() }
 
 				<SelectControl
 					value={ template }

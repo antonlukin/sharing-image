@@ -3,7 +3,7 @@
  */
 /* global ajaxurl:true */
 
-import Build from '../../../builders';
+import Build from '../../builders';
 import './styles.scss';
 
 // Store global scriot object for settings page.

@@ -2,10 +2,10 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./src/settings/pages/catalog/styles.scss":
-/*!************************************************!*\
-  !*** ./src/settings/pages/catalog/styles.scss ***!
-  \************************************************/
+/***/ "./src/settings/catalog/styles.scss":
+/*!******************************************!*\
+  !*** ./src/settings/catalog/styles.scss ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -14,10 +14,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/settings/pages/config/styles.scss":
-/*!***********************************************!*\
-  !*** ./src/settings/pages/config/styles.scss ***!
-  \***********************************************/
+/***/ "./src/settings/config/styles.scss":
+/*!*****************************************!*\
+  !*** ./src/settings/config/styles.scss ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -26,10 +26,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/settings/pages/editor/styles.scss":
-/*!***********************************************!*\
-  !*** ./src/settings/pages/editor/styles.scss ***!
-  \***********************************************/
+/***/ "./src/settings/editor/styles.scss":
+/*!*****************************************!*\
+  !*** ./src/settings/editor/styles.scss ***!
+  \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -38,22 +38,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/settings/pages/premium/styles.scss":
-/*!************************************************!*\
-  !*** ./src/settings/pages/premium/styles.scss ***!
-  \************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-// extracted by mini-css-extract-plugin
-
-
-/***/ }),
-
-/***/ "./src/settings/pages/tools/styles.scss":
-/*!**********************************************!*\
-  !*** ./src/settings/pages/tools/styles.scss ***!
-  \**********************************************/
+/***/ "./src/settings/premium/styles.scss":
+/*!******************************************!*\
+  !*** ./src/settings/premium/styles.scss ***!
+  \******************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -66,6 +54,18 @@ __webpack_require__.r(__webpack_exports__);
 /*!**********************************!*\
   !*** ./src/settings/styles.scss ***!
   \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
+/***/ }),
+
+/***/ "./src/settings/tools/styles.scss":
+/*!****************************************!*\
+  !*** ./src/settings/tools/styles.scss ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -527,11 +527,10 @@ function displayImage(media, value) {
     media.removeChild(figure);
   }
 
-  if (!value && !wp.media) {
+  if (!wp.media) {
     return;
   }
 
-  const frame = wp.media.attachment(value).fetch();
   figure = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('figure', {
     prepend: media
   });
@@ -540,9 +539,20 @@ function displayImage(media, value) {
     media.insertBefore(figure, media.querySelector('h4').nextSibling);
   }
 
-  const image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
+  if (!value) {
+    return;
+  }
+
+  let image = figure.querySelector('img');
+
+  if (image) {
+    figure.removeChild(image);
+  }
+
+  image = (0,_element__WEBPACK_IMPORTED_MODULE_0__["default"])('img', {
     append: figure
   });
+  const frame = wp.media.attachment(value).fetch();
   frame.then(data => {
     image.src = data.sizes?.thumbnail?.url || data.url;
   });
@@ -1100,18 +1110,18 @@ function getUniqueId() {
 
 /***/ }),
 
-/***/ "./src/settings/pages/catalog/index.js":
-/*!*********************************************!*\
-  !*** ./src/settings/pages/catalog/index.js ***!
-  \*********************************************/
+/***/ "./src/settings/catalog/index.js":
+/*!***************************************!*\
+  !*** ./src/settings/catalog/index.js ***!
+  \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../builders */ "./src/builders/index.js");
-/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/pages/catalog/styles.scss");
+/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../builders */ "./src/builders/index.js");
+/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/catalog/styles.scss");
 
  // Store global scriot object for settings page.
 
@@ -1234,18 +1244,18 @@ function createCatalog(content, settings) {
 
 /***/ }),
 
-/***/ "./src/settings/pages/config/index.js":
-/*!********************************************!*\
-  !*** ./src/settings/pages/config/index.js ***!
-  \********************************************/
+/***/ "./src/settings/config/index.js":
+/*!**************************************!*\
+  !*** ./src/settings/config/index.js ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../builders */ "./src/builders/index.js");
-/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/pages/config/styles.scss");
+/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../builders */ "./src/builders/index.js");
+/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/config/styles.scss");
 /**
  * Config settings tab.
  */
@@ -1473,9 +1483,9 @@ function createMetaOptions(options, data) {
       group: 'select',
       classes: ['sharing-image-config-control-select'],
       options: {
-        snippets: wp.i18n.__('Display and adapt Meta Tags to other plugins', 'sharing-image'),
-        enable: wp.i18n.__('Always display plugin Meta Tags', 'sharing-image'),
-        disable: wp.i18n.__('Disable plugin Meta Tags', 'sharing-image')
+        snippets: wp.i18n.__('Display Meta Tags considering SEO plugins', 'sharing-image'),
+        enable: wp.i18n.__('Always display Meta Tags on all pages', 'sharing-image'),
+        disable: wp.i18n.__('Disable Sharing Image Meta Tags', 'sharing-image')
       },
       attributes: {
         name: params.name + '[meta]'
@@ -1649,10 +1659,10 @@ function createConfig(content, settings) {
 
 /***/ }),
 
-/***/ "./src/settings/pages/editor/index.js":
-/*!********************************************!*\
-  !*** ./src/settings/pages/editor/index.js ***!
-  \********************************************/
+/***/ "./src/settings/editor/index.js":
+/*!**************************************!*\
+  !*** ./src/settings/editor/index.js ***!
+  \**************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -1660,9 +1670,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var sortablejs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! sortablejs */ "./node_modules/sortablejs/modular/sortable.esm.js");
-/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../builders */ "./src/builders/index.js");
-/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../helpers */ "./src/helpers/index.js");
-/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/pages/editor/styles.scss");
+/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../builders */ "./src/builders/index.js");
+/* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../helpers */ "./src/helpers/index.js");
+/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/editor/styles.scss");
 /**
  * Editor settings.
  */
@@ -3459,18 +3469,18 @@ function createEditor(content, settings, index, data = {}) {
 
 /***/ }),
 
-/***/ "./src/settings/pages/premium/index.js":
-/*!*********************************************!*\
-  !*** ./src/settings/pages/premium/index.js ***!
-  \*********************************************/
+/***/ "./src/settings/premium/index.js":
+/*!***************************************!*\
+  !*** ./src/settings/premium/index.js ***!
+  \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../builders */ "./src/builders/index.js");
-/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/pages/premium/styles.scss");
+/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../builders */ "./src/builders/index.js");
+/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/premium/styles.scss");
 /**
  * Premium settings tab.
  */
@@ -3835,18 +3845,18 @@ function createPremium(content, settings) {
 
 /***/ }),
 
-/***/ "./src/settings/pages/tools/index.js":
-/*!*******************************************!*\
-  !*** ./src/settings/pages/tools/index.js ***!
-  \*******************************************/
+/***/ "./src/settings/tools/index.js":
+/*!*************************************!*\
+  !*** ./src/settings/tools/index.js ***!
+  \*************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../builders */ "./src/builders/index.js");
-/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/pages/tools/styles.scss");
+/* harmony import */ var _builders__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../builders */ "./src/builders/index.js");
+/* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/tools/styles.scss");
 /**
  * Tools settings tab.
  */
@@ -7539,11 +7549,11 @@ var __webpack_exports__ = {};
   \*******************************/
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../helpers */ "./src/helpers/index.js");
-/* harmony import */ var _pages_tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./pages/tools */ "./src/settings/pages/tools/index.js");
-/* harmony import */ var _pages_catalog__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./pages/catalog */ "./src/settings/pages/catalog/index.js");
-/* harmony import */ var _pages_premium__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./pages/premium */ "./src/settings/pages/premium/index.js");
-/* harmony import */ var _pages_editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./pages/editor */ "./src/settings/pages/editor/index.js");
-/* harmony import */ var _pages_config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./pages/config */ "./src/settings/pages/config/index.js");
+/* harmony import */ var _tools__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./tools */ "./src/settings/tools/index.js");
+/* harmony import */ var _catalog__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./catalog */ "./src/settings/catalog/index.js");
+/* harmony import */ var _premium__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./premium */ "./src/settings/premium/index.js");
+/* harmony import */ var _editor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./editor */ "./src/settings/editor/index.js");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./config */ "./src/settings/config/index.js");
 /* harmony import */ var _styles_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./styles.scss */ "./src/settings/styles.scss");
 
 
@@ -7560,7 +7570,7 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 function initPremiumTab(content, settings) {
-  (0,_pages_premium__WEBPACK_IMPORTED_MODULE_3__["default"])(content, settings);
+  (0,_premium__WEBPACK_IMPORTED_MODULE_3__["default"])(content, settings);
 }
 /**
  * Init config settings tab.
@@ -7571,7 +7581,7 @@ function initPremiumTab(content, settings) {
 
 
 function initConfigTab(content, settings) {
-  (0,_pages_config__WEBPACK_IMPORTED_MODULE_5__["default"])(content, settings);
+  (0,_config__WEBPACK_IMPORTED_MODULE_5__["default"])(content, settings);
 }
 /**
  * Init tools settings tab.
@@ -7582,7 +7592,7 @@ function initConfigTab(content, settings) {
 
 
 function initToolsTab(content, settings) {
-  (0,_pages_tools__WEBPACK_IMPORTED_MODULE_1__["default"])(content, settings);
+  (0,_tools__WEBPACK_IMPORTED_MODULE_1__["default"])(content, settings);
 }
 /**
  * Init config settings tab.
@@ -7605,15 +7615,15 @@ function initTemplatesTab(content, settings) {
   const data = settings.templates[index]; // Create editor for existing template.
 
   if (undefined !== data) {
-    return (0,_pages_editor__WEBPACK_IMPORTED_MODULE_4__["default"])(content, settings, index, data);
+    return (0,_editor__WEBPACK_IMPORTED_MODULE_4__["default"])(content, settings, index, data);
   } // Create editor for new template.
 
 
   if (null === index) {
-    return (0,_pages_catalog__WEBPACK_IMPORTED_MODULE_2__["default"])(content, settings);
+    return (0,_catalog__WEBPACK_IMPORTED_MODULE_2__["default"])(content, settings);
   }
 
-  (0,_pages_editor__WEBPACK_IMPORTED_MODULE_4__["default"])(content, settings, index);
+  (0,_editor__WEBPACK_IMPORTED_MODULE_4__["default"])(content, settings, index);
 }
 /**
  * Init settings page handler.

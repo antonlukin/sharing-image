@@ -125,11 +125,11 @@ class Settings {
 
 		// phpcs:ignore WordPress.Security.NonceVerification
 		if ( ! empty( $config['initialized'] ) && ! isset( $_REQUEST['demo-template'] ) ) {
-			return null;
+			return;
 		}
 
 		if ( ! file_exists( SHARING_IMAGE_DIR . 'demo/templates.json' ) ) {
-			return null;
+			return;
 		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions
@@ -137,7 +137,7 @@ class Settings {
 		$templates = json_decode( $templates, true );
 
 		if ( empty( $templates ) ) {
-			return null;
+			return;
 		}
 
 		$generator = new Generator();
@@ -179,7 +179,7 @@ class Settings {
 		$hide_settings = apply_filters( 'sharing_image_hide_settings', false );
 
 		if ( $hide_settings ) {
-			return null;
+			return;
 		}
 
 		add_options_page(
@@ -251,7 +251,7 @@ class Settings {
 		$disable_fonts = apply_filters( 'sharing_image_disable_custom_fonts', false );
 
 		if ( $disable_fonts ) {
-			return null;
+			return;
 		}
 
 		// Allow fonts uploading.
@@ -488,7 +488,7 @@ class Settings {
 			$template['title'] = $prefix . $template['title'];
 		}
 
-		if ( ! $this->update_templates( uniqid(), $template ) ) {
+		if ( ! $this->update_templates( $this->create_unique_index(), $template ) ) {
 			$this->redirect_with_message( $redirect, 10 );
 		}
 
@@ -666,7 +666,7 @@ class Settings {
 	 */
 	public function display_settings() {
 		if ( ! $this->is_settings_screen() ) {
-			return null;
+			return;
 		}
 
 		include_once SHARING_IMAGE_DIR . 'templates/settings.php';
@@ -729,7 +729,7 @@ class Settings {
 	 */
 	public function enqueue_styles() {
 		if ( ! $this->is_settings_screen() ) {
-			return null;
+			return;
 		}
 
 		$asset = require SHARING_IMAGE_DIR . 'assets/settings/index.asset.php';
@@ -750,7 +750,7 @@ class Settings {
 	 */
 	public function enqueue_scripts() {
 		if ( ! $this->is_settings_screen() ) {
-			return null;
+			return;
 		}
 
 		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
@@ -1125,13 +1125,13 @@ class Settings {
 		$response = wp_remote_post( self::REMOTE_LICENSES, $args );
 
 		if ( is_wp_error( $response ) ) {
-			return null;
+			return;
 		}
 
 		$answer = json_decode( $response['body'], true );
 
 		if ( ! isset( $answer['success'] ) ) {
-			return null;
+			return;
 		}
 
 		if ( true === $answer['success'] ) {
@@ -1182,7 +1182,7 @@ class Settings {
 	 */
 	public function schedule_verification( $args = array() ) {
 		if ( wp_next_scheduled( self::EVENT_PREMIUM, $args ) ) {
-			return null;
+			return;
 		}
 
 		wp_schedule_event( time() + DAY_IN_SECONDS / 2, 'twicedaily', self::EVENT_PREMIUM, $args );
@@ -1688,7 +1688,7 @@ class Settings {
 		$tab = $this->get_current_tab();
 
 		if ( null === $tab ) {
-			return null;
+			return;
 		}
 
 		include_once SHARING_IMAGE_DIR . "templates/{$tab}.php";

@@ -51,13 +51,13 @@ class Meta {
 		$hide_meta = apply_filters( 'sharing_image_hide_meta', false );
 
 		if ( $hide_meta ) {
-			return null;
+			return;
 		}
 
 		$poster = $this->get_poster_src();
 
 		if ( false === $poster ) {
-			return null;
+			return;
 		}
 
 		list( $image, $width, $height ) = $poster;
@@ -87,7 +87,7 @@ class Meta {
 		$hide_twitter_meta = apply_filters( 'sharing_image_hide_twitter_meta', false );
 
 		if ( $hide_twitter_meta ) {
-			return null;
+			return;
 		}
 
 		print(
@@ -107,7 +107,7 @@ class Meta {
 	 * @param string $object_type Optional. Requested meta type, can be singular or taxonomy.
 	 *                            Default is determined by the type of the template in which it is called.
 
-	 * @return string Url to poster.
+	 * @return string|null Url to poster.
 	 */
 	public function get_poster( $object_id = null, $object_type = null ) {
 		$poster = $this->get_poster_src( $object_id, $object_type );
