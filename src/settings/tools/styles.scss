@@ -11,10 +11,6 @@
     margin: 12px 0;
   }
 
-  & ~ #setting-error-sharing-image {
-    max-width: $width-narrow - 40px;
-  }
-
   .sharing-image-tools-control {
     display: grid;
     grid-template-columns: 240px auto;

@@ -10,9 +10,6 @@
 .sharing-image-tools h2 {
   margin: 12px 0;
 }
-.sharing-image-tools ~ #setting-error-sharing-image {
-  max-width: 660px;
-}
 .sharing-image-tools .sharing-image-tools-control {
   display: grid;
   grid-template-columns: 240px auto;
@@ -347,9 +344,6 @@
 }
 .sharing-image-premium .sharing-image-premium-warning.warning-visible {
   display: block;
-}
-.sharing-image-premium + #setting-error-sharing-image {
-  max-width: 660px;
 }
 /*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/@wordpress/scripts/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/@wordpress/scripts/node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/@wordpress/scripts/node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/settings/editor/styles.scss ***!
@@ -945,9 +939,6 @@
 }
 .sharing-image-config > * {
   margin: 24px 0;
-}
-.sharing-image-config ~ #setting-error-sharing-image {
-  max-width: 660px;
 }
 .sharing-image-config .sharing-image-config-control {
   display: grid;

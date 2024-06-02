@@ -1161,6 +1161,24 @@ class Settings {
 	}
 
 	/**
+	 * Check if Post widget is hidden.
+	 *
+	 * @return bool Whether Post widget is hidden.
+	 */
+	public function is_hidden_post_widget() {
+		$config = $this->get_config();
+
+		/**
+		 * Easy way to hide metabox.
+		 *
+		 * @param bool $hide_metabox Set true to hide metabox.
+		 */
+		$hide_metabox = apply_filters( 'sharing_image_hide_metabox', isset( $config['nowidget'] ) );
+
+		return $hide_metabox;
+	}
+
+	/**
 	 * Check if plugin snippets is active.
 	 *
 	 * @return bool Whether plugin snippets are enabled.
@@ -1633,6 +1651,12 @@ class Settings {
 			}
 		}
 
+		$sanitized['autogenerate'] = '';
+
+		if ( ! empty( $config['autogenerate'] ) ) {
+			$sanitized['autogenerate'] = sanitize_key( $config['autogenerate'] );
+		}
+
 		if ( isset( $config['storage'] ) ) {
 			$sanitized['storage'] = sanitize_text_field( $config['storage'] );
 		}
@@ -1645,10 +1669,22 @@ class Settings {
 			$sanitized['attachment'] = 'attachment';
 		}
 
-		$sanitized['autogenerate'] = 'manual';
+		if ( isset( $config['nowidget'] ) ) {
+			$sanitized['nowidget'] = 'nowidget';
+		}
 
-		if ( isset( $config['autogenerate'] ) ) {
-			$sanitized['autogenerate'] = sanitize_key( $config['autogenerate'] );
+		if ( isset( $config['meta'] ) ) {
+			$sanitized['meta'] = sanitize_text_field( $config['meta'] );
+		}
+
+		$sanitized['meta'] = 'snippets';
+
+		if ( isset( $config['meta'] ) ) {
+			$meta = $config['meta'];
+
+			if ( in_array( $meta, array( 'enable', 'disable' ), true ) ) {
+				$sanitized['meta'] = $config['meta'];
+			}
 		}
 
 		/**

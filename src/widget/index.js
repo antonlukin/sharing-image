@@ -74,6 +74,8 @@ function generatePoster() {
 			return showWidgetError( response.data );
 		}
 
+		params.meta.source = response.data;
+
 		for ( const key in response.data ) {
 			poster.querySelectorAll( 'input' ).forEach( ( input ) => {
 				const name = params.name.source + '[' + key + ']';
@@ -158,38 +160,40 @@ function createTemplateSelector( designer, selected ) {
  *
  * @param {HTMLElement} textarea Textarea field.
  * @param {string}      preset   Preset field.
+ * @param {Array}       data     Widget data object.
  */
-function presetTextLayer( textarea, preset ) {
+function presetTextLayer( textarea, preset, data ) {
 	const source = document.getElementById( preset );
 
 	if ( null === source ) {
 		return;
 	}
 
-	if ( textarea.value && source.value !== textarea.value ) {
-		return;
-	}
+	const updateField = () => {
+		if ( 'manual' === data.source.method ) {
+			return;
+		}
 
-	const updateCaption = () => {
 		textarea.value = source.value;
 	};
 
-	source.addEventListener( 'input', updateCaption );
+	source.addEventListener( 'input', updateField );
 
 	// Stop textarea update after first user input.
 	textarea.addEventListener( 'input', () => {
-		source.removeEventListener( 'input', updateCaption );
+		source.removeEventListener( 'input', updateField );
 	} );
 
-	updateCaption();
+	updateField();
 }
 
 /**
  * Try to prefill text layer field with categories.
  *
  * @param {HTMLElement} textarea Textarea field.
+ * @param {Array}       data     Widget data object.
  */
-function presetTextLayerCategories( textarea ) {
+function presetTextLayerCategories( textarea, data ) {
 	const metabox = document.getElementById( 'categorychecklist' );
 
 	if ( ! metabox ) {
@@ -202,6 +206,10 @@ function presetTextLayerCategories( textarea ) {
 	const updateField = () => {
 		const content = [];
 
+		if ( 'manual' === data.source.method ) {
+			return;
+		}
+
 		metabox.querySelectorAll( 'input:checked' ).forEach( ( el ) => {
 			if ( el.parentNode?.textContent ) {
 				content.push( el.parentNode.textContent.trim() );
@@ -211,19 +219,18 @@ function presetTextLayerCategories( textarea ) {
 		textarea.value = content.join( separator );
 	};
 
-	metabox.addEventListener( 'change', () => {
-		updateField();
-	} );
-
 	updateField();
+
+	metabox.addEventListener( 'change', updateField );
 }
 
 /**
  * Try to prefill text layer field with tags.
  *
  * @param {HTMLElement} textarea Textarea field.
+ * @param {Array}       data     Widget data object.
  */
-function presetTextLayerTags( textarea ) {
+function presetTextLayerTags( textarea, data ) {
 	const checklist = document.querySelector( '#post_tag .tagchecklist' );
 
 	if ( ! checklist || ! MutationObserver ) {
@@ -240,27 +247,36 @@ function presetTextLayerTags( textarea ) {
 			return;
 		}
 
+		if ( 'manual' === data.source.method ) {
+			return;
+		}
+
 		const content = tags.value.split( ',' );
 
 		textarea.value = content.join( separator );
 	};
 
+	updateField();
+
 	const observer = new MutationObserver( updateField );
 	observer.observe( checklist, { childList: true } );
-
-	updateField();
 }
 
 /**
  * Try to prefill image layer field.
  *
  * @param {HTMLElement} media Media element.
+ * @param {Array}       data  Widget data object.
  */
-function presetImageLayer( media ) {
+function presetImageLayer( media, data ) {
 	const frame = wp.media?.featuredImage?.frame();
 
 	if ( frame ) {
 		frame.on( 'select', () => {
+			if ( 'manual' === data.source.method ) {
+				return;
+			}
+
 			const selection = frame.state().get( 'selection' ).first().toJSON();
 
 			if ( selection.id ) {
@@ -272,20 +288,34 @@ function presetImageLayer( media ) {
 	// Find featured image metabox.
 	const metabox = document.getElementById( 'postimagediv' );
 
-	if ( metabox ) {
-		const thumbnail = metabox.querySelector( '#_thumbnail_id' );
+	if ( ! metabox ) {
+		return;
+	}
 
-		metabox.addEventListener( 'click', ( e ) => {
-			if ( e.target.id === 'remove-post-thumbnail' ) {
-				media.dispatchEvent( new CustomEvent( 'remove_attachment' ) );
-			}
-		} );
-
-		const attachment = parseInt( thumbnail.value );
-
-		if ( attachment > 0 ) {
-			media.dispatchEvent( new CustomEvent( 'set_attachment', { detail: attachment } ) );
+	metabox.addEventListener( 'click', ( e ) => {
+		if ( 'manual' === data.source.method ) {
+			return;
 		}
+
+		if ( e.target.id === 'remove-post-thumbnail' ) {
+			media.dispatchEvent( new CustomEvent( 'remove_attachment' ) );
+		}
+	} );
+
+	if ( 'manual' === data.source.method ) {
+		return;
+	}
+
+	const thumbnail = metabox.querySelector( '#_thumbnail_id' );
+
+	if ( ! thumbnail ) {
+		return;
+	}
+
+	const attachment = parseInt( thumbnail.value );
+
+	if ( attachment > 0 ) {
+		media.dispatchEvent( new CustomEvent( 'set_attachment', { detail: attachment } ) );
 	}
 }
 
@@ -295,9 +325,9 @@ function presetImageLayer( media ) {
  * @param {HTMLElement} fieldset Fieldset element.
  * @param {Object}      layer    Layer data.
  * @param {string}      key      Layer key.
- * @param {Array}       values   Template fieldset values.
+ * @param {Array}       data     Widget data object.
  */
-function createLayerText( fieldset, layer, key, values ) {
+function createLayerText( fieldset, layer, key, data ) {
 	const textarea = Build.textarea(
 		{
 			classes: [ 'sharing-image-widget-text' ],
@@ -309,26 +339,26 @@ function createLayerText( fieldset, layer, key, values ) {
 		fieldset
 	);
 
-	textarea.value = values[ key ] || '';
+	textarea.value = data.fieldset[ key ] || '';
 
 	// Preset title.
 	if ( layer.preset === 'title' ) {
-		presetTextLayer( textarea, 'title' );
+		presetTextLayer( textarea, 'title', data );
 	}
 
 	// Preset excerpt.
 	if ( layer.preset === 'excerpt' ) {
-		presetTextLayer( textarea, 'excerpt' );
+		presetTextLayer( textarea, 'excerpt', data );
 	}
 
 	// Preset categories.
 	if ( layer.preset === 'categories' ) {
-		presetTextLayerCategories( textarea );
+		presetTextLayerCategories( textarea, data );
 	}
 
 	// Preset tags.
 	if ( layer.preset === 'tags' ) {
-		presetTextLayerTags( textarea );
+		presetTextLayerTags( textarea, data );
 	}
 }
 
@@ -338,14 +368,14 @@ function createLayerText( fieldset, layer, key, values ) {
  * @param {HTMLElement} fieldset Fieldset element.
  * @param {Object}      layer    Layer data.
  * @param {string}      key      Layer key.
- * @param {Array}       values   Template fieldset values.
+ * @param {Array}       data     Widget data object.
  */
-function createLayerImage( fieldset, layer, key, values ) {
+function createLayerImage( fieldset, layer, key, data ) {
 	const media = Build.media( {
 		name: params.name.fieldset + `[${ key }]`,
 		classes: [ 'sharing-image-widget-image' ],
 		label: layer.title || null,
-		value: values[ key ] || '',
+		value: data.fieldset[ key ] || '',
 		labels: {
 			button: wp.i18n.__( 'Set layer image', 'sharing-image' ),
 			heading: wp.i18n.__( 'Select image', 'sharing-image' ),
@@ -360,7 +390,7 @@ function createLayerImage( fieldset, layer, key, values ) {
 
 	// Preset title.
 	if ( layer.preset === 'featured' ) {
-		presetImageLayer( media );
+		presetImageLayer( media, data );
 	}
 }
 
@@ -413,11 +443,11 @@ function createDesigner( data ) {
 
 			switch ( layer.type ) {
 				case 'text':
-					createLayerText( fieldset, layer, key, data.fieldset );
+					createLayerText( fieldset, layer, key, data );
 					break;
 
 				case 'image':
-					createLayerImage( fieldset, layer, key, data.fieldset );
+					createLayerImage( fieldset, layer, key, data );
 					break;
 			}
 		}
@@ -475,6 +505,10 @@ function createDeleteButton( manager ) {
 
 		poster.querySelectorAll( 'input' ).forEach( ( input ) => {
 			input.value = '';
+
+			if ( input.name === params.name.source + '[method]' ) {
+				input.value = 'manual';
+			}
 		} );
 
 		widget.classList.remove( 'widget-visible' );

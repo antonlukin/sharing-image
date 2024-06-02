@@ -1436,9 +1436,9 @@ function createImageOptions(options, data) {
 
 
 function createAutogenerateOptions(options, data, templates) {
-  const fields = {}; // Add the option for disabling feature.
+  const fields = {}; // Add empty option to disable feature.
 
-  fields.manual = wp.i18n.__('Disable auto generation', 'sharing-image');
+  fields[''] = wp.i18n.__('Disable auto generation', 'sharing-image');
 
   for (const i in templates) {
     fields[i] = templates[i].title || wp.i18n.__('Untitled', 'sharing-image');
@@ -1447,7 +1447,7 @@ function createAutogenerateOptions(options, data, templates) {
   let selected = data.autogenerate;
 
   if (typeof selected === 'undefined') {
-    selected = 'manual';
+    selected = '';
   }
 
   const control = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
@@ -1462,6 +1462,32 @@ function createAutogenerateOptions(options, data, templates) {
         name: params.name + '[autogenerate]'
       },
       selected: String(selected)
+    }],
+    append: options
+  });
+  return control;
+}
+/**
+ * Create hiding widget options.
+ *
+ * @param {HTMLElement} options Options form element.
+ * @param {Object}      data    Config data object.
+ */
+
+
+function createHideWidgetOptions(options, data) {
+  const control = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].control({
+    classes: ['sharing-image-config-control'],
+    label: wp.i18n.__('Hide post widget', 'sharing-image'),
+    fields: [{
+      group: 'checkbox',
+      classes: ['sharing-image-config-control-checkbox'],
+      attributes: {
+        name: params.name + '[nowidget]',
+        value: 'nowidget'
+      },
+      label: wp.i18n.__('Hide the widget from the post editor page', 'sharing-image'),
+      checked: data.nowidget
     }],
     append: options
   });
@@ -1640,7 +1666,9 @@ function createConfig(content, settings) {
 
   createImageOptions(options, data); // Autogenerate poster.
 
-  createAutogenerateOptions(options, data, templates); // Header meta options.
+  createAutogenerateOptions(options, data, templates); // Hide widget and sidebar.
+
+  createHideWidgetOptions(options, data); // Header meta options.
 
   createMetaOptions(options, data); // Attachment options.
 

@@ -69,6 +69,10 @@ class Widget {
 	 * Init post sidebar for gutenberg enabled dashboard.
 	 */
 	public function init_post_sidebar() {
+		if ( $this->settings->is_hidden_post_widget() ) {
+			return;
+		}
+
 		$schema = array(
 			'type'       => 'object',
 			'properties' => array(
@@ -136,14 +140,7 @@ class Widget {
 	 * Init widget on post editing page.
 	 */
 	public function init_post_widget() {
-		/**
-		 * Easy way to hide metabox.
-		 *
-		 * @param bool $hide_metabox Set true to hide metabox.
-		 */
-		$hide_metabox = apply_filters( 'sharing_image_hide_metabox', false );
-
-		if ( $hide_metabox ) {
+		if ( $this->settings->is_hidden_post_widget() ) {
 			return;
 		}
 
@@ -599,20 +596,6 @@ class Widget {
 			return;
 		}
 
-		/**
-		 * Easy way disable autogeneration.
-		 *
-		 * @since 2.0.12
-		 *
-		 * @param bool $disabled Set true to disable autogeneration.
-		 * @param int  $post_id Post ID.
-		 */
-		$disabled = apply_filters( 'sharing_image_disable_autogeneration', false, $post_id );
-
-		if ( $disabled ) {
-			return;
-		}
-
 		$meta = get_post_meta( $post_id, self::META_SOURCE, true );
 
 		if ( ! empty( $meta['method'] ) && 'manual' === $meta['method'] ) {
@@ -621,16 +604,13 @@ class Widget {
 
 		$config = $this->settings->get_config();
 
-		if ( ! isset( $config['autogenerate'] ) ) {
+		if ( empty( $config['autogenerate'] ) ) {
 			return;
 		}
 
 		$index = sanitize_key( $config['autogenerate'] );
 
-		if ( 'manual' === $index ) {
-			return;
-		}
-
+		// Compose fieldset by template index.
 		$fieldset = $this->compose_fields( $index, $post_id );
 
 		/**
