@@ -4,7 +4,26 @@ import PresetField from './preset-field';
 import PresetTaxonomy from './preset-taxonomy';
 import ThumbnailField from './thumbnail-field';
 
-const TemplateFields = ( { layers, fieldset, setFieldset } ) => {
+const TemplateFields = ( { layers, mode, fieldset, setFieldset } ) => {
+	/**
+	 * Display default text field control.
+	 *
+	 * @param {Object} layer
+	 * @param {string} name
+	 *
+	 * @return {JSX.Element} Textarea control component.
+	 */
+	const displayDefaultControl = ( layer, name ) => {
+		return (
+			<TextareaControl
+				name={ name }
+				label={ layer.title }
+				defaultValue={ fieldset[ name ] }
+				onChange={ ( value ) => setFieldset( { ...fieldset, [ name ]: value } ) }
+			/>
+		);
+	};
+
 	/**
 	 * Display dynamic text field.
 	 *
@@ -14,6 +33,10 @@ const TemplateFields = ( { layers, fieldset, setFieldset } ) => {
 	 * @return {JSX.Element} Textarea control component.
 	 */
 	const displayTextField = ( layer, name ) => {
+		if ( mode === 'manual' ) {
+			return displayDefaultControl( layer, name );
+		}
+
 		const props = { name, layer, fieldset, setFieldset };
 
 		switch ( layer.preset ) {
@@ -30,14 +53,7 @@ const TemplateFields = ( { layers, fieldset, setFieldset } ) => {
 				return <PresetTaxonomy { ...props } attribute={ 'post_tags' } entity={ 'tag' } />;
 		}
 
-		return (
-			<TextareaControl
-				name={ name }
-				label={ layer.title }
-				defaultValue={ fieldset[ name ] }
-				onChange={ ( value ) => setFieldset( { ...fieldset, [ name ]: value } ) }
-			/>
-		);
+		return displayDefaultControl( layer, name );
 	};
 
 	/**
@@ -49,7 +65,7 @@ const TemplateFields = ( { layers, fieldset, setFieldset } ) => {
 	 * @return {JSX.Element} Textarea control component.
 	 */
 	const displayImageField = ( layer, name ) => {
-		const props = { name, layer, fieldset, setFieldset };
+		const props = { name, layer, mode, fieldset, setFieldset };
 
 		// Thumbnail field custom styles.
 		const styles = { border: 'solid 1px #ccc', padding: '4px', borderRadius: '4px' };

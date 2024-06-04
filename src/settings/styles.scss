@@ -16,7 +16,7 @@
 
 .notice {
   width: $width-settings - 40px;
-  max-width: 100%;
+  max-width: calc(100% - 40px);
   margin: 20px auto;
 
   @media screen and (max-width: 782px) {

@@ -44,7 +44,7 @@ function buildInput( args, parent ) {
 		}
 	}
 
-	if ( 'range' === input.type ) {
+	if ( input.type === 'range' ) {
 		const counter = Build.element( 'em', {
 			text: input.value,
 			attributes: {
@@ -62,11 +62,7 @@ function buildInput( args, parent ) {
 		} );
 
 		counter.addEventListener( 'click', () => {
-			if ( 'text' === input.type ) {
-				return input.type = 'range';
-			}
-
-			return input.type = 'text';
+			input.type = input.type === 'text' ? 'range' : 'text';
 		} );
 	}
 

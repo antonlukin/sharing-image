@@ -74,7 +74,7 @@ function initTemplatesTab( content, settings ) {
  * Init settings page handler.
  */
 ( function () {
-	if ( typeof 'undefined' === wp ) {
+	if ( wp === undefined ) {
 		return;
 	}
 

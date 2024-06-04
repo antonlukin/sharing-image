@@ -119,14 +119,14 @@ function createUploadsOptions( options, data ) {
 		}
 
 		// Show storage input for checked custom radio.
-		if ( radio.checked && 'custom' === radio.value ) {
+		if ( radio.checked && radio.value === 'custom' ) {
 			input.disabled = false;
 		}
 
 		radio.addEventListener( 'change', () => {
 			input.disabled = true;
 
-			if ( 'custom' === radio.value ) {
+			if ( radio.value === 'custom' ) {
 				input.disabled = false;
 			}
 		} );
@@ -184,14 +184,14 @@ function createImageOptions( options, data ) {
 	// Find control quiality input.
 	const quality = control.querySelector( 'input' );
 
-	if ( 'jpg' === format.value ) {
+	if ( format.value === 'jpg' ) {
 		quality.disabled = false;
 	}
 
 	format.addEventListener( 'change', () => {
 		quality.disabled = true;
 
-		if ( 'jpg' === format.value ) {
+		if ( format.value === 'jpg' ) {
 			quality.disabled = false;
 		}
 	} );

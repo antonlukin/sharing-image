@@ -96,7 +96,7 @@ function generatePoster() {
 
 		image.src = response.data.poster;
 
-		if ( 'auto' === response.data.method ) {
+		if ( response.data.mode === 'auto' ) {
 			widget.classList.add( 'widget-auto' );
 		}
 
@@ -170,7 +170,7 @@ function presetTextLayer( textarea, preset, data ) {
 	}
 
 	const updateField = () => {
-		if ( 'manual' === data.source.method ) {
+		if ( data.source.mode === 'manual' ) {
 			return;
 		}
 
@@ -206,7 +206,7 @@ function presetTextLayerCategories( textarea, data ) {
 	const updateField = () => {
 		const content = [];
 
-		if ( 'manual' === data.source.method ) {
+		if ( data.source.mode === 'manual' ) {
 			return;
 		}
 
@@ -247,7 +247,7 @@ function presetTextLayerTags( textarea, data ) {
 			return;
 		}
 
-		if ( 'manual' === data.source.method ) {
+		if ( data.source.mode === 'manual' ) {
 			return;
 		}
 
@@ -273,7 +273,7 @@ function presetImageLayer( media, data ) {
 
 	if ( frame ) {
 		frame.on( 'select', () => {
-			if ( 'manual' === data.source.method ) {
+			if ( data.source.mode === 'manual' ) {
 				return;
 			}
 
@@ -293,7 +293,7 @@ function presetImageLayer( media, data ) {
 	}
 
 	metabox.addEventListener( 'click', ( e ) => {
-		if ( 'manual' === data.source.method ) {
+		if ( data.source.mode === 'manual' ) {
 			return;
 		}
 
@@ -302,7 +302,7 @@ function presetImageLayer( media, data ) {
 		}
 	} );
 
-	if ( 'manual' === data.source.method ) {
+	if ( data.source.mode === 'manual' ) {
 		return;
 	}
 
@@ -340,6 +340,11 @@ function createLayerText( fieldset, layer, key, data ) {
 	);
 
 	textarea.value = data.fieldset[ key ] || '';
+
+	// Skip presets for terms.
+	if ( params.context !== 'post' ) {
+		return;
+	}
 
 	// Preset title.
 	if ( layer.preset === 'title' ) {
@@ -388,8 +393,7 @@ function createLayerImage( fieldset, layer, key, data ) {
 		append: fieldset,
 	} );
 
-	// Preset title.
-	if ( layer.preset === 'featured' ) {
+	if ( params.context === 'post' && layer.preset === 'featured' ) {
 		presetImageLayer( media, data );
 	}
 }
@@ -506,7 +510,7 @@ function createDeleteButton( manager ) {
 		poster.querySelectorAll( 'input' ).forEach( ( input ) => {
 			input.value = '';
 
-			if ( input.name === params.name.source + '[method]' ) {
+			if ( input.name === params.name.source + '[mode]' ) {
 				input.value = 'manual';
 			}
 		} );
@@ -547,14 +551,14 @@ function createPoster( data ) {
 	} );
 
 	Build.element( 'span', {
-		classes: [ 'sharing-image-widget-method' ],
+		classes: [ 'sharing-image-widget-mode' ],
 		attributes: {
 			title: wp.i18n.__( 'Poster was generated automatically and will update on post saving.', 'sharing-image' ),
 		},
 		append: poster,
 	} );
 
-	if ( 'auto' === data.source.method ) {
+	if ( data.source.mode === 'auto' ) {
 		widget.classList.add( 'widget-auto' );
 	}
 
@@ -600,8 +604,8 @@ function createPoster( data ) {
 	Build.element( 'input', {
 		attributes: {
 			type: 'hidden',
-			name: params.name.source + '[method]',
-			value: data.source.method,
+			name: params.name.source + '[mode]',
+			value: data.source.mode,
 		},
 		append: poster,
 	} );
@@ -682,7 +686,7 @@ function buildWidget() {
  * Init metabox handler.
  */
 ( function () {
-	if ( typeof 'undefined' === wp ) {
+	if ( wp === undefined ) {
 		return;
 	}
 

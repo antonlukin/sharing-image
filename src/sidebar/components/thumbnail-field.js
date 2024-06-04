@@ -1,5 +1,5 @@
 import { __ } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';
 import { Button } from '@wordpress/components';
 import { Icon, image as imageIcon } from '@wordpress/icons';
@@ -7,9 +7,7 @@ import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
 import styles from '../styles.module.scss';
 
-const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
-	const [ changed, setChanged ] = useState( false );
-
+const ThumbnailField = ( { name, layer, mode, fieldset, setFieldset } ) => {
 	/**
 	 * Subscribe on featured media updates.
 	 */
@@ -40,16 +38,13 @@ const ThumbnailField = ( { name, layer, fieldset, setFieldset } ) => {
 	 */
 	const changeFieldset = ( value ) => {
 		setFieldset( { ...fieldset, [ name ]: value } );
-
-		// Mark this field as manually changed by user.
-		setChanged( true );
 	};
 
 	/**
 	 * Update fieldset on presets change.
 	 */
 	useEffect( () => {
-		if ( ! changed && layer.preset === 'featured' ) {
+		if ( mode !== 'manual' && layer.preset === 'featured' ) {
 			setFieldset( { ...fieldset, [ name ]: preset } );
 		}
 	}, [ preset ] ); // eslint-disable-line

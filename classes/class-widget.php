@@ -88,7 +88,7 @@ class Widget {
 				'template' => array(
 					'type' => 'string',
 				),
-				'method'   => array(
+				'mode'     => array(
 					'type' => 'string',
 				),
 			),
@@ -440,8 +440,8 @@ class Widget {
 			$sanitized['template'] = sanitize_key( $source['template'] );
 		}
 
-		if ( ! empty( $source['method'] ) ) {
-			$sanitized['method'] = sanitize_text_field( $source['method'] );
+		if ( ! empty( $source['mode'] ) ) {
+			$sanitized['mode'] = sanitize_text_field( $source['mode'] );
 		}
 
 		/**
@@ -598,7 +598,7 @@ class Widget {
 
 		$meta = get_post_meta( $post_id, self::META_SOURCE, true );
 
-		if ( ! empty( $meta['method'] ) && 'manual' === $meta['method'] ) {
+		if ( ! empty( $meta['mode'] ) && 'manual' === $meta['mode'] ) {
 			return;
 		}
 
@@ -696,11 +696,11 @@ class Widget {
 			'poster' => $url,
 			'width'  => $editor['width'],
 			'height' => $editor['height'],
-			'method' => 'manual',
+			'mode'   => 'manual',
 		);
 
 		if ( ! empty( $auto ) ) {
-			$source['method'] = 'auto';
+			$source['mode'] = 'auto';
 		}
 
 		return $source;
@@ -864,7 +864,7 @@ class Widget {
 		}
 
 		if ( 'excerpt' === $layer['preset'] ) {
-			return get_the_excerpt( $post_id );
+			return get_post_field( 'excerpt', $post_id );
 		}
 
 		if ( 'categories' === $layer['preset'] ) {

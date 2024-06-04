@@ -53,10 +53,15 @@
     &.control-section {
       padding-bottom: 40px;
       border-bottom: solid 1px $color-border;
+
+      @media screen and (max-width: 782px) {
+        padding-bottom: 24px;
+      }
     }
 
     @media screen and (max-width: 782px) {
       grid-template-columns: 1fr;
+      margin: 24px 0;
     }
   }
 

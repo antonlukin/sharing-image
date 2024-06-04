@@ -105,10 +105,10 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	/**
 	 * Display icon for auto generated poster.
 	 */
-	const displayMethodAutoIcon = () => {
+	const displayMdodeAutoIcon = () => {
 		const title = __( 'Poster was generated automatically and will update on post saving.', 'sharing-image' );
 
-		return <Dashicon icon="awards" className={ styles.methodAuto } title={ title } />;
+		return <Dashicon icon="awards" className={ styles.modeAuto } title={ title } />;
 	};
 
 	/**
@@ -138,7 +138,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 					<img src={ postMeta[ meta.source ].poster } alt={ __( 'Sharing Image poster', 'sharing-image' ) } />
 				) }
 
-				{ postMeta[ meta.source ]?.method === 'auto' && displayMethodAutoIcon() }
+				{ postMeta[ meta.source ]?.mode === 'auto' && displayMdodeAutoIcon() }
 
 				<SelectControl
 					value={ template }
@@ -153,6 +153,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 					<Flex direction={ 'column' } gap={ 2 }>
 						<TemplateFields
 							layers={ templates[ template ].layers || [] }
+							mode={ postMeta[ meta.source ]?.mode }
 							fieldset={ fieldset }
 							setFieldset={ setFieldset }
 						/>
