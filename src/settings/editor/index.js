@@ -178,7 +178,7 @@ function createTextDynamicFields( layer, name, data ) {
 				name: name + '[dynamic]',
 				value: 'dynamic',
 			},
-			label: wp.i18n.__( 'Dynamic field. Filled in the post editing screen.', 'sharing-image' ),
+			label: wp.i18n.__( 'Dynamic field. Filled in on the post editing screen.', 'sharing-image' ),
 			checked: data.dynamic,
 		},
 		control
@@ -209,7 +209,7 @@ function createTextDynamicFields( layer, name, data ) {
 	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-hidden' ],
 		help: wp.i18n.__(
-			'This field is for example purposes only, to preview the editors appearance.',
+			'This field is for example purposes only, to preview the editor’s appearance.',
 			'sharing-image'
 		),
 		fields: [
@@ -304,7 +304,7 @@ function createTextDynamicFields( layer, name, data ) {
 
 	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-extend' ],
-		help: wp.i18n.__( 'You can use non-breaking spaces to manage your string position.', 'sharing-image' ),
+		help: wp.i18n.__( 'You can use non-breaking spaces to adjust your string position.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'textarea',
@@ -383,7 +383,7 @@ function createImageDynamicFields( layer, name, data ) {
 		image: true,
 		remove: true,
 		help: wp.i18n.__(
-			'This image is for example purposes only, to preview the editors appearance.',
+			'This image is for example purposes only, to preview the editor’s appearance.',
 			'sharing-image'
 		),
 		mime: [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ],
@@ -464,7 +464,7 @@ function createBackgroundButton( layer, sizes, callback ) {
 
 	const button = Build.element( 'button', {
 		classes: [ 'sharing-image-editor-more' ],
-		text: wp.i18n.__( 'Utilize image as poster background', 'sharing-image' ),
+		text: wp.i18n.__( 'Utilize image as the poster background.', 'sharing-image' ),
 		attributes: {
 			type: 'button',
 		},
@@ -579,7 +579,7 @@ function createImageSizesFields( layer, name, data ) {
 					name: name + '[resize]',
 					value: 'center',
 				},
-				label: wp.i18n.__( 'Center image while preserving aspect ratio', 'sharing-image' ),
+				label: wp.i18n.__( 'Center image while preserving the aspect ratio', 'sharing-image' ),
 				checked: data.resize || 'center',
 			},
 			{
@@ -589,7 +589,7 @@ function createImageSizesFields( layer, name, data ) {
 					name: name + '[resize]',
 					value: 'top',
 				},
-				label: wp.i18n.__( 'Top aligned image while preserving aspect ratio', 'sharing-image' ),
+				label: wp.i18n.__( 'Top-aligned image while preserving the aspect ratio.', 'sharing-image' ),
 				checked: data.resize || 'center',
 			},
 			{
@@ -599,7 +599,7 @@ function createImageSizesFields( layer, name, data ) {
 					name: name + '[resize]',
 					value: 'bottom',
 				},
-				label: wp.i18n.__( 'Bottom aligned image while preserving aspect ratio', 'sharing-image' ),
+				label: wp.i18n.__( 'Bottom-aligned image while preserving aspect ratio', 'sharing-image' ),
 				checked: data.resize || 'center',
 			},
 			{
@@ -609,7 +609,7 @@ function createImageSizesFields( layer, name, data ) {
 					name: name + '[resize]',
 					value: 'ignore',
 				},
-				label: wp.i18n.__( 'Resize ignore the aspect ratio', 'sharing-image' ),
+				label: wp.i18n.__( 'Resize while ignoring the aspect ratio', 'sharing-image' ),
 				checked: data.resize || 'center',
 			},
 			{
@@ -827,7 +827,7 @@ function createFontField( layer, name, data ) {
 	} );
 
 	Build.element( 'small', {
-		text: wp.i18n.__( 'Custom font can only be in .ttf or .otf format.', 'sharing-image' ),
+		text: wp.i18n.__( 'Custom fonts can only be in .ttf or .otf format.', 'sharing-image' ),
 		append: control,
 	} );
 
@@ -1158,14 +1158,14 @@ function createDeleteLayerButton( designer, layer ) {
 function createLayerImage( data, name ) {
 	const description = [];
 
-	description.push( wp.i18n.__( 'Use jpg, gif or png image formats.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'Use JPG, GIF, or PNG image formats.', 'sharing-image' ) );
 
 	description.push(
-		wp.i18n.__( 'Leave width and height fields blank to use the original image size.', 'sharing-image' )
+		wp.i18n.__( 'Leave the width and height fields blank to use the original image size.', 'sharing-image' )
 	);
 
-	description.push( wp.i18n.__( 'Sizes are calculated proportionally if not filled.', 'sharing-image' ) );
-	description.push( wp.i18n.__( 'You can use negative position and dimensions.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'Sizes are calculated proportionally if not specified.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'You can use negative values for position and dimensions.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-image' ],
@@ -1220,16 +1220,16 @@ function createLayerImage( data, name ) {
 function createLayerText( data, name ) {
 	const description = [];
 
-	description.push( wp.i18n.__( 'Write a text to the current image.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'Write text on the current image.', 'sharing-image' ) );
 
 	description.push(
 		wp.i18n.__( 'If the font does not fit within your limits, its size will decrease.', 'sharing-image' )
 	);
 	description.push(
-		wp.i18n.__( 'Avoid using large font sizes for long text – this affects performance.', 'sharing-image' )
+		wp.i18n.__( 'Avoid using large font sizes for long text as it affects performance.', 'sharing-image' )
 	);
 
-	description.push( wp.i18n.__( 'You can use negative position and dimensions.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'You can use negative values for position and dimensions.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-text' ],
@@ -1359,10 +1359,7 @@ function createLayerText( data, name ) {
 function createLayerFilter( data, name ) {
 	const description = [];
 
-	description.push(
-		wp.i18n.__( 'Filters are applied one after another to the entire editor image.', 'sharing-image' )
-	);
-
+	description.push( wp.i18n.__( 'Filters are applied sequentially to the entire editor image.', 'sharing-image' ) );
 	description.push( wp.i18n.__( 'If you want to control their order, create multiple layers.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
@@ -1390,7 +1387,7 @@ function createLayerFilter( data, name ) {
 					name: name + '[grayscale]',
 					value: 'grayscale',
 				},
-				label: wp.i18n.__( 'Turns image into a grayscale version', 'sharing-image' ),
+				label: wp.i18n.__( 'Converts the image into a grayscale version', 'sharing-image' ),
 				checked: data.grayscale,
 			},
 		],
@@ -1486,14 +1483,14 @@ function createLayerFilter( data, name ) {
 function createLayerRectangle( data, name ) {
 	const description = [];
 
-	description.push( wp.i18n.__( 'Draw a colored rectangle on current image.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'Draw a colored rectangle on the current image.', 'sharing-image' ) );
 
 	description.push(
-		wp.i18n.__( 'You can get filled or outlined figure with custom color and opacity.', 'sharing-image' )
+		wp.i18n.__( 'You can get a filled or outlined figure with custom color and opacity.', 'sharing-image' )
 	);
 
-	description.push( wp.i18n.__( 'Use small height to draw the line.', 'sharing-image' ) );
-	description.push( wp.i18n.__( 'You can use negative position and dimensions.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'Use a small height to draw the line.', 'sharing-image' ) );
+	description.push( wp.i18n.__( 'You can use negative values for position and dimensions.', 'sharing-image' ) );
 
 	const layer = Build.layer( {
 		classes: [ 'sharing-image-editor-layer', 'layer-text' ],

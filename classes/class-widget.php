@@ -508,13 +508,13 @@ class Widget {
 		$post_id = $request->get_param( 'id' );
 
 		if ( empty( $post_id ) ) {
-			wp_send_json_error( __( 'Empty post data.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Post data is empty.', 'sharing-image' ), 400 );
 		}
 
 		$params = $request->get_json_params();
 
 		if ( ! isset( $params['template'] ) ) {
-			wp_send_json_error( __( 'Wrong request parameters.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Incorrect request parameters.', 'sharing-image' ), 400 );
 		}
 
 		$index = sanitize_key( $params['template'] );
@@ -542,11 +542,11 @@ class Widget {
 		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
-			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
 		}
 
 		if ( empty( $_POST[ self::META_SOURCE ]['template'] ) ) {
-			wp_send_json_error( __( 'Template id cannot be empty.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Template ID cannot be empty.', 'sharing-image' ), 400 );
 		}
 
 		$index = sanitize_key( $_POST[ self::META_SOURCE ]['template'] );
@@ -665,7 +665,7 @@ class Widget {
 		$templates = $this->settings->get_templates();
 
 		if ( ! isset( $templates[ $index ] ) ) {
-			return new WP_Error( 'generate', esc_html__( 'Wrong template id', 'sharing-image' ), 400 );
+			return new WP_Error( 'generate', esc_html__( 'Incorrect template ID.', 'sharing-image' ), 400 );
 		}
 
 		$generator = new Generator();
@@ -674,7 +674,7 @@ class Widget {
 		$editor = $generator->prepare_template( $templates[ $index ], $fieldset, $index, $screen_id, $context );
 
 		if ( ! $generator->check_required( $editor ) ) {
-			return new WP_Error( 'generate', esc_html__( 'Wrong template settings', 'sharing-image' ), 400 );
+			return new WP_Error( 'generate', esc_html__( 'Incorrect template settings.', 'sharing-image' ), 400 );
 		}
 
 		list( $path, $url ) = $generator->get_upload_file();
@@ -846,7 +846,7 @@ class Widget {
 	 * @param string $layer    List of layer options.
 	 * @param int    $post_id  Post id.
 	 *
-	 * @return array List of prepared fieldset for text layer.
+	 * @return array|null List of prepared fieldset for text layer.
 	 */
 	private function compose_text_presets( $layer, $post_id ) {
 		if ( empty( $layer['preset'] ) || empty( $layer['dynamic'] ) ) {
@@ -892,7 +892,7 @@ class Widget {
 	 * @param string $layer    List of layer options.
 	 * @param int    $post_id  Post id.
 	 *
-	 * @return array List of prepared fieldset for image layer.
+	 * @return array|null List of prepared fieldset for image layer.
 	 */
 	private function compose_image_presets( $layer, $post_id ) {
 		if ( empty( $layer['preset'] ) || empty( $layer['dynamic'] ) ) {
@@ -933,6 +933,8 @@ class Widget {
 	 * @param string $path      Path to poster image.
 	 * @param int    $screen_id Post or taxonomy screen ID.
 	 * @param string $context   Widget context. For example: metabox or autogenerate.
+	 *
+	 * @return int|null Attachment ID or null;
 	 */
 	private function save_attachment( $path, $screen_id, $context ) {
 		$config = $this->settings->get_config();
@@ -1020,7 +1022,7 @@ class Widget {
 		);
 
 		if ( empty( $posts[0]->ID ) ) {
-			return null;
+			return false;
 		}
 
 		return wp_delete_attachment( $posts[0]->ID, true );

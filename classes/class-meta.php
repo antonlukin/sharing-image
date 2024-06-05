@@ -43,14 +43,7 @@ class Meta {
 	 * Print poster image meta tags.
 	 */
 	public function show_header() {
-		/**
-		 * Easy way to hide poster meta.
-		 *
-		 * @param bool $hide_meta Set true to hide poster meta.
-		 */
-		$hide_meta = apply_filters( 'sharing_image_hide_meta', false );
-
-		if ( $hide_meta ) {
+		if ( ! $this->settings->is_custom_header_meta() ) {
 			return;
 		}
 

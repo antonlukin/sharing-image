@@ -48,7 +48,7 @@ function buildInput( args, parent ) {
 		const counter = Build.element( 'em', {
 			text: input.value,
 			attributes: {
-				title: wp.i18n.__( 'Click to change input view', 'sharing-image' ),
+				title: wp.i18n.__( 'Click to change the input view.', 'sharing-image' ),
 			},
 			append: field,
 		} );

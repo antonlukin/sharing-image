@@ -38,10 +38,7 @@ function createDefaultOptions( options, data ) {
 
 	const description = [];
 
-	description.push(
-		wp.i18n.__( 'The default poster is used on pages where there is no generated.', 'sharing-image' )
-	);
-
+	description.push( wp.i18n.__( 'The default poster is used on pages where none is generated.', 'sharing-image' ) );
 	description.push( wp.i18n.__( 'Best image size: 1200×630 pixels.', 'sharing-image' ) );
 
 	Build.element( 'small', {
@@ -109,7 +106,10 @@ function createUploadsOptions( options, data ) {
 	);
 
 	Build.element( 'small', {
-		text: wp.i18n.__( 'Use relative path from site root. Directory should be writeable.', 'sharing-image' ),
+		text: wp.i18n.__(
+			'Use a relative path from the site root. The directory should be writable.',
+			'sharing-image'
+		),
 		append: control,
 	} );
 
@@ -225,7 +225,7 @@ function createAutogenerateOptions( options, data, templates ) {
 	const control = Build.control( {
 		classes: [ 'sharing-image-config-control' ],
 		label: wp.i18n.__( 'Auto generate poster', 'sharing-image' ),
-		help: wp.i18n.__( 'This template will be applied automatically on post save.', 'sharing-image' ),
+		help: wp.i18n.__( 'This template will be applied automatically when the post is saved.', 'sharing-image' ),
 		fields: [
 			{
 				group: 'select',
@@ -261,7 +261,7 @@ function createHideWidgetOptions( options, data ) {
 					name: params.name + '[nowidget]',
 					value: 'nowidget',
 				},
-				label: wp.i18n.__( 'Hide the widget from the post editor page', 'sharing-image' ),
+				label: wp.i18n.__( 'Hide the widget on the post editor page', 'sharing-image' ),
 				checked: data.nowidget,
 			},
 		],
@@ -286,9 +286,9 @@ function createMetaOptions( options, data ) {
 				group: 'select',
 				classes: [ 'sharing-image-config-control-select' ],
 				options: {
-					snippets: wp.i18n.__( 'Display Meta Tags considering SEO plugins', 'sharing-image' ),
-					enable: wp.i18n.__( 'Always display Meta Tags on all pages', 'sharing-image' ),
-					disable: wp.i18n.__( 'Disable Sharing Image Meta Tags', 'sharing-image' ),
+					snippets: wp.i18n.__( 'Display Meta Tags with consideration for SEO plugins', 'sharing-image' ),
+					custom: wp.i18n.__( 'Always display Meta Tags on all pages', 'sharing-image' ),
+					hidden: wp.i18n.__( 'Disable Sharing Image Meta Tags', 'sharing-image' ),
 				},
 				attributes: {
 					name: params.name + '[meta]',
@@ -350,7 +350,7 @@ function createLiveReloadOptions( options, data ) {
 					name: params.name + '[suspend]',
 					value: 'suspend',
 				},
-				label: wp.i18n.__( 'Disable live-reload on the template editor screen', 'sharing-image' ),
+				label: wp.i18n.__( 'Disable live reload on the template editor screen.', 'sharing-image' ),
 				checked: data.suspend,
 			},
 		],

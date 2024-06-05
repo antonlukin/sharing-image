@@ -72,14 +72,14 @@ class Settings {
 	 *
 	 * @var array
 	 */
-	private $tabs = array();
+	private static $tabs = array();
 
 	/**
 	 * Store list of plugin snippets.
 	 *
 	 * @var array
 	 */
-	private $snippets = array();
+	private static $snippets = array();
 
 	/**
 	 * Settings constructor.
@@ -290,7 +290,7 @@ class Settings {
 		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+			wp_die( esc_html__( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ) );
 		}
 
 		$redirect = $this->get_tab_link( 'config' );
@@ -315,7 +315,7 @@ class Settings {
 		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+			wp_die( esc_html__( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ) );
 		}
 
 		$redirect = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
@@ -359,7 +359,7 @@ class Settings {
 		check_admin_referer( basename( __FILE__ ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+			wp_die( esc_html__( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ) );
 		}
 
 		$redirect = admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
@@ -384,7 +384,7 @@ class Settings {
 		check_admin_referer( basename( __FILE__ ), 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+			wp_die( esc_html__( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ) );
 		}
 
 		$templates = $this->get_templates();
@@ -413,11 +413,11 @@ class Settings {
 		check_admin_referer( basename( __FILE__ ), 'sharing_image_nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to manage options for this site.', 'sharing-image' ) );
+			wp_die( esc_html__( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ) );
 		}
 
 		if ( ! current_user_can( 'upload_files' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to upload files.', 'sharing-image' ) );
+			wp_die( esc_html__( 'Sorry, you do not have permission to upload files.', 'sharing-image' ) );
 		}
 
 		$redirect = $this->get_tab_link( 'tools' );
@@ -502,17 +502,17 @@ class Settings {
 		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
-			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
 		}
 
 		if ( ! isset( $_POST['sharing_image_index'] ) ) {
-			wp_send_json_error( __( 'Poster index undefined.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Poster index is undefined.', 'sharing-image' ), 400 );
 		}
 
 		$index = sanitize_key( wp_unslash( $_POST['sharing_image_index'] ) );
 
 		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
-			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Editor settings are not configured.', 'sharing-image' ), 400 );
 		}
 
 		$generator = new Generator();
@@ -524,7 +524,7 @@ class Settings {
 		$editor = $generator->prepare_template( $editor, null, $index );
 
 		if ( ! $generator->check_required( $editor ) ) {
-			wp_send_json_error( __( 'Wrong template settings.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Incorrect template settings.', 'sharing-image' ), 400 );
 		}
 
 		// Generate image and show it immediately.
@@ -544,17 +544,17 @@ class Settings {
 		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
-			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
 		}
 
 		if ( ! isset( $_POST['sharing_image_index'] ) ) {
-			wp_send_json_error( __( 'Poster index undefined.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Poster index is undefined.', 'sharing-image' ), 400 );
 		}
 
 		$index = sanitize_key( wp_unslash( $_POST['sharing_image_index'] ) );
 
 		if ( ! isset( $_POST['sharing_image_editor'] ) ) {
-			wp_send_json_error( __( 'Editor settings are not set.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Editor settings are not configured.', 'sharing-image' ), 400 );
 		}
 
 		$generator = new Generator();
@@ -566,7 +566,7 @@ class Settings {
 		$editor = $generator->prepare_template( $editor, null, $index );
 
 		if ( ! $generator->check_required( $editor ) ) {
-			wp_send_json_error( __( 'Wrong template settings.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Incorrect template settings.', 'sharing-image' ), 400 );
 		}
 
 		list( $path, $url ) = $generator->get_upload_file();
@@ -588,11 +588,11 @@ class Settings {
 		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
-			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
 		}
 
 		if ( empty( $_POST['sharing_image_key'] ) ) {
-			wp_send_json_error( __( 'Premium key undefined.', 'sharing-image' ), 400 );
+			wp_send_json_error( __( 'Premium key is undefined.', 'sharing-image' ), 400 );
 		}
 
 		$key = sanitize_text_field( wp_unslash( $_POST['sharing_image_key'] ) );
@@ -630,7 +630,7 @@ class Settings {
 
 		$error = array(
 			'success' => false,
-			'data'    => __( 'Verification failed.', 'sharing-image' ),
+			'data'    => __( 'Verification unsuccessful.', 'sharing-image' ),
 		);
 
 		if ( isset( $answer['result'] ) ) {
@@ -649,7 +649,7 @@ class Settings {
 		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
-			wp_send_json_error( __( 'Invalid security token. Reload the page and retry.', 'sharing-image' ), 403 );
+			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
 		}
 
 		// Remove license verification event.
@@ -803,7 +803,9 @@ class Settings {
 	 */
 	public function init_snippets() {
 		$list = array(
-			'Sharing_Image\Snippets\YoastSeo' => SHARING_IMAGE_DIR . 'snippets/class-yoastseo.php',
+			'Sharing_Image\Snippets\YoastSeo'        => SHARING_IMAGE_DIR . 'snippets/class-yoastseo.php',
+			'Sharing_Image\Snippets\RankMath'        => SHARING_IMAGE_DIR . 'snippets/class-rankmath.php',
+			'Sharing_Image\Snippets\TheSEOFramework' => SHARING_IMAGE_DIR . 'snippets/class-theseoframework.php',
 		);
 
 		/**
@@ -828,7 +830,7 @@ class Settings {
 				$plugin_class::init_filters();
 			}
 
-			$this->snippets[] = $plugin_class::get_name();
+			self::$snippets[] = $plugin_class::get_name();
 		}
 	}
 
@@ -845,7 +847,7 @@ class Settings {
 		 *
 		 * @param array $namess List of snippets names.
 		 */
-		return apply_filters( 'sharing_image_get_snippets', $this->snippets );
+		return apply_filters( 'sharing_image_get_snippets', self::$snippets );
 	}
 
 	/**
@@ -1099,11 +1101,11 @@ class Settings {
 			return $title;
 		}
 
-		if ( empty( $this->tabs[ $tab ]['label'] ) ) {
+		if ( empty( self::$tabs[ $tab ]['label'] ) ) {
 			return $title;
 		}
 
-		$label = esc_html( $this->tabs[ $tab ]['label'] );
+		$label = esc_html( self::$tabs[ $tab ]['label'] );
 
 		return sprintf( '%s &ndash; %s', $label, $title );
 	}
@@ -1171,11 +1173,9 @@ class Settings {
 		/**
 		 * Easy way to hide metabox.
 		 *
-		 * @param bool $hide_metabox Set true to hide metabox.
+		 * @param bool Set true to hide metabox.
 		 */
-		$hide_metabox = apply_filters( 'sharing_image_hide_metabox', isset( $config['nowidget'] ) );
-
-		return $hide_metabox;
+		return apply_filters( 'sharing_image_hide_metabox', isset( $config['nowidget'] ) );
 	}
 
 	/**
@@ -1184,13 +1184,48 @@ class Settings {
 	 * @return bool Whether plugin snippets are enabled.
 	 */
 	public function is_active_snippets() {
+		$active_snippets = false;
+
+		// Get config data.
 		$config = $this->get_config();
 
-		if ( ! empty( $config['meta'] ) && 'snippets' === $config['meta'] ) {
-			return true;
+		if ( isset( $config['meta'] ) && 'snippets' === $config['meta'] ) {
+			$active_snippets = true;
 		}
 
-		return false;
+		/**
+		 * Last chance to activate plugin snippets.
+		 *
+		 * @since 3.0
+		 *
+		 * @param bool $active_snippets Set true to activate plugin snippets.
+		 */
+		return apply_filters( 'sharing_image_active_snippets', $active_snippets );
+	}
+
+	/**
+	 * Check that header meta is forced enabled.
+	 *
+	 * @return bool Whether header meta is enabled.
+	 */
+	public function is_custom_header_meta() {
+		$show_header = false;
+
+		// Get config data.
+		$config = $this->get_config();
+
+		if ( isset( $config['meta'] ) && 'custom' === $config['meta'] ) {
+			$show_header = true;
+		}
+
+		/**
+		 * Last chance to show customer header meta.
+		 *
+		 * @since 3.0
+		 *
+		 * @param bool $show_header Set true to show custom header meta.
+		 */
+		return apply_filters( 'sharing_image_show_header', $show_header );
 	}
 
 	/**
@@ -1682,7 +1717,7 @@ class Settings {
 		if ( isset( $config['meta'] ) ) {
 			$meta = $config['meta'];
 
-			if ( in_array( $meta, array( 'enable', 'disable' ), true ) ) {
+			if ( in_array( $meta, array( 'hidden', 'custom' ), true ) ) {
 				$sanitized['meta'] = $config['meta'];
 			}
 		}
@@ -1739,23 +1774,23 @@ class Settings {
 
 		switch ( $message ) {
 			case 1:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Settings successfully updated.', 'sharing-image' ), 'updated' );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Settings updated successfully.', 'sharing-image' ), 'updated' );
 				break;
 
 			case 2:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to save template settings.', 'sharing-image' ) );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Unable to save template settings.', 'sharing-image' ) );
 				break;
 
 			case 3:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Template successfully deleted.', 'sharing-image' ), 'updated' );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Template deleted successfully.', 'sharing-image' ), 'updated' );
 				break;
 
 			case 4:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to delete template.', 'sharing-image' ) );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Unable to delete template.', 'sharing-image' ) );
 				break;
 
 			case 5:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to save configuration settings.', 'sharing-image' ) );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Unable to save configuration settings.', 'sharing-image' ) );
 				break;
 
 			case 6:
@@ -1763,23 +1798,23 @@ class Settings {
 				break;
 
 			case 7:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Imported file is empty.', 'sharing-image' ) );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'The imported file is empty.', 'sharing-image' ) );
 				break;
 
 			case 8:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'The maximum allowed limit of templates has been reached. Please upgrade to Premium.', 'sharing-image' ) );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'The maximum allowed number of templates has been reached. Please upgrade to Premium.', 'sharing-image' ) );
 				break;
 
 			case 9:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Templates successfully imported.', 'sharing-image' ), 'updated' );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Templates imported successfully.', 'sharing-image' ), 'updated' );
 				break;
 
 			case 10:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Failed to clone template.', 'sharing-image' ) );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Unable to clone template.', 'sharing-image' ) );
 				break;
 
 			case 11:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Template successfully cloned.', 'sharing-image' ), 'updated' );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Template cloned successfully.', 'sharing-image' ), 'updated' );
 				break;
 		}
 
@@ -1815,7 +1850,7 @@ class Settings {
 		 *
 		 * @param array $tabs List of settings tabs.
 		 */
-		$this->tabs = apply_filters( 'sharing_image_settings_tabs', $tabs );
+		self::$tabs = apply_filters( 'sharing_image_settings_tabs', $tabs );
 	}
 
 	/**
@@ -1824,7 +1859,7 @@ class Settings {
 	private function show_settings_menu() {
 		$current = $this->get_current_tab();
 
-		foreach ( $this->tabs as $tab => $args ) {
+		foreach ( self::$tabs as $tab => $args ) {
 			$classes = array(
 				'sharing-image-tab',
 			);
@@ -1914,11 +1949,11 @@ class Settings {
 	 * @return string|null Tab link.
 	 */
 	private function get_tab_link( $tab ) {
-		if ( empty( $this->tabs[ $tab ]['link'] ) ) {
+		if ( empty( self::$tabs[ $tab ]['link'] ) ) {
 			return admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG );
 		}
 
-		return $this->tabs[ $tab ]['link'];
+		return self::$tabs[ $tab ]['link'];
 	}
 
 	/**
@@ -1931,7 +1966,7 @@ class Settings {
 		if ( ! empty( $_GET['tab'] ) ) {
 			$tab = sanitize_file_name( wp_unslash( $_GET['tab'] ) );
 
-			if ( array_key_exists( $tab, $this->tabs ) ) {
+			if ( array_key_exists( $tab, self::$tabs ) ) {
 				return $tab;
 			}
 		}

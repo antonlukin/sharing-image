@@ -22,7 +22,7 @@ function parseErrorCode( code, title ) {
 	const message = [];
 
 	if ( undefined === title ) {
-		title = wp.i18n.__( 'Verification failed.', 'sharing-image' );
+		title = wp.i18n.__( 'Verification unsuccessful.', 'sharing-image' );
 	}
 
 	message.push( title );
@@ -34,12 +34,12 @@ function parseErrorCode( code, title ) {
 			break;
 
 		case 'KEY_NOT_FOUND':
-			message.push( wp.i18n.__( 'Premium key is invalid or expired.', 'sharing-image' ) );
+			message.push( wp.i18n.__( 'The Premium key is invalid or expired.', 'sharing-image' ) );
 
 			break;
 
 		case 'SERVER_ERROR':
-			message.push( wp.i18n.__( 'Unable to get a response from the verification server.', 'sharing-image' ) );
+			message.push( wp.i18n.__( 'Unable to receive a response from the verification server.', 'sharing-image' ) );
 
 			break;
 	}
@@ -61,7 +61,7 @@ function showPremiumError( message ) {
 	}
 
 	warning.classList.add( 'warning-visible' );
-	warning.textContent = message || wp.i18n.__( 'Unknown request error', 'sharing-image' );
+	warning.textContent = message || wp.i18n.__( 'Unknown request error.', 'sharing-image' );
 }
 
 /**
@@ -231,7 +231,7 @@ function showVerifyForm( access, license ) {
  */
 function showDevelopAlert() {
 	showPremiumError(
-		wp.i18n.__( 'Using plugin with a development license is prohibited in production.', 'sharing-image' )
+		wp.i18n.__( 'Using the plugin with a development license is prohibited in production.', 'sharing-image' )
 	);
 }
 
