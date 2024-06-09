@@ -806,6 +806,10 @@ class Settings {
 			'Sharing_Image\Snippets\YoastSeo'        => SHARING_IMAGE_DIR . 'snippets/class-yoastseo.php',
 			'Sharing_Image\Snippets\RankMath'        => SHARING_IMAGE_DIR . 'snippets/class-rankmath.php',
 			'Sharing_Image\Snippets\TheSEOFramework' => SHARING_IMAGE_DIR . 'snippets/class-theseoframework.php',
+			'Sharing_Image\Snippets\Squirrly'        => SHARING_IMAGE_DIR . 'snippets/class-squirrly.php',
+			'Sharing_Image\Snippets\SEOPress'        => SHARING_IMAGE_DIR . 'snippets/class-seopress.php',
+			'Sharing_Image\Snippets\SlimSEO'         => SHARING_IMAGE_DIR . 'snippets/class-slimseo.php',
+			'Sharing_Image\Snippets\AIOSEO'          => SHARING_IMAGE_DIR . 'snippets/class-aioseo.php',
 		);
 
 		/**

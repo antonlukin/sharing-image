@@ -6,18 +6,14 @@
   padding-left: 0 !important;
 }
 
-.update-nag {
-  margin: 20px;
-
-  @media screen and (max-width: 782px) {
-    margin: 10px;
-  }
-}
-
 .notice {
   width: $width-settings - 40px;
   max-width: calc(100% - 40px);
   margin: 20px auto;
+
+  &.update-nag {
+    display: none;
+  }
 
   @media screen and (max-width: 782px) {
     margin: 10px auto;

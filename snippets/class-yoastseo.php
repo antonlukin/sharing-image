@@ -45,7 +45,7 @@ class YoastSeo {
 	 * Init snippet filters.
 	 */
 	public static function init_filters() {
-		add_filter( 'wpseo_frontend_presenter_classes', array( __CLASS__, 'update_presenters' ) );
+		add_filter( 'wpseo_frontend_presenter_classes', array( __CLASS__, 'update_presenters' ), 11 );
 		add_filter( 'sharing_image_show_header', '__return_true' );
 	}
 

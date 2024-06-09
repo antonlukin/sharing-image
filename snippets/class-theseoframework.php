@@ -45,7 +45,7 @@ class TheSEOFramework {
 	 * Init snippet filters.
 	 */
 	public static function init_filters() {
-		add_filter( 'the_seo_framework_meta_render_data', array( __CLASS__, 'update_render_data' ) );
+		add_filter( 'the_seo_framework_meta_render_data', array( __CLASS__, 'update_render_data' ), 11 );
 	}
 
 	/**

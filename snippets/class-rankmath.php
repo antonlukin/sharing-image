@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * RankMath Snippet class.
+ * Snippet class.
  *
  * @class RankMath
  */
