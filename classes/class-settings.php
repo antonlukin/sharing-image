@@ -1339,11 +1339,6 @@ class Settings {
 			$sanitized['title'] = sanitize_text_field( $editor['title'] );
 		}
 
-		// For backward compatibility.
-		if ( ! empty( $editor['attachment'] ) ) {
-			$sanitized['attachment'] = absint( $editor['attachment'] );
-		}
-
 		$sanitized['fill'] = '#000000';
 
 		if ( ! empty( $editor['fill'] ) ) {
