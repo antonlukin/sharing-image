@@ -65,6 +65,7 @@ class ComposerStaticInitae03b17d76d2c2dd61a64839b07285bc
         'PHPCSUtils\\Utils\\Variables' => __DIR__ . '/..' . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/Variables.php',
         'Sharing_Image\\Generator' => __DIR__ . '/../..' . '/classes/class-generator.php',
         'Sharing_Image\\Meta' => __DIR__ . '/../..' . '/classes/class-meta.php',
+        'Sharing_Image\\Migrations' => __DIR__ . '/../..' . '/classes/class-migrations.php',
         'Sharing_Image\\Settings' => __DIR__ . '/../..' . '/classes/class-settings.php',
         'Sharing_Image\\Widget' => __DIR__ . '/../..' . '/classes/class-widget.php',
     );

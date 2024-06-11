@@ -46,6 +46,7 @@ return array(
     'PHPCSUtils\\Utils\\Variables' => $vendorDir . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/Variables.php',
     'Sharing_Image\\Generator' => $baseDir . '/classes/class-generator.php',
     'Sharing_Image\\Meta' => $baseDir . '/classes/class-meta.php',
+    'Sharing_Image\\Migrations' => $baseDir . '/classes/class-migrations.php',
     'Sharing_Image\\Settings' => $baseDir . '/classes/class-settings.php',
     'Sharing_Image\\Widget' => $baseDir . '/classes/class-widget.php',
 );

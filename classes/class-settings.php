@@ -93,27 +93,17 @@ class Settings {
 	 */
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'add_menu' ) );
-		add_action( 'load-settings_page_' . self::SETTINGS_SLUG, array( $this, 'create_demo_template' ) );
-
-		// Init snippets list.
-		add_action( 'init', array( $this, 'init_snippets' ) );
-
-		// Handle settings POST requests.
-		add_action( 'admin_init', array( $this, 'handle_post_requests' ) );
-
-		// Handle settings AJAX requests.
-		add_action( 'admin_init', array( $this, 'handle_ajax_requests' ) );
-
-		// Allow uploading custom fonts for templates editor.
-		add_action( 'admin_init', array( $this, 'allow_custom_fonts' ) );
-
-		// Add settings link to plugins list.
-		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
-
-		// Update admin title for different tabs.
 		add_action( 'admin_title', array( $this, 'update_settings_title' ) );
 
-		// Schedule Premium license verification.
+		add_action( 'init', array( $this, 'init_snippets' ) );
+
+		add_action( 'admin_init', array( $this, 'handle_post_requests' ) );
+		add_action( 'admin_init', array( $this, 'handle_ajax_requests' ) );
+		add_action( 'admin_init', array( $this, 'allow_custom_fonts' ) );
+
+		add_filter( 'plugin_action_links', array( $this, 'add_settings_link' ), 10, 2 );
+		add_action( 'load-settings_page_' . self::SETTINGS_SLUG, array( $this, 'create_demo_template' ) );
+
 		add_action( self::EVENT_PREMIUM, array( $this, 'launch_verification_event' ), 10, 1 );
 	}
 
@@ -901,7 +891,11 @@ class Settings {
 	 * @return array List of plugin config settings.
 	 */
 	public function get_config() {
-		$config = get_option( self::OPTION_CONFIG, array() );
+		$config = get_option( self::OPTION_CONFIG );
+
+		if ( empty( $config ) ) {
+			$config = array();
+		}
 
 		/**
 		 * Filters settings config.
@@ -1246,6 +1240,48 @@ class Settings {
 	}
 
 	/**
+	 * Generate random string for layer key.
+	 *
+	 * @param int    $len Optional. Desiner string length.
+	 * @param string $key Optional. Prefix for key.
+	 */
+	public function generate_layer_key( $len = 12, $key = '' ) {
+		$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+		for ( $i = 0; $i < $len; $i++ ) {
+			$key = $key . $characters[ random_int( 0, strlen( $characters ) - 1 ) ];
+		}
+
+		return $key;
+	}
+
+	/**
+	 * Create unique template index.
+	 *
+	 * @return string New template index.
+	 */
+	public function create_unique_index() {
+		$templates = $this->get_templates();
+
+		// Generate random index.
+		$index = substr( bin2hex( openssl_random_pseudo_bytes( 20 ) ), -8 );
+
+		/**
+		 * Filter template unique index.
+		 *
+		 * @param array $index     Generated template index.
+		 * @param array $templates List of templates.
+		 */
+		$index = apply_filters( 'sharing_image_unique_index', $index, $templates );
+
+		if ( array_key_exists( $index, $templates ) ) {
+			return $this->create_unique_index();
+		}
+
+		return $index;
+	}
+
+	/**
 	 * Create script object to inject with settings.
 	 *
 	 * @return array Filtered script settings object.
@@ -1301,6 +1337,11 @@ class Settings {
 
 		if ( ! empty( $editor['title'] ) ) {
 			$sanitized['title'] = sanitize_text_field( $editor['title'] );
+		}
+
+		// For backward compatibility.
+		if ( ! empty( $editor['attachment'] ) ) {
+			$sanitized['attachment'] = absint( $editor['attachment'] );
 		}
 
 		$sanitized['fill'] = '#000000';
@@ -2013,32 +2054,6 @@ class Settings {
 
 		wp_safe_redirect( $redirect );
 		exit;
-	}
-
-	/**
-	 * Create unique template index.
-	 *
-	 * @return string New template index.
-	 */
-	private function create_unique_index() {
-		$templates = $this->get_templates();
-
-		// Generate random index.
-		$index = substr( bin2hex( openssl_random_pseudo_bytes( 20 ) ), -8 );
-
-		/**
-		 * Filter template unique index.
-		 *
-		 * @param array $index     Generated template index.
-		 * @param array $templates List of templates.
-		 */
-		$index = apply_filters( 'sharing_image_unique_index', $index, $templates );
-
-		if ( array_key_exists( $index, $templates ) ) {
-			return $this->create_unique_index();
-		}
-
-		return $index;
 	}
 
 	/**

@@ -49,9 +49,10 @@ if ( ! function_exists( 'sharing_image_plugin' ) ) {
 		require_once SHARING_IMAGE_DIR . 'vendor/autoload.php';
 
 		$classes = array(
-			'Sharing_Image\Meta',
 			'Sharing_Image\Settings',
+			'Sharing_Image\Meta',
 			'Sharing_Image\Widget',
+			'Sharing_Image\Migrations',
 		);
 
 		/**

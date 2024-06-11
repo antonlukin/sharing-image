@@ -4,8 +4,7 @@
     "description": "Sharing Image",
     "autoload": {
         "classmap": [
-            "classes",
-            "integrations"
+            "classes"
         ]
     },
     "config": {
