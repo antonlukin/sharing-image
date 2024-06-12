@@ -53,7 +53,7 @@ function createExportOptions( tools ) {
  */
 function createImportOptions( tools ) {
 	const control = Build.control( {
-		classes: [ 'sharing-image-tools-control' ],
+		classes: [ 'sharing-image-tools-control', 'control-section' ],
 		label: wp.i18n.__( 'Import templates', 'sharing-image' ),
 		append: tools,
 	} );
@@ -187,6 +187,52 @@ function createCloningOptions( tools ) {
 }
 
 /**
+ * Create clearing options block.
+ *
+ * @param {HTMLElement} tools Tools wrapper element.
+ */
+function createClearOptions( tools ) {
+	const control = Build.control( {
+		classes: [ 'sharing-image-tools-control' ],
+		label: wp.i18n.__( 'Clearing settings', 'sharing-image' ),
+		append: tools,
+	} );
+
+	const fieldset = Build.element( 'div', {
+		classes: [ 'sharing-image-tools-control-fieldset' ],
+		append: control,
+	} );
+
+	// Set template index to delete link.
+	const link = new URL( params.links.action );
+
+	link.searchParams.set( 'action', 'sharing_image_clear' );
+	link.searchParams.set( 'nonce', params.nonce );
+
+	const remove = Build.element( 'a', {
+		classes: [ 'sharing-image-tools-delete', 'button' ],
+		text: wp.i18n.__( 'Remove posters', 'sharing-image' ),
+		attributes: {
+			href: link.href,
+		},
+		append: fieldset,
+	} );
+
+	remove.addEventListener( 'click', ( e ) => {
+		const message = wp.i18n.__( 'Are you sure you want to clear plugin data?', 'sharing-image' );
+
+		if ( ! confirm( message ) ) { // eslint-disable-line
+			e.preventDefault();
+		}
+	} );
+
+	Build.element( 'small', {
+		text: wp.i18n.__( 'This action clears post meta options but does not delete server images.', 'sharing-image' ),
+		append: fieldset,
+	} );
+}
+
+/**
  * Create templates catalog from options.
  *
  * @param {HTMLElement} content  Settings content element.
@@ -210,6 +256,9 @@ function createTools( content, settings ) {
 
 	// Import options.
 	createImportOptions( tools );
+
+	// Clear plugin options.
+	createClearOptions( tools );
 }
 
 export default createTools;

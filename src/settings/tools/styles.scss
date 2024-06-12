@@ -117,4 +117,14 @@
   .sharing-image-tools-warning {
     margin: 6px 0 0;
   }
+
+  .sharing-image-tools-delete {
+    color: $color-alert;
+    border-color: $color-alert;
+
+    &:hover {
+      color: $color-alert;
+      border-color: $color-alert;
+    }
+  }
 }

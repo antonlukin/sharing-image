@@ -30,7 +30,7 @@ class Settings {
 	 *
 	 * @var string
 	 */
-	const OPTION_TEMPLATES = 'sharing_image_templates';
+	const OPTION_TEMPLATES = 'sharing_image_data';
 
 	/**
 	 * Sharing Image config options name.
@@ -196,6 +196,7 @@ class Settings {
 			'export' => 'export_templates',
 			'import' => 'import_templates',
 			'clone'  => 'clone_template',
+			'clear'  => 'clear_templates_data',
 		);
 
 		foreach ( $actions as $key => $method ) {
@@ -327,7 +328,7 @@ class Settings {
 		$templates = $this->get_templates();
 
 		// Skip 2nd+ templates if the Premium is not active.
-		if ( ! $this->is_premium_features() && empty( $templates[ $index ] ) ) {
+		if ( ! $this->is_premium_features() && ! empty( $templates ) && empty( $templates[ $index ] ) ) {
 			$this->redirect_with_message( $redirect, 8 );
 		}
 
@@ -483,6 +484,37 @@ class Settings {
 		}
 
 		$this->redirect_with_message( $redirect, 11 );
+	}
+
+	/**
+	 * Action to clear templates data.
+	 */
+	public function clear_templates_data() {
+		check_admin_referer( basename( __FILE__ ), 'nonce' );
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ) );
+		}
+
+		$redirect = $this->get_tab_link( 'tools' );
+
+		if ( ! delete_metadata( 'post', null, Widget::META_SOURCE, '', true ) ) {
+			$this->redirect_with_message( $redirect, 13 );
+		}
+
+		if ( ! delete_metadata( 'post', null, Widget::META_FIELDSET, '', true ) ) {
+			$this->redirect_with_message( $redirect, 13 );
+		}
+
+		if ( ! delete_metadata( 'term', null, Widget::META_SOURCE, '', true ) ) {
+			$this->redirect_with_message( $redirect, 13 );
+		}
+
+		if ( ! delete_metadata( 'term', null, Widget::META_FIELDSET, '', true ) ) {
+			$this->redirect_with_message( $redirect, 13 );
+		}
+
+		$this->redirect_with_message( $redirect, 12 );
 	}
 
 	/**
@@ -1855,6 +1887,14 @@ class Settings {
 
 			case 11:
 				add_settings_error( 'sharing-image', 'sharing-image', __( 'Template cloned successfully.', 'sharing-image' ), 'updated' );
+				break;
+
+			case 12:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Unable to remove plugin options.', 'sharing-image' ) );
+				break;
+
+			case 13:
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Options removed successfully.', 'sharing-image' ), 'updated' );
 				break;
 		}
 

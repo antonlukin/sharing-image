@@ -127,6 +127,14 @@
 .sharing-image-tools .sharing-image-tools-warning {
   margin: 6px 0 0;
 }
+.sharing-image-tools .sharing-image-tools-delete {
+  color: #b32d2e;
+  border-color: #b32d2e;
+}
+.sharing-image-tools .sharing-image-tools-delete:hover {
+  color: #b32d2e;
+  border-color: #b32d2e;
+}
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/@wordpress/scripts/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[4].use[1]!./node_modules/@wordpress/scripts/node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[4].use[2]!./node_modules/@wordpress/scripts/node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[4].use[3]!./src/settings/catalog/styles.scss ***!
   \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************/

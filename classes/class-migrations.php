@@ -36,14 +36,14 @@ class Migrations {
 	 * Init class actions and filters.
 	 */
 	public function init() {
+		add_action( 'admin_init', array( $this, 'update_version' ) );
 		add_action( 'admin_init', array( $this, 'migrate_database' ) );
 	}
 
-
 	/**
-	 * Migrate database if needed.
+	 * Update version if needed.
 	 */
-	public function migrate_database() {
+	public function update_version() {
 		$config = $this->settings->get_config();
 
 		// Default version if not defined.
@@ -58,29 +58,40 @@ class Migrations {
 			return;
 		}
 
-		if ( version_compare( $version, '3.0', '<' ) ) {
-			$this->add_templates_index();
-		}
-
 		$config['version'] = SHARING_IMAGE_VERSION;
 
 		$this->settings->update_config( $config );
 	}
 
 	/**
-	 * Add keys to templates and layers for legacy settings.
+	 * Migrate database from version 2.0 to 3.0
 	 */
-	private function add_templates_index() {
-		$templates = get_option( Settings::OPTION_TEMPLATES, null );
+	public function migrate_database() {
+		$legacy = get_option( 'sharing_image_templates' );
 
-		if ( empty( $templates ) ) {
-			$templates = array();
+		if ( empty( $legacy ) ) {
+			return;
 		}
 
-		$settings = $this->settings;
+		$templates = get_option( Settings::OPTION_TEMPLATES, null );
 
-		foreach ( $templates as $i => $template ) {
-			$index = $settings->create_unique_index();
+		if ( ! is_null( $templates ) ) {
+			return;
+		}
+
+		$this->add_templates_index( $legacy );
+	}
+
+	/**
+	 * Add keys to templates and layers for legacy settings.
+	 *
+	 * @param array $legacy Legacy templates data.
+	 */
+	private function add_templates_index( $legacy ) {
+		$templates = array();
+
+		foreach ( $legacy as $i => $template ) {
+			$index = $this->settings->create_unique_index();
 
 			if ( ! empty( $template['layers'] ) ) {
 				$template['layers'] = $this->replace_layers_key( $template['layers'] );
@@ -90,8 +101,6 @@ class Migrations {
 
 			// Add template with a new key.
 			$templates[ $index ] = $template;
-
-			unset( $templates[ $i ] );
 		}
 
 		update_option( Settings::OPTION_TEMPLATES, $templates );
@@ -158,10 +167,8 @@ class Migrations {
 	 * @param array $layers List of template layers.
 	 */
 	private function replace_layers_key( $layers ) {
-		$settings = $this->settings;
-
 		foreach ( $layers as $i => $layer ) {
-			$key = $settings->generate_layer_key();
+			$key = $this->settings->generate_layer_key();
 
 			// Add layer with a new key.
 			$layers[ $key ] = $layer;
