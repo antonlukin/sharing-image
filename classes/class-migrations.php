@@ -37,7 +37,9 @@ class Migrations {
 	 */
 	public function init() {
 		add_action( 'admin_init', array( $this, 'update_version' ) );
-		add_action( 'admin_init', array( $this, 'migrate_database' ) );
+		add_action( 'admin_init', array( $this, 'migrate_templates' ) );
+
+		add_action( 'load-post.php', array( $this, 'migrate_post_fieldset' ) );
 	}
 
 	/**
@@ -66,7 +68,7 @@ class Migrations {
 	/**
 	 * Migrate database from version 2.0 to 3.0
 	 */
-	public function migrate_database() {
+	public function migrate_templates() {
 		$legacy = get_option( 'sharing_image_templates' );
 
 		if ( empty( $legacy ) ) {
@@ -80,6 +82,56 @@ class Migrations {
 		}
 
 		$this->add_templates_index( $legacy );
+
+		delete_option( 'sharing_image_templates' );
+	}
+
+	/**
+	 * Migrate fieldset in edit screen.
+	 */
+	public function migrate_post_fieldset() {
+		// phpcs:ignore WordPress.Security.NonceVerification
+		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
+
+		if ( empty( $post_id ) ) {
+			return;
+		}
+
+		$source = get_post_meta( $post_id, Widget::META_SOURCE, true );
+
+		if ( empty( $source['fieldset'] ) ) {
+			return;
+		}
+
+		$migrated = array();
+		$fieldset = $source['fieldset'];
+
+		foreach ( $this->settings->get_templates() as $template ) {
+			if ( empty( $template['layers'] ) ) {
+				continue;
+			}
+
+			foreach ( $template['layers'] as $key => $layer ) {
+				if ( empty( $layer['legacy'] ) ) {
+					continue;
+				}
+
+				list( $field, $id, $pos ) = array_pad( explode( '-', $layer['legacy'] ), 3, null );
+
+				if ( is_null( $pos ) && ! empty( $fieldset[ $id ][ $field ] ) ) {
+					$migrated[ $key ] = $fieldset[ $id ][ $field ];
+				}
+
+				if ( ! is_null( $pos ) && ! empty( $fieldset[ $id ][ $field ][ $pos ] ) ) {
+					$migrated[ $key ] = $fieldset[ $id ][ $field ][ $pos ];
+				}
+			}
+		}
+
+		unset( $source['fieldset'] );
+
+		update_post_meta( $post_id, Widget::META_SOURCE, $source );
+		update_post_meta( $post_id, Widget::META_FIELDSET, $migrated );
 	}
 
 	/**
@@ -90,14 +142,14 @@ class Migrations {
 	private function add_templates_index( $legacy ) {
 		$templates = array();
 
-		foreach ( $legacy as $i => $template ) {
+		foreach ( $legacy as $id => $template ) {
 			$index = $this->settings->create_unique_index();
 
 			if ( ! empty( $template['layers'] ) ) {
-				$template['layers'] = $this->replace_layers_key( $template['layers'] );
+				$template['layers'] = $this->replace_layers_key( $template['layers'], $id );
 			}
 
-			$template = $this->create_background_layer( $template );
+			$template = $this->create_background_layer( $template, $id );
 
 			// Add template with a new key.
 			$templates[ $index ] = $template;
@@ -110,8 +162,9 @@ class Migrations {
 	 * Create new background layer from template data.
 	 *
 	 * @param array $template Template data.
+	 * @param int   $id       Legacy template id.
 	 */
-	private function create_background_layer( $template ) {
+	private function create_background_layer( $template, $id ) {
 		if ( empty( $template['background'] ) ) {
 			return $template;
 		}
@@ -132,6 +185,7 @@ class Migrations {
 			'y'      => 0,
 			'width'  => 1200,
 			'height' => 630,
+			'legacy' => 'attachment-' . $id,
 		);
 
 		if ( 'dynamic' === $background ) {
@@ -165,15 +219,18 @@ class Migrations {
 	 * Replace key for the template layer.
 	 *
 	 * @param array $layers List of template layers.
+	 * @param int   $id     Legacy template id.
 	 */
-	private function replace_layers_key( $layers ) {
-		foreach ( $layers as $i => $layer ) {
+	private function replace_layers_key( $layers, $id ) {
+		foreach ( $layers as $pos => $layer ) {
 			$key = $this->settings->generate_layer_key();
+
+			$layer['legacy'] = 'captions-' . $id . '-' . $pos;
 
 			// Add layer with a new key.
 			$layers[ $key ] = $layer;
 
-			unset( $layers[ $i ] );
+			unset( $layers[ $pos ] );
 		}
 
 		return $layers;

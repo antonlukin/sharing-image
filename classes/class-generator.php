@@ -513,7 +513,7 @@ class Generator {
 	 * @return array List of layer settings.
 	 */
 	private function update_layer_position( $layer, $boundary ) {
-		if ( 'absolute' === $layer['boundary'] ) {
+		if ( empty( $layer['boundary'] ) || 'absolute' === $layer['boundary'] ) {
 			return $layer;
 		}
 

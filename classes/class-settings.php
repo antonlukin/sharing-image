@@ -1529,6 +1529,10 @@ class Settings {
 
 		$sanitized['boundary'] = $this->sanitize_boundary( $layer );
 
+		if ( ! empty( $layer['legacy'] ) ) {
+			$sanitized['legacy'] = sanitize_text_field( $layer['legacy'] );
+		}
+
 		return $sanitized;
 	}
 
@@ -1592,6 +1596,10 @@ class Settings {
 		}
 
 		$sanitized['boundary'] = $this->sanitize_boundary( $layer );
+
+		if ( ! empty( $layer['legacy'] ) ) {
+			$sanitized['legacy'] = sanitize_text_field( $layer['legacy'] );
+		}
 
 		return $sanitized;
 	}

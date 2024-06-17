@@ -2771,6 +2771,14 @@ function createLayerImage(data, name) {
   createImageDynamicFields(layer, name, data); // Create static/dynamic image fields.
 
   createImageSizesFields(layer, name, data);
+  _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
+    attributes: {
+      type: 'hidden',
+      name: name + '[legacy]',
+      value: data.legacy || ''
+    },
+    append: layer
+  });
   return layer;
 }
 /**
@@ -2884,6 +2892,14 @@ function createLayerText(data, name) {
       type: 'hidden',
       name: name + '[separator]',
       value: ', '
+    },
+    append: layer
+  });
+  _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('input', {
+    attributes: {
+      type: 'hidden',
+      name: name + '[legacy]',
+      value: data.legacy || ''
     },
     append: layer
   });
