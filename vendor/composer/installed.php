@@ -3,7 +3,7 @@
         'name' => 'antonlukin/sharing-image',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => 'f030981bf912f75228ec8895b88dab1cb09916cb',
+        'reference' => 'faa3a36c2852c7932dd682e776b2427d38d3f1b7',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'antonlukin/sharing-image' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => 'f030981bf912f75228ec8895b88dab1cb09916cb',
+            'reference' => 'faa3a36c2852c7932dd682e776b2427d38d3f1b7',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

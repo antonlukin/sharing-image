@@ -28,7 +28,7 @@ function createExportOptions( tools ) {
 	// Set template index to delete link.
 	const link = new URL( params.links.action );
 
-	link.searchParams.set( 'action', 'sharing_image_export' );
+	link.searchParams.set( 'action', 'sharing_image_export_templates' );
 	link.searchParams.set( 'nonce', params.nonce );
 
 	Build.element( 'a', {
@@ -72,7 +72,7 @@ function createImportOptions( tools ) {
 		classes: [ 'sharing-image-tools-control-file' ],
 		attributes: {
 			type: 'file',
-			name: 'sharing_image_import',
+			name: 'sharing_image_file',
 			accept: 'application/json',
 			required: 'required',
 		},
@@ -92,7 +92,7 @@ function createImportOptions( tools ) {
 		attributes: {
 			type: 'hidden',
 			name: 'action',
-			value: 'sharing_image_import',
+			value: 'sharing_image_import_templates',
 		},
 		append: uploader,
 	} );
@@ -152,7 +152,7 @@ function createCloningOptions( tools ) {
 			classes: [ 'sharing-image-tools-control-duplicator' ],
 			options: fields,
 			attributes: {
-				name: 'sharing_image_clone',
+				name: 'sharing_image_source',
 			},
 		},
 		cloning
@@ -171,7 +171,7 @@ function createCloningOptions( tools ) {
 		attributes: {
 			type: 'hidden',
 			name: 'action',
-			value: 'sharing_image_clone',
+			value: 'sharing_image_clone_template',
 		},
 		append: cloning,
 	} );
@@ -206,7 +206,7 @@ function createClearOptions( tools ) {
 	// Set template index to delete link.
 	const link = new URL( params.links.action );
 
-	link.searchParams.set( 'action', 'sharing_image_clear' );
+	link.searchParams.set( 'action', 'sharing_image_clear_templates' );
 	link.searchParams.set( 'nonce', params.nonce );
 
 	const remove = Build.element( 'a', {

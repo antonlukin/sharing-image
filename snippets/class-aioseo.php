@@ -47,6 +47,7 @@ class AIOSEO {
 	public static function init_filters() {
 		add_filter( 'aioseo_facebook_tags', array( __CLASS__, 'update_facebook_tags' ), 11 );
 		add_filter( 'aioseo_twitter_tags', array( __CLASS__, 'update_twitter_tags' ), 11 );
+		add_filter( 'sharing_image_show_header', '__return_false' );
 	}
 
 	/**

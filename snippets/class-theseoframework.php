@@ -62,7 +62,7 @@ class TheSEOFramework {
 			return $tags;
 		}
 
-		foreach ( $tags as &$tag ) {
+		foreach ( $tags as $key => &$tag ) {
 			if ( empty( $tag['attributes'] ) ) {
 				continue;
 			}
@@ -70,19 +70,19 @@ class TheSEOFramework {
 			$attributes = $tag['attributes'];
 
 			if ( isset( $attributes['property'] ) && 'og:image' === $attributes['property'] ) {
-				$tag['attributes']['content'] = $sharing_image[0];
+				unset( $tags[ $key ] );
 			}
 
 			if ( isset( $attributes['property'] ) && 'og:image:width' === $attributes['property'] ) {
-				$tag['attributes']['content'] = $sharing_image[1];
+				unset( $tags[ $key ] );
 			}
 
 			if ( isset( $attributes['property'] ) && 'og:image:height' === $attributes['property'] ) {
-				$tag['attributes']['content'] = $sharing_image[2];
+				unset( $tags[ $key ] );
 			}
 
 			if ( isset( $attributes['name'] ) && 'twitter:image' === $attributes['name'] ) {
-				$tag['attributes']['content'] = $sharing_image[0];
+				unset( $tags[ $key ] );
 			}
 		}
 

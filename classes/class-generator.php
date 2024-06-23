@@ -1,6 +1,6 @@
 <?php
 /**
- * Poster generator class
+ * Poster generator class.
  *
  * @package sharing-image
  * @author  Anton Lukin
@@ -17,25 +17,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Poster generator class
+ * Generator class.
  *
  * @class Generator
  */
 class Generator {
-	/**
-	 * The instance of Settings class.
-	 *
-	 * @var instance
-	 */
-	private $settings;
-
-	/**
-	 * Generator constructor.
-	 */
-	public function __construct() {
-		$this->settings = new Settings();
-	}
-
 	/**
 	 * Check requred template values.
 	 *
@@ -43,11 +29,11 @@ class Generator {
 	 *
 	 * @return bool Whether all required values isset.
 	 */
-	public function check_required( $template ) {
+	public static function check_required( $template ) {
 		$required = array( 'width', 'height', 'fill' );
 
 		// Count intersected values.
-		$prepared = count( $this->prepare_args( $template, $required ) );
+		$prepared = count( self::prepare_args( $template, $required ) );
 
 		if ( count( $required ) === $prepared ) {
 			return true;
@@ -68,7 +54,7 @@ class Generator {
 	 *
 	 * @return array List of template data.
 	 */
-	public function prepare_template( $template, $fieldset = array(), $index = null, $screen_id = 0, $context = 'settings' ) {
+	public static function prepare_template( $template, $fieldset = array(), $index = null, $screen_id = 0, $context = 'settings' ) {
 		$layers = array();
 
 		if ( isset( $template['layers'] ) ) {
@@ -117,7 +103,7 @@ class Generator {
 	 *
 	 * @return void|WP_Error WP_Error on failure.
 	 */
-	public function create_poster( $template, $path = null ) {
+	public static function create_poster( $template, $path = null ) {
 		try {
 			$poster = new PosterEditor();
 
@@ -131,16 +117,14 @@ class Generator {
 			$poster->canvas( $template['width'], $template['height'], $options );
 
 			if ( ! empty( $template['layers'] ) ) {
-				$poster = $this->append_layers( $poster, $template['layers'] );
+				$poster = self::append_layers( $poster, $template['layers'] );
 			}
-
-			$settings = $this->settings;
 
 			if ( null === $path ) {
-				return $poster->show( $settings->get_file_format(), $settings->get_quality() );
+				return $poster->show( Config::get_file_format(), Config::get_quality() );
 			}
 
-			$poster->save( $path, $settings->get_quality() );
+			$poster->save( $path, Config::get_quality() );
 		} catch ( Exception $e ) {
 			return new WP_Error( 'generate', $e->getMessage() );
 		}
@@ -151,14 +135,12 @@ class Generator {
 	 *
 	 * @return array Server file path and url to uploaded image.
 	 */
-	public function get_upload_file() {
-		$settings = $this->settings;
-
+	public static function get_upload_file() {
 		// Get uploads directory url and path array.
-		list( $path, $url ) = $settings->get_upload_dir();
+		list( $path, $url ) = Config::get_upload_dir();
 
 		// Create random file name with proper extension.
-		$name = wp_unique_filename( $path, uniqid() . '.' . $settings->get_file_format() );
+		$name = wp_unique_filename( $path, uniqid() . '.' . Config::get_file_format() );
 
 		$file = array(
 			trailingslashit( $path ) . $name,
@@ -182,7 +164,7 @@ class Generator {
 	 *
 	 * @return PosterEditor PosterEditor instance.
 	 */
-	private function append_layers( $poster, $layers ) {
+	private static function append_layers( $poster, $layers ) {
 		$boundary = array();
 
 		foreach ( $layers as $layer ) {
@@ -192,19 +174,19 @@ class Generator {
 
 			switch ( $layer['type'] ) {
 				case 'filter':
-					$poster = $this->draw_filter( $poster, $layer );
+					$poster = self::draw_filter( $poster, $layer );
 					break;
 
 				case 'rectangle':
-					$poster = $this->draw_rectangle( $poster, $layer, $boundary );
+					$poster = self::draw_rectangle( $poster, $layer, $boundary );
 					break;
 
 				case 'image':
-					$poster = $this->draw_image( $poster, $layer, $boundary );
+					$poster = self::draw_image( $poster, $layer, $boundary );
 					break;
 
 				case 'text':
-					$poster = $this->draw_text( $poster, $layer, $boundary );
+					$poster = self::draw_text( $poster, $layer, $boundary );
 					break;
 			}
 		}
@@ -222,7 +204,7 @@ class Generator {
 	 *
 	 * @return array List of image layer data.
 	 */
-	private function prepare_image_layer( $layer, $fieldset, $key, $context ) {
+	private static function prepare_image_layer( $layer, $fieldset, $key, $context ) {
 		if ( 'settings' !== $context ) {
 			unset( $layer['attachment'] );
 		}
@@ -244,7 +226,7 @@ class Generator {
 	 *
 	 * @return array List of text layer data.
 	 */
-	private function prepare_text_layer( $layer, $fieldset, $key, $context ) {
+	private static function prepare_text_layer( $layer, $fieldset, $key, $context ) {
 		$layer['content'] = null;
 
 		if ( isset( $layer['sample'] ) && 'settings' === $context ) {
@@ -266,7 +248,7 @@ class Generator {
 	 *
 	 * @return PosterEditor PosterEditor instance.
 	 */
-	private function draw_filter( $poster, $layer ) {
+	private static function draw_filter( $poster, $layer ) {
 		if ( ! empty( $layer['grayscale'] ) ) {
 			$poster->grayscale();
 		}
@@ -299,13 +281,13 @@ class Generator {
 	 *
 	 * @return PosterEditor PosterEditor instance.
 	 */
-	private function draw_rectangle( $poster, $layer, &$boundary = array() ) {
+	private static function draw_rectangle( $poster, $layer, &$boundary = array() ) {
 		// Both x and y should be set.
 		if ( ! isset( $layer['x'], $layer['y'] ) ) {
 			return $poster;
 		}
 
-		$args = $this->prepare_args( $layer, array( 'color', 'opacity', 'thickness' ) );
+		$args = self::prepare_args( $layer, array( 'color', 'opacity', 'thickness' ) );
 
 		if ( ! empty( $layer['outline'] ) ) {
 			$args['outline'] = true;
@@ -320,8 +302,8 @@ class Generator {
 		}
 
 		// Update layer position and dimensions.
-		$layer = $this->update_layer_position( $layer, $boundary );
-		$layer = $this->update_layer_dimensions( $layer, $poster );
+		$layer = self::update_layer_position( $layer, $boundary );
+		$layer = self::update_layer_dimensions( $layer, $poster );
 
 		// Draw rectangle.
 		$poster->rectangle( $layer['x'], $layer['y'], $layer['width'], $layer['height'], $args );
@@ -343,7 +325,7 @@ class Generator {
 	 *
 	 * @return PosterEditor PosterEditor instance.
 	 */
-	private function draw_image( $poster, $layer, &$boundary = array() ) {
+	private static function draw_image( $poster, $layer, &$boundary = array() ) {
 		if ( ! isset( $layer['attachment'] ) ) {
 			return $poster;
 		}
@@ -351,16 +333,16 @@ class Generator {
 		$image = new PosterEditor();
 
 		// Update layer position and dimensions.
-		$layer = $this->update_layer_position( $layer, $boundary );
-		$layer = $this->update_layer_dimensions( $layer, $poster );
+		$layer = self::update_layer_position( $layer, $boundary );
+		$layer = self::update_layer_dimensions( $layer, $poster );
 
 		// Prepare common layer args.
-		$args = $this->prepare_args( $layer, array( 'x', 'y' ) );
+		$args = self::prepare_args( $layer, array( 'x', 'y' ) );
 
 		// Create new editor  instance by attachment id.
 		$attachment = $image->make( get_attached_file( $layer['attachment'] ) );
 
-		return $poster->insert( $this->resize_attachment( $attachment, $layer ), $args, $boundary );
+		return $poster->insert( self::resize_attachment( $attachment, $layer ), $args, $boundary );
 	}
 
 	/**
@@ -372,7 +354,7 @@ class Generator {
 	 *
 	 * @return PosterEditor PosterEditor instance.
 	 */
-	private function draw_text( $poster, $layer, &$boundary = array() ) {
+	private static function draw_text( $poster, $layer, &$boundary = array() ) {
 		$allowed = array(
 			'x',
 			'y',
@@ -388,16 +370,16 @@ class Generator {
 		);
 
 		// Update layer position and dimensions.
-		$layer = $this->update_layer_position( $layer, $boundary );
-		$layer = $this->update_layer_dimensions( $layer, $poster );
+		$layer = self::update_layer_position( $layer, $boundary );
+		$layer = self::update_layer_dimensions( $layer, $poster );
 
 		// Prepare common layer args.
-		$args = $this->prepare_args( $layer, $allowed );
+		$args = self::prepare_args( $layer, $allowed );
 
 		// Try to set font file by name or attachment path.
-		$args['fontpath'] = $this->get_fontpath( $layer );
+		$args['fontpath'] = self::get_fontpath( $layer );
 
-		$boundary = $this->set_empty_boundary( $args );
+		$boundary = self::set_empty_boundary( $args );
 
 		if ( ! empty( $layer['content'] ) ) {
 			$poster->text( $layer['content'], $args, $boundary );
@@ -413,7 +395,7 @@ class Generator {
 	 *
 	 * @param array $args List of common layer args.
 	 */
-	private function set_empty_boundary( $args ) {
+	private static function set_empty_boundary( $args ) {
 		$boundary = array(
 			'x'      => 0,
 			'y'      => 0,
@@ -440,7 +422,7 @@ class Generator {
 	 *
 	 * @return PosterEditor PosterEditor instance.
 	 */
-	private function resize_attachment( $attachment, $layer ) {
+	private static function resize_attachment( $attachment, $layer ) {
 		$width = null;
 
 		if ( isset( $layer['width'] ) ) {
@@ -486,7 +468,7 @@ class Generator {
 	 *
 	 * @return string Filtered path to font file.
 	 */
-	private function get_fontpath( $layer, $path = '' ) {
+	private static function get_fontpath( $layer, $path = '' ) {
 		if ( isset( $layer['fontname'] ) ) {
 			$path = sprintf( SHARING_IMAGE_DIR . 'fonts/%s.ttf', $layer['fontname'] );
 		}
@@ -512,7 +494,7 @@ class Generator {
 	 *
 	 * @return array List of layer settings.
 	 */
-	private function update_layer_position( $layer, $boundary ) {
+	private static function update_layer_position( $layer, $boundary ) {
 		if ( empty( $layer['boundary'] ) || 'absolute' === $layer['boundary'] ) {
 			return $layer;
 		}
@@ -552,7 +534,7 @@ class Generator {
 	 *
 	 * @return array List of layer settings.
 	 */
-	private function update_layer_dimensions( $layer, $poster ) {
+	private static function update_layer_dimensions( $layer, $poster ) {
 		$width = absint( $poster->width() );
 
 		if ( $layer['width'] < 0 ) {
@@ -576,7 +558,7 @@ class Generator {
 	 *
 	 * @return array List of prepared args.
 	 */
-	private function prepare_args( $args, $allowed ) {
+	private static function prepare_args( $args, $allowed ) {
 		return wp_array_slice_assoc( $args, $allowed );
 	}
 }

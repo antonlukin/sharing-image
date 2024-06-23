@@ -64,7 +64,7 @@ function generateTemplate() {
 
 	// Create data bundle using form data.
 	const bundle = new window.FormData( editor );
-	bundle.set( 'action', 'sharing_image_show' );
+	bundle.set( 'action', 'sharing_image_show_preview' );
 
 	hideTemplateError();
 
@@ -114,7 +114,7 @@ function generateTemplate() {
 /**
  * Save template while editor submiting.
  */
-function saveTemplate() {
+function savePreview() {
 	const request = new XMLHttpRequest();
 	request.open( 'POST', ajaxurl );
 	request.responseType = 'json';
@@ -123,7 +123,7 @@ function saveTemplate() {
 
 	// Create data bundle using editor data.
 	const bundle = new window.FormData( editor );
-	bundle.set( 'action', 'sharing_image_save' );
+	bundle.set( 'action', 'sharing_image_save_preview' );
 
 	request.addEventListener( 'load', () => {
 		const response = request.response || {};
@@ -209,7 +209,7 @@ function createTextDynamicFields( layer, name, data ) {
 	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-extend', 'control-hidden' ],
 		help: wp.i18n.__(
-			'This field is for example purposes only, to preview the editor’s appearance.',
+			'This field is for demonstration only, to preview the editor’s appearance.',
 			'sharing-image'
 		),
 		fields: [
@@ -383,7 +383,7 @@ function createImageDynamicFields( layer, name, data ) {
 		image: true,
 		remove: true,
 		help: wp.i18n.__(
-			'This image is for example purposes only, to preview the editor’s appearance.',
+			'This field is for demonstration only, to preview the editor’s appearance.',
 			'sharing-image'
 		),
 		mime: [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ],
@@ -973,7 +973,7 @@ function createDeleteButton( footer ) {
 	// Set template index to delete link.
 	const link = new URL( params.links.action );
 
-	link.searchParams.set( 'action', 'sharing_image_delete' );
+	link.searchParams.set( 'action', 'sharing_image_delete_template' );
 	link.searchParams.set( 'template', index );
 	link.searchParams.set( 'nonce', params.nonce );
 
@@ -2001,7 +2001,7 @@ function prepareEditor( content, index ) {
 		attributes: {
 			type: 'hidden',
 			name: 'action',
-			value: params.name,
+			value: 'sharing_image_save_editor',
 		},
 		append: form,
 	} );
@@ -2027,7 +2027,7 @@ function prepareEditor( content, index ) {
 	form.addEventListener( 'submit', ( e ) => {
 		e.preventDefault();
 
-		saveTemplate();
+		savePreview();
 	} );
 
 	return form;

@@ -48,6 +48,8 @@ class RankMath {
 		foreach ( array( 'facebook', 'twitter' ) as $network ) {
 			add_filter( "rank_math/opengraph/{$network}/image_array", array( __CLASS__, 'update_image_array' ) );
 		}
+
+		add_filter( 'sharing_image_show_header', '__return_false' );
 	}
 
 	/**
@@ -60,6 +62,10 @@ class RankMath {
 
 		if ( empty( $poster ) ) {
 			return $attachment;
+		}
+
+		if ( empty( $attachment ) ) {
+			$attachment = array();
 		}
 
 		$attachment['id']     = 0;

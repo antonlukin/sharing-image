@@ -47,6 +47,8 @@ class Squirrly {
 	public static function init_filters() {
 		add_filter( 'sq_open_graph', array( __CLASS__, 'update_og_meta' ), 11 );
 		add_filter( 'sq_twitter_card', array( __CLASS__, 'update_twitter_meta' ), 11 );
+
+		add_filter( 'sharing_image_show_header', '__return_false' );
 	}
 
 	/**

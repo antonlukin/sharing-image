@@ -32,6 +32,7 @@ function createDefaultOptions( options, data ) {
 			details: wp.i18n.__( 'Attachment details', 'sharing-image' ),
 			remove: wp.i18n.__( 'Remove image', 'sharing-image' ),
 		},
+		image: true,
 		remove: true,
 		append: control,
 	} );
@@ -288,7 +289,7 @@ function createMetaOptions( options, data ) {
 				options: {
 					snippets: wp.i18n.__( 'Display Meta Tags with consideration for SEO plugins', 'sharing-image' ),
 					custom: wp.i18n.__( 'Always display Meta Tags on all pages', 'sharing-image' ),
-					hidden: wp.i18n.__( 'Disable Sharing Image Meta Tags', 'sharing-image' ),
+					hidden: wp.i18n.__( 'Hide Sharing Image Meta Tags', 'sharing-image' ),
 				},
 				attributes: {
 					name: params.name + '[meta]',
@@ -398,7 +399,7 @@ function createMetaFields( options ) {
 		attributes: {
 			type: 'hidden',
 			name: 'action',
-			value: params.name,
+			value: 'sharing_image_save_config',
 		},
 		append: options,
 	} );

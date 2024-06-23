@@ -19,35 +19,21 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Meta {
 	/**
-	 * The instance of Settings class.
-	 *
-	 * @var instance
-	 */
-	private $settings;
-
-	/**
-	 * Widget constructor.
-	 */
-	public function __construct() {
-		$this->settings = new Settings();
-	}
-
-	/**
 	 * Init class actions and filters.
 	 */
-	public function init() {
-		add_action( 'wp_head', array( $this, 'show_header' ) );
+	public static function init() {
+		add_action( 'wp_head', array( __CLASS__, 'show_header' ) );
 	}
 
 	/**
 	 * Print poster image meta tags.
 	 */
-	public function show_header() {
-		if ( ! $this->settings->is_custom_header_meta() ) {
+	public static function show_header() {
+		if ( ! Config::is_custom_header_meta() ) {
 			return;
 		}
 
-		$poster = $this->get_poster_src();
+		$poster = self::get_poster_src();
 
 		if ( false === $poster ) {
 			return;
@@ -102,8 +88,8 @@ class Meta {
 
 	 * @return string|null Url to poster.
 	 */
-	public function get_poster( $object_id = null, $object_type = null ) {
-		$poster = $this->get_poster_src( $object_id, $object_type );
+	public static function get_poster( $object_id = null, $object_type = null ) {
+		$poster = self::get_poster_src( $object_id, $object_type );
 
 		if ( ! isset( $poster[0] ) ) {
 			return null;
@@ -121,11 +107,11 @@ class Meta {
 
 	 * @return array|false Poster image, width and height data or false if undefined.
 	 */
-	public function get_poster_src( $object_id = null, $object_type = null ) {
-		$poster = $this->get_widget_poster_src( $object_id, $object_type );
+	public static function get_poster_src( $object_id = null, $object_type = null ) {
+		$poster = self::get_widget_poster_src( $object_id, $object_type );
 
 		if ( false === $poster ) {
-			$poster = $this->settings->get_default_poster_src();
+			$poster = Config::get_default_poster_src();
 		}
 
 		/**
@@ -146,7 +132,7 @@ class Meta {
 
 	 * @return array|false Widget poster image, width and height data or false if undefined.
 	 */
-	public function get_widget_poster_src( $object_id = null, $object_type = null ) {
+	public static function get_widget_poster_src( $object_id = null, $object_type = null ) {
 		$meta = array();
 
 		if ( 'singular' !== $object_type && 'taxonomy' !== $object_type ) {
@@ -162,11 +148,11 @@ class Meta {
 		}
 
 		if ( 'singular' === $object_type ) {
-			$meta = $this->get_singular_poster_meta( $object_id );
+			$meta = self::get_singular_poster_meta( $object_id );
 		}
 
 		if ( 'taxonomy' === $object_type ) {
-			$meta = $this->get_taxonomy_poster_meta( $object_id );
+			$meta = self::get_taxonomy_poster_meta( $object_id );
 		}
 
 		$poster = false;
@@ -189,7 +175,7 @@ class Meta {
 
 	 * @return array|false Singular poster meta. False if undefined.
 	 */
-	private function get_singular_poster_meta( $post_id = null ) {
+	private static function get_singular_poster_meta( $post_id = null ) {
 		$post = get_post( $post_id );
 
 		if ( isset( $post->ID ) ) {
@@ -214,8 +200,8 @@ class Meta {
 
 	 * @return array|false Taxonomy poster meta. False if undefined.
 	 */
-	private function get_taxonomy_poster_meta( $term_id = null ) {
-		if ( ! $this->settings->is_premium_features() ) {
+	private static function get_taxonomy_poster_meta( $term_id = null ) {
+		if ( ! Premium::is_premium_features() ) {
 			return false;
 		}
 

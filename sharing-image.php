@@ -50,6 +50,12 @@ if ( ! function_exists( 'sharing_image_plugin' ) ) {
 
 		$classes = array(
 			'Sharing_Image\Settings',
+			'Sharing_Image\Templates',
+			'Sharing_Image\Config',
+			'Sharing_Image\Premium',
+			'Sharing_Image\Tools',
+			'Sharing_Image\Demo',
+			'Sharing_Image\Snippets',
 			'Sharing_Image\Meta',
 			'Sharing_Image\Widget',
 			'Sharing_Image\Migrations',
@@ -63,7 +69,7 @@ if ( ! function_exists( 'sharing_image_plugin' ) ) {
 		$classes = apply_filters( 'sharing_image_plugin_classes', $classes );
 
 		foreach ( $classes as $class ) {
-			( new $class() )->init();
+			$class::init();
 		}
 
 		include SHARING_IMAGE_DIR . 'functions.php';

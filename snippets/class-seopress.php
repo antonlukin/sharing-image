@@ -47,6 +47,5 @@ class SEOPress {
 	public static function init_filters() {
 		add_filter( 'seopress_social_og_thumb', '__return_empty_string', 11 );
 		add_filter( 'seopress_social_twitter_card_thumb', '__return_empty_string', 11 );
-		add_filter( 'sharing_image_show_header', '__return_true' );
 	}
 }

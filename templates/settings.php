@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 		<nav class="sharing-image-menu">
 		<?php
-			$this->show_settings_menu();
+			self::show_settings_menu();
 		?>
 		</nav>
 	</div>
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<div class="sharing-image-content">
 		<?php
-			$this->show_settings_section();
+			self::show_settings_section();
 		?>
 
 		<div class="sharing-image-error hide-if-js">
@@ -37,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 
 		<?php
-			$this->show_settings_message();
+			self::show_settings_message();
 		?>
 	</div>
 </div>

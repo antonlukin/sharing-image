@@ -92,7 +92,7 @@ function revokePremium( access ) {
 
 	// Create data bundle using form data.
 	const bundle = new window.FormData( access );
-	bundle.set( 'action', 'sharing_image_revoke' );
+	bundle.set( 'action', 'sharing_image_revoke_premium' );
 
 	hidePremiumError();
 
@@ -140,7 +140,7 @@ function verifyPremium( access ) {
 
 	// Create data bundle using form data.
 	const bundle = new window.FormData( access );
-	bundle.set( 'action', 'sharing_image_verify' );
+	bundle.set( 'action', 'sharing_image_verify_premium' );
 
 	hidePremiumError();
 

@@ -47,7 +47,6 @@ class SlimSEO {
 	public static function init_filters() {
 		add_filter( 'slim_seo_open_graph_tags', array( __CLASS__, 'update_open_graph_tags' ), 11 );
 		add_filter( 'slim_seo_twitter_card_image', '__return_empty_string', 11 );
-		add_filter( 'sharing_image_show_header', '__return_true' );
 	}
 
 	/**

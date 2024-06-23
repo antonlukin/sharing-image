@@ -63,10 +63,16 @@ class ComposerStaticInitae03b17d76d2c2dd61a64839b07285bc
         'PHPCSUtils\\Utils\\TextStrings' => __DIR__ . '/..' . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/TextStrings.php',
         'PHPCSUtils\\Utils\\UseStatements' => __DIR__ . '/..' . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/UseStatements.php',
         'PHPCSUtils\\Utils\\Variables' => __DIR__ . '/..' . '/phpcsstandards/phpcsutils/PHPCSUtils/Utils/Variables.php',
+        'Sharing_Image\\Config' => __DIR__ . '/../..' . '/classes/class-config.php',
+        'Sharing_Image\\Demo' => __DIR__ . '/../..' . '/classes/class-demo.php',
         'Sharing_Image\\Generator' => __DIR__ . '/../..' . '/classes/class-generator.php',
         'Sharing_Image\\Meta' => __DIR__ . '/../..' . '/classes/class-meta.php',
         'Sharing_Image\\Migrations' => __DIR__ . '/../..' . '/classes/class-migrations.php',
+        'Sharing_Image\\Premium' => __DIR__ . '/../..' . '/classes/class-premium.php',
         'Sharing_Image\\Settings' => __DIR__ . '/../..' . '/classes/class-settings.php',
+        'Sharing_Image\\Snippets' => __DIR__ . '/../..' . '/classes/class-snippets.php',
+        'Sharing_Image\\Templates' => __DIR__ . '/../..' . '/classes/class-templates.php',
+        'Sharing_Image\\Tools' => __DIR__ . '/../..' . '/classes/class-tools.php',
         'Sharing_Image\\Widget' => __DIR__ . '/../..' . '/classes/class-widget.php',
     );
 

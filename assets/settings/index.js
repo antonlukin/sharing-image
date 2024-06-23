@@ -1283,6 +1283,7 @@ function createDefaultOptions(options, data) {
       details: wp.i18n.__('Attachment details', 'sharing-image'),
       remove: wp.i18n.__('Remove image', 'sharing-image')
     },
+    image: true,
     remove: true,
     append: control
   });
@@ -1507,7 +1508,7 @@ function createMetaOptions(options, data) {
       options: {
         snippets: wp.i18n.__('Display Meta Tags with consideration for SEO plugins', 'sharing-image'),
         custom: wp.i18n.__('Always display Meta Tags on all pages', 'sharing-image'),
-        hidden: wp.i18n.__('Disable Sharing Image Meta Tags', 'sharing-image')
+        hidden: wp.i18n.__('Hide Sharing Image Meta Tags', 'sharing-image')
       },
       attributes: {
         name: params.name + '[meta]'
@@ -1609,7 +1610,7 @@ function createMetaFields(options) {
     attributes: {
       type: 'hidden',
       name: 'action',
-      value: params.name
+      value: 'sharing_image_save_config'
     },
     append: options
   });
@@ -1758,7 +1759,7 @@ function generateTemplate() {
   request.responseType = 'blob'; // Create data bundle using form data.
 
   const bundle = new window.FormData(editor);
-  bundle.set('action', 'sharing_image_show');
+  bundle.set('action', 'sharing_image_show_preview');
   hideTemplateError(); // Set blob for success response.
 
   request.addEventListener('readystatechange', () => {
@@ -1802,14 +1803,14 @@ function generateTemplate() {
  */
 
 
-function saveTemplate() {
+function savePreview() {
   const request = new XMLHttpRequest();
   request.open('POST', ajaxurl);
   request.responseType = 'json';
   preview.classList.add('preview-loader'); // Create data bundle using editor data.
 
   const bundle = new window.FormData(editor);
-  bundle.set('action', 'sharing_image_save');
+  bundle.set('action', 'sharing_image_save_preview');
   request.addEventListener('load', () => {
     const response = request.response || {};
 
@@ -1881,7 +1882,7 @@ function createTextDynamicFields(layer, name, data) {
   });
   fields[fields.length] = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
     classes: ['sharing-image-editor-control', 'control-extend', 'control-hidden'],
-    help: wp.i18n.__('This field is for example purposes only, to preview the editor’s appearance.', 'sharing-image'),
+    help: wp.i18n.__('This field is for demonstration only, to preview the editor’s appearance.', 'sharing-image'),
     fields: [{
       group: 'textarea',
       classes: ['sharing-image-editor-control-textarea'],
@@ -2033,7 +2034,7 @@ function createImageDynamicFields(layer, name, data) {
     append: dynamic,
     image: true,
     remove: true,
-    help: wp.i18n.__('This image is for example purposes only, to preview the editor’s appearance.', 'sharing-image'),
+    help: wp.i18n.__('This field is for demonstration only, to preview the editor’s appearance.', 'sharing-image'),
     mime: ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
   });
   const fields = [];
@@ -2557,7 +2558,7 @@ function createDeleteButton(footer) {
   const index = href.searchParams.get('template'); // Set template index to delete link.
 
   const link = new URL(params.links.action);
-  link.searchParams.set('action', 'sharing_image_delete');
+  link.searchParams.set('action', 'sharing_image_delete_template');
   link.searchParams.set('template', index);
   link.searchParams.set('nonce', params.nonce);
   const button = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].element('a', {
@@ -3459,7 +3460,7 @@ function prepareEditor(content, index) {
     attributes: {
       type: 'hidden',
       name: 'action',
-      value: params.name
+      value: 'sharing_image_save_editor'
     },
     append: form
   });
@@ -3481,7 +3482,7 @@ function prepareEditor(content, index) {
   });
   form.addEventListener('submit', e => {
     e.preventDefault();
-    saveTemplate();
+    savePreview();
   });
   return form;
 }
@@ -3611,7 +3612,7 @@ function revokePremium(access) {
   request.responseType = 'json'; // Create data bundle using form data.
 
   const bundle = new window.FormData(access);
-  bundle.set('action', 'sharing_image_revoke');
+  bundle.set('action', 'sharing_image_revoke_premium');
   hidePremiumError();
   request.addEventListener('load', () => {
     const response = request.response || {}; // Hide form loader class.
@@ -3651,7 +3652,7 @@ function verifyPremium(access) {
   request.responseType = 'json'; // Create data bundle using form data.
 
   const bundle = new window.FormData(access);
-  bundle.set('action', 'sharing_image_verify');
+  bundle.set('action', 'sharing_image_verify_premium');
   hidePremiumError();
   request.addEventListener('load', () => {
     const response = request.response || {}; // Hide form loader class.
@@ -3922,7 +3923,7 @@ function createExportOptions(tools) {
   }); // Set template index to delete link.
 
   const link = new URL(params.links.action);
-  link.searchParams.set('action', 'sharing_image_export');
+  link.searchParams.set('action', 'sharing_image_export_templates');
   link.searchParams.set('nonce', params.nonce);
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('a', {
     classes: ['button', 'button-primary'],
@@ -3963,7 +3964,7 @@ function createImportOptions(tools) {
     classes: ['sharing-image-tools-control-file'],
     attributes: {
       type: 'file',
-      name: 'sharing_image_import',
+      name: 'sharing_image_file',
       accept: 'application/json',
       required: 'required'
     },
@@ -3981,7 +3982,7 @@ function createImportOptions(tools) {
     attributes: {
       type: 'hidden',
       name: 'action',
-      value: 'sharing_image_import'
+      value: 'sharing_image_import_templates'
     },
     append: uploader
   });
@@ -4036,7 +4037,7 @@ function createCloningOptions(tools) {
     classes: ['sharing-image-tools-control-duplicator'],
     options: fields,
     attributes: {
-      name: 'sharing_image_clone'
+      name: 'sharing_image_source'
     }
   }, cloning);
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('button', {
@@ -4051,7 +4052,7 @@ function createCloningOptions(tools) {
     attributes: {
       type: 'hidden',
       name: 'action',
-      value: 'sharing_image_clone'
+      value: 'sharing_image_clone_template'
     },
     append: cloning
   });
@@ -4083,7 +4084,7 @@ function createClearOptions(tools) {
   }); // Set template index to delete link.
 
   const link = new URL(params.links.action);
-  link.searchParams.set('action', 'sharing_image_clear');
+  link.searchParams.set('action', 'sharing_image_clear_templates');
   link.searchParams.set('nonce', params.nonce);
   const remove = _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('a', {
     classes: ['sharing-image-tools-delete', 'button'],

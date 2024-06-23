@@ -19,34 +19,20 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Migrations {
 	/**
-	 * The instance of Settings class.
-	 *
-	 * @var instance
-	 */
-	private $settings;
-
-	/**
-	 * Widget constructor.
-	 */
-	public function __construct() {
-		$this->settings = new Settings();
-	}
-
-	/**
 	 * Init class actions and filters.
 	 */
-	public function init() {
-		add_action( 'admin_init', array( $this, 'update_version' ) );
-		add_action( 'admin_init', array( $this, 'migrate_templates' ) );
+	public static function init() {
+		add_action( 'admin_init', array( __CLASS__, 'update_version' ) );
+		add_action( 'admin_init', array( __CLASS__, 'migrate_templates' ) );
 
-		add_action( 'load-post.php', array( $this, 'migrate_post_fieldset' ) );
+		add_action( 'load-post.php', array( __CLASS__, 'migrate_post_fieldset' ) );
 	}
 
 	/**
 	 * Update version if needed.
 	 */
-	public function update_version() {
-		$config = $this->settings->get_config();
+	public static function update_version() {
+		$config = Config::get_config();
 
 		// Default version if not defined.
 		$version = '2.0';
@@ -62,13 +48,13 @@ class Migrations {
 
 		$config['version'] = SHARING_IMAGE_VERSION;
 
-		$this->settings->update_config( $config );
+		Config::update_config( $config );
 	}
 
 	/**
 	 * Migrate database from version 2.0 to 3.0
 	 */
-	public function migrate_templates() {
+	public static function migrate_templates() {
 		$legacy = get_option( 'sharing_image_templates' );
 
 		if ( empty( $legacy ) ) {
@@ -81,7 +67,7 @@ class Migrations {
 			return;
 		}
 
-		$this->add_templates_index( $legacy );
+		self::add_templates_index( $legacy );
 
 		delete_option( 'sharing_image_templates' );
 	}
@@ -89,7 +75,7 @@ class Migrations {
 	/**
 	 * Migrate fieldset in edit screen.
 	 */
-	public function migrate_post_fieldset() {
+	public static function migrate_post_fieldset() {
 		// phpcs:ignore WordPress.Security.NonceVerification
 		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
 
@@ -106,7 +92,7 @@ class Migrations {
 		$migrated = array();
 		$fieldset = $source['fieldset'];
 
-		foreach ( $this->settings->get_templates() as $template ) {
+		foreach ( Templates::get_templates() as $template ) {
 			if ( empty( $template['layers'] ) ) {
 				continue;
 			}
@@ -139,17 +125,17 @@ class Migrations {
 	 *
 	 * @param array $legacy Legacy templates data.
 	 */
-	private function add_templates_index( $legacy ) {
+	private static function add_templates_index( $legacy ) {
 		$templates = array();
 
 		foreach ( $legacy as $id => $template ) {
-			$index = $this->settings->create_unique_index();
+			$index = Templates::create_unique_index();
 
 			if ( ! empty( $template['layers'] ) ) {
-				$template['layers'] = $this->replace_layers_key( $template['layers'], $id );
+				$template['layers'] = self::replace_layers_key( $template['layers'], $id );
 			}
 
-			$template = $this->create_background_layer( $template, $id );
+			$template = self::create_background_layer( $template, $id );
 
 			// Add template with a new key.
 			$templates[ $index ] = $template;
@@ -164,7 +150,7 @@ class Migrations {
 	 * @param array $template Template data.
 	 * @param int   $id       Legacy template id.
 	 */
-	private function create_background_layer( $template, $id ) {
+	private static function create_background_layer( $template, $id ) {
 		if ( empty( $template['background'] ) ) {
 			return $template;
 		}
@@ -207,7 +193,7 @@ class Migrations {
 
 		unset( $template['attachment'] );
 
-		$item = array( $this->settings->generate_layer_key() => $layer );
+		$item = array( Templates::generate_layer_key() => $layer );
 
 		// Add new layer to first layers position.
 		$template['layers'] = array_merge( $item, $template['layers'] );
@@ -221,9 +207,9 @@ class Migrations {
 	 * @param array $layers List of template layers.
 	 * @param int   $id     Legacy template id.
 	 */
-	private function replace_layers_key( $layers, $id ) {
+	private static function replace_layers_key( $layers, $id ) {
 		foreach ( $layers as $pos => $layer ) {
-			$key = $this->settings->generate_layer_key();
+			$key = Templates::generate_layer_key();
 
 			$layer['legacy'] = 'captions-' . $id . '-' . $pos;
 

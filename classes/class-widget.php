@@ -36,40 +36,33 @@ class Widget {
 	const META_FIELDSET = '_sharing_image_fieldset';
 
 	/**
-	 * The instance of Settings class.
+	 * Common nonce for settings tabs.
 	 *
-	 * @var instance
+	 * @var string
 	 */
-	private $settings;
-
-	/**
-	 * Widget constructor.
-	 */
-	public function __construct() {
-		$this->settings = new Settings();
-	}
+	const WIDGET_NONCE = 'sharing-image-widget';
 
 	/**
 	 * Init class actions and filters.
 	 */
-	public function init() {
-		add_action( 'init', array( $this, 'init_post_widget' ) );
-		add_action( 'init', array( $this, 'init_post_sidebar' ) );
-		add_action( 'init', array( $this, 'init_taxonomy_widget' ) );
+	public static function init() {
+		add_action( 'init', array( __CLASS__, 'init_post_widget' ) );
+		add_action( 'init', array( __CLASS__, 'init_post_sidebar' ) );
+		add_action( 'init', array( __CLASS__, 'init_taxonomy_widget' ) );
 
 		// Generate poster handlers.
-		add_action( 'wp_ajax_sharing_image_generate', array( $this, 'handle_ajax_generator' ) );
-		add_action( 'rest_api_init', array( $this, 'add_generate_endpoint' ) );
+		add_action( 'wp_ajax_sharing_image_generate', array( __CLASS__, 'handle_ajax_generator' ) );
+		add_action( 'rest_api_init', array( __CLASS__, 'add_generate_endpoint' ) );
 
 		// Try to autogenerate poster if it is needed.
-		add_action( 'wp_after_insert_post', array( $this, 'autogenerate_poster' ), 20, 3 );
+		add_action( 'wp_after_insert_post', array( __CLASS__, 'autogenerate_poster' ), 20, 3 );
 	}
 
 	/**
 	 * Init post sidebar for gutenberg enabled dashboard.
 	 */
-	public function init_post_sidebar() {
-		if ( $this->settings->is_hidden_post_widget() ) {
+	public static function init_post_sidebar() {
+		if ( Config::is_hidden_post_widget() ) {
 			return;
 		}
 
@@ -106,7 +99,7 @@ class Widget {
 				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
-				'sanitize_callback' => array( $this, 'sanitize_source' ),
+				'sanitize_callback' => array( __CLASS__, 'sanitize_source' ),
 			)
 		);
 
@@ -128,63 +121,63 @@ class Widget {
 				'auth_callback'     => function () {
 					return current_user_can( 'edit_posts' );
 				},
-				'sanitize_callback' => array( $this, 'sanitize_fieldset' ),
+				'sanitize_callback' => array( __CLASS__, 'sanitize_fieldset' ),
 			)
 		);
 
 		// Add required assets and objects.
-		add_action( 'enqueue_block_editor_assets', array( $this, 'enqueue_sidebar_assets' ) );
+		add_action( 'enqueue_block_editor_assets', array( __CLASS__, 'enqueue_sidebar_assets' ) );
 	}
 
 	/**
 	 * Init widget on post editing page.
 	 */
-	public function init_post_widget() {
-		if ( $this->settings->is_hidden_post_widget() ) {
+	public static function init_post_widget() {
+		if ( Config::is_hidden_post_widget() ) {
 			return;
 		}
 
-		add_action( 'add_meta_boxes', array( $this, 'add_metabox' ) );
+		add_action( 'add_meta_boxes', array( __CLASS__, 'add_metabox' ) );
 
 		// Handle actions on post save.
-		add_action( 'save_post', array( $this, 'save_post_widget' ), 10 );
+		add_action( 'save_post', array( __CLASS__, 'save_post_widget' ), 10 );
 
 		// Add required assets and objects.
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_metabox_assets' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_metabox_assets' ) );
 	}
 
 	/**
 	 * Init widget on taxonomy term editing page.
 	 */
-	public function init_taxonomy_widget() {
+	public static function init_taxonomy_widget() {
 		// Skip if the Premium is not active.
-		if ( ! $this->settings->is_premium_features() ) {
+		if ( ! Premium::is_premium_features() ) {
 			return;
 		}
 
-		$taxonomies = $this->get_widget_taxonomies();
+		$taxonomies = self::get_widget_taxonomies();
 
 		foreach ( $taxonomies as $taxonomy ) {
 			// Display taxonomy term widget.
-			add_action( $taxonomy . '_edit_form', array( $this, 'display_widget' ), 10, 2 );
+			add_action( $taxonomy . '_edit_form', array( __CLASS__, 'display_widget' ), 10, 2 );
 
 			// Save taxonomy term meta.
-			add_action( 'edited_' . $taxonomy, array( $this, 'save_taxonomy_widget' ) );
+			add_action( 'edited_' . $taxonomy, array( __CLASS__, 'save_taxonomy_widget' ) );
 
 			// Enqueue term assets.
-			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_taxonomy_assets' ) );
+			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_taxonomy_assets' ) );
 		}
 	}
 
 	/**
 	 * Add metabox to post editing page.
 	 */
-	public function add_metabox() {
+	public static function add_metabox() {
 		add_meta_box(
 			'sharing-image-metabox',
 			esc_html__( 'Sharing Image', 'sharing-image' ),
-			array( $this, 'display_widget' ),
-			$this->get_metabox_post_types(),
+			array( __CLASS__, 'display_widget' ),
+			self::get_metabox_post_types(),
 			'side',
 			'high',
 			array(
@@ -198,14 +191,14 @@ class Widget {
 	 *
 	 * @param string $hook_suffix The current admin page.
 	 */
-	public function enqueue_metabox_assets( $hook_suffix ) {
+	public static function enqueue_metabox_assets( $hook_suffix ) {
 		if ( ! in_array( $hook_suffix, array( 'post.php', 'post-new.php' ), true ) ) {
 			return;
 		}
 
 		$screen = get_current_screen();
 
-		if ( ! in_array( $screen->post_type, $this->get_metabox_post_types(), true ) ) {
+		if ( ! in_array( $screen->post_type, self::get_metabox_post_types(), true ) ) {
 			return;
 		}
 
@@ -216,7 +209,7 @@ class Widget {
 		}
 
 		// Get post meta for current post ID.
-		$data = $this->create_script_object( 'post', $post->ID );
+		$data = self::create_script_object( 'post', $post->ID );
 
 		$data['meta'] = array(
 			'source'   => get_post_meta( $post->ID, self::META_SOURCE, true ),
@@ -228,7 +221,7 @@ class Widget {
 		 *
 		 * @param array $object Array of widget script object.
 		 */
-		$this->enqueue_widget_scripts( $data );
+		self::enqueue_widget_scripts( $data );
 	}
 
 	/**
@@ -236,14 +229,14 @@ class Widget {
 	 *
 	 * @param string $hook_suffix The current admin page.
 	 */
-	public function enqueue_taxonomy_assets( $hook_suffix ) {
+	public static function enqueue_taxonomy_assets( $hook_suffix ) {
 		if ( 'term.php' !== $hook_suffix ) {
 			return;
 		}
 
 		$screen = get_current_screen();
 
-		if ( ! in_array( $screen->taxonomy, $this->get_widget_taxonomies(), true ) ) {
+		if ( ! in_array( $screen->taxonomy, self::get_widget_taxonomies(), true ) ) {
 			return;
 		}
 
@@ -255,7 +248,7 @@ class Widget {
 		$term_id = absint( $_REQUEST['tag_ID'] );
 		// phpcs:enable WordPress.Security.NonceVerification
 
-		$data = $this->create_script_object( 'term', $term_id );
+		$data = self::create_script_object( 'term', $term_id );
 
 		$data['meta'] = array(
 			'source'   => get_term_meta( $term_id, self::META_SOURCE, true ),
@@ -267,7 +260,7 @@ class Widget {
 		 *
 		 * @param array $object Array of widget script object.
 		 */
-		$this->enqueue_widget_scripts( $data );
+		self::enqueue_widget_scripts( $data );
 	}
 
 	/**
@@ -275,7 +268,7 @@ class Widget {
 	 *
 	 * @since 3.0
 	 */
-	public function enqueue_sidebar_assets() {
+	public static function enqueue_sidebar_assets() {
 		$asset = require SHARING_IMAGE_DIR . 'assets/sidebar/index.asset.php';
 
 		wp_enqueue_script(
@@ -302,7 +295,7 @@ class Widget {
 				'source'   => self::META_SOURCE,
 				'fieldset' => self::META_FIELDSET,
 			),
-			'templates' => $this->settings->get_templates(),
+			'templates' => Templates::get_templates(),
 		);
 
 		// Add widget script object.
@@ -314,7 +307,7 @@ class Widget {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	public function save_post_widget( $post_id ) {
+	public static function save_post_widget( $post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -332,20 +325,20 @@ class Widget {
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		if ( ! wp_verify_nonce( $_POST['sharing_image_nonce'], basename( __FILE__ ) ) ) {
+		if ( ! wp_verify_nonce( $_POST['sharing_image_nonce'], self::WIDGET_NONCE ) ) {
 			return;
 		}
 
 		if ( isset( $_POST[ self::META_SOURCE ] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			$meta = $this->sanitize_source( wp_unslash( $_POST[ self::META_SOURCE ] ) );
+			$meta = self::sanitize_source( wp_unslash( $_POST[ self::META_SOURCE ] ) );
 
 			update_post_meta( $post_id, self::META_SOURCE, $meta );
 		}
 
 		if ( isset( $_POST[ self::META_FIELDSET ] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			$meta = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
+			$meta = self::sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
 
 			update_post_meta( $post_id, self::META_FIELDSET, $meta );
 		}
@@ -356,7 +349,7 @@ class Widget {
 	 *
 	 * @param int $term_id Term ID.
 	 */
-	public function save_taxonomy_widget( $term_id ) {
+	public static function save_taxonomy_widget( $term_id ) {
 		if ( ! current_user_can( 'edit_term', $term_id ) ) {
 			return;
 		}
@@ -366,20 +359,20 @@ class Widget {
 		}
 
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-		if ( ! wp_verify_nonce( $_POST['sharing_image_nonce'], basename( __FILE__ ) ) ) {
+		if ( ! wp_verify_nonce( $_POST['sharing_image_nonce'], self::WIDGET_NONCE ) ) {
 			return;
 		}
 
 		if ( isset( $_POST[ self::META_SOURCE ] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			$meta = $this->sanitize_source( wp_unslash( $_POST[ self::META_SOURCE ] ) );
+			$meta = self::sanitize_source( wp_unslash( $_POST[ self::META_SOURCE ] ) );
 
 			update_term_meta( $term_id, self::META_SOURCE, $meta );
 		}
 
 		if ( isset( $_POST[ self::META_FIELDSET ] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			$meta = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
+			$meta = self::sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
 
 			update_term_meta( $term_id, self::META_FIELDSET, $meta );
 		}
@@ -388,7 +381,7 @@ class Widget {
 	/**
 	 * Display widget.
 	 */
-	public function display_widget() {
+	public static function display_widget() {
 		include_once SHARING_IMAGE_DIR . 'templates/widget.php';
 
 		/**
@@ -400,13 +393,13 @@ class Widget {
 	/**
 	 * Create new endpoint for generate button in Gutenberg sidebar.
 	 */
-	public function add_generate_endpoint() {
+	public static function add_generate_endpoint() {
 		register_rest_route(
 			'sharing-image/v1',
 			'/poster/(?P<id>\d+)',
 			array(
 				'methods'             => 'POST',
-				'callback'            => array( $this, 'handle_rest_generator' ),
+				'callback'            => array( __CLASS__, 'handle_rest_generator' ),
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
 				},
@@ -421,7 +414,7 @@ class Widget {
 	 *
 	 * @return array Sanitized source meta fields.
 	 */
-	public function sanitize_source( $source ) {
+	public static function sanitize_source( $source ) {
 		$sanitized = array();
 
 		if ( isset( $source['poster'] ) ) {
@@ -462,11 +455,11 @@ class Widget {
 	 *
 	 * @return array Sanitized fieldset data.
 	 */
-	public function sanitize_fieldset( $fieldset ) {
+	public static function sanitize_fieldset( $fieldset ) {
 		$sanitized = array();
 
 		// Get list of templates.
-		$templates = $this->settings->get_templates();
+		$templates = Templates::get_templates();
 
 		foreach ( $templates as $template ) {
 			if ( empty( $template['layers'] ) ) {
@@ -504,7 +497,7 @@ class Widget {
 	 *
 	 * @param WP_REST_Request $request Request params.
 	 */
-	public function handle_rest_generator( $request ) {
+	public static function handle_rest_generator( $request ) {
 		$post_id = $request->get_param( 'id' );
 
 		if ( empty( $post_id ) ) {
@@ -523,10 +516,10 @@ class Widget {
 			$params['fieldset'] = array();
 		}
 
-		$fieldset = $this->sanitize_fieldset( $params['fieldset'] );
+		$fieldset = self::sanitize_fieldset( $params['fieldset'] );
 
 		// Invoke poster generation.
-		$result = $this->generate_poster( $fieldset, $index, $post_id, 'post' );
+		$result = self::generate_poster( $fieldset, $index, $post_id, 'post' );
 
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( $result->get_error_messages(), $result->get_error_data() );
@@ -538,8 +531,8 @@ class Widget {
 	/**
 	 * Handle generate button on Classic Editor and taxonomy widget.
 	 */
-	public function handle_ajax_generator() {
-		$check = check_ajax_referer( basename( __FILE__ ), 'sharing_image_nonce', false );
+	public static function handle_ajax_generator() {
+		$check = check_ajax_referer( self::WIDGET_NONCE, 'sharing_image_nonce', false );
 
 		if ( false === $check ) {
 			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
@@ -567,11 +560,11 @@ class Widget {
 
 		if ( ! empty( $_POST[ self::META_FIELDSET ] ) ) {
 			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			$fieldset = $this->sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
+			$fieldset = self::sanitize_fieldset( wp_unslash( $_POST[ self::META_FIELDSET ] ) );
 		}
 
 		// Invoke poster generation.
-		$result = $this->generate_poster( $fieldset, $index, $screen_id, $context );
+		$result = self::generate_poster( $fieldset, $index, $screen_id, $context );
 
 		if ( is_wp_error( $result ) ) {
 			wp_send_json_error( $result->get_error_messages(), $result->get_error_data() );
@@ -587,7 +580,7 @@ class Widget {
 	 * @param object $post Updated post object.
 	 * @param bool   $update Whether this is an existing post being updated.
 	 */
-	public function autogenerate_poster( $post_id, $post, $update ) {
+	public static function autogenerate_poster( $post_id, $post, $update ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -602,7 +595,7 @@ class Widget {
 			return;
 		}
 
-		$config = $this->settings->get_config();
+		$config = Config::get_config();
 
 		if ( empty( $config['autogenerate'] ) ) {
 			return;
@@ -611,7 +604,7 @@ class Widget {
 		$index = sanitize_key( $config['autogenerate'] );
 
 		// Compose fieldset by template index.
-		$fieldset = $this->compose_fields( $index, $post_id );
+		$fieldset = self::compose_fields( $index, $post_id );
 
 		/**
 		 * Filters fieldset before autogeneration.
@@ -629,7 +622,7 @@ class Widget {
 		}
 
 		// Invoke poster generation.
-		$result = $this->generate_poster( $fieldset, $index, $post_id, 'post', true );
+		$result = self::generate_poster( $fieldset, $index, $post_id, 'post', true );
 
 		$result['template'] = $index;
 
@@ -661,32 +654,30 @@ class Widget {
 	 * @param string  $context   Screen ID context field. Can be settings, post or term.
 	 * @param boolean $auto      Whether auto-generated poster.
 	 */
-	private function generate_poster( $fieldset, $index, $screen_id, $context, $auto = false ) {
-		$templates = $this->settings->get_templates();
+	private static function generate_poster( $fieldset, $index, $screen_id, $context, $auto = false ) {
+		$templates = Templates::get_templates();
 
 		if ( ! isset( $templates[ $index ] ) ) {
 			return new WP_Error( 'generate', esc_html__( 'Incorrect template ID.', 'sharing-image' ), 400 );
 		}
 
-		$generator = new Generator();
-
 		// Prepare template editor.
-		$editor = $generator->prepare_template( $templates[ $index ], $fieldset, $index, $screen_id, $context );
+		$editor = Generator::prepare_template( $templates[ $index ], $fieldset, $index, $screen_id, $context );
 
-		if ( ! $generator->check_required( $editor ) ) {
+		if ( ! Generator::check_required( $editor ) ) {
 			return new WP_Error( 'generate', esc_html__( 'Incorrect template settings.', 'sharing-image' ), 400 );
 		}
 
-		list( $path, $url ) = $generator->get_upload_file();
+		list( $path, $url ) = Generator::get_upload_file();
 
 		// Generate image and save it to given path.
-		$poster = $generator->create_poster( $editor, $path );
+		$poster = Generator::create_poster( $editor, $path );
 
 		if ( is_wp_error( $poster ) ) {
 			return new WP_Error( 'generate', $poster->get_error_message(), 400 );
 		}
 
-		$attachment = $this->save_attachment( $path, $screen_id, $context );
+		$attachment = self::save_attachment( $path, $screen_id, $context );
 
 		if ( is_wp_error( $attachment ) ) {
 			return new WP_Error( 'attachment', $attachment->get_error_message(), 400 );
@@ -714,9 +705,9 @@ class Widget {
 	 *
 	 * @return array Filtered widget script object.
 	 */
-	private function create_script_object( $context, $screen_id ) {
+	private static function create_script_object( $context, $screen_id ) {
 		$object = array(
-			'nonce'     => wp_create_nonce( basename( __FILE__ ) ),
+			'nonce'     => wp_create_nonce( self::WIDGET_NONCE ),
 			'context'   => $context,
 			'screen'    => $screen_id,
 
@@ -727,7 +718,7 @@ class Widget {
 			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
 			),
-			'templates' => $this->settings->get_templates(),
+			'templates' => Templates::get_templates(),
 		);
 
 		/**
@@ -743,7 +734,7 @@ class Widget {
 	 *
 	 * @param array $data Widget data object.
 	 */
-	private function enqueue_widget_scripts( $data ) {
+	private static function enqueue_widget_scripts( $data ) {
 		$asset = require SHARING_IMAGE_DIR . 'assets/widget/index.asset.php';
 
 		wp_enqueue_media();
@@ -776,7 +767,7 @@ class Widget {
 	 *
 	 * @return array Array of post types.
 	 */
-	private function get_metabox_post_types() {
+	private static function get_metabox_post_types() {
 		$post_types = get_post_types(
 			array(
 				'public' => true,
@@ -802,8 +793,8 @@ class Widget {
 	 *
 	 * @return array List of prepared fields.
 	 */
-	private function compose_fields( $index, $post_id, $fieldset = array() ) {
-		$templates = $this->settings->get_templates();
+	private static function compose_fields( $index, $post_id, $fieldset = array() ) {
+		$templates = Templates::get_templates();
 
 		if ( ! isset( $templates[ $index ] ) ) {
 			return $fieldset;
@@ -825,11 +816,11 @@ class Widget {
 			}
 
 			if ( 'text' === $layer['type'] ) {
-				$field = $this->compose_text_presets( $layer, $post_id );
+				$field = self::compose_text_presets( $layer, $post_id );
 			}
 
 			if ( 'image' === $layer['type'] ) {
-				$field = $this->compose_image_presets( $layer, $post_id );
+				$field = self::compose_image_presets( $layer, $post_id );
 			}
 
 			if ( ! empty( $field ) ) {
@@ -848,7 +839,7 @@ class Widget {
 	 *
 	 * @return array|null List of prepared fieldset for text layer.
 	 */
-	private function compose_text_presets( $layer, $post_id ) {
+	private static function compose_text_presets( $layer, $post_id ) {
 		if ( empty( $layer['preset'] ) || empty( $layer['dynamic'] ) ) {
 			return null;
 		}
@@ -894,7 +885,7 @@ class Widget {
 	 *
 	 * @return array|null List of prepared fieldset for image layer.
 	 */
-	private function compose_image_presets( $layer, $post_id ) {
+	private static function compose_image_presets( $layer, $post_id ) {
 		if ( empty( $layer['preset'] ) || empty( $layer['dynamic'] ) ) {
 			return null;
 		}
@@ -911,7 +902,7 @@ class Widget {
 	 *
 	 * @return array Array of taxonomies.
 	 */
-	private function get_widget_taxonomies() {
+	private static function get_widget_taxonomies() {
 		$taxonomies = get_taxonomies(
 			array(
 				'public'  => true,
@@ -936,8 +927,8 @@ class Widget {
 	 *
 	 * @return int|null Attachment ID or null;
 	 */
-	private function save_attachment( $path, $screen_id, $context ) {
-		$config = $this->settings->get_config();
+	private static function save_attachment( $path, $screen_id, $context ) {
+		$config = Config::get_config();
 
 		if ( ! isset( $config['attachment'] ) ) {
 			return null;
@@ -949,7 +940,7 @@ class Widget {
 			$name = implode( '-', array( 'sharing-image', $context, $screen_id ) );
 
 			// Try to delete current attachment if exists.
-			$this->delete_attachment( $name );
+			self::delete_attachment( $name );
 
 			$uploads = wp_upload_dir();
 
@@ -1010,7 +1001,7 @@ class Widget {
 	 *
 	 * @return bool Whether attachment deleted
 	 */
-	private function delete_attachment( $name ) {
+	private static function delete_attachment( $name ) {
 		$posts = get_posts(
 			array(
 				'post_type'              => 'attachment',
