@@ -45,6 +45,7 @@ class Premium {
 	public static function init() {
 		add_action( 'admin_init', array( __CLASS__, 'handle_requests' ) );
 		add_action( self::EVENT_PREMIUM, array( __CLASS__, 'launch_verification_event' ), 10, 1 );
+		add_action( 'load-settings_page_' . Settings::SETTINGS_SLUG, array( __CLASS__, 'check_verification_event' ) );
 	}
 
 	/**
@@ -90,14 +91,12 @@ class Premium {
 			wp_send_json_error( __( 'Invalid response received from the verification server.', 'sharing-image' ), 400 );
 		}
 
-		// Remove license verification event.
 		wp_unschedule_hook( self::EVENT_PREMIUM );
 
 		if ( true === $answer['success'] ) {
 			$license = self::update_license( true, $key );
 
-			// Schedule license verification twice daily.
-			self::schedule_verification( array( $key ) );
+			self::schedule_verification();
 
 			wp_send_json_success( $license );
 		}
@@ -175,8 +174,6 @@ class Premium {
 	public static function update_license( $premium, $key = '', $error = '' ) {
 		$license = get_option( self::OPTION_LICENSE, array() );
 
-		$license['premium'] = $premium;
-
 		if ( ! empty( $key ) ) {
 			$license['key'] = $key;
 		}
@@ -186,6 +183,8 @@ class Premium {
 		if ( ! empty( $error ) ) {
 			$license['error'] = $error;
 		}
+
+		$license['premium'] = $premium;
 
 		// Save updated license settings in database.
 		update_option( self::OPTION_LICENSE, $license );
@@ -197,12 +196,22 @@ class Premium {
 	 * Launch scheduled license verification event.
 	 * Do not disable Premium if the verification server does not respond.
 	 *
-	 * @param string $key License key.
+	 * @param string|null $key Optional. Legacy license key.
 	 */
-	public static function launch_verification_event( $key ) {
+	public static function launch_verification_event( $key = null ) {
+		if ( ! is_null( $key ) ) {
+			self::reschedule_verification();
+		}
+
+		$license = get_option( self::OPTION_LICENSE, array() );
+
+		if ( empty( $license['key'] ) ) {
+			return self::update_license( false, '' );
+		}
+
 		$args = array(
 			'body' => array(
-				'key'    => $key,
+				'key'    => $license['key'],
 				'domain' => wp_parse_url( site_url(), PHP_URL_HOST ),
 			),
 		);
@@ -220,14 +229,14 @@ class Premium {
 		}
 
 		if ( true === $answer['success'] ) {
-			return self::update_license( true, $key );
+			return self::update_license( true, $license['key'] );
 		}
 
 		if ( ! isset( $answer['result'] ) ) {
-			return self::update_license( false, $key );
+			return self::update_license( false, $license['key'] );
 		}
 
-		self::update_license( false, $key, $answer['result'] );
+		self::update_license( false, $license['key'], $answer['result'] );
 	}
 
 	/**
@@ -246,15 +255,35 @@ class Premium {
 	}
 
 	/**
-	 * Schedule license verification.
-	 *
-	 * @param array $args List of event arguments. License key by default.
+	 * Reschedule license verification with current Premium key.
 	 */
-	public static function schedule_verification( $args = array() ) {
-		if ( wp_next_scheduled( self::EVENT_PREMIUM, $args ) ) {
+	public static function check_verification_event() {
+		$license = self::get_license();
+
+		if ( empty( $license['premium'] ) ) {
 			return;
 		}
 
-		wp_schedule_event( time() + DAY_IN_SECONDS / 2, 'twicedaily', self::EVENT_PREMIUM, $args );
+		self::schedule_verification();
+	}
+
+	/**
+	 * Schedule license verification.
+	 */
+	public static function schedule_verification() {
+		if ( wp_next_scheduled( self::EVENT_PREMIUM ) ) {
+			return;
+		}
+
+		wp_schedule_event( time() + DAY_IN_SECONDS / 2, 'twicedaily', self::EVENT_PREMIUM );
+	}
+
+	/**
+	 * Delete all events with the same name and schedule again.
+	 */
+	public static function reschedule_verification() {
+		wp_unschedule_hook( self::EVENT_PREMIUM );
+
+		self::schedule_verification();
 	}
 }

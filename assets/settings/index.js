@@ -1602,10 +1602,11 @@ function createAttachmentOptions(options, data) {
  * Create required form meta fields.
  *
  * @param {HTMLElement} options Options form element.
+ * @param {Object}      data    Config data object.
  */
 
 
-function createMetaFields(options) {
+function createCommonFields(options, data) {
   _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
     attributes: {
       type: 'hidden',
@@ -1619,6 +1620,14 @@ function createMetaFields(options) {
       type: 'hidden',
       name: 'sharing_image_nonce',
       value: params.nonce
+    },
+    append: options
+  });
+  _builders__WEBPACK_IMPORTED_MODULE_0__["default"].element('input', {
+    attributes: {
+      type: 'hidden',
+      name: params.name + '[demo]',
+      value: data.demo || ''
     },
     append: options
   });
@@ -1677,7 +1686,7 @@ function createConfig(content, settings) {
 
   createDefaultOptions(options, data); // Create required form fields.
 
-  createMetaFields(options);
+  createCommonFields(options, data);
 }
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (createConfig);

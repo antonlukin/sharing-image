@@ -290,13 +290,13 @@ class Settings {
 				'premium' => esc_url_raw( self::get_tab_link( 'premium' ) ),
 				'storage' => path_join( $basedir, 'sharing-image' ),
 			),
+			'fonts'      => self::get_fonts(),
+			'taxonomies' => self::get_preset_taxonomies(),
 			'templates'  => Templates::get_templates(),
 			'index'      => Templates::create_unique_index(),
 			'snippets'   => Snippets::get_snippets(),
 			'config'     => Config::get_config(),
 			'license'    => Premium::get_license(),
-			'fonts'      => self::get_fonts(),
-			'taxonomies' => self::get_preset_taxonomies(),
 		);
 
 		/**
@@ -373,11 +373,7 @@ class Settings {
 				break;
 
 			case 12:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Unable to remove plugin options.', 'sharing-image' ) );
-				break;
-
-			case 13:
-				add_settings_error( 'sharing-image', 'sharing-image', __( 'Options removed successfully.', 'sharing-image' ), 'updated' );
+				add_settings_error( 'sharing-image', 'sharing-image', __( 'Posters removed successfully.', 'sharing-image' ), 'updated' );
 				break;
 		}
 

@@ -173,21 +173,11 @@ class Tools {
 
 		$redirect = Settings::get_tab_link( 'tools' );
 
-		if ( ! delete_metadata( 'post', null, Widget::META_SOURCE, '', true ) ) {
-			Settings::redirect_with_message( $redirect, 13 );
-		}
+		delete_metadata( 'post', null, Widget::META_SOURCE, '', true );
+		delete_metadata( 'post', null, Widget::META_FIELDSET, '', true );
 
-		if ( ! delete_metadata( 'post', null, Widget::META_FIELDSET, '', true ) ) {
-			Settings::redirect_with_message( $redirect, 13 );
-		}
-
-		if ( ! delete_metadata( 'term', null, Widget::META_SOURCE, '', true ) ) {
-			Settings::redirect_with_message( $redirect, 13 );
-		}
-
-		if ( ! delete_metadata( 'term', null, Widget::META_FIELDSET, '', true ) ) {
-			Settings::redirect_with_message( $redirect, 13 );
-		}
+		delete_metadata( 'term', null, Widget::META_SOURCE, '', true );
+		delete_metadata( 'term', null, Widget::META_FIELDSET, '', true );
 
 		Settings::redirect_with_message( $redirect, 12 );
 	}

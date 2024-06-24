@@ -393,8 +393,9 @@ function createAttachmentOptions( options, data ) {
  * Create required form meta fields.
  *
  * @param {HTMLElement} options Options form element.
+ * @param {Object}      data    Config data object.
  */
-function createMetaFields( options ) {
+function createCommonFields( options, data ) {
 	Build.element( 'input', {
 		attributes: {
 			type: 'hidden',
@@ -409,6 +410,15 @@ function createMetaFields( options ) {
 			type: 'hidden',
 			name: 'sharing_image_nonce',
 			value: params.nonce,
+		},
+		append: options,
+	} );
+
+	Build.element( 'input', {
+		attributes: {
+			type: 'hidden',
+			name: params.name + '[demo]',
+			value: data.demo || '',
 		},
 		append: options,
 	} );
@@ -479,7 +489,7 @@ function createConfig( content, settings ) {
 	createDefaultOptions( options, data );
 
 	// Create required form fields.
-	createMetaFields( options );
+	createCommonFields( options, data );
 }
 
 export default createConfig;

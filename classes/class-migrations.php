@@ -22,33 +22,8 @@ class Migrations {
 	 * Init class actions and filters.
 	 */
 	public static function init() {
-		add_action( 'admin_init', array( __CLASS__, 'update_version' ) );
 		add_action( 'admin_init', array( __CLASS__, 'migrate_templates' ) );
-
 		add_action( 'load-post.php', array( __CLASS__, 'migrate_post_fieldset' ) );
-	}
-
-	/**
-	 * Update version if needed.
-	 */
-	public static function update_version() {
-		$config = Config::get_config();
-
-		// Default version if not defined.
-		$version = '2.0';
-
-		if ( ! empty( $config['version'] ) ) {
-			$version = $config['version'];
-		}
-
-		// Skip migrations if version matches.
-		if ( version_compare( $version, SHARING_IMAGE_VERSION, '=' ) ) {
-			return;
-		}
-
-		$config['version'] = SHARING_IMAGE_VERSION;
-
-		Config::update_config( $config );
 	}
 
 	/**

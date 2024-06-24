@@ -347,6 +347,10 @@ class Config {
 			}
 		}
 
+		if ( ! empty( $config['demo'] ) ) {
+			$sanitized['demo'] = 1;
+		}
+
 		/**
 		 * Filters template editor sanitized fields.
 		 *
