@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
 Requires at least: 5.3
 Tested up to: 6.4
-Stable tag: 2.0.17
+Stable tag: 3.0
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,6 +29,18 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 3.0 =
+* Updated Poster Editor library
+* Redesigned template settings page
+* Added new layer settings
+* Redesigned template auto-generation
+* Added import and export of templates
+* Added demo template
+* Added template cloning
+* Changed the approach to meta tags output
+* Added Gutenberg widget
+* See the list of updated hooks on the plugin page: https://wpset.org/sharing-image/hooks/
 
 = 2.0.17 =
 * Fix missing translation handler in settings editor

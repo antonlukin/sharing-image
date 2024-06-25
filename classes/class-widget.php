@@ -609,7 +609,7 @@ class Widget {
 		/**
 		 * Filters fieldset before autogeneration.
 		 *
-		 * @since 3.0.0
+		 * @since 3.0
 		 *
 		 * @param array  $fieldset Prepared fieldset data.
 		 * @param string $index    Template index.

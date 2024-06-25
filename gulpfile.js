@@ -19,12 +19,12 @@ gulp.task( 'styles', ( done ) => {
 		.pipe(
 			sassGlob( {
 				allowEmpty: true,
-			} ),
+			} )
 		)
 		.pipe(
 			sass( {
 				errLogToConsole: true,
-			} ),
+			} )
 		)
 		.pipe( prefix() )
 		.pipe( gulp.dest( 'assets/styles/' ) );
@@ -61,13 +61,13 @@ gulp.task( 'scripts', ( done ) => {
 						],
 					},
 				},
-			} ),
+			} )
 		)
 		.pipe(
 			rename( ( file ) => {
 				file.basename = file.basename;
 				file.extname = '.js';
-			} ),
+			} )
 		)
 		.pipe( gulp.dest( 'assets/scripts/' ) );
 

@@ -391,7 +391,7 @@ class Generator {
 	/**
 	 * Set empty boundary list to reset boundary for empty layers.
 	 *
-	 * @since 3.0.0
+	 * @since 3.0
 	 *
 	 * @param array $args List of common layer args.
 	 */

@@ -81,7 +81,7 @@ class Snippets {
 		/**
 		 * Filters list of plugin snippets names.
 		 *
-		 * @since 3.0.0
+		 * @since 3.0
 		 *
 		 * @param array $namess List of snippets names.
 		 */
