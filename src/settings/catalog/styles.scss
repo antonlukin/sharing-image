@@ -102,6 +102,7 @@
 
     img {
       display: block;
+      object-fit: cover;
 
       @include fill-parent;
     }

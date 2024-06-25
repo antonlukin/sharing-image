@@ -64,10 +64,18 @@ class Migrations {
 			return;
 		}
 
+		$position = 0;
 		$migrated = array();
+
 		$fieldset = $source['fieldset'];
 
-		foreach ( Templates::get_templates() as $template ) {
+		foreach ( Templates::get_templates() as $index => $template ) {
+			if ( $position === $source['template'] ) {
+				$source['template'] = $index;
+			}
+
+			++$position;
+
 			if ( empty( $template['layers'] ) ) {
 				continue;
 			}
@@ -193,6 +201,8 @@ class Migrations {
 
 			unset( $layers[ $pos ] );
 		}
+
+		$layers = array_reverse( $layers );
 
 		return $layers;
 	}
