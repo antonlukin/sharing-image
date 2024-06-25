@@ -36,7 +36,7 @@ class Migrations {
 			return;
 		}
 
-		$templates = get_option( Settings::OPTION_TEMPLATES, null );
+		$templates = get_option( Templates::OPTION_TEMPLATES, null );
 
 		if ( ! is_null( $templates ) ) {
 			return;
@@ -116,7 +116,7 @@ class Migrations {
 			$templates[ $index ] = $template;
 		}
 
-		update_option( Settings::OPTION_TEMPLATES, $templates );
+		update_option( Templates::OPTION_TEMPLATES, $templates );
 	}
 
 	/**
