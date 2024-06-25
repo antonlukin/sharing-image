@@ -12,13 +12,17 @@ const PresetTaxonomy = ( { name, layer, fieldset, setFieldset, attribute, entity
 		const list = [];
 
 		// Get checked categories ids.
-		const checked = select( 'core/editor' ).getEditedPostAttribute( attribute );
+		let checked = select( 'core/editor' ).getEditedPostAttribute( attribute );
+
+		if ( ! checked ) {
+			checked = [];
+		}
 
 		checked.forEach( ( id ) => {
-			const category = select( 'core' ).getEntityRecord( 'taxonomy', entity, id );
+			const taxonomy = select( 'core' ).getEntityRecord( 'taxonomy', entity, id );
 
-			if ( category ) {
-				list.push( category.name );
+			if ( taxonomy ) {
+				list.push( taxonomy.name );
 			}
 		} );
 

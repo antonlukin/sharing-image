@@ -50,7 +50,7 @@ const TemplateFields = ( { layers, mode, fieldset, setFieldset } ) => {
 				return <PresetTaxonomy { ...props } attribute={ 'categories' } entity={ 'category' } />;
 
 			case 'tags':
-				return <PresetTaxonomy { ...props } attribute={ 'post_tags' } entity={ 'tag' } />;
+				return <PresetTaxonomy { ...props } attribute={ 'tags' } entity={ 'post_tag' } />;
 		}
 
 		return displayDefaultControl( layer, name );

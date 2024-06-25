@@ -855,7 +855,9 @@ class Widget {
 		}
 
 		if ( 'excerpt' === $layer['preset'] ) {
-			return get_post_field( 'excerpt', $post_id );
+			$post = get_post( $post_id );
+
+			return $post->post_excerpt;
 		}
 
 		if ( 'categories' === $layer['preset'] ) {
@@ -867,7 +869,7 @@ class Widget {
 		}
 
 		if ( 'tags' === $layer['preset'] ) {
-			$tags = get_the_category( $post_id );
+			$tags = get_the_tags( $post_id );
 
 			if ( $tags ) {
 				return implode( $separator, wp_list_pluck( $tags, 'name' ) );
