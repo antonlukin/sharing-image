@@ -269,6 +269,9 @@ class Widget {
 	 * @since 3.0
 	 */
 	public static function enqueue_sidebar_assets() {
+		if ( ! is_admin() ) {
+			return;
+		}
 		$asset = require SHARING_IMAGE_DIR . 'assets/sidebar/index.asset.php';
 
 		wp_enqueue_script(

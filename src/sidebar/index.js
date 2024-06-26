@@ -14,17 +14,17 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	const { createErrorNotice, removeNotice } = useDispatch( noticesStore );
 
 	/**
-	 * Retrieve post meta.
-	 */
-	const postMeta = useSelect( ( select ) => {
-		return select( 'core/editor' ).getEditedPostAttribute( 'meta' );
-	} );
-
-	/**
 	 * Retrieve post id.
 	 */
 	const postId = useSelect( ( select ) => {
 		return select( 'core/editor' ).getCurrentPostId();
+	} );
+
+	/**
+	 * Retrieve post meta.
+	 */
+	const postMeta = useSelect( ( select ) => {
+		return select( 'core/editor' ).getEditedPostAttribute( 'meta' ) || {};
 	} );
 
 	/**
@@ -118,7 +118,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 		editPost( {
 			meta: { [ meta.fieldset ]: fieldset },
 		} );
-	}, [ fieldset ] ); // eslint-disable-line
+	}, [fieldset]); // eslint-disable-line
 
 	/**
 	 * Set template.
@@ -132,64 +132,60 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	}, [ templates, template ] );
 
 	return (
-		<PluginDocumentSettingPanel name="sharing-image-setting" title={ __( 'Sharing Image', 'sharing-image' ) }>
-			<Flex direction={ 'column' } gap={ 2 } style={ { position: 'relative' } }>
-				{ postMeta[ meta.source ]?.poster && (
-					<img src={ postMeta[ meta.source ].poster } alt={ __( 'Sharing Image poster', 'sharing-image' ) } />
-				) }
+		<Flex direction={ 'column' } gap={ 2 } style={ { position: 'relative' } }>
+			{ postMeta[ meta.source ]?.poster && (
+				<img src={ postMeta[ meta.source ].poster } alt={ __( 'Sharing Image poster', 'sharing-image' ) } />
+			) }
 
-				{ postMeta[ meta.source ]?.mode === 'auto' && displayMdodeAutoIcon() }
+			{ postMeta[ meta.source ]?.mode === 'auto' && displayMdodeAutoIcon() }
 
-				<SelectControl
-					value={ template }
-					options={ Object.keys( templates ).map( ( index ) => ( {
-						label: templates[ index ].title || __( 'Untitled', 'sharing-image' ),
-						value: index,
-					} ) ) }
-					onChange={ changeTemplate }
-				/>
+			<SelectControl
+				value={ template }
+				options={ Object.keys( templates ).map( ( index ) => ( {
+					label: templates[ index ].title || __( 'Untitled', 'sharing-image' ),
+					value: index,
+				} ) ) }
+				onChange={ changeTemplate }
+			/>
 
-				{ templates[ template ] && (
-					<Flex direction={ 'column' } gap={ 2 }>
-						<TemplateFields
-							layers={ templates[ template ].layers || [] }
-							mode={ postMeta[ meta.source ]?.mode }
-							fieldset={ fieldset }
-							setFieldset={ setFieldset }
-						/>
-					</Flex>
-				) }
-
-				<Flex justify={ 'flex-start' }>
-					<Button variant="secondary" type={ 'button' } onClick={ () => generatePoster() }>
-						{ __( 'Generate', 'sharing-image' ) }
-					</Button>
-
-					<Button variant="tertiary" isDestructive={ true } onClick={ () => removePoster() }>
-						{ __( 'Remove', 'sharing-image' ) }
-					</Button>
-
-					{ loading && <Spinner /> }
+			{ templates[ template ] && (
+				<Flex direction={ 'column' } gap={ 2 }>
+					<TemplateFields
+						layers={ templates[ template ].layers || [] }
+						mode={ postMeta[ meta.source ]?.mode }
+						fieldset={ fieldset }
+						setFieldset={ setFieldset }
+					/>
 				</Flex>
+			) }
+
+			<Flex justify={ 'flex-start' }>
+				<Button variant="secondary" type={ 'button' } onClick={ () => generatePoster() }>
+					{ __( 'Generate', 'sharing-image' ) }
+				</Button>
+
+				<Button variant="tertiary" isDestructive={ true } onClick={ () => removePoster() }>
+					{ __( 'Remove', 'sharing-image' ) }
+				</Button>
+
+				{ loading && <Spinner /> }
 			</Flex>
-		</PluginDocumentSettingPanel>
+		</Flex>
 	);
-};
-
-const checkMeta = ( params ) => {
-	if ( ! params.meta?.source || ! params.meta?.fieldset ) {
-		return false;
-	}
-
-	return true;
 };
 
 registerPlugin( 'sharing-image-sidebar', {
 	render: () => {
 		const params = window.sharingImageSidebar || {};
 
-		if ( checkMeta( params ) ) {
-			return <SharingImageSidebar { ...params } />;
+		if ( ! params.meta?.source || ! params.meta?.fieldset ) {
+			return;
 		}
+
+		return (
+			<PluginDocumentSettingPanel name="sharing-image-sidebar" title={ __( 'Sharing Image', 'sharing-image' ) }>
+				<SharingImageSidebar { ...params } />
+			</PluginDocumentSettingPanel>
+		);
 	},
 } );
