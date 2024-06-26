@@ -1,7 +1,7 @@
 === Sharing Image ===
 Contributors: antonlukin
 Donate link: https://wpset.org/about/
-Tags: social image, sharing image, og image, twitter image, facebook, twitter, telegram, vk.com, ok.ru
+Tags: social image, sharing image, og image, facebook, twitter
 Requires at least: 5.3
 Tested up to: 6.5
 Stable tag: 3.0
