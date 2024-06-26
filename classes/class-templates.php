@@ -239,7 +239,7 @@ class Templates {
 		$valid = preg_match( '~^[a-z0-9]{8}$~', $index );
 
 		/**
-		 * Filter wheter given unique index matching rule.
+		 * Filter whether given unique index matching rule.
 		 *
 		 * @param bool   $valid Valid flag.
 		 * @param string $index Template index.
@@ -501,10 +501,6 @@ class Templates {
 
 		$sanitized['boundary'] = self::sanitize_boundary( $layer );
 
-		if ( ! empty( $layer['legacy'] ) ) {
-			$sanitized['legacy'] = sanitize_text_field( $layer['legacy'] );
-		}
-
 		return $sanitized;
 	}
 
@@ -568,10 +564,6 @@ class Templates {
 		}
 
 		$sanitized['boundary'] = self::sanitize_boundary( $layer );
-
-		if ( ! empty( $layer['legacy'] ) ) {
-			$sanitized['legacy'] = sanitize_text_field( $layer['legacy'] );
-		}
 
 		return $sanitized;
 	}

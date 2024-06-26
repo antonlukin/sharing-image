@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Handle config tab on settings page and provide static methods.
+ * Config class.
  *
  * @class Config
  */

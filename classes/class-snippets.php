@@ -83,7 +83,7 @@ class Snippets {
 		 *
 		 * @since 3.0
 		 *
-		 * @param array $namess List of snippets names.
+		 * @param array $names List of snippets names.
 		 */
 		return apply_filters( 'sharing_image_get_snippets', self::$snippets );
 	}

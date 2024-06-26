@@ -1,6 +1,6 @@
 <?php
 /**
- * Meta class
+ * Display header meta.
  *
  * @package sharing-image
  * @author  Anton Lukin
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Meta class
+ * Meta class.
  *
  * @class Meta
  */

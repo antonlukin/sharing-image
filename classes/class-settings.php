@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Settings page class
+ * Settings class.
  *
  * @class Settings
  */
@@ -283,20 +283,19 @@ class Settings {
 		$basedir = str_replace( ABSPATH, '', $uploads['basedir'] );
 
 		$object = array(
-			'nonce'      => wp_create_nonce( self::SETTINGS_NONCE ),
-			'links'      => array(
+			'nonce'     => wp_create_nonce( self::SETTINGS_NONCE ),
+			'links'     => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
 				'action'  => esc_url( admin_url( 'admin-post.php' ) ),
 				'premium' => esc_url_raw( self::get_tab_link( 'premium' ) ),
 				'storage' => path_join( $basedir, 'sharing-image' ),
 			),
-			'fonts'      => self::get_fonts(),
-			'taxonomies' => self::get_preset_taxonomies(),
-			'templates'  => Templates::get_templates(),
-			'index'      => Templates::create_unique_index(),
-			'snippets'   => Snippets::get_snippets(),
-			'config'     => Config::get_config(),
-			'license'    => Premium::get_license(),
+			'fonts'     => self::get_fonts(),
+			'templates' => Templates::get_templates(),
+			'index'     => Templates::create_unique_index(),
+			'snippets'  => Snippets::get_snippets(),
+			'config'    => Config::get_config(),
+			'license'   => Premium::get_license(),
 		);
 
 		/**
@@ -464,40 +463,6 @@ class Settings {
 		 * @param array List of availible poster fonts.
 		 */
 		return apply_filters( 'sharing_image_poster_fonts', $fonts );
-	}
-
-	/**
-	 * Get available taxonomies for text layer preset.
-	 *
-	 * @return array List of availible preset taxonomies.
-	 */
-	public static function get_preset_taxonomies() {
-		$objects = get_taxonomies(
-			array(
-				'public'  => true,
-				'show_ui' => true,
-			),
-			'object',
-		);
-
-		$taxonomies = array();
-
-		foreach ( $objects as $key => $object ) {
-			$label = $key;
-
-			if ( ! empty( $object->label ) ) {
-				$label = $object->label;
-			}
-
-			$taxonomies[ $key ] = $label;
-		}
-
-		/**
-		 * Filter taxonomies for text layer preset.
-		 *
-		 * @param array $taxonomies List of taxonomies.
-		 */
-		return apply_filters( 'sharing_image_preset_taxonomies', $taxonomies );
 	}
 
 	/**

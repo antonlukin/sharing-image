@@ -1,6 +1,6 @@
 <?php
 /**
- * Widget class
+ * Display widgets and sidebars on post and term editors screens.
  *
  * @package sharing-image
  * @author  Anton Lukin
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Widget class
+ * Widget class.
  *
  * @class Widget
  */
