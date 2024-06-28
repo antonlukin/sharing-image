@@ -2,7 +2,7 @@ import { useSelect } from '@wordpress/data';
 import { useState, useEffect } from '@wordpress/element';
 import { TextareaControl } from '@wordpress/components';
 
-const PresetTaxonomy = ( { name, layer, fieldset, setFieldset, attribute, entity } ) => {
+const PresetTaxonomy = ( { name, layer, fieldset, updateFieldset, attribute, entity } ) => {
 	const [ changed, setChanged ] = useState( false );
 
 	/**
@@ -35,7 +35,7 @@ const PresetTaxonomy = ( { name, layer, fieldset, setFieldset, attribute, entity
 	 * @param {string} value
 	 */
 	const changeFieldset = ( value ) => {
-		setFieldset( { ...fieldset, [ name ]: value } );
+		updateFieldset( name, value );
 
 		// Mark this field as manually changed by user.
 		setChanged( true );
@@ -46,7 +46,7 @@ const PresetTaxonomy = ( { name, layer, fieldset, setFieldset, attribute, entity
 	 */
 	useEffect( () => {
 		if ( ! changed ) {
-			setFieldset( { ...fieldset, [ name ]: preset } );
+			updateFieldset( name, preset );
 		}
 	}, [ preset ] ); // eslint-disable-line
 

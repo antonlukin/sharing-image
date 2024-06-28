@@ -589,7 +589,7 @@ function createImageSizesFields( layer, name, data ) {
 					name: name + '[resize]',
 					value: 'top',
 				},
-				label: wp.i18n.__( 'Top-aligned image while preserving the aspect ratio.', 'sharing-image' ),
+				label: wp.i18n.__( 'Top-aligned image while preserving the aspect ratio', 'sharing-image' ),
 				checked: data.resize || 'center',
 			},
 			{

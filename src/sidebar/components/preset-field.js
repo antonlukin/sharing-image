@@ -2,7 +2,7 @@ import { useSelect } from '@wordpress/data';
 import { useState, useEffect } from '@wordpress/element';
 import { TextareaControl } from '@wordpress/components';
 
-const PresetField = ( { name, layer, fieldset, setFieldset, attribute } ) => {
+const PresetField = ( { name, layer, fieldset, updateFieldset, attribute } ) => {
 	const [ changed, setChanged ] = useState( false );
 
 	/**
@@ -18,7 +18,7 @@ const PresetField = ( { name, layer, fieldset, setFieldset, attribute } ) => {
 	 * @param {string} value
 	 */
 	const changeFieldset = ( value ) => {
-		setFieldset( { ...fieldset, [ name ]: value } );
+		updateFieldset( name, value );
 
 		// Mark this field as manually changed by user.
 		setChanged( true );
@@ -29,7 +29,7 @@ const PresetField = ( { name, layer, fieldset, setFieldset, attribute } ) => {
 	 */
 	useEffect( () => {
 		if ( ! changed ) {
-			setFieldset( { ...fieldset, [ name ]: preset } );
+			updateFieldset( name, preset );
 		}
 	}, [ preset ] ); // eslint-disable-line
 

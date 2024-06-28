@@ -294,11 +294,11 @@ class Generator {
 		}
 
 		if ( ! isset( $layer['width'] ) ) {
-			$layer['width'] = 0;
+			$layer['width'] = 1;
 		}
 
 		if ( ! isset( $layer['height'] ) ) {
-			$layer['height'] = 0;
+			$layer['height'] = 1;
 		}
 
 		// Update layer position and dimensions.
@@ -535,6 +535,10 @@ class Generator {
 	 * @return array List of layer settings.
 	 */
 	private static function update_layer_dimensions( $layer, $poster ) {
+		if ( ! isset( $layer['width'], $layer['height'] ) ) {
+			return $layer;
+		}
+
 		$width = absint( $poster->width() );
 
 		if ( $layer['width'] < 0 ) {

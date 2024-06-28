@@ -10,7 +10,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import TemplateFields from './components/template-fields';
 import styles from './styles.module.scss';
 
-const SharingImageSidebar = ( { meta, templates } ) => {
+const SharingImageSidebar = ( { meta, templates, autogenerate } ) => {
 	const { createErrorNotice, removeNotice } = useDispatch( noticesStore );
 
 	/**
@@ -38,6 +38,10 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	const [ template, setTemplate ] = useState( postMeta[ meta.source ]?.template );
 	const [ fieldset, setFieldset ] = useState( postMeta[ meta.fieldset ] );
 	const [ loading, setLoading ] = useState( false );
+
+	const updateFieldset = ( key, value ) => {
+		setFieldset( ( prevFieldset ) => ( { ...prevFieldset, [ key ]: value } ) );
+	};
 
 	/**
 	 * Change Template.
@@ -105,7 +109,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	/**
 	 * Display icon for auto generated poster.
 	 */
-	const displayMdodeAutoIcon = () => {
+	const displayModeAutoIcon = () => {
 		const title = __( 'Poster was generated automatically and will update on post saving.', 'sharing-image' );
 
 		return <Dashicon icon="awards" className={ styles.modeAuto } title={ title } />;
@@ -121,15 +125,24 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 	}, [fieldset]); // eslint-disable-line
 
 	/**
-	 * Set template.
+	 * Set template on load.
 	 */
 	useEffect( () => {
+		if ( templates[ template ] ) {
+			return;
+		}
+
+		if ( autogenerate && templates[ autogenerate ] ) {
+			setTemplate( autogenerate );
+			return;
+		}
+
 		const [ index ] = Object.keys( templates );
 
-		if ( ! templates[ template ] && index ) {
+		if ( index ) {
 			setTemplate( index );
 		}
-	}, [ templates, template ] );
+	}, [ templates, template, autogenerate ] );
 
 	return (
 		<Flex direction={ 'column' } gap={ 2 } style={ { position: 'relative' } }>
@@ -137,7 +150,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 				<img src={ postMeta[ meta.source ].poster } alt={ __( 'Sharing Image poster', 'sharing-image' ) } />
 			) }
 
-			{ postMeta[ meta.source ]?.mode === 'auto' && displayMdodeAutoIcon() }
+			{ postMeta[ meta.source ]?.mode === 'auto' && displayModeAutoIcon() }
 
 			<SelectControl
 				value={ template }
@@ -154,7 +167,7 @@ const SharingImageSidebar = ( { meta, templates } ) => {
 						layers={ templates[ template ].layers || [] }
 						mode={ postMeta[ meta.source ]?.mode }
 						fieldset={ fieldset }
-						setFieldset={ setFieldset }
+						updateFieldset={ updateFieldset }
 					/>
 				</Flex>
 			) }

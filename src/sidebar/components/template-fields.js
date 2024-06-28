@@ -4,7 +4,7 @@ import PresetField from './preset-field';
 import PresetTaxonomy from './preset-taxonomy';
 import ThumbnailField from './thumbnail-field';
 
-const TemplateFields = ( { layers, mode, fieldset, setFieldset } ) => {
+const TemplateFields = ( { layers, mode, fieldset, updateFieldset } ) => {
 	/**
 	 * Display default text field control.
 	 *
@@ -19,7 +19,7 @@ const TemplateFields = ( { layers, mode, fieldset, setFieldset } ) => {
 				name={ name }
 				label={ layer.title }
 				defaultValue={ fieldset[ name ] }
-				onChange={ ( value ) => setFieldset( { ...fieldset, [ name ]: value } ) }
+				onChange={ ( value ) => updateFieldset( name, value ) }
 			/>
 		);
 	};
@@ -37,7 +37,7 @@ const TemplateFields = ( { layers, mode, fieldset, setFieldset } ) => {
 			return displayDefaultControl( layer, name );
 		}
 
-		const props = { name, layer, fieldset, setFieldset };
+		const props = { name, layer, fieldset, updateFieldset };
 
 		switch ( layer.preset ) {
 			case 'title':
@@ -65,7 +65,7 @@ const TemplateFields = ( { layers, mode, fieldset, setFieldset } ) => {
 	 * @return {JSX.Element} Textarea control component.
 	 */
 	const displayImageField = ( layer, name ) => {
-		const props = { name, layer, mode, fieldset, setFieldset };
+		const props = { name, layer, mode, fieldset, updateFieldset };
 
 		// Thumbnail field custom styles.
 		const styles = { border: 'solid 1px #ccc', padding: '4px', borderRadius: '4px' };

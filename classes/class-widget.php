@@ -272,6 +272,13 @@ class Widget {
 		if ( ! is_admin() ) {
 			return;
 		}
+
+		$screen = get_current_screen();
+
+		if ( ! in_array( $screen->post_type, self::get_metabox_post_types(), true ) ) {
+			return;
+		}
+
 		$asset = require SHARING_IMAGE_DIR . 'assets/sidebar/index.asset.php';
 
 		wp_enqueue_script(
@@ -294,11 +301,12 @@ class Widget {
 		wp_set_script_translations( 'sharing-image-sidebar', 'sharing-image' );
 
 		$data = array(
-			'meta'      => array(
+			'meta'         => array(
 				'source'   => self::META_SOURCE,
 				'fieldset' => self::META_FIELDSET,
 			),
-			'templates' => Templates::get_templates(),
+			'autogenerate' => Config::get_autogenerate_index(),
+			'templates'    => Templates::get_templates(),
 		);
 
 		// Add widget script object.
@@ -592,19 +600,33 @@ class Widget {
 			return;
 		}
 
+		if ( wp_is_post_revision( $post_id ) ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return;
+		}
+
+		if ( 'trash' === $post->post_status ) {
+			return;
+		}
+
+		if ( ! in_array( $post->post_type, self::get_metabox_post_types(), true ) ) {
+			return;
+		}
+
 		$meta = get_post_meta( $post_id, self::META_SOURCE, true );
 
 		if ( ! empty( $meta['mode'] ) && 'manual' === $meta['mode'] ) {
 			return;
 		}
 
-		$config = Config::get_config();
+		$index = Config::get_autogenerate_index();
 
-		if ( empty( $config['autogenerate'] ) ) {
+		if ( empty( $index ) ) {
 			return;
 		}
-
-		$index = sanitize_key( $config['autogenerate'] );
 
 		// Compose fieldset by template index.
 		$fieldset = self::compose_fields( $index, $post_id );

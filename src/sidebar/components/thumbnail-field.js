@@ -7,7 +7,7 @@ import { MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
 
 import styles from '../styles.module.scss';
 
-const ThumbnailField = ( { name, layer, mode, fieldset, setFieldset } ) => {
+const ThumbnailField = ( { name, layer, mode, fieldset, updateFieldset } ) => {
 	/**
 	 * Subscribe on featured media updates.
 	 */
@@ -37,23 +37,27 @@ const ThumbnailField = ( { name, layer, mode, fieldset, setFieldset } ) => {
 	 * @param {string} value
 	 */
 	const changeFieldset = ( value ) => {
-		setFieldset( { ...fieldset, [ name ]: value } );
+		updateFieldset( name, value );
 	};
 
 	/**
 	 * Update fieldset on presets change.
 	 */
 	useEffect( () => {
-		if ( mode !== 'manual' && layer.preset === 'featured' ) {
-			setFieldset( { ...fieldset, [ name ]: preset } );
+		if ( mode === 'manual' ) {
+			return;
 		}
-	}, [ preset ] ); // eslint-disable-line
+
+		if ( layer.preset === 'featured' ) {
+			updateFieldset( name, preset );
+		}
+	}, [ preset, name ] ); // eslint-disable-line
 
 	/**
 	 * Function to remove layer image.
 	 */
 	const removeImage = () => {
-		setFieldset( { ...fieldset, [ name ]: 0 } );
+		updateFieldset( name, 0 );
 	};
 
 	const displayThumbnailIcon = ( open ) => {
