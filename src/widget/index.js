@@ -417,6 +417,10 @@ function createDesigner( data ) {
 	// Reset selected template if index undefined.
 	if ( ! params.templates[ selected ] ) {
 		selected = Object.keys( params.templates )[ 0 ];
+
+		if ( params.autogenerate && params.templates[ params.autogenerate ] ) {
+			selected = params.autogenerate;
+		}
 	}
 
 	createTemplateSelector( designer, selected );

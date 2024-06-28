@@ -55,7 +55,7 @@ class Widget {
 		add_action( 'rest_api_init', array( __CLASS__, 'add_generate_endpoint' ) );
 
 		// Try to autogenerate poster if it is needed.
-		add_action( 'wp_after_insert_post', array( __CLASS__, 'autogenerate_poster' ), 20, 3 );
+		add_action( 'wp_after_insert_post', array( __CLASS__, 'autogenerate_poster' ), 20, 2 );
 	}
 
 	/**
@@ -589,14 +589,9 @@ class Widget {
 	 *
 	 * @param int    $post_id Updated post_id.
 	 * @param object $post Updated post object.
-	 * @param bool   $update Whether this is an existing post being updated.
 	 */
-	public static function autogenerate_poster( $post_id, $post, $update ) {
+	public static function autogenerate_poster( $post_id, $post ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-			return;
-		}
-
-		if ( ! $update ) {
 			return;
 		}
 
@@ -608,7 +603,7 @@ class Widget {
 			return;
 		}
 
-		if ( 'trash' === $post->post_status ) {
+		if ( 'trash' === $post->post_status || 'auto-draft' === $post->post_status ) {
 			return;
 		}
 
@@ -732,18 +727,19 @@ class Widget {
 	 */
 	private static function create_script_object( $context, $screen_id ) {
 		$object = array(
-			'nonce'     => wp_create_nonce( self::WIDGET_NONCE ),
-			'context'   => $context,
-			'screen'    => $screen_id,
+			'nonce'        => wp_create_nonce( self::WIDGET_NONCE ),
+			'context'      => $context,
+			'screen'       => $screen_id,
 
-			'name'      => array(
+			'name'         => array(
 				'source'   => self::META_SOURCE,
 				'fieldset' => self::META_FIELDSET,
 			),
-			'links'     => array(
+			'links'        => array(
 				'uploads' => esc_url( admin_url( 'upload.php' ) ),
 			),
-			'templates' => Templates::get_templates(),
+			'templates'    => Templates::get_templates(),
+			'autogenerate' => Config::get_autogenerate_index(),
 		);
 
 		/**
