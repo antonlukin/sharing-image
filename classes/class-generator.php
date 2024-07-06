@@ -337,7 +337,7 @@ class Generator {
 		$layer = self::update_layer_dimensions( $layer, $poster );
 
 		// Prepare common layer args.
-		$args = self::prepare_args( $layer, array( 'x', 'y' ) );
+		$args = self::prepare_args( $layer, array( 'x', 'y', 'opacity' ) );
 
 		// Create new editor  instance by attachment id.
 		$attachment = $image->make( get_attached_file( $layer['attachment'] ) );
@@ -535,19 +535,23 @@ class Generator {
 	 * @return array List of layer settings.
 	 */
 	private static function update_layer_dimensions( $layer, $poster ) {
-		if ( ! isset( $layer['width'], $layer['height'] ) ) {
-			return $layer;
+		if ( ! isset( $layer['width'] ) ) {
+			$layer['width'] = 0;
+		}
+
+		if ( ! isset( $layer['height'] ) ) {
+			$layer['height'] = 0;
 		}
 
 		$width = absint( $poster->width() );
 
-		if ( $layer['width'] < 0 ) {
+		if ( $layer['width'] <= 0 ) {
 			$layer['width'] = $width + $layer['width'] - $layer['x'];
 		}
 
 		$height = absint( $poster->height() );
 
-		if ( $layer['height'] < 0 ) {
+		if ( $layer['height'] <= 0 ) {
 			$layer['height'] = $height + $layer['height'] - $layer['y'];
 		}
 

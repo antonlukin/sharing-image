@@ -141,6 +141,10 @@
 
       object-fit: cover;
     }
+
+    &:has(img)::after {
+      display: none;
+    }
   }
 
   a {

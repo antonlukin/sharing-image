@@ -2,17 +2,17 @@
     "packages": [
         {
             "name": "antonlukin/poster-editor",
-            "version": "5.13",
-            "version_normalized": "5.13.0.0",
+            "version": "5.15",
+            "version_normalized": "5.15.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/antonlukin/poster-editor.git",
-                "reference": "4555b454db9afb7bbb126970120a0e3f9569d3db"
+                "reference": "2c31ec7b318e895ad7a140782df7ab5aaa46f24f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/antonlukin/poster-editor/zipball/4555b454db9afb7bbb126970120a0e3f9569d3db",
-                "reference": "4555b454db9afb7bbb126970120a0e3f9569d3db",
+                "url": "https://api.github.com/repos/antonlukin/poster-editor/zipball/2c31ec7b318e895ad7a140782df7ab5aaa46f24f",
+                "reference": "2c31ec7b318e895ad7a140782df7ab5aaa46f24f",
                 "shasum": ""
             },
             "require": {
@@ -25,7 +25,7 @@
             "suggest": {
                 "ext-gd": "to use GD library based image processing."
             },
-            "time": "2024-03-31T11:11:38+00:00",
+            "time": "2024-07-06T16:53:08+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -53,7 +53,7 @@
             ],
             "support": {
                 "issues": "https://github.com/antonlukin/poster-editor/issues",
-                "source": "https://github.com/antonlukin/poster-editor/tree/v5.13"
+                "source": "https://github.com/antonlukin/poster-editor/tree/v5.15"
             },
             "install-path": "../antonlukin/poster-editor"
         },
@@ -400,12 +400,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/WordPress/WordPress-Coding-Standards.git",
-                "reference": "29488feb64b723674fe463e691a4f83682c2dd5e"
+                "reference": "d77b0204f49e4b4a2bbac791e3bbfbfe603edf06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/29488feb64b723674fe463e691a4f83682c2dd5e",
-                "reference": "29488feb64b723674fe463e691a4f83682c2dd5e",
+                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/d77b0204f49e4b4a2bbac791e3bbfbfe603edf06",
+                "reference": "d77b0204f49e4b4a2bbac791e3bbfbfe603edf06",
                 "shasum": ""
             },
             "require": {
@@ -429,7 +429,7 @@
                 "ext-iconv": "For improved results",
                 "ext-mbstring": "For improved results"
             },
-            "time": "2024-04-25T09:28:10+00:00",
+            "time": "2024-06-14T09:24:28+00:00",
             "default-branch": true,
             "type": "phpcodesniffer-standard",
             "installation-source": "dist",

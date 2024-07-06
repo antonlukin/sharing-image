@@ -3,7 +3,7 @@
         'name' => 'antonlukin/sharing-image',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => 'faa3a36c2852c7932dd682e776b2427d38d3f1b7',
+        'reference' => 'fdf5f29ddff8a79a24fee5ff129362a66eb52672',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'antonlukin/poster-editor' => array(
-            'pretty_version' => '5.13',
-            'version' => '5.13.0.0',
-            'reference' => '4555b454db9afb7bbb126970120a0e3f9569d3db',
+            'pretty_version' => '5.15',
+            'version' => '5.15.0.0',
+            'reference' => '2c31ec7b318e895ad7a140782df7ab5aaa46f24f',
             'type' => 'library',
             'install_path' => __DIR__ . '/../antonlukin/poster-editor',
             'aliases' => array(),
@@ -22,7 +22,7 @@
         'antonlukin/sharing-image' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => 'faa3a36c2852c7932dd682e776b2427d38d3f1b7',
+            'reference' => 'fdf5f29ddff8a79a24fee5ff129362a66eb52672',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -67,7 +67,7 @@
         'wp-coding-standards/wpcs' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => '29488feb64b723674fe463e691a4f83682c2dd5e',
+            'reference' => 'd77b0204f49e4b4a2bbac791e3bbfbfe603edf06',
             'type' => 'phpcodesniffer-standard',
             'install_path' => __DIR__ . '/../wp-coding-standards/wpcs',
             'aliases' => array(

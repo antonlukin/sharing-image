@@ -919,6 +919,9 @@
   -o-object-fit: cover;
      object-fit: cover;
 }
+.sharing-image-editor .sharing-image-editor-control-media figure:has(img)::after {
+  display: none;
+}
 .sharing-image-editor .sharing-image-editor-control-media a {
   margin-left: 14px;
 }
@@ -1129,6 +1132,9 @@
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
+}
+.sharing-image-config .sharing-image-config-control-media figure:has(img)::after {
+  display: none;
 }
 .sharing-image-config .sharing-image-config-control-media a {
   margin-left: 14px;

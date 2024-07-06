@@ -2339,6 +2339,23 @@ function createTextMoreFields(layer, name, data) {
     append: layer
   });
   fields[fields.length] = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
+    classes: ['sharing-image-editor-control', 'control-hidden'],
+    fields: [{
+      group: 'input',
+      classes: ['sharing-image-editor-control-range'],
+      attributes: {
+        type: 'range',
+        name: name + '[opacity]',
+        min: 0,
+        max: 100,
+        step: 5,
+        value: data.opacity || '0'
+      },
+      label: wp.i18n.__('Opacity', 'sharing-image')
+    }],
+    append: layer
+  });
+  fields[fields.length] = _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
     classes: ['sharing-image-editor-control', 'control-series', 'control-hidden'],
     fields: [{
       group: 'select',
@@ -2778,7 +2795,24 @@ function createLayerImage(data, name) {
     append: layer
   }); // Create static/dynamic image fields.
 
-  createImageDynamicFields(layer, name, data); // Create static/dynamic image fields.
+  createImageDynamicFields(layer, name, data);
+  _builders__WEBPACK_IMPORTED_MODULE_1__["default"].control({
+    classes: ['sharing-image-editor-control'],
+    fields: [{
+      group: 'input',
+      classes: ['sharing-image-editor-control-range'],
+      attributes: {
+        type: 'range',
+        name: name + '[opacity]',
+        min: 0,
+        max: 100,
+        step: 5,
+        value: data.opacity || '0'
+      },
+      label: wp.i18n.__('Opacity', 'sharing-image')
+    }],
+    append: layer
+  }); // Create static/dynamic image fields.
 
   createImageSizesFields(layer, name, data);
   return layer;

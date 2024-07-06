@@ -489,6 +489,16 @@ class Templates {
 			$sanitized['fontfile'] = absint( $layer['fontfile'] );
 		}
 
+		$sanitized['opacity'] = 0;
+
+		if ( isset( $layer['opacity'] ) ) {
+			$opacity = absint( $layer['opacity'] );
+
+			if ( $opacity <= 100 ) {
+				$sanitized['opacity'] = $opacity;
+			}
+		}
+
 		$sizes = array( 'x', 'y', 'width', 'height' );
 
 		foreach ( $sizes as $size ) {
@@ -531,6 +541,16 @@ class Templates {
 
 		if ( ! empty( $layer['attachment'] ) ) {
 			$sanitized['attachment'] = absint( $layer['attachment'] );
+		}
+
+		$sanitized['opacity'] = 0;
+
+		if ( isset( $layer['opacity'] ) ) {
+			$opacity = absint( $layer['opacity'] );
+
+			if ( $opacity <= 100 ) {
+				$sanitized['opacity'] = $opacity;
+			}
 		}
 
 		$sizes = array( 'x', 'y', 'width', 'height' );
@@ -656,9 +676,9 @@ class Templates {
 		$sanitized['opacity'] = 0;
 
 		if ( isset( $layer['opacity'] ) ) {
-			$opacity = (float) $layer['opacity'];
+			$opacity = absint( $layer['opacity'] );
 
-			if ( $opacity >= 0 && $opacity <= 100 ) {
+			if ( $opacity <= 100 ) {
 				$sanitized['opacity'] = $opacity;
 			}
 		}
