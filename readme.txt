@@ -32,6 +32,9 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 
 = 3.2 =
 * Fixed post status checks and default template for auto-generating posters.
+* Added transparency to the template's text and image layers.
+* Fixed auto-generation bug that occurred if a poster was deleted.
+* Updated PosterEditor library to the latest version.
 
 = 3.1 =
 * Fixed auto-generation bug when changing post status.

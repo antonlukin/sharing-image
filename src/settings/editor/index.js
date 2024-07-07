@@ -742,7 +742,7 @@ function createTextMoreFields( layer, name, data ) {
 					step: 5,
 					value: data.opacity || '0',
 				},
-				label: wp.i18n.__( 'Opacity', 'sharing-image' ),
+				label: wp.i18n.__( 'Transparency', 'sharing-image' ),
 			},
 		],
 		append: layer,
@@ -1247,7 +1247,7 @@ function createLayerImage( data, name ) {
 					step: 5,
 					value: data.opacity || '0',
 				},
-				label: wp.i18n.__( 'Opacity', 'sharing-image' ),
+				label: wp.i18n.__( 'Transparency', 'sharing-image' ),
 			},
 		],
 		append: layer,
@@ -1534,7 +1534,7 @@ function createLayerRectangle( data, name ) {
 	description.push( wp.i18n.__( 'Draw a colored rectangle on the current image.', 'sharing-image' ) );
 
 	description.push(
-		wp.i18n.__( 'You can get a filled or outlined figure with custom color and opacity.', 'sharing-image' )
+		wp.i18n.__( 'You can get a filled or outlined figure with custom color and transparency.', 'sharing-image' )
 	);
 
 	description.push( wp.i18n.__( 'Use a small height to draw the line.', 'sharing-image' ) );
@@ -1638,7 +1638,7 @@ function createLayerRectangle( data, name ) {
 					step: 5,
 					value: data.opacity || '0',
 				},
-				label: wp.i18n.__( 'Opacity', 'sharing-image' ),
+				label: wp.i18n.__( 'Transparency', 'sharing-image' ),
 			},
 		],
 		append: layer,
