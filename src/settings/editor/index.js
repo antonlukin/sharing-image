@@ -447,6 +447,8 @@ function createImageDynamicFields( layer, name, data ) {
 	checkbox.addEventListener( 'change', () => {
 		updateDynamic();
 	} );
+
+	updateLayerCaption( layer );
 }
 
 /**
@@ -662,11 +664,15 @@ function createImageSizesFields( layer, name, data ) {
  * @param {HTMLElement} layer    Current layer element.
  * @param {HTMLElement} checkbox Dynamic text checbox element.
  */
-function updateLayerCaption( layer, checkbox ) {
+function updateLayerCaption( layer, checkbox = null ) {
 	const caption = layer.querySelector( 'h2 > span' );
 
 	if ( null === caption ) {
 		return;
+	}
+
+	if ( checkbox === null ) {
+		checkbox = { checked: true };
 	}
 
 	const fields = {};
@@ -680,9 +686,11 @@ function updateLayerCaption( layer, checkbox ) {
 		} );
 	} );
 
-	caption.textContent = prefix + fields.content.value;
+	if ( fields.content ) {
+		caption.textContent = prefix + fields.content.value;
+	}
 
-	if ( checkbox.checked ) {
+	if ( fields.title && checkbox.checked ) {
 		caption.textContent = prefix + fields.title.value;
 	}
 
