@@ -229,6 +229,27 @@ class Templates {
 	}
 
 	/**
+	 * Check if template with given index exists.
+	 *
+	 * @param string $index Template index.
+	 *
+	 * @return bool Whether template exists.
+	 */
+	public static function has_template( $index ) {
+		if ( empty( $index ) ) {
+			return false;
+		}
+
+		$templates = self::get_templates();
+
+		if ( array_key_exists( $index, $templates ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Check unique template index.
 	 *
 	 * @param string $index Unique template index to check.
