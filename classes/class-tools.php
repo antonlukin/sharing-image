@@ -154,6 +154,16 @@ class Tools {
 			$template['title'] = $prefix . $template['title'];
 		}
 
+		$layers = array();
+
+		foreach ( $template['layers'] as $layer ) {
+			$key = Templates::generate_layer_key();
+
+			$layers[ $key ] = $layer;
+		}
+
+		$template['layers'] = $layers;
+
 		if ( ! Templates::update_templates( Templates::create_unique_index(), $template ) ) {
 			Settings::redirect_with_message( $redirect, 10 );
 		}
