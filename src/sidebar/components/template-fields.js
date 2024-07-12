@@ -18,7 +18,7 @@ const TemplateFields = ( { layers, mode, fieldset, updateFieldset } ) => {
 			<TextareaControl
 				name={ name }
 				label={ layer.title }
-				defaultValue={ fieldset[ name ] }
+				defaultValue={ fieldset?.[ name ] || '' }
 				onChange={ ( value ) => updateFieldset( name, value ) }
 			/>
 		);

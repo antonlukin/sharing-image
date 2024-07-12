@@ -37,7 +37,7 @@ const PresetField = ( { name, layer, fieldset, updateFieldset, attribute } ) => 
 		<TextareaControl
 			name={ name }
 			label={ layer.title }
-			value={ fieldset[ name ] }
+			value={ fieldset?.[ name ] || '' }
 			onChange={ ( value ) => changeFieldset( value ) }
 		/>
 	);

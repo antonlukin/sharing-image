@@ -54,7 +54,7 @@ const PresetTaxonomy = ( { name, layer, fieldset, updateFieldset, attribute, ent
 		<TextareaControl
 			name={ name }
 			label={ layer.title }
-			value={ fieldset[ name ] }
+			value={ fieldset?.[ name ] || '' }
 			onChange={ ( value ) => changeFieldset( value ) }
 		/>
 	);

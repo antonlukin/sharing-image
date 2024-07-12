@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, facebook, twitter
 Requires at least: 5.3
 Tested up to: 6.5.5
-Stable tag: 3.3
+Stable tag: 3.2.2
 Requires PHP: 5.5
 License: GPLv2 or later
 
