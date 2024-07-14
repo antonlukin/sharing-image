@@ -17,6 +17,6 @@
         "wp-coding-standards/wpcs": "dev-develop"
     },
     "require": {
-        "antonlukin/poster-editor": "5.15"
+        "antonlukin/poster-editor": "5.16"
     }
 }

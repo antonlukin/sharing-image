@@ -17,9 +17,13 @@ const ThumbnailField = ( { name, layer, mode, fieldset, updateFieldset } ) => {
 
 	const thumbnail = useSelect(
 		( select ) => {
-			const media = select( 'core' ).getMedia( fieldset[ name ] );
+			if ( ! fieldset?.[ name ] ) {
+				return null;
+			}
 
-			// Try to get thumnail first.
+			const media = select( 'core' ).getMedia( fieldset?.[ name ] );
+
+			// Try to get thumbnail first.
 			let url = media?.media_details?.sizes?.thumbnail?.source_url;
 
 			if ( ! url ) {
@@ -90,7 +94,7 @@ const ThumbnailField = ( { name, layer, mode, fieldset, updateFieldset } ) => {
 	 * @param {Function} open
 	 */
 	const displayThumbnail = ( { open } ) => {
-		if ( fieldset[ name ] ) {
+		if ( fieldset?.[ name ] ) {
 			return displayThumbnailImage();
 		}
 
@@ -104,7 +108,7 @@ const ThumbnailField = ( { name, layer, mode, fieldset, updateFieldset } ) => {
 					changeFieldset( media.id );
 				} }
 				allowedTypes={ [ 'image' ] }
-				value={ fieldset[ name ] }
+				value={ fieldset?.[ name ] }
 				render={ displayThumbnail }
 			/>
 		</MediaUploadCheck>

@@ -258,7 +258,7 @@ class Settings {
 
 		$tab = self::get_current_tab();
 
-		if ( null === $tab ) {
+		if ( is_null( $tab ) ) {
 			return $title;
 		}
 
@@ -312,7 +312,7 @@ class Settings {
 	private static function show_settings_section() {
 		$tab = self::get_current_tab();
 
-		if ( null === $tab ) {
+		if ( is_null( $tab ) ) {
 			return;
 		}
 
@@ -426,7 +426,7 @@ class Settings {
 				$classes[] = 'active';
 			}
 
-			if ( null === $current && ! empty( $args['default'] ) ) {
+			if ( is_null( $current ) && ! empty( $args['default'] ) ) {
 				$classes[] = 'active';
 			}
 

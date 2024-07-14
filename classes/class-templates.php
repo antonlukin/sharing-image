@@ -286,7 +286,7 @@ class Templates {
 
 		$templates[ $index ] = $editor;
 
-		if ( null === $editor ) {
+		if ( is_null( $editor ) ) {
 			unset( $templates[ $index ] );
 		}
 

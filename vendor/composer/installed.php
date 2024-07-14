@@ -3,7 +3,7 @@
         'name' => 'antonlukin/sharing-image',
         'pretty_version' => 'dev-develop',
         'version' => 'dev-develop',
-        'reference' => 'fdf5f29ddff8a79a24fee5ff129362a66eb52672',
+        'reference' => 'b4de69e2c9ba0158f23679a67f2cef96b399d307',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'antonlukin/poster-editor' => array(
-            'pretty_version' => '5.15',
-            'version' => '5.15.0.0',
-            'reference' => '2c31ec7b318e895ad7a140782df7ab5aaa46f24f',
+            'pretty_version' => '5.16',
+            'version' => '5.16.0.0',
+            'reference' => '190fc123de1d8c4453481d413dfcf40bd58eb30d',
             'type' => 'library',
             'install_path' => __DIR__ . '/../antonlukin/poster-editor',
             'aliases' => array(),
@@ -22,7 +22,7 @@
         'antonlukin/sharing-image' => array(
             'pretty_version' => 'dev-develop',
             'version' => 'dev-develop',
-            'reference' => 'fdf5f29ddff8a79a24fee5ff129362a66eb52672',
+            'reference' => 'b4de69e2c9ba0158f23679a67f2cef96b399d307',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

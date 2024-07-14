@@ -120,7 +120,7 @@ class Generator {
 				$poster = self::append_layers( $poster, $template['layers'] );
 			}
 
-			if ( null === $path ) {
+			if ( is_null( $path ) ) {
 				return $poster->show( Config::get_file_format(), Config::get_quality() );
 			}
 
@@ -336,11 +336,17 @@ class Generator {
 		$layer = self::update_layer_position( $layer, $boundary );
 		$layer = self::update_layer_dimensions( $layer, $poster );
 
-		// Prepare common layer args.
 		$args = self::prepare_args( $layer, array( 'x', 'y', 'opacity' ) );
 
+		// Try to get file from attachment id.
+		$file = get_attached_file( $layer['attachment'] );
+
+		if ( empty( $file ) ) {
+			return $poster;
+		}
+
 		// Create new editor  instance by attachment id.
-		$attachment = $image->make( get_attached_file( $layer['attachment'] ) );
+		$attachment = $image->make( $file );
 
 		return $poster->insert( self::resize_attachment( $attachment, $layer ), $args, $boundary );
 	}

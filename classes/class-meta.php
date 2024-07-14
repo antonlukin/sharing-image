@@ -205,7 +205,7 @@ class Meta {
 			return false;
 		}
 
-		if ( null === $term_id ) {
+		if ( is_null( $term_id ) ) {
 			$term_id = get_queried_object_id();
 		}
 
