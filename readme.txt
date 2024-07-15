@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, facebook, twitter
 Requires at least: 5.3
 Tested up to: 6.5.5
-Stable tag: 3.2.4
+Stable tag: 3.3
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -32,6 +32,9 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 
 = 3.3 =
 * Fixed duplicate layers key names on templates cloning.
+* Fixed undefined preset fields.
+* Updated PosterEditor library.
+* Rebuild autogenerate_poster method.
 
 = 3.2 =
 * Fixed post status checks and default template for auto-generating posters.
@@ -45,7 +48,7 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 * Added `get_autogenerate_index` filter.
 
 = 3.0 =
-* Updated Poster Editor library
+* Updated PosterEditor library
 * Redesigned template settings page
 * Added new layer settings
 * Redesigned template auto-generation
