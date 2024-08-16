@@ -625,6 +625,10 @@ class Templates {
 		if ( ! empty( $layer['collapsed'] ) ) {
 			$sanitized['collapsed'] = 1;
 		}
+		
+		if ( isset( $layer['title'] ) ) {
+			$sanitized['title'] = sanitize_text_field( $layer['title'] );
+		}
 
 		if ( ! empty( $layer['grayscale'] ) ) {
 			$sanitized['grayscale'] = 'grayscale';
@@ -684,6 +688,10 @@ class Templates {
 			$sanitized['collapsed'] = 1;
 		}
 
+		if ( isset( $layer['title'] ) ) {
+			$sanitized['title'] = sanitize_text_field( $layer['title'] );
+		}
+		
 		if ( ! empty( $layer['outline'] ) ) {
 			$sanitized['outline'] = 'outline';
 		}
