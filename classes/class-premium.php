@@ -200,10 +200,14 @@ class Premium {
 	 */
 	public static function launch_verification_event( $key = null ) {
 		if ( ! is_null( $key ) ) {
-			self::reschedule_verification();
+			self::reschedule_verification(); // For backward compatibility before version 3.0.
 		}
 
-		$license = get_option( self::OPTION_LICENSE, array() );
+		$license = self::get_license();
+
+		if ( ! empty( $license['instant'] ) || ! empty( $license['develop'] ) ) {
+			return;
+		}
 
 		if ( empty( $license['key'] ) ) {
 			return self::update_license( false, '' );
@@ -255,12 +259,12 @@ class Premium {
 	}
 
 	/**
-	 * Reschedule license verification with current Premium key.
+	 * Reschedule license verification on load settings page.
 	 */
 	public static function check_verification_event() {
 		$license = self::get_license();
 
-		if ( empty( $license['premium'] ) ) {
+		if ( empty( $license['premium'] ) || ! empty( $license['instant'] ) ) {
 			return;
 		}
 

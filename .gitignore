@@ -6,3 +6,6 @@
 /vendor/wp-coding-standards/
 /vendor/bin/
 /vendor/phpcsstandards/
+/premium-sample.php
+/premium.php
+/build-premium.sh

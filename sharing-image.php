@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin version.
  */
-define( 'SHARING_IMAGE_VERSION', '3.3' );
+define( 'SHARING_IMAGE_VERSION', '3.3.1' );
 
 /**
  * Main plugin file.
@@ -73,6 +73,10 @@ if ( ! function_exists( 'sharing_image_plugin' ) ) {
 		}
 
 		include SHARING_IMAGE_DIR . 'functions.php';
+
+		if ( file_exists( SHARING_IMAGE_DIR . 'premium.php' ) ) {
+			include SHARING_IMAGE_DIR . 'premium.php';
+		}
 	}
 }
 

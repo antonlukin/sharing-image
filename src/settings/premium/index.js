@@ -332,7 +332,9 @@ function showPremiumData( access, license ) {
 		showLicenseInfo( access, license.key );
 	}
 
-	showRevokeButton( access );
+	if ( ! license.instant ) {
+		return showRevokeButton( access );
+	}
 }
 
 /**
