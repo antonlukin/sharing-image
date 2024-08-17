@@ -458,6 +458,12 @@ class Templates {
 			$sanitized['separator'] = preg_replace( '#[^\s,]#', '', $layer['separator'] );
 		}
 
+		$sanitized['textconvert'] = 'default';
+
+		if ( isset( $layer['textconvert'] ) and in_array( $layer['textconvert'], ['default', 'uppercase', 'lowercase'] ) ) {
+			$sanitized['textconvert'] = $layer['textconvert'];
+		}
+
 		$sanitized['preset'] = 'none';
 
 		if ( isset( $layer['preset'] ) ) {

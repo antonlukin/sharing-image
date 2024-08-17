@@ -233,6 +233,14 @@ class Generator {
 			$layer['content'] = $layer['sample'];
 		}
 
+		if ( isset( $layer['textconvert'] ) and $layer['textconvert'] !== 'default') {
+			if ( $layer['textconvert'] === 'uppercase' ) {
+				$layer['content'] = mb_strtoupper( $layer['content'] );
+			} else if ( $layer['textconvert'] === 'lowercase' ) {
+				$layer['content'] = mb_strtolower( $layer['content'] );
+			}
+		}
+ 
 		if ( isset( $fieldset[ $key ] ) ) {
 			$layer['content'] = $fieldset[ $key ];
 		}

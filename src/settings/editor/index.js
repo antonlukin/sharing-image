@@ -741,6 +741,28 @@ function createTextMoreFields( layer, name, data ) {
 	fields[ fields.length ] = createFontField( layer, name, data );
 
 	fields[ fields.length ] = Build.control( {
+		classes: [ 'sharing-image-editor-control' ],
+		label: wp.i18n.__( 'Text conversion settings', 'sharing-image' ),
+		fields: [
+			{
+				group: 'select',
+				classes: [ 'sharing-image-editor-control-select' ],
+				options: {
+					default: wp.i18n.__( 'Don\'t convert', 'sharing-image' ),
+					uppercase: wp.i18n.__( 'Convert text to uppercase', 'sharing-image' ),
+					lowercase: wp.i18n.__( 'Convert text to lowercase', 'sharing-image' ),
+				},
+				attributes: {
+					name: name + '[textconvert]',
+				},
+				selected: data.textconvert,
+			},
+		],
+		help: wp.i18n.__( 'With this setting you can convert text to uppercase or lowercase.', 'sharing-image' ),
+		append: layer,
+	} );
+
+	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
 		fields: [
 			{
