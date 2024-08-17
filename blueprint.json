@@ -13,6 +13,11 @@
                 "resource": "wordpress.org/plugins",
                 "slug": "sharing-image"
             }
+        },
+        {
+            "step": "login",
+            "username": "admin",
+            "password": "password"
         }
     ]
 }
