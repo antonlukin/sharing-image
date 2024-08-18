@@ -741,7 +741,7 @@ function createTextMoreFields( layer, name, data ) {
 	fields[ fields.length ] = createFontField( layer, name, data );
 
 	fields[ fields.length ] = Build.control( {
-		classes: [ 'sharing-image-editor-control' ],
+		classes: [ 'sharing-image-editor-control', 'control-extend' ],
 		label: wp.i18n.__( 'Text conversion settings', 'sharing-image' ),
 		fields: [
 			{
