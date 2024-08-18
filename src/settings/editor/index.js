@@ -343,6 +343,35 @@ function createTextDynamicFields( layer, name, data ) {
 }
 
 /**
+ * Create field name control.
+ *
+ * @param {HTMLElement} layer The layer element to which the control will be appended.
+ * @param {string} name The name attribute for the input field, used as part of the control's identifier.
+ * @param {Object} data The current template data, including the title value for the input field.
+ */
+function createFieldNameControl( layer, name, data ) {
+    Build.control( {
+        classes: [ 'sharing-image-editor-control', 'control-extend' ],
+        help: wp.i18n.__( 'Only visible on the admin side.', 'sharing-image' ),
+        fields: [
+            {
+                group: 'input',
+                classes: [ 'sharing-image-editor-control-input' ],
+                attributes: {
+                    name: name + '[title]',
+                    value: data.title,
+                },
+                dataset: {
+                    caption: 'title',
+                },
+                label: wp.i18n.__( 'Field name', 'sharing-image' ),
+            },
+        ],
+        append: layer,
+    } );
+}
+
+/**
  * Image layer dynamic/static fields manager.
  *
  * @param {HTMLElement} layer Current layer element.
@@ -710,6 +739,28 @@ function createTextMoreFields( layer, name, data ) {
 	const fields = [];
 
 	fields[ fields.length ] = createFontField( layer, name, data );
+
+	fields[ fields.length ] = Build.control( {
+		classes: [ 'sharing-image-editor-control', 'control-extend' ],
+		label: wp.i18n.__( 'Text conversion settings', 'sharing-image' ),
+		fields: [
+			{
+				group: 'select',
+				classes: [ 'sharing-image-editor-control-select' ],
+				options: {
+					default: wp.i18n.__( 'Do not convert', 'sharing-image' ),
+					uppercase: wp.i18n.__( 'Convert text to uppercase', 'sharing-image' ),
+					lowercase: wp.i18n.__( 'Convert text to lowercase', 'sharing-image' ),
+				},
+				attributes: {
+					name: name + '[textconvert]',
+				},
+				selected: data.textconvert,
+			},
+		],
+		help: wp.i18n.__( 'With this setting you can convert text to uppercase or lowercase.', 'sharing-image' ),
+		append: layer,
+	} );
 
 	fields[ fields.length ] = Build.control( {
 		classes: [ 'sharing-image-editor-control', 'control-hidden' ],
@@ -1416,6 +1467,8 @@ function createLayerFilter( data, name ) {
 		description: description.join( ' ' ),
 	} );
 
+    createFieldNameControl(layer, name, data);
+
 	Build.element( 'input', {
 		attributes: {
 			type: 'hidden',
@@ -1519,6 +1572,8 @@ function createLayerFilter( data, name ) {
 		append: layer,
 	} );
 
+	updateLayerCaption( layer );
+
 	return layer;
 }
 
@@ -1545,6 +1600,8 @@ function createLayerRectangle( data, name ) {
 		label: wp.i18n.__( 'Rectangle', 'sharing-image' ),
 		description: description.join( ' ' ),
 	} );
+
+    createFieldNameControl(layer, name, data);
 
 	Build.element( 'input', {
 		attributes: {
@@ -1643,7 +1700,9 @@ function createLayerRectangle( data, name ) {
 		],
 		append: layer,
 	} );
-
+	
+	updateLayerCaption( layer );
+	
 	return layer;
 }
 
