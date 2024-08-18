@@ -232,6 +232,10 @@ class Generator {
 		if ( isset( $layer['sample'] ) && 'settings' === $context ) {
 			$layer['content'] = $layer['sample'];
 		}
+ 
+		if ( isset( $fieldset[ $key ] ) ) {
+			$layer['content'] = $fieldset[ $key ];
+		}
 
 		if ( isset( $layer['textconvert'] ) && 'default' !== $layer['textconvert'] ) {
 			if ( 'uppercase' === $layer['textconvert'] ) {
@@ -247,10 +251,6 @@ class Generator {
 					$layer['content'] = strtolower( $layer['content'] );
 				}
 			}
-		}
- 
-		if ( isset( $fieldset[ $key ] ) ) {
-			$layer['content'] = $fieldset[ $key ];
 		}
 
 		return $layer;
