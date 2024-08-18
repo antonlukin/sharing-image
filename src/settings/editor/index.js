@@ -748,7 +748,7 @@ function createTextMoreFields( layer, name, data ) {
 				group: 'select',
 				classes: [ 'sharing-image-editor-control-select' ],
 				options: {
-					default: wp.i18n.__( 'Don\'t convert', 'sharing-image' ),
+					default: wp.i18n.__( 'Do not convert', 'sharing-image' ),
 					uppercase: wp.i18n.__( 'Convert text to uppercase', 'sharing-image' ),
 					lowercase: wp.i18n.__( 'Convert text to lowercase', 'sharing-image' ),
 				},

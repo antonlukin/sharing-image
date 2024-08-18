@@ -233,11 +233,19 @@ class Generator {
 			$layer['content'] = $layer['sample'];
 		}
 
-		if ( isset( $layer['textconvert'] ) and $layer['textconvert'] !== 'default') {
-			if ( $layer['textconvert'] === 'uppercase' ) {
-				$layer['content'] = mb_strtoupper( $layer['content'] );
-			} else if ( $layer['textconvert'] === 'lowercase' ) {
-				$layer['content'] = mb_strtolower( $layer['content'] );
+		if ( isset( $layer['textconvert'] ) && 'default' !== $layer['textconvert'] ) {
+			if ( 'uppercase' === $layer['textconvert'] ) {
+				if ( function_exists('mb_strtoupper') ) {
+					$layer['content'] = mb_strtoupper( $layer['content'] );
+				} else {
+					$layer['content'] = strtoupper( $layer['content'] );
+				}
+			} else if ( 'lowercase' === $layer['textconvert'] ) {
+				if ( function_exists('mb_strtolower') ) {
+					$layer['content'] = mb_strtolower( $layer['content'] );
+				} else {
+					$layer['content'] = strtolower( $layer['content'] );
+				}
 			}
 		}
  
