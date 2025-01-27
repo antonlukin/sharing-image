@@ -3,7 +3,10 @@
 /.gitignore export-ignore
 /.eslintrc.js export-ignore
 /.wordpress-org export-ignore
+/.phpunit.result.cache export-ignore
+/.wp-env.json export-ignore
 
+/phpunit.xml export-ignore
 /composer.json export-ignore
 /composer.lock export-ignore
 /gulpfile.js export-ignore
@@ -15,3 +18,4 @@
 /banner-sources.zip export-ignore
 
 /src export-ignore
+/test export-ignore

@@ -17,6 +17,8 @@
         "wp-coding-standards/wpcs": "dev-develop"
     },
     "require": {
-        "antonlukin/poster-editor": "5.16"
+        "antonlukin/poster-editor": "5.16",
+        "phpunit/phpunit": "^9",
+        "yoast/phpunit-polyfills": "^3.1"
     }
 }

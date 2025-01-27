@@ -7,3 +7,4 @@
 /vendor/bin/
 /vendor/phpcsstandards/
 /premium-sample.php
+/.phpunit.result.cache

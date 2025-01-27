@@ -6,7 +6,8 @@
   "scripts": {
     "build": "wp-scripts build",
     "start": "wp-scripts start",
-    "premium": "cp premium-sample.php premium.php && git archive -o sharing-image.zip $(git rev-parse --abbrev-ref HEAD) && zip -j sharing-image.zip premium.php && rm premium.php"
+    "premium": "cp premium-sample.php premium.php && git archive -o sharing-image.zip $(git rev-parse --abbrev-ref HEAD) && zip -j sharing-image.zip premium.php && rm premium.php",
+    "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/sharing-image ./vendor/bin/phpunit"
   },
   "prettier": {
     "printWidth": 120
