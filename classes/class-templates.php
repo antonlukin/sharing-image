@@ -460,7 +460,10 @@ class Templates {
 
 		$sanitized['textconvert'] = 'default';
 
-		if ( isset( $layer['textconvert'] ) and in_array( $layer['textconvert'], ['default', 'uppercase', 'lowercase'] ) ) {
+		// Set only available text convert options.
+		$converts = array( 'default', 'uppercase', 'lowercase' );
+
+		if ( isset( $layer['textconvert'] ) && in_array( $layer['textconvert'], $converts, true ) ) {
 			$sanitized['textconvert'] = $layer['textconvert'];
 		}
 
@@ -631,7 +634,7 @@ class Templates {
 		if ( ! empty( $layer['collapsed'] ) ) {
 			$sanitized['collapsed'] = 1;
 		}
-		
+
 		if ( isset( $layer['title'] ) ) {
 			$sanitized['title'] = sanitize_text_field( $layer['title'] );
 		}
@@ -697,7 +700,7 @@ class Templates {
 		if ( isset( $layer['title'] ) ) {
 			$sanitized['title'] = sanitize_text_field( $layer['title'] );
 		}
-		
+
 		if ( ! empty( $layer['outline'] ) ) {
 			$sanitized['outline'] = 'outline';
 		}

@@ -598,7 +598,7 @@ class Widget {
 		if ( wp_is_post_revision( $post_id ) ) {
 			return;
 		}
-		
+
 		if ( ( ! defined( 'DOING_CRON' ) || ! DOING_CRON ) && ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
