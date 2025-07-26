@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Sharing Image
  * Description:       Create sharing image for Facebook, VK.com, Telegram and other social networks
- * Version:           3.6
+ * Version:           3.7
  * Requires at least: 5.3
  * Requires PHP:      5.6
  * Plugin URI:        https://wpset.org/sharing-image/
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin version.
  */
-define( 'SHARING_IMAGE_VERSION', '3.6' );
+define( 'SHARING_IMAGE_VERSION', '3.7' );
 
 /**
  * Main plugin file.
