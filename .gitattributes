@@ -18,4 +18,4 @@
 /banner-sources.zip export-ignore
 
 /src export-ignore
-/test export-ignore
+/tests export-ignore

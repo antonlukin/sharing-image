@@ -1,10 +1,10 @@
 /composer.lock
 /node_modules/
 /.vscode/
-/vendor/dealerdirect/
-/vendor/squizlabs/
-/vendor/wp-coding-standards/
-/vendor/bin/
-/vendor/phpcsstandards/
+/vendor/*
+!/vendor/antonlukin/
+!/vendor/antonlukin/**
+!/vendor/autoload.php
+
 /premium-sample.php
 /.phpunit.result.cache

@@ -14,11 +14,11 @@
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
-        "wp-coding-standards/wpcs": "dev-develop"
-    },
-    "require": {
-        "antonlukin/poster-editor": "6.0",
+        "wp-coding-standards/wpcs": "dev-develop",
         "phpunit/phpunit": "^9",
         "yoast/phpunit-polyfills": "^3.1"
+    },
+    "require": {
+        "antonlukin/poster-editor": "6.0"
     }
 }
