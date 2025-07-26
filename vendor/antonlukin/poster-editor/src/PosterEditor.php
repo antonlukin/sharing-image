@@ -3,7 +3,7 @@
  * Wrapper for PHP's GD Library for easy image manipulation to resize, crop
  * and draw images on top of each other preserving transparency, writing text
  * with transparency and drawing shapes.
- * php version 7.1
+ * php version 7.3
  *
  * @category PHP
  * @package  PosterEditor
@@ -23,7 +23,7 @@ use Exception;
   * @package  PosterEditor
   * @author   Anton Lukin <anton@lukin.me>
   * @license  MIT License (http://www.opensource.org/licenses/mit-license.php)
-  * @version  Release: 5.16
+  * @version  Release: 6.0
   * @link     https://github.com/antonlukin/poster-editor
   */
 class PosterEditor
@@ -606,7 +606,7 @@ class PosterEditor
     {
         $level = $this->getParam($level, -100, 100);
 
-        imagefilter($this->resource, IMG_FILTER_BRIGHTNESS, $level * 2.55);
+        imagefilter($this->resource, IMG_FILTER_BRIGHTNESS, intval($level * 2.55));
 
         return $this;
     }
@@ -854,7 +854,7 @@ class PosterEditor
             $sizes = imagefttext($this->resource, $options['fontsize'], 0, $x, $y, $color, $options['fontpath'], $word);
 
             // Update x-coord
-            $x = $x + abs($sizes[6] - $sizes[4]) + $extraspace;
+            $x = intval($x + abs($sizes[6] - $sizes[4]) + $extraspace);
         }
     }
 
@@ -924,7 +924,7 @@ class PosterEditor
         foreach ($words as $word) {
             $sentence = $this->removeExtraSpace($line . ' ' . $word);
 
-            if (empty($line)) {
+            if (strlen($line) < 1) {
                 $sentence = $word;
             }
 
@@ -1212,7 +1212,7 @@ class PosterEditor
             }
         }
 
-        return array($width, $height);
+        return array_map('intval', array($width, $height));
     }
 
     /**

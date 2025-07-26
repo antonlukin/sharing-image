@@ -48,8 +48,7 @@ class Settings {
 	 * Init class actions and filters.
 	 */
 	public static function init() {
-		self::init_tabs();
-
+		add_action( 'admin_init', array( __CLASS__, 'init_tabs' ) );
 		add_action( 'admin_menu', array( __CLASS__, 'add_menu' ) );
 		add_action( 'admin_title', array( __CLASS__, 'update_settings_title' ) );
 		add_action( 'admin_init', array( __CLASS__, 'allow_custom_fonts' ) );
@@ -382,7 +381,7 @@ class Settings {
 	/**
 	 * Set list of settings page tabs.
 	 */
-	private static function init_tabs() {
+	public static function init_tabs() {
 		$tabs = array(
 			'templates' => array(
 				'label'   => __( 'Templates', 'sharing-image' ),

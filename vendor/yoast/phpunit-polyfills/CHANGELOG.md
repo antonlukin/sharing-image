@@ -9,6 +9,17 @@ This projects adheres to [Keep a CHANGELOG](http://keepachangelog.com/) and uses
 
 _Nothing yet._
 
+## [3.1.2] - 2025-02-09
+
+This is a maintenance release.
+
+### Changed
+* README: updated sub-section about PHPUnit version support with information about the PHPUnit Polyfills 4.x branch. PR [#249]
+* General housekeeping.
+
+<!-- Link to #249 is defined on the 1.1.4 release. -->
+
+
 ## [3.1.1] - 2025-01-12
 
 ### Fixed
@@ -87,6 +98,17 @@ _In practical terms, the net effect of this is that tests on PHP 8.1 will run on
 [#200]: https://github.com/Yoast/PHPUnit-Polyfills/pull/200
 
 [readme-on-expectuserdeprecation]: https://github.com/Yoast/PHPUnit-Polyfills/tree/3.x?tab=readme-ov-file#phpunit--1100-yoastphpunitpolyfillspolyfillsexpectuserdeprecation
+
+
+## [2.0.4] - 2025-02-09
+
+This is a maintenance release.
+
+### Changed
+* README: updated sub-section about PHPUnit version support with information about the PHPUnit Polyfills 4.x branch. PR [#249]
+* General housekeeping.
+
+<!-- Link to #249 is defined on the 1.1.4 release. -->
 
 
 ## [2.0.3] - 2025-01-08
@@ -176,6 +198,17 @@ Projects which don't use any of the new or removed functionality in their test s
 [#110]: https://github.com/Yoast/PHPUnit-Polyfills/pull/110
 [#116]: https://github.com/Yoast/PHPUnit-Polyfills/pull/116
 [#130]: https://github.com/Yoast/PHPUnit-Polyfills/pull/130
+
+
+## [1.1.4] - 2025-02-09
+
+This is a maintenance release.
+
+### Changed
+* README: updated sub-section about PHPUnit version support with information about the PHPUnit Polyfills 4.x branch. PR [#249]
+* General housekeeping.
+
+[#249]: https://github.com/Yoast/PHPUnit-Polyfills/pull/249
 
 
 ## [1.1.3] - 2025-01-08
@@ -367,13 +400,16 @@ Initial release.
 
 
 [Unreleased]: https://github.com/Yoast/PHPUnit-Polyfills/compare/main...HEAD
+[3.1.2]: https://github.com/Yoast/PHPUnit-Polyfills/compare/3.1.1...3.1.2
 [3.1.1]: https://github.com/Yoast/PHPUnit-Polyfills/compare/3.1.0...3.1.1
 [3.1.0]: https://github.com/Yoast/PHPUnit-Polyfills/compare/3.0.0...3.1.0
-[3.0.0]: https://github.com/Yoast/PHPUnit-Polyfills/compare/2.0.3...3.0.0
+[3.0.0]: https://github.com/Yoast/PHPUnit-Polyfills/compare/2.0.4...3.0.0
+[2.0.4]: https://github.com/Yoast/PHPUnit-Polyfills/compare/2.0.3...2.0.4
 [2.0.3]: https://github.com/Yoast/PHPUnit-Polyfills/compare/2.0.2...2.0.3
 [2.0.2]: https://github.com/Yoast/PHPUnit-Polyfills/compare/2.0.1...2.0.2
 [2.0.1]: https://github.com/Yoast/PHPUnit-Polyfills/compare/2.0.0...2.0.1
-[2.0.0]: https://github.com/Yoast/PHPUnit-Polyfills/compare/1.1.3...2.0.0
+[2.0.0]: https://github.com/Yoast/PHPUnit-Polyfills/compare/1.1.4...2.0.0
+[1.1.4]: https://github.com/Yoast/PHPUnit-Polyfills/compare/1.1.3...1.1.4
 [1.1.3]: https://github.com/Yoast/PHPUnit-Polyfills/compare/1.1.2...1.1.3
 [1.1.2]: https://github.com/Yoast/PHPUnit-Polyfills/compare/1.1.1...1.1.2
 [1.1.1]: https://github.com/Yoast/PHPUnit-Polyfills/compare/1.1.0...1.1.1
