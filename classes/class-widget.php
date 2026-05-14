@@ -483,7 +483,9 @@ class Widget {
 				}
 
 				if ( 'text' === $layer['type'] ) {
-					$sanitized[ $key ] = sanitize_textarea_field( $fieldset[ $key ] );
+					$sanitized[ $key ] = sanitize_textarea_field(
+						Generator::normalize_text( $fieldset[ $key ] )
+					);
 				}
 
 				if ( 'image' === $layer['type'] ) {

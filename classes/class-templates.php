@@ -447,11 +447,15 @@ class Templates {
 		}
 
 		if ( isset( $layer['content'] ) ) {
-			$sanitized['content'] = sanitize_textarea_field( $layer['content'] );
+			$sanitized['content'] = sanitize_textarea_field(
+				Generator::normalize_text( $layer['content'] )
+			);
 		}
 
 		if ( isset( $layer['sample'] ) ) {
-			$sanitized['sample'] = sanitize_textarea_field( $layer['sample'] );
+			$sanitized['sample'] = sanitize_textarea_field(
+				Generator::normalize_text( $layer['sample'] )
+			);
 		}
 
 		if ( isset( $layer['separator'] ) ) {
