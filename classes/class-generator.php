@@ -509,9 +509,10 @@ class Generator {
 	 */
 	private static function convert_mojibake_candidate( $text ) {
 		if ( function_exists( 'iconv' ) ) {
-			$fixed = @iconv( 'UTF-8', 'Windows-1252//IGNORE', $text );
+			// Suppress notices: we only care about the return value, errors are expected on partial sequences.
+			$fixed = @iconv( 'UTF-8', 'Windows-1252//IGNORE', $text ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		} elseif ( function_exists( 'mb_convert_encoding' ) ) {
-			$fixed = @mb_convert_encoding( $text, 'Windows-1252', 'UTF-8' );
+			$fixed = @mb_convert_encoding( $text, 'Windows-1252', 'UTF-8' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 		} else {
 			return false;
 		}

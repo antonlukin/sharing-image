@@ -132,11 +132,11 @@ class ClassGeneratorTest extends TestCase {
 	 */
 	public function provider_legitimate_accents() {
 		return array(
-			'french cafe'         => array( 'Café' ),
-			'portuguese station'  => array( 'Avaliação' ),
-			'french stick'        => array( 'bâton' ),
-			'lone capital a hat'  => array( 'Â' ),
-			'vietnamese can tho'  => array( 'Cần Thơ' ),
+			'french cafe'        => array( 'Café' ),
+			'portuguese station' => array( 'Avaliação' ),
+			'french stick'       => array( 'bâton' ),
+			'lone capital a hat' => array( 'Â' ),
+			'vietnamese can tho' => array( 'Cần Thơ' ),
 		);
 	}
 
@@ -182,8 +182,8 @@ class ClassGeneratorTest extends TestCase {
 	}
 
 	/**
-	 * mb_strtoupper must use UTF-8 explicitly so it works regardless of
-	 * the host-wide mb_internal_encoding default.
+	 * Multibyte case conversion must use UTF-8 explicitly so it works regardless
+	 * of the host-wide mb_internal_encoding default.
 	 */
 	public function test_prepare_text_layer_uppercases_cyrillic_under_latin_internal_encoding() {
 		$this->previous_internal_encoding = mb_internal_encoding();
@@ -229,8 +229,8 @@ class ClassGeneratorTest extends TestCase {
 	}
 
 	/**
-	 * prepare_text_layer must apply normalize_text before textconvert,
-	 * so entity-encoded titles get decoded and then uppercased correctly.
+	 * Normalization must run before textconvert, so entity-encoded titles
+	 * get decoded and then uppercased correctly.
 	 */
 	public function test_prepare_text_layer_normalizes_before_textconvert() {
 		$layer = array(
