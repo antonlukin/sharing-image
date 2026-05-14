@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, facebook, twitter
 Requires at least: 5.3
 Tested up to: 6.8.2
-Stable tag: 3.7
+Stable tag: 3.8
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,6 +29,11 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 3.8 =
+* Fixed text rendering for posters containing mojibake or HTML entities.
+* Fixed multibyte case conversion on hosts where mb_internal_encoding is not UTF-8.
+* Added phpunit tests for text normalization.
 
 = 3.7 =
 * Fix buggy composer autoload file
