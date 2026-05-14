@@ -411,6 +411,121 @@ class Generator {
 	}
 
 	/**
+	 * Normalize text before rendering it into GD.
+	 *
+	 * WordPress stores strings as UTF-8, but older saved meta or imported
+	 * templates can contain HTML entities or mojibake markers instead of
+	 * the original characters.
+	 *
+	 * @param mixed $text Text layer content.
+	 *
+	 * @return mixed Normalized text.
+	 */
+	public static function normalize_text( $text ) {
+		if ( ! is_string( $text ) ) {
+			return $text;
+		}
+
+		$text = html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+
+		if ( function_exists( 'wp_check_invalid_utf8' ) ) {
+			$text = wp_check_invalid_utf8( $text, true );
+		}
+
+		/**
+		 * Whether to attempt heuristic mojibake repair.
+		 *
+		 * Detects common UTF-8 sequences that were once decoded as
+		 * Windows-1252 (e.g. "RÃ©sumÃ©" → "Résumé"). Disable this filter
+		 * if it produces false positives on legitimate accented text.
+		 *
+		 * @param bool   $enabled Whether repair is enabled. Default true.
+		 * @param string $text    Text being normalized.
+		 */
+		if ( apply_filters( 'sharing_image_repair_mojibake', true, $text ) ) {
+			$text = self::repair_mojibake( $text );
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Repair UTF-8 text that was previously decoded as Windows-1252/ISO-8859-1.
+	 *
+	 * @param string $text Text layer content.
+	 *
+	 * @return string Repaired text when mojibake is detected.
+	 */
+	private static function repair_mojibake( $text ) {
+		for ( $attempt = 0; $attempt < 2; $attempt++ ) {
+			$score = self::mojibake_score( $text );
+
+			if ( 0 === $score ) {
+				return $text;
+			}
+
+			$fixed = self::convert_mojibake_candidate( $text );
+
+			if ( ! is_string( $fixed ) || $fixed === $text || self::mojibake_score( $fixed ) >= $score ) {
+				return $text;
+			}
+
+			$text = $fixed;
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Count common mojibake markers without matching normal accented text.
+	 *
+	 * @param string $text Text layer content.
+	 *
+	 * @return int Mojibake marker count.
+	 */
+	private static function mojibake_score( $text ) {
+		$score   = 0;
+		$markers = array(
+			"\xc3\x83",
+			"\xc3\x82",
+			"\xc3\xa2",
+		);
+
+		foreach ( $markers as $marker ) {
+			$score += substr_count( $text, $marker );
+		}
+
+		return $score;
+	}
+
+	/**
+	 * Convert a mojibake-looking UTF-8 string back through Windows-1252 bytes.
+	 *
+	 * @param string $text Text layer content.
+	 *
+	 * @return string|false Converted candidate.
+	 */
+	private static function convert_mojibake_candidate( $text ) {
+		if ( function_exists( 'iconv' ) ) {
+			$fixed = @iconv( 'UTF-8', 'Windows-1252//IGNORE', $text );
+		} elseif ( function_exists( 'mb_convert_encoding' ) ) {
+			$fixed = @mb_convert_encoding( $text, 'Windows-1252', 'UTF-8' );
+		} else {
+			return false;
+		}
+
+		if ( ! is_string( $fixed ) || '' === $fixed ) {
+			return false;
+		}
+
+		if ( function_exists( 'mb_check_encoding' ) ) {
+			return mb_check_encoding( $fixed, 'UTF-8' ) ? $fixed : false;
+		}
+
+		return preg_match( '//u', $fixed ) ? $fixed : false;
+	}
+
+	/**
 	 * Set empty boundary list to reset boundary for empty layers.
 	 *
 	 * @since 3.0
