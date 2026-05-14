@@ -237,16 +237,18 @@ class Generator {
 			$layer['content'] = $fieldset[ $key ];
 		}
 
+		$layer['content'] = self::normalize_text( $layer['content'] );
+
 		if ( isset( $layer['textconvert'] ) && 'default' !== $layer['textconvert'] ) {
 			if ( 'uppercase' === $layer['textconvert'] ) {
 				if ( function_exists( 'mb_strtoupper' ) ) {
-					$layer['content'] = mb_strtoupper( $layer['content'] );
+					$layer['content'] = mb_strtoupper( $layer['content'], 'UTF-8' );
 				} else {
 					$layer['content'] = strtoupper( $layer['content'] );
 				}
 			} elseif ( 'lowercase' === $layer['textconvert'] ) {
 				if ( function_exists( 'mb_strtolower' ) ) {
-					$layer['content'] = mb_strtolower( $layer['content'] );
+					$layer['content'] = mb_strtolower( $layer['content'], 'UTF-8' );
 				} else {
 					$layer['content'] = strtolower( $layer['content'] );
 				}
