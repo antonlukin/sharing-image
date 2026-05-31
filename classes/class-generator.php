@@ -469,6 +469,10 @@ class Generator {
 			$fixed = self::convert_mojibake_candidate( $text );
 
 			if ( ! is_string( $fixed ) || $fixed === $text || self::mojibake_score( $fixed ) >= $score ) {
+				$fixed = self::repair_mojibake_segments( $text );
+			}
+
+			if ( ! is_string( $fixed ) || $fixed === $text || self::mojibake_score( $fixed ) >= $score ) {
 				return $text;
 			}
 
@@ -491,6 +495,8 @@ class Generator {
 			"\xc3\x83",
 			"\xc3\x82",
 			"\xc3\xa2",
+			"\xc3\x90",
+			"\xc3\x91",
 		);
 
 		foreach ( $markers as $marker ) {
@@ -501,6 +507,38 @@ class Generator {
 	}
 
 	/**
+	 * Repair mojibake one whitespace-delimited segment at a time.
+	 *
+	 * @param string $text Text layer content.
+	 *
+	 * @return string Repaired text when a segment can be converted safely.
+	 */
+	private static function repair_mojibake_segments( $text ) {
+		$segments = preg_split( '/(\s+)/u', $text, -1, PREG_SPLIT_DELIM_CAPTURE );
+
+		if ( ! is_array( $segments ) ) {
+			return $text;
+		}
+
+		foreach ( $segments as &$segment ) {
+			$score = self::mojibake_score( $segment );
+
+			if ( 0 === $score ) {
+				continue;
+			}
+
+			$fixed = self::convert_mojibake_candidate( $segment );
+
+			if ( is_string( $fixed ) && $fixed !== $segment && self::mojibake_score( $fixed ) < $score ) {
+				$segment = $fixed;
+			}
+		}
+		unset( $segment );
+
+		return implode( '', $segments );
+	}
+
+	/**
 	 * Convert a mojibake-looking UTF-8 string back through Windows-1252 bytes.
 	 *
 	 * @param string $text Text layer content.
@@ -508,24 +546,68 @@ class Generator {
 	 * @return string|false Converted candidate.
 	 */
 	private static function convert_mojibake_candidate( $text ) {
+		$encodings = array( 'Windows-1252' );
+		$best      = false;
+
+		foreach ( $encodings as $encoding ) {
+			$fixed = self::convert_to_legacy_bytes( $text, $encoding );
+
+			if ( ! is_string( $fixed ) || '' === $fixed ) {
+				continue;
+			}
+
+			if ( ! self::is_valid_utf8( $fixed ) ) {
+				continue;
+			}
+
+			if ( false === $best || self::mojibake_score( $fixed ) < self::mojibake_score( $best ) ) {
+				$best = $fixed;
+			}
+		}
+
+		return $best;
+	}
+
+	/**
+	 * Convert UTF-8 text to legacy bytes only when the conversion is lossless.
+	 *
+	 * @param string $text     Text layer content.
+	 * @param string $encoding Legacy encoding name.
+	 *
+	 * @return string|false Converted bytes.
+	 */
+	private static function convert_to_legacy_bytes( $text, $encoding ) {
 		if ( function_exists( 'iconv' ) ) {
 			// Suppress notices: we only care about the return value, errors are expected on partial sequences.
-			$fixed = @iconv( 'UTF-8', 'Windows-1252//IGNORE', $text ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$fixed = @iconv( 'UTF-8', $encoding, $text ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+
+			if ( is_string( $fixed ) && @iconv( $encoding, 'UTF-8', $fixed ) === $text ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				return $fixed;
+			}
 		} elseif ( function_exists( 'mb_convert_encoding' ) ) {
-			$fixed = @mb_convert_encoding( $text, 'Windows-1252', 'UTF-8' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-		} else {
-			return false;
+			$fixed = @mb_convert_encoding( $text, $encoding, 'UTF-8' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+
+			if ( is_string( $fixed ) && @mb_convert_encoding( $fixed, 'UTF-8', $encoding ) === $text ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+				return $fixed;
+			}
 		}
 
-		if ( ! is_string( $fixed ) || '' === $fixed ) {
-			return false;
-		}
+		return false;
+	}
 
+	/**
+	 * Check whether a string contains valid UTF-8 bytes.
+	 *
+	 * @param string $text Text to check.
+	 *
+	 * @return bool Whether text is valid UTF-8.
+	 */
+	private static function is_valid_utf8( $text ) {
 		if ( function_exists( 'mb_check_encoding' ) ) {
-			return mb_check_encoding( $fixed, 'UTF-8' ) ? $fixed : false;
+			return mb_check_encoding( $text, 'UTF-8' );
 		}
 
-		return preg_match( '//u', $fixed ) ? $fixed : false;
+		return (bool) preg_match( '//u', $text );
 	}
 
 	/**

@@ -1,6 +1,7 @@
 /composer.lock
 /node_modules/
 /.vscode/
+/.claude/
 /vendor/*
 !/vendor/antonlukin/
 !/vendor/antonlukin/**

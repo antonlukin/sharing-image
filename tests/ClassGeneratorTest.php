@@ -107,9 +107,12 @@ class ClassGeneratorTest extends TestCase {
 	 */
 	public function provider_mojibake_repairs() {
 		return array(
-			'resume'    => array( 'RÃ©sumÃ©', 'Résumé' ),
-			'enye'      => array( 'EspaÃ±a', 'España' ),
-			'cent sign' => array( 'Â¢100', '¢100' ),
+			'resume'        => array( 'RÃ©sumÃ©', 'Résumé' ),
+			'enye'          => array( 'EspaÃ±a', 'España' ),
+			'cent sign'     => array( 'Â¢100', '¢100' ),
+			'right quote'   => array( 'Itâ€™s fine', 'It’s fine' ),
+			'cyrillic'      => array( 'ÐŸÑ€Ð¸Ð²ÐµÑ‚', 'Привет' ),
+			'cyrillic city' => array( 'ÐœÐ¾ÑÐºÐ²Ð°', 'Москва' ),
 		);
 	}
 
@@ -179,6 +182,31 @@ class ClassGeneratorTest extends TestCase {
 		$twice = Generator::normalize_text( $once );
 
 		$this->assertSame( $once, $twice );
+	}
+
+	/**
+	 * Mixed text must repair only mojibake segments without dropping valid Unicode.
+	 *
+	 * @dataProvider provider_mixed_mojibake_repairs
+	 *
+	 * @param string $input    Mixed UTF-8 and mojibake text.
+	 * @param string $expected Expected repaired text.
+	 */
+	public function test_normalize_text_repairs_mixed_text_without_dropping_unicode( $input, $expected ) {
+		$this->assertSame( $expected, Generator::normalize_text( $input ) );
+	}
+
+	/**
+	 * Data provider for mixed valid UTF-8 and mojibake strings.
+	 *
+	 * @return array
+	 */
+	public function provider_mixed_mojibake_repairs() {
+		return array(
+			'cyrillic plus latin mojibake' => array( 'Привет RÃ©sumÃ©', 'Привет Résumé' ),
+			'emoji after mojibake'         => array( 'RÃ©sumÃ© 🧪', 'Résumé 🧪' ),
+			'curly quote before mojibake'  => array( 'It’s mojibake RÃ©sumÃ©', 'It’s mojibake Résumé' ),
+		);
 	}
 
 	/**
@@ -284,19 +312,6 @@ class ClassGeneratorTest extends TestCase {
 		);
 
 		$this->assertSame( 'Résumé', $result['content'] );
-	}
-
-	/**
-	 * Known limitation: when decoded entities introduce code points that map
-	 * to Windows-1252 continuation bytes (e.g. U+2019 → 0x92), the heuristic
-	 * intentionally bails out instead of risking a destructive conversion.
-	 * This test documents that behaviour so a future "improvement" doesn't
-	 * silently break it.
-	 */
-	public function test_normalize_text_skips_repair_when_decoded_text_breaks_round_trip() {
-		$mixed = 'It’s mojibake RÃ©sumÃ©';
-
-		$this->assertSame( $mixed, Generator::normalize_text( $mixed ) );
 	}
 
 	/**
