@@ -111,16 +111,18 @@
   .sharing-image-catalog-footer {
     display: flex;
     align-items: center;
+    gap: 10px;
     position: relative;
 
-    height: 48px;
-    padding: 0 15px;
+    min-height: 48px;
+    padding: 8px 15px;
 
     h2 {
       flex: 1 1 auto;
 
-      margin-right: 10px;
+      margin: 0;
       font-size: 15px;
+      line-height: 1.4;
 
       overflow: hidden;
       text-overflow: ellipsis;
@@ -128,11 +130,13 @@
     }
 
     .button {
-      margin-bottom: 0;
+      flex: 0 0 auto;
+      margin: 0;
+      white-space: nowrap;
     }
 
     @media screen and (max-width: 782px) {
-      height: 54px;
+      min-height: 54px;
     }
   }
 
