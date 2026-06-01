@@ -66,6 +66,10 @@ class Premium {
 			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
 		}
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ), 403 );
+		}
+
 		if ( empty( $_POST['sharing_image_key'] ) ) {
 			wp_send_json_error( __( 'Premium key is undefined.', 'sharing-image' ), 400 );
 		}
@@ -123,6 +127,10 @@ class Premium {
 
 		if ( false === $check ) {
 			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ), 403 );
 		}
 
 		// Remove license verification event.

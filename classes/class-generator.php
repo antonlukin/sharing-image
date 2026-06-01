@@ -35,11 +35,11 @@ class Generator {
 		// Count intersected values.
 		$prepared = count( self::prepare_args( $template, $required ) );
 
-		if ( count( $required ) === $prepared ) {
-			return true;
+		if ( count( $required ) !== $prepared ) {
+			return false;
 		}
 
-		return false;
+		return ! is_wp_error( self::validate_template( $template ) );
 	}
 
 	/**
@@ -105,6 +105,12 @@ class Generator {
 	 */
 	public static function create_poster( $template, $path = null ) {
 		try {
+			$validation = self::validate_template( $template );
+
+			if ( is_wp_error( $validation ) ) {
+				return $validation;
+			}
+
 			$poster = new PosterEditor();
 
 			// Set color canvas options.
@@ -154,6 +160,97 @@ class Generator {
 		 * @param string $name Unique file name.
 		 */
 		return apply_filters( 'sharing_image_get_upload_file', $file, $name );
+	}
+
+	/**
+	 * Get generator safety limit.
+	 *
+	 * @param string $name Limit name.
+	 *
+	 * @return int Limit value.
+	 */
+	public static function get_limit( $name ) {
+		$limits = array(
+			'max_width'     => 4096,
+			'max_height'    => 4096,
+			'max_pixels'    => 12000000,
+			'max_layers'    => 100,
+			'max_text'      => 5000,
+			'max_fontsize'  => 512,
+			'max_dimension' => 4096,
+		);
+
+		/**
+		 * Filters generator safety limits.
+		 *
+		 * @param array $limits List of generator limits.
+		 */
+		$limits = apply_filters( 'sharing_image_generator_limits', $limits );
+
+		if ( ! isset( $limits[ $name ] ) ) {
+			return 0;
+		}
+
+		return absint( $limits[ $name ] );
+	}
+
+	/**
+	 * Limit text length before storing or rendering.
+	 *
+	 * @param mixed $text Text value.
+	 *
+	 * @return mixed Limited text value.
+	 */
+	public static function limit_text( $text ) {
+		if ( ! is_string( $text ) ) {
+			return $text;
+		}
+
+		$max = self::get_limit( 'max_text' );
+
+		if ( ! $max ) {
+			return $text;
+		}
+
+		if ( function_exists( 'mb_strlen' ) && function_exists( 'mb_substr' ) ) {
+			if ( mb_strlen( $text, 'UTF-8' ) > $max ) {
+				return mb_substr( $text, 0, $max, 'UTF-8' );
+			}
+
+			return $text;
+		}
+
+		if ( strlen( $text ) > $max ) {
+			return substr( $text, 0, $max );
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Normalize template dimensions to configured safety limits.
+	 *
+	 * @param int $width  Template width.
+	 * @param int $height Template height.
+	 *
+	 * @return array Normalized width and height.
+	 */
+	public static function normalize_dimensions( $width, $height ) {
+		$width  = max( 1, min( absint( $width ), self::get_limit( 'max_width' ) ) );
+		$height = max( 1, min( absint( $height ), self::get_limit( 'max_height' ) ) );
+
+		$max_pixels = self::get_limit( 'max_pixels' );
+
+		if ( $max_pixels && $width * $height > $max_pixels ) {
+			$ratio  = sqrt( $max_pixels / ( $width * $height ) );
+			$width  = max( 1, (int) floor( $width * $ratio ) );
+			$height = max( 1, (int) floor( $height * $ratio ) );
+		}
+
+		return array(
+			'width'  => $width,
+			'height' => $height,
+		);
 	}
 
 	/**
@@ -238,6 +335,7 @@ class Generator {
 		}
 
 		$layer['content'] = self::normalize_text( $layer['content'] );
+		$layer['content'] = self::limit_text( $layer['content'] );
 
 		if ( isset( $layer['textconvert'] ) && 'default' !== $layer['textconvert'] ) {
 			if ( 'uppercase' === $layer['textconvert'] ) {
@@ -546,7 +644,7 @@ class Generator {
 	 * @return string|false Converted candidate.
 	 */
 	private static function convert_mojibake_candidate( $text ) {
-		$encodings = array( 'Windows-1252' );
+		$encodings = array( 'Windows-1252', 'ISO-8859-1' );
 		$best      = false;
 
 		foreach ( $encodings as $encoding ) {
@@ -577,22 +675,70 @@ class Generator {
 	 * @return string|false Converted bytes.
 	 */
 	private static function convert_to_legacy_bytes( $text, $encoding ) {
+		$source = $text;
+
+		if ( 'ISO-8859-1' === $encoding ) {
+			$source = self::normalize_windows_1252_symbols( $text );
+		}
+
 		if ( function_exists( 'iconv' ) ) {
 			// Suppress notices: we only care about the return value, errors are expected on partial sequences.
-			$fixed = @iconv( 'UTF-8', $encoding, $text ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$fixed = @iconv( 'UTF-8', $encoding, $source ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
-			if ( is_string( $fixed ) && @iconv( $encoding, 'UTF-8', $fixed ) === $text ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			if ( is_string( $fixed ) && @iconv( $encoding, 'UTF-8', $fixed ) === $source ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 				return $fixed;
 			}
 		} elseif ( function_exists( 'mb_convert_encoding' ) ) {
-			$fixed = @mb_convert_encoding( $text, $encoding, 'UTF-8' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			$fixed = @mb_convert_encoding( $source, $encoding, 'UTF-8' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 
-			if ( is_string( $fixed ) && @mb_convert_encoding( $fixed, 'UTF-8', $encoding ) === $text ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+			if ( is_string( $fixed ) && @mb_convert_encoding( $fixed, 'UTF-8', $encoding ) === $source ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
 				return $fixed;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Normalize Windows-1252 printable symbols to ISO-8859-1 C1 controls.
+	 *
+	 * Some mojibake strings mix Windows-1252 symbols like "œ" with raw C1
+	 * controls. Mapping those symbols back to controls lets ISO-8859-1 recover
+	 * the original UTF-8 byte stream.
+	 *
+	 * @param string $text Text to normalize.
+	 *
+	 * @return string Normalized text.
+	 */
+	private static function normalize_windows_1252_symbols( $text ) {
+		$bytes = array( 0x80, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8E, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9E, 0x9F );
+
+		foreach ( $bytes as $byte ) {
+			$symbol = @iconv( 'Windows-1252', 'UTF-8', chr( $byte ) ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+
+			if ( ! is_string( $symbol ) || '' === $symbol ) {
+				continue;
+			}
+
+			$text = str_replace( $symbol, self::utf8_chr( $byte ), $text );
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Convert a Unicode code point below U+0800 to UTF-8.
+	 *
+	 * @param int $code_point Unicode code point.
+	 *
+	 * @return string UTF-8 character.
+	 */
+	private static function utf8_chr( $code_point ) {
+		if ( $code_point < 0x80 ) {
+			return chr( $code_point );
+		}
+
+		return chr( 0xC0 | ( $code_point >> 6 ) ) . chr( 0x80 | ( $code_point & 0x3F ) );
 	}
 
 	/**
@@ -692,7 +838,11 @@ class Generator {
 	 */
 	private static function get_fontpath( $layer, $path = '' ) {
 		if ( isset( $layer['fontname'] ) ) {
-			$path = sprintf( SHARING_IMAGE_DIR . 'fonts/%s.ttf', $layer['fontname'] );
+			$fontname = sanitize_key( $layer['fontname'] );
+
+			if ( $fontname ) {
+				$path = sprintf( SHARING_IMAGE_DIR . 'fonts/%s.ttf', $fontname );
+			}
 		}
 
 		if ( isset( $layer['fontfile'] ) ) {
@@ -790,5 +940,89 @@ class Generator {
 	 */
 	private static function prepare_args( $args, $allowed ) {
 		return wp_array_slice_assoc( $args, $allowed );
+	}
+
+	/**
+	 * Validate template before allocating GD resources.
+	 *
+	 * @param array $template Template settings.
+	 *
+	 * @return true|WP_Error True when valid, WP_Error otherwise.
+	 */
+	private static function validate_template( $template ) {
+		if ( empty( $template['width'] ) || empty( $template['height'] ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Incorrect template settings.', 'sharing-image' ) );
+		}
+
+		$width  = absint( $template['width'] );
+		$height = absint( $template['height'] );
+
+		if ( $width < 1 || $height < 1 ) {
+			return new WP_Error( 'generate', esc_html__( 'Incorrect template dimensions.', 'sharing-image' ) );
+		}
+
+		if ( $width > self::get_limit( 'max_width' ) || $height > self::get_limit( 'max_height' ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Template dimensions are too large.', 'sharing-image' ) );
+		}
+
+		if ( $width * $height > self::get_limit( 'max_pixels' ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Template canvas is too large.', 'sharing-image' ) );
+		}
+
+		if ( ! empty( $template['layers'] ) && is_array( $template['layers'] ) ) {
+			if ( count( $template['layers'] ) > self::get_limit( 'max_layers' ) ) {
+				return new WP_Error( 'generate', esc_html__( 'Template contains too many layers.', 'sharing-image' ) );
+			}
+
+			foreach ( $template['layers'] as $layer ) {
+				$validation = self::validate_layer( $layer );
+
+				if ( is_wp_error( $validation ) ) {
+					return $validation;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Validate layer settings before rendering.
+	 *
+	 * @param array $layer Layer settings.
+	 *
+	 * @return true|WP_Error True when valid, WP_Error otherwise.
+	 */
+	private static function validate_layer( $layer ) {
+		if ( isset( $layer['fontsize'] ) && absint( $layer['fontsize'] ) > self::get_limit( 'max_fontsize' ) ) {
+			return new WP_Error( 'generate', esc_html__( 'Layer font size is too large.', 'sharing-image' ) );
+		}
+
+		foreach ( array( 'width', 'height' ) as $dimension ) {
+			if ( ! isset( $layer[ $dimension ] ) ) {
+				continue;
+			}
+
+			$value = intval( $layer[ $dimension ] );
+
+			if ( $value > self::get_limit( 'max_dimension' ) ) {
+				return new WP_Error( 'generate', esc_html__( 'Layer dimensions are too large.', 'sharing-image' ) );
+			}
+		}
+
+		if ( isset( $layer['content'] ) && is_string( $layer['content'] ) ) {
+			$text = $layer['content'];
+			$max  = self::get_limit( 'max_text' );
+
+			if ( $max && function_exists( 'mb_strlen' ) && mb_strlen( $text, 'UTF-8' ) > $max ) {
+				return new WP_Error( 'generate', esc_html__( 'Layer text is too long.', 'sharing-image' ) );
+			}
+
+			if ( $max && ! function_exists( 'mb_strlen' ) && strlen( $text ) > $max ) {
+				return new WP_Error( 'generate', esc_html__( 'Layer text is too long.', 'sharing-image' ) );
+			}
+		}
+
+		return true;
 	}
 }

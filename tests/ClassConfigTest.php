@@ -61,13 +61,27 @@ class ClassConfigTest extends TestCase {
 			'quality'      => 95,
 			'uploads'      => 'custom',
 			'autogenerate' => 'some-key',
-			'storage'      => '/custom/storage/',
+			'storage'      => 'custom/storage',
 			'meta'         => 'custom',
 		);
 
 		$sanitized_config = $this->invokePrivateMethod( Config::class, 'sanitize_config', array( $input_config ) );
 
 		$this->assertEquals( $expected_config, $sanitized_config );
+	}
+
+	/**
+	 * Test that traversal paths are rejected in custom storage.
+	 */
+	public function test_sanitize_config_rejects_storage_traversal() {
+		$input_config = array(
+			'uploads' => 'custom',
+			'storage' => '../../../tmp/sharing-image',
+		);
+
+		$sanitized_config = $this->invokePrivateMethod( Config::class, 'sanitize_config', array( $input_config ) );
+
+		$this->assertArrayNotHasKey( 'storage', $sanitized_config );
 	}
 
 	/**

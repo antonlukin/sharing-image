@@ -123,6 +123,10 @@ class Templates {
 			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
 		}
 
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ), 403 );
+		}
+
 		if ( ! isset( $_POST['sharing_image_index'] ) ) {
 			wp_send_json_error( __( 'Poster index is undefined.', 'sharing-image' ), 400 );
 		}
@@ -161,6 +165,10 @@ class Templates {
 
 		if ( false === $check ) {
 			wp_send_json_error( __( 'Invalid security token. Please reload the page and try again.', 'sharing-image' ), 403 );
+		}
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( __( 'Sorry, you do not have permission to manage options for this site.', 'sharing-image' ), 403 );
 		}
 
 		if ( ! isset( $_POST['sharing_image_index'] ) ) {
@@ -373,14 +381,18 @@ class Templates {
 		$sanitized['width'] = 1200;
 
 		if ( ! empty( $editor['width'] ) ) {
-			$sanitized['width'] = absint( $editor['width'] );
+			$sanitized['width'] = min( absint( $editor['width'] ), Generator::get_limit( 'max_width' ) );
 		}
 
 		$sanitized['height'] = 630;
 
 		if ( ! empty( $editor['height'] ) ) {
-			$sanitized['height'] = absint( $editor['height'] );
+			$sanitized['height'] = min( absint( $editor['height'] ), Generator::get_limit( 'max_height' ) );
 		}
+
+		$dimensions          = Generator::normalize_dimensions( $sanitized['width'], $sanitized['height'] );
+		$sanitized['width']  = $dimensions['width'];
+		$sanitized['height'] = $dimensions['height'];
 
 		if ( isset( $editor['layers'] ) && is_array( $editor['layers'] ) ) {
 			$layers = array();
@@ -448,13 +460,13 @@ class Templates {
 
 		if ( isset( $layer['content'] ) ) {
 			$sanitized['content'] = sanitize_textarea_field(
-				Generator::normalize_text( $layer['content'] )
+				Generator::limit_text( Generator::normalize_text( $layer['content'] ) )
 			);
 		}
 
 		if ( isset( $layer['sample'] ) ) {
 			$sanitized['sample'] = sanitize_textarea_field(
-				Generator::normalize_text( $layer['sample'] )
+				Generator::limit_text( Generator::normalize_text( $layer['sample'] ) )
 			);
 		}
 
@@ -508,7 +520,7 @@ class Templates {
 		}
 
 		if ( isset( $layer['fontsize'] ) ) {
-			$sanitized['fontsize'] = absint( $layer['fontsize'] );
+			$sanitized['fontsize'] = min( absint( $layer['fontsize'] ), Generator::get_limit( 'max_fontsize' ) );
 		}
 
 		if ( isset( $layer['lineheight'] ) ) {
@@ -516,7 +528,7 @@ class Templates {
 		}
 
 		if ( isset( $layer['fontname'] ) ) {
-			$sanitized['fontname'] = sanitize_text_field( $layer['fontname'] );
+			$sanitized['fontname'] = sanitize_key( $layer['fontname'] );
 		}
 
 		if ( ! empty( $layer['fontfile'] ) ) {

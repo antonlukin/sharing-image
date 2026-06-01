@@ -315,6 +315,80 @@ class ClassGeneratorTest extends TestCase {
 	}
 
 	/**
+	 * Oversized templates must be rejected before GD allocates memory.
+	 */
+	public function test_check_required_rejects_oversized_canvas() {
+		$template = array(
+			'width'  => Generator::get_limit( 'max_width' ) + 1,
+			'height' => 630,
+			'fill'   => '#000000',
+		);
+
+		$this->assertFalse( Generator::check_required( $template ) );
+	}
+
+	/**
+	 * Negative layer dimensions are valid because they are resolved relative to the canvas.
+	 */
+	public function test_check_required_allows_negative_layer_dimensions() {
+		$template = array(
+			'width'  => 1200,
+			'height' => 630,
+			'fill'   => '#000000',
+			'layers' => array(
+				array(
+					'type'   => 'rectangle',
+					'x'      => -5000,
+					'y'      => -100,
+					'width'  => -10,
+					'height' => -10,
+				),
+			),
+		);
+
+		$this->assertTrue( Generator::check_required( $template ) );
+	}
+
+	/**
+	 * Positive layer dimensions still have a hard upper bound.
+	 */
+	public function test_check_required_rejects_large_positive_layer_dimensions() {
+		$template = array(
+			'width'  => 1200,
+			'height' => 630,
+			'fill'   => '#000000',
+			'layers' => array(
+				array(
+					'type'  => 'rectangle',
+					'width' => Generator::get_limit( 'max_dimension' ) + 1,
+				),
+			),
+		);
+
+		$this->assertFalse( Generator::check_required( $template ) );
+	}
+
+	/**
+	 * Text values must be truncated to the configured rendering limit.
+	 */
+	public function test_limit_text_truncates_long_values() {
+		$text = str_repeat( 'a', Generator::get_limit( 'max_text' ) + 10 );
+
+		$this->assertSame( Generator::get_limit( 'max_text' ), strlen( Generator::limit_text( $text ) ) );
+	}
+
+	/**
+	 * Dimension normalization must keep saved templates within the pixel limit.
+	 */
+	public function test_normalize_dimensions_respects_pixel_limit() {
+		$dimensions = Generator::normalize_dimensions( 4000, 3500 );
+
+		$this->assertLessThanOrEqual( Generator::get_limit( 'max_pixels' ), $dimensions['width'] * $dimensions['height'] );
+		$this->assertLessThanOrEqual( Generator::get_limit( 'max_width' ), $dimensions['width'] );
+		$this->assertLessThanOrEqual( Generator::get_limit( 'max_height' ), $dimensions['height'] );
+	}
+
+	/**
 	 * Utility to call private or protected methods for testing.
 	 *
 	 * @param string $target_class Fully qualified class name.
