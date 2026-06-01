@@ -4,7 +4,7 @@ Donate link: https://wpset.org/about/
 Tags: social image, sharing image, og image, facebook, twitter
 Requires at least: 5.3
 Tested up to: 7.0
-Stable tag: 3.9
+Stable tag: 3.10
 Requires PHP: 5.5
 License: GPLv2 or later
 
@@ -29,6 +29,12 @@ Read more on the [plugin page](https://wpset.org/sharing-image/#premium).
 3. Generate Sharing Image poster for certain post
 
 == Changelog ==
+
+= 3.10 =
+* Hardened poster generation permissions for REST and AJAX requests.
+* Added stricter validation for custom storage paths, imported templates, font names, and generator limits.
+* Updated frontend dependencies to address production audit findings.
+* Fixed catalog card footer spacing in the settings screen.
 
 = 3.9 =
 * Added support for WordPress 7.0.
