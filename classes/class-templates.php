@@ -381,13 +381,13 @@ class Templates {
 		$sanitized['width'] = 1200;
 
 		if ( ! empty( $editor['width'] ) ) {
-			$sanitized['width'] = min( absint( $editor['width'] ), Generator::get_limit( 'max_width' ) );
+			$sanitized['width'] = absint( $editor['width'] );
 		}
 
 		$sanitized['height'] = 630;
 
 		if ( ! empty( $editor['height'] ) ) {
-			$sanitized['height'] = min( absint( $editor['height'] ), Generator::get_limit( 'max_height' ) );
+			$sanitized['height'] = absint( $editor['height'] );
 		}
 
 		$dimensions          = Generator::normalize_dimensions( $sanitized['width'], $sanitized['height'] );

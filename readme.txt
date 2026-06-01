@@ -5,7 +5,7 @@ Tags: social image, sharing image, og image, facebook, twitter
 Requires at least: 5.3
 Tested up to: 7.0
 Stable tag: 3.10
-Requires PHP: 5.5
+Requires PHP: 5.6
 License: GPLv2 or later
 
 Sharing Image is a WordPress plugin for generating sharing posters in social networks.
