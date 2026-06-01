@@ -340,7 +340,11 @@ class Config {
 		}
 
 		if ( isset( $config['storage'] ) ) {
-			$sanitized['storage'] = sanitize_text_field( $config['storage'] );
+			$storage = self::sanitize_storage_path( $config['storage'] );
+
+			if ( ! empty( $storage ) ) {
+				$sanitized['storage'] = $storage;
+			}
 		}
 
 		if ( isset( $config['suspend'] ) ) {
@@ -390,7 +394,13 @@ class Config {
 	 * @return array Path and url to upload directory.
 	 */
 	private static function create_upload_dir( $storage ) {
-		$storage = trim( $storage, '/' );
+		$storage = self::sanitize_storage_path( $storage );
+
+		if ( empty( $storage ) ) {
+			$directory = wp_upload_dir();
+
+			return array( $directory['path'], $directory['url'] );
+		}
 
 		/**
 		 * Change permissions when creating new folders.
@@ -403,5 +413,40 @@ class Config {
 		wp_mkdir_p( ABSPATH . $storage, $permissions, true );
 
 		return array( ABSPATH . $storage, site_url( $storage ) );
+	}
+
+	/**
+	 * Sanitize custom storage path.
+	 *
+	 * @param string $storage Relative directory path from WordPress root.
+	 *
+	 * @return string Sanitized path, or empty string when invalid.
+	 */
+	private static function sanitize_storage_path( $storage ) {
+		if ( ! is_scalar( $storage ) ) {
+			return '';
+		}
+
+		$storage = sanitize_text_field( $storage );
+		$storage = wp_normalize_path( $storage );
+		$storage = trim( $storage, '/' );
+
+		if ( '' === $storage || '.' === $storage ) {
+			return '';
+		}
+
+		if ( false !== strpos( $storage, '://' ) || false !== strpos( $storage, ':' ) ) {
+			return '';
+		}
+
+		$parts = explode( '/', $storage );
+
+		foreach ( $parts as $part ) {
+			if ( '' === $part || '.' === $part || '..' === $part ) {
+				return '';
+			}
+		}
+
+		return implode( '/', $parts );
 	}
 }

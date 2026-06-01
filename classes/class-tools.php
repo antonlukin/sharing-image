@@ -36,7 +36,6 @@ class Tools {
 	 * Handle tools requests from admin-side.
 	 */
 	public static function handle_requests() {
-		add_action( 'admin_post_sharing_image_save_config', array( __CLASS__, 'save_config_tab' ) );
 		add_action( 'admin_post_sharing_image_export_templates', array( __CLASS__, 'export_templates' ) );
 		add_action( 'admin_post_sharing_image_import_templates', array( __CLASS__, 'import_templates' ) );
 		add_action( 'admin_post_sharing_image_clone_template', array( __CLASS__, 'clone_template' ) );
@@ -108,6 +107,12 @@ class Tools {
 		}
 
 		foreach ( $templates as $index => $template ) {
+			$index = sanitize_key( $index );
+
+			if ( ! Templates::is_valid_unique_index( $index ) ) {
+				$index = Templates::create_unique_index();
+			}
+
 			Templates::update_templates( $index, Templates::sanitize_editor( $template ) );
 		}
 

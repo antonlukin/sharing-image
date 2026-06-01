@@ -38,7 +38,10 @@
   },
   "dependencies": {
     "@wordpress/icons": "^9.46.0",
-    "nanoid": "^5.0.6",
+    "nanoid": "^5.0.9",
     "sortablejs": "^1.15.2"
+  },
+  "resolutions": {
+    "@babel/runtime": "^7.26.10"
   }
 }

@@ -96,8 +96,8 @@ class Widget {
 					'schema' => $schema,
 				),
 				'single'            => true,
-				'auth_callback'     => function () {
-					return current_user_can( 'edit_posts' );
+				'auth_callback'     => function ( $allowed, $meta_key, $object_id ) {
+					return current_user_can( 'edit_post', $object_id );
 				},
 				'sanitize_callback' => array( __CLASS__, 'sanitize_source' ),
 			)
@@ -118,8 +118,8 @@ class Widget {
 					),
 				),
 				'single'            => true,
-				'auth_callback'     => function () {
-					return current_user_can( 'edit_posts' );
+				'auth_callback'     => function ( $allowed, $meta_key, $object_id ) {
+					return current_user_can( 'edit_post', $object_id );
 				},
 				'sanitize_callback' => array( __CLASS__, 'sanitize_fieldset' ),
 			)
@@ -411,8 +411,8 @@ class Widget {
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( __CLASS__, 'handle_rest_generator' ),
-				'permission_callback' => function () {
-					return current_user_can( 'edit_posts' );
+				'permission_callback' => function ( $request ) {
+					return current_user_can( 'edit_post', absint( $request['id'] ) );
 				},
 			)
 		);
@@ -489,7 +489,11 @@ class Widget {
 				}
 
 				if ( 'image' === $layer['type'] ) {
-					$sanitized[ $key ] = absint( $fieldset[ $key ] );
+					$attachment_id = absint( $fieldset[ $key ] );
+
+					if ( $attachment_id && self::can_use_image_attachment( $attachment_id ) ) {
+						$sanitized[ $key ] = $attachment_id;
+					}
 				}
 			}
 		}
@@ -511,10 +515,14 @@ class Widget {
 	 * @param WP_REST_Request $request Request params.
 	 */
 	public static function handle_rest_generator( $request ) {
-		$post_id = $request->get_param( 'id' );
+		$post_id = absint( $request->get_param( 'id' ) );
 
 		if ( empty( $post_id ) ) {
 			wp_send_json_error( __( 'Post data is empty.', 'sharing-image' ), 400 );
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_send_json_error( __( 'Sorry, you are not allowed to edit this post.', 'sharing-image' ), 403 );
 		}
 
 		$params = $request->get_json_params();
@@ -567,6 +575,12 @@ class Widget {
 
 		if ( ! empty( $_POST['sharing_image_context'] ) ) {
 			$context = sanitize_key( wp_unslash( $_POST['sharing_image_context'] ) );
+		}
+
+		$permission_error = self::check_generate_permission( $screen_id, $context );
+
+		if ( is_wp_error( $permission_error ) ) {
+			wp_send_json_error( $permission_error->get_error_message(), $permission_error->get_error_data() );
 		}
 
 		$fieldset = array();
@@ -954,6 +968,57 @@ class Widget {
 		 * @param array $taxonomies List of taxonomies to show settings.
 		 */
 		return apply_filters( 'sharing_image_widget_taxonomies', array_values( $taxonomies ) );
+	}
+
+	/**
+	 * Check whether current user can generate a poster for the requested object.
+	 *
+	 * @param int    $screen_id Post or term ID.
+	 * @param string $context   Widget context.
+	 *
+	 * @return true|WP_Error True when allowed, WP_Error otherwise.
+	 */
+	private static function check_generate_permission( $screen_id, $context ) {
+		if ( 'term' === $context ) {
+			if ( ! $screen_id || ! current_user_can( 'edit_term', $screen_id ) ) {
+				return new WP_Error( 'permission', __( 'Sorry, you are not allowed to edit this term.', 'sharing-image' ), 403 );
+			}
+
+			return true;
+		}
+
+		if ( 'post' !== $context ) {
+			return new WP_Error( 'permission', __( 'Incorrect request context.', 'sharing-image' ), 400 );
+		}
+
+		if ( $screen_id ) {
+			if ( ! current_user_can( 'edit_post', $screen_id ) ) {
+				return new WP_Error( 'permission', __( 'Sorry, you are not allowed to edit this post.', 'sharing-image' ), 403 );
+			}
+
+			return true;
+		}
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return new WP_Error( 'permission', __( 'Sorry, you are not allowed to edit posts.', 'sharing-image' ), 403 );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check whether an attachment can be used as a dynamic image layer.
+	 *
+	 * @param int $attachment_id Attachment ID.
+	 *
+	 * @return bool Whether attachment is readable image.
+	 */
+	private static function can_use_image_attachment( $attachment_id ) {
+		if ( ! current_user_can( 'read_post', $attachment_id ) ) {
+			return false;
+		}
+
+		return wp_attachment_is_image( $attachment_id );
 	}
 
 	/**
